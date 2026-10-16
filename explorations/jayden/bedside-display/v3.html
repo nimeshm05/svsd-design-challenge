@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bedside Story v3: monitor + 3D setup</title>
+<style>
+  :root { --ink: #1f1f1f; --mute: #6b6b6b; --line: #c9c9c9; --fill: #f2f2f2; --bg: #fafafa; --note: #2f6fd6; --accent: #3d7fd9; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 12px 26px; align-items: center; padding: 12px 20px;
+    border-bottom: 1px dashed var(--line); background: #fff; }
+  .controls h1 { font-size: 15px; margin: 0; }
+  .group { display: flex; gap: 6px; align-items: center; }
+  .group > span { color: var(--mute); font-size: 13px; margin-right: 4px; }
+  .seg { border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 4px 10px; font-size: 13px; }
+  .seg[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .seg:disabled { opacity: .35; cursor: default; }
+  .hint { color: var(--note); font-size: 12px; }
+
+  .stage { padding: 28px 20px 48px; display: flex; flex-direction: column; align-items: center; }
+  .label { font-size: 12px; color: var(--mute); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 8px; align-self: center; }
+
+  .display { width: min(1040px, calc(100vw - 40px)); aspect-ratio: 16 / 10; border: 12px solid #3a3a3a; border-radius: 16px;
+    background: #fff; overflow: hidden; position: relative; transition: background .3s; }
+  .screen { position: absolute; inset: 0; padding: 3.5% 4%; display: flex; flex-direction: column; }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line);
+    padding-bottom: 10px; margin-bottom: 14px; }
+  .topline .who { font-size: clamp(18px, 2.6vw, 28px); font-weight: 600; }
+  .topline .meta { color: var(--mute); font-size: 13px; text-align: right; }
+  .dots { display: flex; gap: 6px; justify-content: center; margin-top: auto; padding-top: 10px; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+  .dots i.on { background: var(--ink); }
+  .box { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+  .kicker { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--mute); margin-bottom: 6px; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; border: 1px solid currentColor;
+    border-radius: 4px; padding: 0 5px; margin-right: 6px; vertical-align: 1px; }
+  .tag.new { color: var(--accent); }
+  .tag.removed { border-style: dashed; color: var(--mute); }
+
+  /* Today */
+  .home { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; flex: 1; min-height: 0; }
+  .summary { font-size: clamp(15px, 2vw, 22px); line-height: 1.5; margin: 0 0 10px; }
+  .confirmed { font-size: 12px; color: var(--mute); }
+  .changes { list-style: none; margin: 0; padding: 0; }
+  .changes li { padding: 7px 0; border-top: 1px solid var(--fill); font-size: 14px; }
+  .changes li:first-child { border-top: 0; }
+  .strip { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 16px; }
+  .strip .big { font-size: 18px; font-weight: 600; }
+  .strip .empty { border-style: dashed; color: var(--mute); font-size: 13px; display: flex; align-items: center; }
+
+  /* 3D setup */
+  .setup { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 250px; gap: 14px; }
+  .view3d { position: relative; border-radius: 10px; background: radial-gradient(ellipse at 50% 40%, #f7f7f5, #e9e8e4); overflow: hidden; min-height: 0; }
+  .view3d canvas { display: block; }
+  .lbl { font-size: 12px; background: rgba(255,255,255,.92); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px;
+    white-space: nowrap; pointer-events: auto; cursor: pointer; transition: opacity .3s; }
+  .lbl.new { border-color: var(--accent); }
+  .lbl.removed { border-style: dashed; color: var(--mute); }
+  .lbl.dim { opacity: .25; }
+  .lbl.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .lbl.on .tag { color: #fff; }
+  .legend3d { list-style: none; margin: 0; padding: 0; overflow: auto; font-size: 13px; }
+  .legend3d li { padding: 8px 10px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; }
+  .legend3d li.on { border-color: var(--ink); background: #fff; }
+  .legend3d li b { font-weight: 600; display: block; }
+  .legend3d li span { color: var(--mute); font-size: 12px; }
+  .legend3d li.removed { opacity: .55; }
+  .caption { position: absolute; left: 12px; right: 12px; bottom: 10px; font-size: 14px; background: rgba(255,255,255,.9);
+    border-radius: 8px; padding: 8px 12px; display: flex; gap: 10px; align-items: baseline; }
+  .caption b { white-space: nowrap; }
+  .gesture { position: absolute; top: 10px; left: 12px; font-size: 11px; color: var(--note); }
+
+  /* Team */
+  .team { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .card { display: flex; gap: 10px; align-items: flex-start; }
+  .avatar { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--fill); border: 1px solid var(--line);
+    display: grid; place-items: center; font-size: 13px; font-weight: 600; }
+  .card .n { font-weight: 600; font-size: 14px; }
+  .card .r, .card .l { font-size: 12px; }
+  .card .r { color: var(--mute); }
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .plans .open { border-style: dashed; }
+
+  /* Night + away */
+  .display.night { background: #0b0b0c; border-color: #161616; }
+  .night-view { color: #6e6e6e; justify-content: center; align-items: center; text-align: center; gap: 14px; }
+  .night-view .clock { font-size: clamp(40px, 7vw, 76px); font-weight: 300; color: #8a8a8a; }
+  .away-view { justify-content: center; align-items: center; text-align: center; gap: 8px; color: var(--mute); }
+  .away-view strong { color: var(--ink); font-size: 22px; }
+
+  @media (max-width: 720px) {
+    .display { aspect-ratio: auto; height: 720px; }
+    .home, .strip, .team, .plans, .setup { grid-template-columns: 1fr; }
+    .setup { grid-template-rows: 1fr auto; }
+    .legend3d { max-height: 180px; }
+  }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+
+<div class="controls">
+  <h1>Bedside Story v3 · monitor</h1>
+  <div class="group" id="screens"><span>View</span></div>
+  <div class="group" id="modes"><span>Mode</span></div>
+  <div class="group" id="days"><span>Day type</span></div>
+  <div class="group" id="tour"><span>3D</span></div>
+</div>
+
+<div class="stage">
+  <p class="label">Bedside display · beside the parent chair · view-only</p>
+  <div class="display" id="display"></div>
+</div>
+
+<!-- The 3D view lives outside render() so it isn't rebuilt on every change. -->
+<div id="view3d" class="view3d" hidden>
+  <div class="gesture">Sketch only: drag to turn. The real screen turns slowly by itself.</div>
+  <div class="caption" id="caption"></div>
+</div>
+
+<script src="data.js"></script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+
+const B = window.BABY;
+const state = { screen: "setup", mode: "day", dayType: "steady", tour: true, active: 0 };
+const SCREENS = [["home", "Today's chapter"], ["setup", "Setup (3D)"], ["team", "Care team"]];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const $ = id => document.getElementById(id);
+
+/* ---------------- Equipment shown in 3D ---------------- */
+function items() {
+  const steady = state.dayType === "steady";
+  return [
+    steady
+      ? { id: "cannula", name: "Nasal cannula", plain: "Soft prongs in her nose give a gentle flow of air.", status: "new" }
+      : { id: "cpap", name: "CPAP mask", plain: "A small mask gives steady air pressure to help her breathe.", status: "new" },
+    { id: "tube", name: "Feeding tube", plain: "A thin tube through her nose carries milk straight to her tummy.", status: "same" },
+    { id: "leads", name: "Heart monitor stickers", plain: "Three soft stickers on her chest count her heartbeat and breathing.", status: "same" },
+    { id: "temp", name: "Temperature sensor", plain: "A small patch on her belly lets the incubator keep her warm.", status: "same" },
+    { id: "pulseox", name: "Pulse oximeter", plain: "A soft wrap on her foot shines a gentle light to measure oxygen. It doesn't hurt.", status: "same" },
+    steady
+      ? { id: "iv", name: "IV line", plain: "Removed today. All her milk now goes through the feeding tube.", status: "removed" }
+      : { id: "iv", name: "IV line", plain: "A thin line in her hand for fluids.", status: "same" },
+    { id: "monitor", name: "Bedside monitor", plain: "Shows her numbers to the nurses. All the wires end here.", status: "same" },
+  ];
+}
+
+/* ---------------- Three.js scene ---------------- */
+const host = $("view3d");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+host.prepend(renderer.domElement);
+const labels = new CSS2DRenderer();
+Object.assign(labels.domElement.style, { position: "absolute", inset: "0", pointerEvents: "none" });
+host.appendChild(labels.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
+camera.position.set(2.2, 8.6, 6.4);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(-0.2, 1.7, 0);
+controls.enableDamping = true; controls.enablePan = false;
+controls.minDistance = 5; controls.maxDistance = 16; controls.maxPolarAngle = Math.PI * .48;
+controls.autoRotate = true; controls.autoRotateSpeed = 0.5;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xd9d4cc, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 1.4); sun.position.set(4, 10, 6); scene.add(sun);
+
+const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: .85, ...extra });
+const CLAY = 0xd8cbc0, WHITE = 0xf4f4f2, GRAY = 0xbdbdbd, WIRE = 0x8d8d8d;
+const ACCENT = new THREE.Color(0x3d7fd9);
+const add = (geo, m, x, y, z, parent = scene) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); parent.add(o); return o; };
+
+// Incubator: stand, base, mattress, clear hood with portholes.
+add(new THREE.BoxGeometry(0.5, 1.6, 0.5), mat(GRAY), 0, -0.6, 0);
+add(new THREE.BoxGeometry(4, 0.15, 2.4), mat(GRAY), 0, -1.4, 0);
+add(new THREE.BoxGeometry(7.2, 0.9, 3.8), mat(0xe2e2df), 0, 0.45, 0);
+add(new THREE.BoxGeometry(6.4, 0.35, 3.2), mat(WHITE), 0, 1.07, 0);
+const hoodGeo = new THREE.BoxGeometry(7, 3.2, 3.6);
+add(hoodGeo, new THREE.MeshPhysicalMaterial({ color: 0xdfeaf2, transparent: true, opacity: .13, roughness: .1, depthWrite: false }), 0, 2.5, 0);
+const edges = new THREE.LineSegments(new THREE.EdgesGeometry(hoodGeo), new THREE.LineBasicMaterial({ color: 0x9fb3c2, transparent: true, opacity: .6 }));
+edges.position.set(0, 2.5, 0); scene.add(edges);
+[-1.8, 1.8].forEach(x => { const r = add(new THREE.TorusGeometry(0.5, 0.03, 8, 40), mat(0xc9d6e0, { transparent: true, opacity: .5 }), x, 2.3, 1.8); });
+
+// Baby: simple clay figure lying along x, head to the left.
+const baby = new THREE.Group(); scene.add(baby);
+const skin = mat(CLAY, { roughness: .95 });
+add(new THREE.SphereGeometry(0.6, 32, 24), skin, -2.05, 1.85, 0, baby);
+const torso = add(new THREE.CapsuleGeometry(0.62, 1.2, 8, 24), skin, -0.55, 1.82, 0, baby); torso.rotation.z = Math.PI / 2; torso.scale.set(1, 1, .85);
+add(new THREE.CapsuleGeometry(0.5, 0.25, 8, 16), mat(WHITE), 0.45, 1.8, 0, baby).rotation.z = Math.PI / 2; // diaper
+[[-0.95, .62, .35], [-0.95, -.62, -.35]].forEach(([x, z, rz]) => {
+  const a = add(new THREE.CapsuleGeometry(0.17, 0.7, 6, 12), skin, x, 1.75, z, baby); a.rotation.set(Math.PI / 2, 0, rz);
+});
+[[1.25, .33], [1.25, -.33]].forEach(([x, z]) => {
+  const l = add(new THREE.CapsuleGeometry(0.2, 0.9, 6, 12), skin, x, 1.68, z, baby); l.rotation.z = Math.PI / 2 - .1;
+});
+const tube = (pts, r = 0.035, m = mat(WIRE)) =>
+  new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p))), 80, r, 8), m);
+
+// Monitor on a pole outside the incubator, where every wire ends.
+const PORT = [3.5, 2.0, -1.6];
+add(new THREE.CylinderGeometry(0.06, 0.06, 4.2), mat(GRAY), 4.6, 1.5, -2.2);
+const monitor = new THREE.Group(); scene.add(monitor);
+add(new THREE.BoxGeometry(1.6, 1.05, 0.15), mat(0x3a3a3a), 4.6, 3.7, -2.1, monitor);
+add(new THREE.PlaneGeometry(1.4, 0.85), mat(0x5d6670, { roughness: .4 }), 4.6, 3.7, -2.02, monitor);
+
+// Each item is a group so it can be highlighted as one piece.
+const groups = {};
+function makeGroup(id, anchor) { const g = new THREE.Group(); g.userData.anchor = new THREE.Vector3(...anchor); scene.add(g); groups[id] = g; return g; }
+
+{ const g = makeGroup("cannula", [-2.65, 2.25, 0]);
+  g.add(tube([[-2.62, 1.88, 0.12], [-2.5, 2.05, 0.45], [-2.0, 2.0, 0.65], [-1.6, 1.6, 0.5], [-1.4, 1.5, -0.3], [0.5, 1.3, -1.4], [2.5, 1.5, -1.6], PORT], 0.045, mat(0xcfe0ef)));
+  g.add(tube([[-2.62, 1.88, -0.12], [-2.5, 2.05, -0.45], [-2.0, 2.0, -0.65], [-1.6, 1.6, -0.5], [-1.4, 1.5, -0.3]], 0.045, mat(0xcfe0ef))); }
+{ const g = makeGroup("cpap", [-2.75, 2.3, 0]);
+  const m = add(new THREE.CapsuleGeometry(0.2, 0.25, 6, 16), mat(0xcfe0ef, { transparent: true, opacity: .9 }), -2.62, 1.92, 0, g); m.rotation.x = Math.PI / 2;
+  g.add(tube([[-2.7, 2.05, 0], [-2.6, 2.6, 0], [-1.8, 3.0, -0.6], [1.5, 2.6, -1.5], PORT], 0.08, mat(0xcfe0ef))); }
+{ const g = makeGroup("tube", [-2.4, 2.75, -0.6]);
+  g.add(tube([[-2.6, 1.8, -0.06], [-2.75, 2.1, -0.2], [-2.6, 2.6, -0.8], [-2.0, 3.4, -1.4], [-1.7, 3.6, -1.6]], 0.03, mat(0xf2e3a0)));
+  add(new THREE.CylinderGeometry(0.12, 0.12, 0.8), mat(0xf5f5f5, { transparent: true, opacity: .85 }), -1.7, 4.0, -1.6, g); }
+{ const g = makeGroup("leads", [-1.0, 2.9, 1.0]);
+  [[-1.0, 0.32], [-1.0, -0.32], [-0.25, 0.3]].forEach(([x, z], i) => {
+    add(new THREE.CylinderGeometry(0.13, 0.13, 0.04, 20), mat(0xfafafa), x, 2.4, z, g);
+    g.add(tube([[x, 2.43, z], [x + 0.3, 2.55, z * 1.4], [0.6, 2.2, -0.9 - i * .08], [2.4, 1.7, -1.5], PORT], 0.025, mat([0xd9d9d9, 0xc9c9c9, 0xb9b9b9][i])));
+  }); }
+{ const g = makeGroup("temp", [0.5, 2.9, -0.9]);
+  add(new THREE.CylinderGeometry(0.14, 0.14, 0.03, 4), mat(0xe8e0d0), -0.05, 2.42, 0, g);
+  g.add(tube([[-0.05, 2.44, 0], [0.4, 2.45, -0.4], [1.2, 1.9, -1.2], [2.6, 1.7, -1.6], PORT], 0.025)); }
+{ const g = makeGroup("pulseox", [2.25, 2.15, 0.6]);
+  const w = add(new THREE.CylinderGeometry(0.24, 0.24, 0.3, 20), mat(0xf0f0f0), 1.95, 1.62, 0.33, g); w.rotation.z = Math.PI / 2;
+  add(new THREE.SphereGeometry(0.06, 12, 12), new THREE.MeshBasicMaterial({ color: 0xff5a4f }), 1.95, 1.62, 0.58, g);
+  g.add(tube([[2.1, 1.62, 0.33], [2.6, 1.5, 0.3], [3.0, 1.6, -0.8], PORT], 0.025)); }
+{ const g = makeGroup("iv", [-0.9, 2.15, 1.25]);
+  g.add(tube([[-0.95, 1.72, 1.0], [-0.6, 1.9, 1.3], [0.4, 2.6, 1.5], [1.8, 3.2, 1.4], [3.0, 3.3, 0.6], PORT], 0.03, mat(0xbfd6e8))); }
+groups.monitor = monitor; monitor.userData.anchor = new THREE.Vector3(4.6, 4.5, -2.1);
+
+// Remember original colors so highlight/ghost states can be reset.
+Object.values(groups).forEach(g => g.traverse(o => { if (o.isMesh) o.userData.base = { color: o.material.color.clone(), opacity: o.material.opacity, transparent: o.material.transparent }; }));
+const labelEls = {};
+Object.entries(groups).forEach(([id, g]) => {
+  const div = document.createElement("div"); div.className = "lbl";
+  div.onclick = () => select(id);
+  const obj = new CSS2DObject(div); obj.position.copy(g.userData.anchor); scene.add(obj);
+  labelEls[id] = { div, obj };
+});
+
+function applyState() {
+  const list = items(), ids = list.map(i => i.id), act = list[state.active % list.length];
+  Object.entries(groups).forEach(([id, g]) => {
+    const it = list.find(i => i.id === id);
+    g.visible = !!it;
+    if (!it) { labelEls[id].obj.visible = false; return; }
+    const removed = it.status === "removed", on = act && act.id === id, dim = state.tour && !on;
+    labelEls[id].obj.visible = !state.tour || on; // tour shows one label at a time
+    g.traverse(o => {
+      if (!o.isMesh) return; const b = o.userData.base;
+      o.material.transparent = removed || dim || b.transparent;
+      o.material.opacity = removed ? .18 : dim ? .35 : b.opacity;
+      o.material.depthWrite = !(removed || dim);
+      o.material.color.copy(on ? b.color.clone().lerp(ACCENT, .55) : b.color);
+      if (o.material.emissive) o.material.emissive.copy(on ? ACCENT : new THREE.Color(0)).multiplyScalar(on ? .25 : 0);
+    });
+    const d = labelEls[id].div;
+    d.className = `lbl ${it.status} ${on ? "on" : ""} ${state.tour && !on ? "dim" : ""}`;
+    d.innerHTML = `${it.status !== "same" ? `<span class="tag ${it.status}">${it.status === "new" ? "NEW" : "REMOVED"}</span>` : ""}${esc(it.name)}`;
+  });
+  $("caption").innerHTML = act ? `<b>${esc(act.name)}</b><span>${esc(act.plain)}</span>` : "";
+  $("caption").hidden = !state.tour;
+  const leg = document.querySelector(".legend3d");
+  if (leg) leg.innerHTML = list.map((i, n) => `<li data-id="${i.id}" class="${i.status} ${n === state.active % list.length ? "on" : ""}">
+    <b>${i.status !== "same" ? `<span class="tag ${i.status}">${i.status === "new" ? "NEW" : "REMOVED"}</span>` : ""}${esc(i.name)}</b><span>${esc(i.plain)}</span></li>`).join("");
+}
+function select(id) {
+  const idx = items().findIndex(i => i.id === id); if (idx < 0) return;
+  state.active = idx; state.tour = true; lastStep = performance.now(); syncButtons(); applyState();
+}
+
+// Tour: on a no-touch screen, the display walks through each item by itself.
+let lastStep = performance.now();
+function size() {
+  const r = host.getBoundingClientRect(); if (!r.width) return;
+  renderer.setSize(r.width, r.height); labels.setSize(r.width, r.height);
+  camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+}
+new ResizeObserver(size).observe(host);
+renderer.setAnimationLoop(t => {
+  if (host.hidden) return;
+  if (state.tour && t - lastStep > 5000) { state.active = (state.active + 1) % items().length; lastStep = t; applyState(); }
+  controls.update(); renderer.render(scene, camera); labels.render(scene, camera);
+});
+
+/* ---------------- Screens ---------------- */
+const topline = t => `<div class="topline"><div class="who">${esc(B.name)} · Day ${B.day}</div><div class="meta">${esc(t)}<br>Corrected age ${esc(B.correctedAge)}</div></div>`;
+const dots = () => `<div class="dots">${SCREENS.map(([v]) => `<i class="${v === state.screen ? "on" : ""}"></i>`).join("")}</div>`;
+
+function home() {
+  const c = B.chapters[state.dayType];
+  const changes = c.changes.map(x => `<li><span class="tag ${x.kind}">${x.kind === "new" ? "NEW" : "REMOVED"}</span>${esc(x.text)}</li>`).join("");
+  const milestone = c.milestone ? `<div class="box"><div class="kicker">Today's moment</div><div class="big">${esc(c.milestone)}</div></div>`
+    : `<div class="box empty">No milestone today. That's okay.</div>`;
+  return `${topline("Today's chapter")}<div class="home">
+      <div><div class="kicker">Today</div><p class="summary">${esc(c.summary)}</p><div class="confirmed">Checked by ${esc(c.confirmedBy)} · ${esc(c.confirmedAt)}</div></div>
+      <div class="box"><div class="kicker">What changed since yesterday</div><ul class="changes">${changes}</ul></div></div>
+    <div class="strip">${milestone}<div class="box"><div class="kicker">Next care time</div><div class="big">${esc(B.nextCare.time)}</div>
+      <div style="font-size:13px">${esc(B.nextCare.what)}. ${esc(B.nextCare.why)}</div></div></div>${dots()}`;
+}
+const setup = () => `${topline("Your baby's setup")}<div class="setup"><div id="slot3d" style="display:contents"></div>
+  <ul class="legend3d"></ul></div>${dots()}`;
+function team() {
+  const cards = B.team.map(t => `<div class="box card"><div class="avatar">${esc(t.initials)}</div><div><div class="n">${esc(t.name)}</div><div class="r">${esc(t.role)}</div><div class="l">${esc(t.line)}</div></div></div>`).join("");
+  const plans = B.plans.map(p => state.dayType === "harder" && p.specialty === "Breathing" ? { ...p, plan: "Stay on CPAP while she rests", open: true, note: "Next step to be talked through at rounds" } : p)
+    .map(p => `<div class="box ${p.open ? "open" : ""}"><div class="kicker">${esc(p.specialty)}</div><div style="font-size:14px">${esc(p.plan)}</div>${p.open ? `<div style="font-size:12px;margin-top:4px">◌ Still open: ${esc(p.note)}</div>` : ""}</div>`).join("");
+  return `${topline("Today's care team")}<div class="team">${cards}</div><div class="kicker" style="margin-top:14px">Current plans</div><div class="plans">${plans}</div>${dots()}`;
+}
+const night = () => `<div class="screen night-view"><div class="clock">1:12 a.m.</div><div style="font-size:18px">Next care · ${esc(B.nextCare.nightTime)}</div><div>${esc(B.name)} is resting.</div></div>`;
+const away = () => `<div class="screen away-view"><strong>${esc(B.room)}</strong><div>The family is away right now.</div><div>Updates are on their phone.</div></div>`;
+
+function render() {
+  const d = $("display");
+  d.classList.toggle("night", state.mode === "night");
+  document.body.appendChild(host); host.hidden = true; // park the 3D view before the screen is rebuilt
+  d.innerHTML = state.mode === "night" ? night() : state.mode === "away" ? away()
+    : `<div class="screen">${{ home, setup, team }[state.screen]()}</div>`;
+  const slot = $("slot3d");
+  if (slot) { slot.replaceWith(host); host.hidden = false; size(); applyState(); }
+  syncButtons();
+}
+function syncButtons() {
+  for (const [id, key] of [["screens", "screen"], ["modes", "mode"], ["days", "dayType"], ["tour", "tour"]])
+    document.querySelectorAll(`#${id} .seg`).forEach(b => {
+      b.setAttribute("aria-pressed", String(b.dataset.v) === String(state[key]));
+      if (id === "screens") b.disabled = state.mode !== "day";
+    });
+}
+function segs(id, opts, key) {
+  opts.forEach(([v, l]) => {
+    const b = document.createElement("button"); b.className = "seg"; b.textContent = l; b.dataset.v = v;
+    b.onclick = () => { state[key] = v === "true" ? true : v === "false" ? false : v; if (key === "dayType") state.active = 0; lastStep = performance.now(); render(); };
+    $(id).appendChild(b);
+  });
+}
+segs("screens", SCREENS, "screen");
+segs("modes", [["day", "Day"], ["night", "Night"], ["away", "Away"]], "mode");
+segs("days", [["steady", "Steady day"], ["harder", "Harder day"]], "dayType");
+segs("tour", [["true", "Guided tour"], ["false", "Show all"]], "tour");
+document.addEventListener("click", e => { const li = e.target.closest(".legend3d li"); if (li) select(li.dataset.id); });
+render();
+</script>
+</body>
+</html>

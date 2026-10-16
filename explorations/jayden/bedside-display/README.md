@@ -31,7 +31,16 @@ Then open http://localhost:8123. Use the bar at the top to switch screens, modes
 - **Phone:** add a question for rounds; it appears on the display
 - **Harder day:** the same screens on a day with a setback (back on CPAP, no milestone), so the tone holds up when things don't go well
 
-Not built yet: the real 3D setup view, tapping setup items on the phone for details, and the daily summary for parents who aren't at the bedside.
+Not built yet: tapping setup items on the phone for details, and the daily summary for parents who aren't at the bedside.
+
+### v3: monitor only, with 3D setup
+
+Open http://localhost:8123/v3.html (same server). Just the bedside monitor, with no phone or questions flow.
+
+- **Setup (3D):** a clay-style model of the incubator, the baby, and everything attached: nasal cannula (or CPAP mask on a harder day), feeding tube, heart monitor stickers, temperature sensor, pulse oximeter, and the IV line (shown as a faded ghost once it's removed). All the wires run out to the bedside monitor.
+- **Guided tour:** since the screen is view-only, it slowly turns and highlights one item every 5 seconds, with a plain-language caption. **Show all** labels everything at once.
+- **Today's chapter**, **Care team**, and the **Night**/**Away** modes carry over from v1.
+- Uses three.js 0.160.0 from a CDN, so it needs an internet connection.
 
 ## Open questions
 
@@ -43,3 +52,5 @@ Not built yet: the real 3D setup view, tapping setup items on the phone for deta
 
 - 2026-10-16: Created the exploration folder and branch.
 - 2026-10-16: First wireframe: home (day/night/away), setup, care team, rounds, phone question flow, steady vs. harder day.
+- 2026-10-16: Tried a phone-first question loop with a "sky" of stars as a gentle reward (v2, not committed). Set aside for now to focus on the monitor.
+- 2026-10-16: v3: monitor only, with a 3D setup view and a guided tour for a no-touch screen.
