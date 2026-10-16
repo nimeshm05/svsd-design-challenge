@@ -10,9 +10,9 @@ A storytelling product for parents of very preterm babies (born before 32 weeks)
 
 | Person | GitHub handle | Exploration folder |
 | --- | --- | --- |
-| Nimesh | `TODO` | `explorations/nimesh/` |
-| `TODO` | `TODO` | `explorations/<name>/` |
-| `TODO` | `TODO` | `explorations/<name>/` |
+| Nimesh | nimeshm05 | explorations/nimesh/ |
+| Jayden | jaydehnajun-jpg | explorations/jayden/ |
+| Sara | sarachong02 | explorations/sara/ |
 
 Agents: find out whose machine you're on (`git config user.name`) and work in that person's space.
 
