@@ -3,7 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { armAngle, galaxies, type WeekGalaxy } from "@/lib/galaxies";
-import { useStore } from "@/lib/store";
+import { fadeK, useStore } from "@/lib/store";
 import { diskFrag, diskVert, swarmFrag, swarmVert } from "./galaxyShaders";
 import { C } from "./palette";
 
@@ -123,9 +123,10 @@ function Galaxy({ g, lite }: { g: WeekGalaxy; lite: boolean }) {
     const st = useStore.getState();
     let target = 1;
     if (st.recap.active) target = g.week === st.week ? 0.6 : 0.12;
-    else if (st.level === "week") target = g.week === st.week ? 1 : 0.14;
+    // inside a week the galaxy steps back a little so its day-stars always read
+    else if (st.level === "week") target = g.week === st.week ? 0.62 : 0.12;
     else if (st.level === "day") target = g.week === st.week ? 0.5 : 0.06;
-    focus.current += (target - focus.current) * (1 - Math.exp(-dt * 3));
+    focus.current += (target - focus.current) * fadeK(dt, 3);
     disk.uniforms.uTime.value = s.clock.elapsedTime;
     disk.uniforms.uFocus.value = focus.current;
     swarm.uniforms.uTime.value = s.clock.elapsedTime;

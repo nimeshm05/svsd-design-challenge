@@ -3,8 +3,9 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo } from "react";
 import * as THREE from "three";
 import { stay } from "@/lib/data";
+import { galaxies } from "@/lib/galaxies";
 import { coreSize } from "@/lib/layout";
-import { useStore } from "@/lib/store";
+import { fadeK, useStore } from "@/lib/store";
 import type { Day, Support } from "@/lib/types";
 import { posOf } from "@/lib/view";
 import { C } from "./palette";
@@ -12,11 +13,12 @@ import { starFrag, starVert } from "./shaders";
 
 // More breathing help → more, thinner spikes. Spikes simplify as the baby needs less help.
 const spikeSpec: Record<Support, { lines: number; w: number; len: number }> = {
+  // lengths stay close so every day reads clearly inside its galaxy; the count carries the meaning
   ventilator: { lines: 4, w: 0.0042, len: 0.64 },
   cpap: { lines: 3, w: 0.0058, len: 0.6 },
-  "high-flow": { lines: 3, w: 0.0075, len: 0.5 },
-  "low-flow": { lines: 2, w: 0.0095, len: 0.42 },
-  "room-air": { lines: 2, w: 0.013, len: 0.32 },
+  "high-flow": { lines: 3, w: 0.0072, len: 0.56 },
+  "low-flow": { lines: 2, w: 0.0085, len: 0.52 },
+  "room-air": { lines: 2, w: 0.0095, len: 0.48 },
 };
 const brightness = { calm: 1, mixed: 0.82, hard: 0.64 } as const; // hard days dimmer, never dark
 const cool = { calm: 0, mixed: 0.35, hard: 1 } as const;
@@ -25,10 +27,12 @@ export function starAttributes(d: Day) {
   const s = spikeSpec[d.support];
   const b = brightness[d.mood];
   const growth = 1 + Math.max(0, d.weightGrams - 900) / 2200;
+  // scale with the week's galaxy so day-stars read the same size on screen in every week
+  const g = galaxies[d.week - 1];
+  const fit = g ? g.radius / 2.1 : 1;
   return {
-    // day stars live inside a galaxy now, so they are smaller foreground jewels
-    core: coreSize(d.weightGrams) * 0.75,
-    size: s.len * (0.78 + 0.22 * b) * growth * 0.62,
+    core: Math.max(0.03, coreSize(d.weightGrams) * 0.9) * fit,
+    size: s.len * (0.85 + 0.15 * b) * growth * 0.68 * fit,
     bright: b,
     warm: Math.min(1, d.parentMinutes / 210),
     lines: s.lines,
@@ -117,7 +121,7 @@ export function Stars() {
     const { level, week, day, pulse, recap } = useStore.getState();
     const focus = geometry.getAttribute("aFocus") as THREE.InstancedBufferAttribute;
     const pul = geometry.getAttribute("aPulse") as THREE.InstancedBufferAttribute;
-    const k = 1 - Math.exp(-dt * 3.2);
+    const k = fadeK(dt, 3.2);
     const now = performance.now();
     for (let i = 0; i < days.length; i++) {
       const d = days[i];

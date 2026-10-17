@@ -38,14 +38,14 @@ export function armAngle(g: Pick<WeekGalaxy, "phase" | "pitch">, rn: number, arm
 // Hand-composed like a deep-field photograph: galaxies scattered across the sky at different
 // depths, drifting loosely from the first week (top, furthest back) to this week (bottom, closest).
 const COMPOSED: Vec3[] = [
-  [3.7, 8.1, -6.5],
-  [-3.5, 6.5, -5.6],
-  [0.3, 4.3, -4.8],
-  [-4.0, 1.5, -4.0],
-  [3.9, 1.9, -3.2],
-  [-0.8, -1.7, -2.2],
-  [3.7, -4.3, -1.2],
-  [-1.5, -7.6, 0],
+  [-3.6, 10.8, -8.0],
+  [3.9, 8.3, -7.0],
+  [-0.5, 5.9, -6.0],
+  [4.5, 2.9, -5.0],
+  [-4.3, 0.9, -4.0],
+  [1.3, -2.0, -3.0],
+  [-3.3, -5.6, -1.5],
+  [2.1, -9.9, 0],
 ];
 function skyPosition(week: number): Vec3 {
   const n = weekCountAll;

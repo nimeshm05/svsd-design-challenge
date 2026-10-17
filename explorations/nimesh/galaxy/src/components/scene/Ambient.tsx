@@ -2,7 +2,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo } from "react";
 import * as THREE from "three";
-import { useStore } from "@/lib/store";
+import { fadeK, useStore } from "@/lib/store";
 import { posOf, weekCount, weekPoints } from "@/lib/view";
 import { C } from "./palette";
 import { dustFrag, dustVert, lineFrag, lineVert, orbitFrag, orbitVert } from "./shaders";
@@ -92,7 +92,7 @@ export function VoiceMotes() {
     material.uniforms.uPixelRatio.value = gl.getPixelRatio();
     const { level } = useStore.getState();
     const target = level === "week" ? 1 : level === "day" ? 0.25 : 0;
-    material.uniforms.uFade.value += (target - material.uniforms.uFade.value) * (1 - Math.exp(-dt * 3));
+    material.uniforms.uFade.value += (target - material.uniforms.uFade.value) * fadeK(dt, 3);
   });
   return <points geometry={geometry} material={material} frustumCulled={false} renderOrder={3} />;
 }
@@ -134,7 +134,7 @@ export function Constellations() {
   useFrame((_, dt) => {
     const { level, week, recap } = useStore.getState();
     const arr = material.uniforms.uWeekAlpha.value as number[];
-    const k = 1 - Math.exp(-dt * 3);
+    const k = fadeK(dt, 3);
     for (let w = 0; w < 9; w++) {
       let target = 0;
       if (recap.active) target = 0.08;
