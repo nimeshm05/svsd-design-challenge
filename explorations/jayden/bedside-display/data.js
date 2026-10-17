@@ -31,7 +31,51 @@ window.BABY = {
       confirmedBy: "Marcus, night nurse",
       confirmedAt: "6:55 a.m.",
     },
+    quiet: {
+      summary: "A quiet day. Mila slept well between care times and her feeds went as planned. Nothing about her care changed today.",
+      changes: [],
+      milestone: null,
+      confirmedBy: "Priya, day nurse",
+      confirmedAt: "7:35 a.m.",
+    },
   },
+
+  // Current view: the single latest update and what's coming up soon, per kind of day.
+  // `item` links an update to a piece of equipment so the display can offer "See it on her".
+  now: {
+    steady: {
+      latest: { time: "11:40 a.m.", text: "Moved to a nasal cannula: a gentler kind of breathing support.", item: "cannula", by: "Priya, day nurse",
+        terms: [{ term: "nasal cannula", plain: "soft prongs in her nose that give a gentle flow of air" }] },
+      // Moments on today's arc (h = hour of the day). They add light to today's forming star.
+      events: [{ h: 10.25, text: "Skin-to-skin with Daniel", kind: "moment" }, { h: 11.67, text: "Nasal cannula", kind: "update" }],
+      soon: [
+        { when: "3:00 p.m.", what: "Next care: feeding, diaper change, temperature check", you: "You can help with the diaper change." },
+        { when: "Tomorrow, 10:00 a.m.", what: "Rounds: the team reviews her plan", you: "You're welcome to join." },
+      ],
+    },
+    harder: {
+      latest: { time: "4:15 a.m.", text: "Back on CPAP to give her breathing more support overnight. She is resting now.", item: "cpap", by: "Marcus, night nurse",
+        terms: [{ term: "CPAP", plain: "a small mask that gives steady air pressure to help her breathe" }] },
+      events: [{ h: 4.25, text: "Back on CPAP", kind: "update" }, { h: 9.5, text: "You sang to her", kind: "moment" }],
+      soon: [
+        { when: "3:00 p.m.", what: "Next care: feeding, diaper change, temperature check", you: "You can stay close and talk to her." },
+        { when: "Tomorrow, 10:00 a.m.", what: "Rounds: the team will talk through her breathing with you", you: null },
+      ],
+    },
+    quiet: {
+      latest: { time: null, text: "No changes since yesterday. Mila is resting.", item: null, by: "Priya, day nurse", terms: [] },
+      events: [{ h: 9.5, text: "You read her a story", kind: "moment" }],
+      soon: [
+        { when: "3:00 p.m.", what: "Next care: feeding, diaper change, temperature check", you: "You can help with the diaper change." },
+        { when: "Tomorrow, 10:00 a.m.", what: "Rounds: the team reviews her plan", you: "You're welcome to join." },
+      ],
+    },
+  },
+
+  clock: { label: "2:10 p.m.", h: 14.17 },
+  careHours: [0, 3, 6, 9, 12, 15, 18, 21], // care is grouped every 3 hours so she can sleep in between
+  shift: { now: "Priya", until: "7 p.m.", next: "Marcus" },
+  pastDays: 22, // earlier days are already stars
 
   nextCare: {
     time: "3:00 p.m.",
