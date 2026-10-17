@@ -35,6 +35,29 @@ export function armAngle(g: Pick<WeekGalaxy, "phase" | "pitch">, rn: number, arm
   return g.phase + arm * Math.PI + Math.log(Math.max(rn, 0.02)) / g.pitch;
 }
 
+// Hand-composed like a deep-field photograph: galaxies scattered across the sky at different
+// depths, drifting loosely from the first week (top, furthest back) to this week (bottom, closest).
+const COMPOSED: Vec3[] = [
+  [3.7, 8.1, -6.5],
+  [-3.5, 6.5, -5.6],
+  [0.3, 4.3, -4.8],
+  [-4.0, 1.5, -4.0],
+  [3.9, 1.9, -3.2],
+  [-0.8, -1.7, -2.2],
+  [3.7, -4.3, -1.2],
+  [-1.5, -7.6, 0],
+];
+function skyPosition(week: number): Vec3 {
+  const n = weekCountAll;
+  if (n <= COMPOSED.length) {
+    // the last week always takes the hero slot
+    const slot = week === n ? COMPOSED.length - 1 : week - 1;
+    return COMPOSED[slot];
+  }
+  const t = (week - 1) / (n - 1);
+  return [Math.sin(week * 2.4) * 2.6, 9.4 - t * 18, -7.5 * (1 - t)];
+}
+
 export const galaxies: WeekGalaxy[] = Array.from({ length: weekCountAll }, (_, i) => {
   const week = i + 1;
   const wd = days.filter((d) => d.week === week);
@@ -44,9 +67,7 @@ export const galaxies: WeekGalaxy[] = Array.from({ length: weekCountAll }, (_, i
   const firsts = wd.filter((d) => d.first).length;
   // this week is the hero; earlier weeks grow with his weight
   const radius = (1.55 + 1.0 * Math.min(1, Math.max(0, (avgW - 900) / 850))) * (week === weekCountAll ? 1.25 : 1);
-  // a gentle meander down the screen, oldest week at the top and further back in depth
-  const side = week % 2 ? -1 : 1;
-  const center: Vec3 = [side * (1.25 + hash(week) * 0.6), (weekCountAll / 2 + 0.5 - week) * 3.0 - (week === weekCountAll ? 0.6 : 0), -(weekCountAll - week) * 0.45];
+  const center = skyPosition(week);
   const inclination = 0.2 + hash(week + 3) * 0.85;
   const angle = (hash(week + 9) - 0.5) * 2.2;
   const g: WeekGalaxy = {

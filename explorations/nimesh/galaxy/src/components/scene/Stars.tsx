@@ -104,7 +104,13 @@ export function makeStarGeometry(days: Day[], pos: (d: Day) => [number, number, 
 export function Stars() {
   const days = useStore((s) => s.days);
   const material = useMemo(() => makeStarMaterial(0), []);
-  const geometry = useMemo(() => makeStarGeometry(days, (d) => posOf(d.dayIndex), stay.today.dayIndex), [days]);
+  const geometry = useMemo(() => {
+    const g = makeStarGeometry(days, (d) => posOf(d.dayIndex), stay.today.dayIndex);
+    // day stars start hidden (only today shows) and fade in when you enter a galaxy
+    const f = g.getAttribute("aFocus") as THREE.InstancedBufferAttribute;
+    days.forEach((d, i) => (f.array[i] = d.dayIndex === stay.today.dayIndex ? 0.8 : 0));
+    return g;
+  }, [days]);
 
   useFrame((s, dt) => {
     material.uniforms.uTime.value = s.clock.elapsedTime;

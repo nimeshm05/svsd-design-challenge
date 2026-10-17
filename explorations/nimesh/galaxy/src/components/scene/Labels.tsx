@@ -69,20 +69,25 @@ export function Labels() {
       {/* ---------- sky: one galaxy per week, named like a chapter ---------- */}
       {Array.from({ length: weekCount }, (_, i) => i + 1).map((w, i) => {
         const c = weekCenter(w);
-        const toMiddle = c[0] < 0 ? 1 : -1; // label sits on the side facing the middle of the screen
-        const p: Vec3 = [c[0] + toMiddle * weekRadius(w) * 0.78, c[1], c[2]];
+        // side galaxies label toward the middle of the screen; centred ones label underneath
+        const below = Math.abs(c[0]) < 1.2;
+        const toMiddle = c[0] < 0 ? 1 : -1;
+        const p: Vec3 = below ? [c[0], c[1] - weekRadius(w) * 0.62, c[2]] : [c[0] + toMiddle * weekRadius(w) * 0.78, c[1], c[2]];
         const current = w === weekCount;
+        const dx = below ? 0 : toMiddle * 16, dy = below ? 14 : 0;
+        const align = below ? "center" : toMiddle > 0 ? "left" : "right";
+        const items = below ? "center" : toMiddle > 0 ? "flex-start" : "flex-end";
         return (
           <At key={`w${w}`} p={p}>
             <div style={enter(showGalaxy, i)}>
-              <Leader dx={toMiddle * 16} dy={0} align={toMiddle > 0 ? "left" : "right"} warm={current}>
+              <Leader dx={dx} dy={dy} align={align} warm={current}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     goWeek(w);
                   }}
                   className="flex flex-col"
-                  style={{ minHeight: 44, justifyContent: "center", alignItems: toMiddle > 0 ? "flex-start" : "flex-end", textAlign: toMiddle > 0 ? "left" : "right" }}
+                  style={{ minHeight: 44, justifyContent: "center", alignItems: items, textAlign: below ? "center" : toMiddle > 0 ? "left" : "right", transform: below ? "translateY(50%)" : undefined }}
                   aria-label={`Week ${w}: ${stay.weeks[w - 1].title}`}
                 >
                   <span className={`obs ${current ? "text-copper" : "text-ink-3"}`}>{current ? "This week" : `Week ${w}`}</span>
