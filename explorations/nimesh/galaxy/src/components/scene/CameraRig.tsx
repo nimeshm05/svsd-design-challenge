@@ -15,6 +15,11 @@ type Tween = { from: Vec3; to: Vec3; t0: number; dur: number };
  */
 export function CameraRig() {
   const { camera, size } = useThree();
+  const get = useThree((s) => s.get);
+  useEffect(() => {
+    // dev-only: lets a headless/minimised browser render a frame on demand for screenshots
+    if (process.env.NODE_ENV !== "production") (window as unknown as { __r3f: typeof get }).__r3f = get;
+  }, [get]);
   const tween = useRef<Tween | null>(null);
   const lastKey = useRef("");
   const base = useRef(new THREE.Vector3());

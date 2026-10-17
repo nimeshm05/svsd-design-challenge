@@ -26,8 +26,9 @@ export function starAttributes(d: Day) {
   const b = brightness[d.mood];
   const growth = 1 + Math.max(0, d.weightGrams - 900) / 2200;
   return {
-    core: coreSize(d.weightGrams),
-    size: s.len * (0.78 + 0.22 * b) * growth,
+    // day stars live inside a galaxy now, so they are smaller foreground jewels
+    core: coreSize(d.weightGrams) * 0.75,
+    size: s.len * (0.78 + 0.22 * b) * growth * 0.62,
     bright: b,
     warm: Math.min(1, d.parentMinutes / 210),
     lines: s.lines,
@@ -114,9 +115,9 @@ export function Stars() {
     const now = performance.now();
     for (let i = 0; i < days.length; i++) {
       const d = days[i];
-      let target = 1;
-      if (recap.active) target = d.dayIndex === day ? 1 : 0.45;
-      else if (level === "week") target = d.week === week ? 1 : 0.22;
+      let target = d.dayIndex === stay.today.dayIndex ? 0.8 : 0;
+      if (recap.active) target = d.dayIndex === day ? 1 : d.week === week ? 0.3 : 0;
+      else if (level === "week") target = d.week === week ? 1 : 0;
       else if (level === "day") target = d.dayIndex === day ? 1 : 0.1;
       focus.array[i] += (target - focus.array[i]) * k;
       pul.array[i] = pulse && pulse.day === d.dayIndex ? Math.max(0, 1 - (now - pulse.at) / 2600) : 0;

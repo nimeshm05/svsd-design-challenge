@@ -91,7 +91,7 @@ export function VoiceMotes() {
     material.uniforms.uTime.value = s.clock.elapsedTime;
     material.uniforms.uPixelRatio.value = gl.getPixelRatio();
     const { level } = useStore.getState();
-    const target = level === "day" ? 0.25 : 1;
+    const target = level === "week" ? 1 : level === "day" ? 0.25 : 0;
     material.uniforms.uFade.value += (target - material.uniforms.uFade.value) * (1 - Math.exp(-dt * 3));
   });
   return <points geometry={geometry} material={material} frustumCulled={false} renderOrder={3} />;
@@ -136,7 +136,7 @@ export function Constellations() {
     const arr = material.uniforms.uWeekAlpha.value as number[];
     const k = 1 - Math.exp(-dt * 3);
     for (let w = 0; w < 9; w++) {
-      let target = 0.16;
+      let target = 0;
       if (recap.active) target = 0.08;
       else if (level === "week") target = w === week ? 0.42 : 0.05;
       else if (level === "day") target = w === week ? 0.12 : 0.03;
