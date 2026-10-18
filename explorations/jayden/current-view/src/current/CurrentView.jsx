@@ -167,11 +167,6 @@ export function CurrentView({ onSky }) {
               <button type="button" className="cv-btn is-quiet" onClick={() => setDark(true)}>Turn off the screen</button>
             </div>
           )}
-          {comfort && memory && (
-            <div className="cv-actions-left">
-              <button type="button" className="cv-btn is-quiet cv-today-btn" onClick={() => setMemory(false)}><span className="cv-today-icon" aria-hidden="true">‹</span>Close</button>
-            </div>
-          )}
           {/* her first day: her nurse can open "What's on her" while explaining */}
           {first && fstage !== 'arrival' && walk == null && (
             <div className="cv-actions-left">
