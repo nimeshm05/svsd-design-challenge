@@ -73,7 +73,7 @@ void main(){
   float t = uTime * 0.008;
   vec2 g = vP * uGalaxyScale;           // galaxy-space coordinates (≈ star layout)
   float rad = length(g);
-  float ang = atan(g.y, g.x);
+  float ang = atan(-g.y, g.x);          // mirrored to match the clockwise day spiral
   vec2 p = vP * uScale;
 
   // gentle domain warp: billowing, not marbled
@@ -121,8 +121,9 @@ attribute float aToday;
 attribute float aFocus;    // 0.15 .. 1
 attribute float aPulse;    // 0..1 arrival reaction
 attribute float aCool;     // 0..1 cooler tint for hard days
+attribute float aPlanet;   // 1 = draw a tilted ring instead of spikes
 varying vec2 vUv;
-varying float vCore, vBright, vWarm, vLines, vSpikeW, vSeed, vToday, vFocus, vPulse, vCool, vHalo;
+varying float vCore, vBright, vWarm, vLines, vSpikeW, vSeed, vToday, vFocus, vPulse, vCool, vHalo, vPlanet;
 void main(){
   vec4 mv = modelViewMatrix * vec4(aCenter, 1.0);
   mv.xy += position.xy * aSize;
@@ -130,7 +131,7 @@ void main(){
   vCore = aCore / aSize;
   vHalo = (aCore * 2.2 + 0.035) / aSize;
   vBright = aBright; vWarm = aWarm; vLines = aLines; vSpikeW = aSpikeW; vSeed = aSeed;
-  vToday = aToday; vFocus = aFocus; vPulse = aPulse; vCool = aCool;
+  vToday = aToday; vFocus = aFocus; vPulse = aPulse; vCool = aCool; vPlanet = aPlanet;
   gl_Position = projectionMatrix * mv;
 }
 `;
@@ -145,7 +146,7 @@ uniform vec3 uPeri;
 uniform vec3 uEmber;
 uniform vec3 uCopper;
 varying vec2 vUv;
-varying float vCore, vBright, vWarm, vLines, vSpikeW, vSeed, vToday, vFocus, vPulse, vCool, vHalo;
+varying float vCore, vBright, vWarm, vLines, vSpikeW, vSeed, vToday, vFocus, vPulse, vCool, vHalo, vPlanet;
 #define PI 3.14159265
 
 float spike(vec2 uv, float a, float w, float len, float px){
@@ -175,13 +176,24 @@ void main(){
 
   // JWST-style diffraction spikes. More breathing help → more, thinner spikes.
   float s = 0.0;
-  float rot = PI * 0.5;
-  for (int i = 0; i < 4; i++) {
-    if (float(i) >= vLines) break;
-    s += spike(uv, rot + PI * float(i) / vLines, vSpikeW, 1.0, px);
+  if (vPlanet > 0.5) {
+    // Saturn-style ring: a tilted ellipse around the core, hidden behind the planet on its far side
+    float ca = cos(-0.42), sa = sin(-0.42);
+    vec2 q = vec2(ca * uv.x - sa * uv.y, sa * uv.x + ca * uv.y);
+    float ell = length(vec2(q.x, q.y / 0.32));
+    float rw = max(cr * 0.32, px * 0.7);
+    float ring = exp(-pow((ell - cr * 3.6) / rw, 2.0)) * (cr * 0.32 / rw);
+    float behind = step(0.0, q.y) * smoothstep(cr * 1.5, cr * 1.1, r);
+    s = ring * (1.0 - behind) * 0.9;
+  } else {
+    float rot = PI * 0.5;
+    for (int i = 0; i < 4; i++) {
+      if (float(i) >= vLines) break;
+      s += spike(uv, rot + PI * float(i) / vLines, vSpikeW, 1.0, px);
+    }
+    // the two short horizontal struts of the classic 6+2 pattern (only on 3-line stars)
+    if (abs(vLines - 3.0) < 0.1) s += 0.45 * spike(uv, 0.0, vSpikeW * 0.8, 0.45, px);
   }
-  // the two short horizontal struts of the classic 6+2 pattern (only on 3-line stars)
-  if (abs(vLines - 3.0) < 0.1) s += 0.45 * spike(uv, 0.0, vSpikeW * 0.8, 0.45, px);
   float along = clamp(r, 0.0, 1.0);
   vec3 spikeCol = mix(uCopper, uEmber, smoothstep(0.05, 0.7, along));
 

@@ -20,6 +20,9 @@ const spikeSpec: Record<Support, { lines: number; w: number; len: number }> = {
 };
 const brightness = { calm: 1, mixed: 0.82, hard: 0.64 } as const; // hard days dimmer, never dark
 const cool = { calm: 0, mixed: 0.35, hard: 1 } as const;
+// milestones drawn as a ringed planet instead of a spiked star
+const planetFirsts = new Set(["First bath"]);
+const PLANET_SCALE = 1.9; // planets read larger than the stars around them
 
 export function starAttributes(d: Day) {
   const s = spikeSpec[d.support];
@@ -63,12 +66,13 @@ export function makeStarGeometry(days: Day[], pos: (d: Day) => [number, number, 
   g.setAttribute("position", base.getAttribute("position"));
   const n = days.length;
   const arr = (k: number) => new Float32Array(n * k);
-  const center = arr(3), core = arr(1), size = arr(1), bright = arr(1), warm = arr(1), lines = arr(1), spikeW = arr(1), seed = arr(1), today = arr(1), focus = arr(1), pulse = arr(1), coolA = arr(1);
+  const center = arr(3), core = arr(1), size = arr(1), bright = arr(1), warm = arr(1), lines = arr(1), spikeW = arr(1), seed = arr(1), today = arr(1), focus = arr(1), pulse = arr(1), coolA = arr(1), planet = arr(1);
   days.forEach((d, i) => {
     const p = pos(d);
     center.set(p, i * 3);
     const a = starAttributes(d);
-    core[i] = a.core;
+    const isPlanet = !!d.first && planetFirsts.has(d.first);
+    core[i] = a.core * (isPlanet ? PLANET_SCALE : 1);
     size[i] = a.size;
     bright[i] = a.bright;
     warm[i] = a.warm;
@@ -78,6 +82,7 @@ export function makeStarGeometry(days: Day[], pos: (d: Day) => [number, number, 
     today[i] = d.dayIndex === todayIndex ? 1 : 0;
     focus[i] = 1;
     coolA[i] = a.cool;
+    planet[i] = isPlanet ? 1 : 0;
   });
   const set = (name: string, data: Float32Array, k: number, dynamic = false) => {
     const attr = new THREE.InstancedBufferAttribute(data, k);
@@ -96,6 +101,7 @@ export function makeStarGeometry(days: Day[], pos: (d: Day) => [number, number, 
   set("aFocus", focus, 1, true);
   set("aPulse", pulse, 1, true);
   set("aCool", coolA, 1);
+  set("aPlanet", planet, 1);
   g.instanceCount = n;
   return g;
 }

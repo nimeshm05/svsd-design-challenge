@@ -31,7 +31,8 @@ export function spiralPositions(count: number): Vec3[] {
     const rr = r + j;
     const ang = theta + (hash(day + 99) - 0.5) * 0.08;
     const z = (hash(day + 7) - 0.5) * 0.5;
-    out.push([Math.cos(ang) * rr, Math.sin(ang) * rr, z]);
+    // negative y winds the spiral clockwise as days go on
+    out.push([Math.cos(ang) * rr, -Math.sin(ang) * rr, z]);
   }
   return out;
 }
