@@ -1,13 +1,25 @@
 import { ahead } from '../data/days.js'
 
-// "What's ahead": her care plans, separate from her sky but drawn in the same gentle way.
-// Each area her team is working on is a short path of stars: lit for steps she has reached,
-// glowing for the step she's on, an outline for what comes next. Steps show order, never dates;
-// a step back is "working on this again", never failure.
-const STATUS = { decided: 'Decided', deciding: 'Still being decided', waiting: 'For now' }
+// "What's ahead", read the way a parent reads it, top to bottom:
+//   1. When you can be there: a short agenda, the time on the left, what it is on the right.
+//   2. Where she is on each path: three open columns. Where she is now is the biggest thing;
+//      what comes next is one quiet line; a short star path shows the steps in order.
+//   3. Still waiting on a date: one small line at the end.
+// Steps show order, never dates for going home; a step back is "working on this again", never failure.
+const STATUS = { decided: 'Decided', deciding: 'Being decided', waiting: 'For now' }
+// the words her team uses, in plain English
+const MEANS = {
+  'CPAP mask': 'steady air pressure through a small mask, so her lungs stay open',
+  'Nasal cannula': 'a gentle flow of air through soft prongs in her nose',
+  'Breathing on her own': 'no breathing help needed',
+  'Feeding tube': 'a thin tube through her nose to her tummy that carries her milk',
+  'First bottle': 'learning to suck, swallow and breathe together',
+  Breastfeeding: 'feeding at your breast, when you and she are ready',
+  Incubator: 'a warm, covered bed that keeps her temperature steady',
+  'Open crib': 'a regular baby bed, once she can keep herself warm',
+}
 
 function Star({ state }) {
-  // four-point sparkle, like the night sky
   return (
     <svg className={`cv-pstar is-${state}`} viewBox="-16 -16 32 32" aria-hidden="true">
       {state === 'now' && <circle r="15" className="cv-pstar-glow" />}
@@ -19,41 +31,50 @@ function Star({ state }) {
 export function Ahead({ kind }) {
   const a = ahead[kind]
   return (
-    <div className="cv-ahead">
-      <div className="cv-ahead-main">
-        <h2 className="cv-ahead-title">What&apos;s ahead</h2>
-        <ul className="cv-paths">
-          {a.tracks.map((t) => (
-            <li key={t.area} className="cv-path">
-              <div className="cv-path-head">
-                <b>{t.area}</b>
-                <span className={`cv-path-status is-${t.status}`}>{STATUS[t.status]}</span>
+    <div className="ah">
+      <section className="ah-sec" aria-labelledby="ah-when">
+        <h3 id="ah-when" className="ah-k">When you can be there</h3>
+        <ul className="ah-agenda">
+          {a.coming.map((c) => (
+            <li key={c.what}>
+              <span className="ah-agenda-t">{c.when}</span>
+              <div>
+                <b>{c.what}</b>
+                <span>{c.note}</span>
               </div>
-              <ol className="cv-path-stars" style={{ '--n': t.steps.length }}>
-                {t.steps.map((s, i) => {
-                  const state = i < t.at ? 'done' : i === t.at ? 'now' : 'next'
-                  return (
-                    <li key={s} className={`is-${state}`}>
-                      <Star state={state} />
-                      <span>{s}{state === 'now' && t.again && <em>working on this again</em>}</span>
-                    </li>
-                  )
-                })}
-              </ol>
-              <p className="cv-path-plan">{t.plan} <span>Next look: {t.review.toLowerCase()}.</span></p>
             </li>
           ))}
         </ul>
-      </div>
+      </section>
 
-      <aside className="cv-ahead-side">
-        <div className="cv-detail-k">Coming up</div>
-        <ul className="cv-coming">
-          {a.coming.map((c) => <li key={c.what}><span>{c.when}</span><b>{c.what}</b><em>{c.note}</em></li>)}
-          {a.checks.map((c) => <li key={c.what} className="is-waiting"><span>{c.note}</span><b>{c.what}</b></li>)}
+      <section className="ah-sec" aria-labelledby="ah-paths">
+        <h3 id="ah-paths" className="ah-k">Where she is on each path</h3>
+        <ul className="ah-cols">
+          {a.tracks.map((t) => {
+            const now = t.steps[t.at], next = t.steps[t.at + 1]
+            return (
+              <li key={t.area} className="ah-col">
+                <div className="ah-col-head">
+                  <span className="ah-col-area">{t.area}</span>
+                  <span className={`ah-status is-${t.status}`}>{STATUS[t.status]}</span>
+                </div>
+                <ol className="ah-stars" aria-label={t.steps.join(', then ')}>
+                  {t.steps.map((s, i) => <li key={s}><Star state={i < t.at ? 'done' : i === t.at ? 'now' : 'next'} /></li>)}
+                </ol>
+                <b className="ah-now">{now}</b>
+                {MEANS[now] && <span className="ah-means">{MEANS[now]}</span>}
+                {next && <span className="ah-next">Next: {next}</span>}
+                {t.status !== 'waiting' && <p className="ah-plan">{t.plan}</p>}
+              </li>
+            )
+          })}
         </ul>
-        <p className="cv-ahead-note">Plans can change as she grows. Her team will always talk changes through with you.</p>
-      </aside>
+      </section>
+
+      <section className="ah-sec ah-waiting" aria-label="Waiting on a date">
+        <span className="ah-k">Waiting on a date</span>
+        {a.checks.map((c) => <span key={c.what} className="ah-check"><b>{c.what}</b> · {c.note.toLowerCase()}</span>)}
+      </section>
     </div>
   )
 }

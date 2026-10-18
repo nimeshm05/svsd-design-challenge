@@ -1,62 +1,141 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { days, today } from '../data/days.js'
 import { Scan } from '../components/Scan.jsx'
-import { FormingStar } from './FormingStar.jsx'
 import { SkyArc } from './SkyArc.jsx'
+import { HerModel } from './HerModel.jsx'
 import { Ahead } from './Ahead.jsx'
+import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen } from './Galaxy.jsx'
 import './current.css'
 
-// Bedside current view: minimal, low-light, read from the parent chair, in the warm star style.
-// Every page keeps the same header and "Ask for her nurse" in the same corner.
-//   Home A: how she is right now, a link to today, the next care time, today's forming star.
-//           "Today so far" opens the day view.
-//   Home B: the day view: today as a line of stars to drag through, a caption, the day's list.
-//   Home C: today as an arc across the screen; drag today's star along it. The end of the arc
-//           leads to What's ahead.
+// Bedside current view: Home C, minimal and low-light, read from the parent chair, in either of
+// the two styles from the design board. Every page keeps the same header and "Ask for her nurse"
+// in the same corner. Today is an arc across the screen; drag today's star along it. From here:
+//   Her progress: the day view (her baby drawing, a line of stars to scrub, the day's list)
+//   Her galaxy:   zoom out into her whole stay (galaxy → week → day → moment, after Nimesh's galaxy)
+//   What's ahead: her care plans, from the end of the arc
 export function CurrentView({ onSky }) {
-  const [kind, setKind] = useState('calm')
+  const kind = 'harder' // Mila is a complex baby: her day is shown as it really goes, setbacks included
   const [night, setNight] = useState(false)
-  const [page, setPage] = useState('home') // 'home' | 'today' | 'ahead'
-  const [homeV, setHomeV] = useState('c') // two home layouts to compare
-  const openToday = () => setPage('today')
+  const [page, setPage] = useState('home') // 'home' | 'ahead' | 'progress' | 'galaxy'
+  const [cH, setCH] = useState(today.clock.h) // where today's star sits on Home C's arc
+  const [zoom, setZoom] = useState(null) // 'out' | 'in' while the sky is zooming
+  const [theme, setTheme] = useState('nursery') // the two styles from the design board
   const [team, setTeam] = useState(false)
   const d = today[kind]
-  const onSub = page !== 'home' && !night // a page with Back
+  const onSub = page !== 'home' && page !== 'galaxy' && !night // a page with Back
+  const onC = !night && page === 'home'
+  // Today becomes a star: the day retells itself. Its moments lift off the arc in order, each with a few
+  // words, and drift to where her sky keeps today's star; the family moment joins last. Then her sky
+  // fades in around that star. Tap to skip. Coming back, the sky fades away and the day returns.
+  const [form, setForm] = useState(null)
+  const [skyExit, setSkyExit] = useState(0) // a tap on "Today" while in her sky
+  const formT = useRef(null)
+  const toSky = () => { clearTimeout(formT.current); setPage('galaxy'); setZoom(null); setForm(null) }
+  const zoomOut = () => {
+    if (zoom) return
+    setCH(today.clock.h)
+    const el = document.querySelector('.cv-screen')
+    if (!el) return
+    const r = el.getBoundingClientRect(), ox = r.left + el.clientLeft, oy = r.top + el.clientTop
+    const target = todayOnScreen(el.clientWidth, el.clientHeight)
+    const marks = [...el.querySelectorAll('.cv-arc.is-arc .cv-arc-mark[data-label]')]
+    // every moment, the family's too, in the order it happened; each lifts off as its turn comes
+    const lifts = [
+      ...marks.map((m) => {
+        const b = m.getBoundingClientRect()
+        return { x: b.left + b.width / 2 - ox, y: b.top + b.height / 2 - oy, label: m.dataset.label, kind: m.dataset.kind, h: +m.dataset.h, el: m }
+      }),
+    ].sort((a, b) => a.h - b.h)
+    lifts.forEach((l, i) => { l.delay = 0.6 + i * 0.34; l.el?.style.setProperty('--lift', `${l.delay}s`); delete l.el })
+    const end = (lifts.at(-1)?.delay ?? 0.6) + 1.7
+    setForm({ lifts, target, end })
+    setZoom('out')
+    formT.current = setTimeout(toSky, (end + 2.1) * 1000)
+  }
+  const zoomIn = () => {
+    setPage('home'); setZoom('in')
+    setTimeout(() => setZoom(null), 3000)
+  }
+  // Coming back: today's star travels from its place in her sky to "now" on the arc
+  useLayoutEffect(() => {
+    if (zoom !== 'in') return
+    const el = document.querySelector('.cv-screen'), ov = document.querySelector('.cv-forming.is-in')
+    const star = document.querySelector('.cv-arc.is-arc .cv-arc-now .cv-arc-star')
+    if (!el || !ov || !star) return
+    const r = el.getBoundingClientRect(), b = star.getBoundingClientRect()
+    const [tx, ty] = todayOnScreen(el.clientWidth, el.clientHeight)
+    const nx = b.left + b.width / 2 - r.left - el.clientLeft, ny = b.top + b.height / 2 - r.top - el.clientTop
+    const s = Math.max(el.clientWidth / 1000, el.clientHeight / 625) // the sky's drawing units on this screen
+    ov.style.setProperty('--mx', `${(nx - tx) / s}px`)
+    ov.style.setProperty('--my', `${(ny - ty) / s}px`)
+  }, [zoom])
 
   return (
-    <div className="cv-page">
+    <div className={`cv-page theme-${theme}`}>
       {/* Prototype controls: not part of the bedside screen */}
       <div className="cv-proto" role="toolbar" aria-label="Prototype controls">
         <span className="cv-proto-k">Prototype</span>
-        <Seg value={kind} onChange={setKind} options={[['calm', 'Calm day'], ['harder', 'Harder day']]} />
         <Seg value={night ? 'night' : 'day'} onChange={(v) => setNight(v === 'night')} options={[['day', 'Day'], ['night', 'Night']]} />
-        <Seg value={homeV} onChange={(v) => { setHomeV(v); setPage('home') }} options={[['a', 'Home A'], ['b', 'Home B'], ['c', 'Home C']]} />
-        <button type="button" className="cv-proto-btn" onClick={onSky}>Open her sky</button>
+        <Seg value={theme} onChange={setTheme} options={[['nursery', 'DS1'], ['confetti', 'DS2']]} />
       </div>
 
-      <div className={`cv-screen ${night ? 'is-night' : ''}`} role="region" aria-label="Bedside display">
+      <div className={`cv-screen ${night ? 'is-night' : ''} ${page === 'galaxy' && !night ? 'is-galaxy' : ''} ${zoom === 'out' ? 'is-forming' : zoom === 'in' ? 'is-unforming' : ''}`} role="region" aria-label="Bedside display"
+        style={form ? { '--end': `${form.end}s` } : undefined}
+        onPointerMove={(e) => { // the home sky's depth layers lean a little toward the pointer
+          const r = e.currentTarget.getBoundingClientRect()
+          e.currentTarget.style.setProperty('--px', ((e.clientX - r.left) / r.width - 0.5).toFixed(3))
+          e.currentTarget.style.setProperty('--py', ((e.clientY - r.top) / r.height - 0.5).toFixed(3))
+        }}>
+        {page === 'home' && !night && <SkyDepth theme={theme} />}
+        {zoom && page === 'home' && !night && <FormingOverlay theme={theme} mode={zoom} {...(zoom === 'out' ? form : {})} onSkip={zoom === 'out' ? toSky : undefined} />}
+        {page === 'galaxy' && !night && <Galaxy theme={theme} onBack={() => { setSkyExit(0); zoomIn() }} exit={skyExit} />}
         <header className="cv-top">
           <span className="cv-top-left">
-            {onSub && <button type="button" className="cv-back" onClick={() => setPage('home')}>‹ Back</button>}
-            {page !== 'today' || night ? `Mila · Day ${today.day}` : null}
+            {onSub && page !== 'ahead' && <button type="button" className="cv-back" onClick={() => setPage('home')}>‹ Back</button>}
+            {page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? `Mila · Day ${today.day}` : null}
           </span>
           <span className="cv-clock">{night ? today.clock.night : today.clock.label}</span>
         </header>
 
-        {onSub && page === 'ahead'
+        {page === 'galaxy' && !night
+          ? null
+          : onSub && page === 'ahead'
           ? <Ahead kind={kind} />
-          : onSub
-          ? <DayView key={kind} d={d} />
-          : homeV === 'c' && !night
-            ? <HomeC key={kind} d={d} onAhead={() => setPage('ahead')} />
-            : homeV === 'b' && !night
-            ? <DayView key={kind} d={d} />
-            : <Home d={d} night={night} onToday={() => openToday()} />}
+          : onSub && page === 'progress'
+          ? <DayView key={`${kind}-p`} d={d} startH={cH} theme={theme} />
+          : night
+          ? <NightView theme={theme} />
+          : <HomeC key={kind} d={d} h={cH} setH={setCH} zoom={zoom} theme={theme} onAhead={() => setPage('ahead')} onZoomOut={zoomOut} />}
 
         <footer className="cv-actions">
-          <button type="button" className="cv-btn is-call" onClick={() => setTeam(true)}>
-            <span className="cv-btn-icon" aria-hidden="true">☎</span>Ask for her nurse
-          </button>
+          {/* back to today: always bottom left, wherever you are */}
+          {page === 'ahead' && !night && (
+            <div className="cv-actions-left">
+              <button type="button" className="cv-btn is-quiet cv-today-btn" onClick={() => setPage('home')}>
+                <span className="cv-today-icon" aria-hidden="true">‹</span>Today
+              </button>
+            </div>
+          )}
+          {page === 'galaxy' && !night && (
+            <div className="cv-actions-left">
+              <button type="button" className={`cv-btn is-quiet cv-today-btn ${skyExit ? 'is-leaving' : ''}`} onClick={() => setSkyExit((n) => n + 1)}>
+                <span className="cv-today-icon" aria-hidden="true">‹</span>Today
+              </button>
+            </div>
+          )}
+          {onC && (
+            <div className="cv-actions-left">
+              <button type="button" className="cv-btn is-quiet cv-lookup-btn" onClick={zoomOut}>
+                <LookUpIcon />Mila&apos;s stars
+              </button>
+            </div>
+          )}
+          {/* her sky is for looking back; asking for her nurse belongs with today */}
+          {page !== 'galaxy' && (
+            <button type="button" className="cv-btn is-call" onClick={() => setTeam(true)}>
+              <span className="cv-btn-icon" aria-hidden="true">☎</span>Ask for her nurse
+            </button>
+          )}
         </footer>
       </div>
 
@@ -67,38 +146,39 @@ export function CurrentView({ onSky }) {
 
 /* ---------------- Home ---------------- */
 
-function Home({ d, night, onToday }) {
-  const n = d.changes.length + d.decisions.length
+// Night: very dim. How she is, the next care time, and today's star.
+function NightView({ theme }) {
+  // Home, quieter: no arc at night. Today's star, dim; the time, large and soft; one line. All centered,
+  // so a glance from the chair in the dark is enough.
+  const c = theme === 'confetti'
   return (
-    <div className="cv-body">
-      {night ? (
-        <div className="cv-words">
-          <p className="cv-status">Mila is resting.</p>
-          <p className="cv-line">Next care <b>3:00 a.m.</b></p>
-        </div>
-      ) : (
-        <div className="cv-words">
-          <p className="cv-status">{keepTimes(d.status)}</p>
-          <button type="button" className="cv-change" onClick={onToday}>
-            <span className="cv-change-text">Today · {n} {n === 1 ? 'update' : 'updates'}</span>
-            <span className="cv-chev" aria-hidden="true">›</span>
-          </button>
-          <p className="cv-line">Next care <b>{d.next.t}</b></p>
-        </div>
-      )}
-      <FormingStar moments={d.moments} dim={night} />
+    <div className="cv-homec is-night-home">
+      <svg className="cv-night-sky" viewBox="400 20 200 120" aria-hidden="true">
+        <defs>
+          <radialGradient id="cv-night-glow">
+            <stop offset="0" stopColor={c ? '#FFF2C2' : '#FFF8E6'} stopOpacity=".35" />
+            <stop offset=".4" stopColor={c ? '#FFD23F' : '#F3E3B5'} stopOpacity=".1" />
+            <stop offset="1" stopColor={c ? '#FFD23F' : '#F3E3B5'} stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <circle className="cv-night-glow" cx="500" cy="80" r="44" fill="url(#cv-night-glow)" />
+        <path className="cv-night-star" d={`M500 ${80 - 14}L${500 + 3.4} ${80 - 3.4}L${500 + 14} 80L${500 + 3.4} ${80 + 3.4}L500 ${80 + 14}L${500 - 3.4} ${80 + 3.4}L${500 - 14} 80L${500 - 3.4} ${80 - 3.4}Z`}
+          fill={c ? '#FFD23F' : '#F3E3B5'} />
+      </svg>
+      <p className="cv-night-time">{today.clock.night}</p>
+      <p className="cv-night-line">Next care 3:00 a.m. · Mila is resting</p>
     </div>
   )
 }
 
-// The day, in the star style: used as Home B, and as Home A's "Today so far".
+// The day view, opened from "Her progress".
 // Left: her (Sara's drawing, no panel behind her), today as a line of stars you can drag
 // through, and a fixed-height caption. Her wires show as they were at the chosen time.
 // Right: the day's list. Picking a past moment moves the star there; nothing else moves.
-function DayView({ d }) {
+function DayView({ d, startH, theme }) {
   const items = dayItems(d)
   const nowH = today.clock.h
-  const [h, setH] = useState(nowH)
+  const [h, setH] = useState(startH ?? nowH)
   const atNow = Math.abs(h - nowH) < 0.01
   const past = items.filter((i) => i.phase === 'past')
   const current = past.filter((i) => i.h <= h + 0.001).at(-1) // the latest thing at or before h
@@ -110,7 +190,7 @@ function DayView({ d }) {
     <div className="cv-dayview">
       <section className="cv-dayview-main">
         <Scan present={present} changed={changed} height={220} bare />
-        <SkyArc shape="line" h={h} nowH={nowH} marks={marks} later={later} glow={Math.min(1, (marks.length + d.saved.length * 2) / 8)} onChange={setH} />
+        <SkyArc shape="line" theme={theme} h={h} nowH={nowH} marks={marks} later={later} glow={Math.min(1, (marks.length + d.saved.length * 2) / 8)} onChange={setH} />
         <div className="cv-caption cv-dayview-caption">
           {atNow ? (
             <>
@@ -177,42 +257,66 @@ const hourLabel = (h) => {
 // Home C: today's sky. The day is an arc across the whole screen, drawn like the night sky:
 // warm stars on a thin line. Today's star sits at "now" and is what you drag to go back through
 // the day. Below: a few soft words. (A 3D body was tried here and dropped: it felt clinical.)
-// Marks on the arc: care times, changes to her wires, and team decisions. Personal moments stay
-// on the parent's phone (the screen can be seen by others), but they still add light to the star.
-function HomeC({ d, onAhead }) {
+// Marks on the arc: care times, changes to her wires, team decisions, firsts, and family moments
+// as her nurse notes them. Everything comes from what's recorded at the bedside (no phone app).
+function HomeC({ d, h, setH, zoom, theme, onAhead, onZoomOut }) {
   const nowH = today.clock.h
-  const [h, setH] = useState(nowH)
   const atNow = Math.abs(h - nowH) < 0.01
+  // Her day so far: feeds and naps, what changed for her, her team's plans, her firsts, and her family's moments
   const marks = [
     ...d.care.filter((c) => c.h <= nowH).map((c) => ({ ...c, kind: 'care' })),
     ...d.changes.map((c) => ({ ...c, kind: 'change' })),
     ...d.decisions.map((x) => ({ ...x, kind: 'decision' })),
+    ...(d.firsts ?? []).map((x) => ({ ...x, kind: 'first' })),
+    ...d.saved.map((x) => ({ ...x, kind: 'family' })),
   ].sort((a, b) => a.h - b.h)
   const later = [15, 18, 21].filter((x) => x > nowH).map((x) => ({ h: x, kind: 'care' }))
   const current = marks.filter((m) => m.h <= h + 0.001).at(-1)
   const glow = Math.min(1, (marks.length + d.saved.length * 2) / 12)
+  const wiredHere = !atNow && d.setup.changes.some((c) => Math.abs(c.h - h) < 0.01)
 
   return (
-    <div className="cv-homec">
-      <SkyArc h={h} nowH={nowH} marks={marks} later={later} glow={glow} onChange={setH} onFuture={onAhead} />
-      <div className="cv-homec-words">
-        <div className="cv-caption">
-          {atNow ? (
-            <>
-              <span className="cv-detail-k">Right now</span>
-              <p className="cv-her-status">{keepTimes(d.status)}</p>
-            </>
-          ) : current ? <ShortCaption item={current} /> : (
-            <>
-              <span className="cv-detail-k">{hourLabel(h)}</span>
-              <p className="cv-caption-title">The start of her day</p>
-            </>
-          )}
+    // Pinching out over the sky (a trackpad pinch arrives as ctrl + wheel) opens her stars.
+    <div className={`cv-homec ${zoom ? `is-zoom-${zoom}` : ''}`} onWheel={(e) => { if (e.ctrlKey && e.deltaY > 4) onZoomOut() }}>
+      <SkyArc h={h} nowH={nowH} marks={marks} later={later} glow={glow} onChange={setH} onFuture={onAhead} theme={theme} gather={zoom} />
+      {/* One layout for every moment, always the same size: when, what she did, one line. Nothing jumps. */}
+      {/* on a moment that changed what's on her, one tap shows her too, in the same space as the words */}
+      <div className={`cv-homec-words cv-cap ${wiredHere ? 'is-wired' : ''}`} aria-live="polite">
+        {wiredHere && <HerFigure d={d} h={h} />}
+        <div className="cv-cap-text">
+        <span className="cv-detail-k">{atNow ? 'Right now' : current ? current.t : hourLabel(h)}</span>
+        <p className="cv-cap-title">{atNow ? keepTimes(d.status) : current ? current.short : 'The start of her day'}</p>
+        <p className="cv-cap-line">
+          {atNow ? <>Next feed <b>{d.next.t}</b> · <span className="cv-you">{d.next.you}</span></> : current?.line ?? ''}
+        </p>
+        {/* the clinical word, when there is one, in plain English */}
+        <p className="cv-cap-term">{(() => { const t = atNow ? d.statusTerm : current?.term; return t ? <><b>{t.word}</b> · {t.means}</> : '' })()}</p>
         </div>
-        {/* always in place, only hidden, so nothing moves while the star is dragged */}
-        <p className={`cv-homec-next ${atNow ? '' : 'is-hidden'}`} aria-hidden={!atNow}>Next care <b>{d.next.t}</b> · <span className="cv-you">{d.next.you}</span></p>
       </div>
     </div>
+  )
+}
+
+// Her, softly drawn, as she was at that moment: what's new glows, what came off stays as a faint ghost
+// Her, as a soft hologram: drag to turn her and see her from another side
+function HerFigure({ d, h }) {
+  const { present, changed } = setupAt(d, h)
+  return (
+    <div className="cv-her-fig">
+      <HerModel present={present} changed={changed} label="Mila as she was then, with what was on her. Drag to turn her." />
+    </div>
+  )
+}
+
+// A constellation that draws itself, with today's star at its end still twinkling
+function LookUpIcon() {
+  return (
+    <svg className="cv-lookup" viewBox="0 0 34 24" aria-hidden="true">
+      <polyline className="cv-lookup-line" points="3,20 10,14 16,17 23,9" />
+      <line className="cv-lookup-next" x1="23" y1="9" x2="30" y2="4" />
+      {[[3, 20], [10, 14], [16, 17], [23, 9]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.6" />)}
+      <path className="cv-lookup-today" d="M30 0.8L31 3L33.2 4L31 5L30 7.2L29 5L26.8 4L29 3Z" />
+    </svg>
   )
 }
 
@@ -242,6 +346,16 @@ function dayItems(d) {
     ...d.upcoming.map((u) => ({ ...u, key: `up-${u.short}`, kind: 'later', phase: 'later' })),
     ...d.waiting.map((w) => ({ ...w, key: `wait-${w.short}`, kind: 'waiting', when: w.note, phase: 'waiting' })),
   ]
+}
+
+// A simple outline of a sleeping baby, for "Her progress"
+function BabyIcon() {
+  return (
+    <svg className="cv-btn-icon is-svg" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="7" cy="12" r="3.4" />
+      <path d="M10.6 12c0-2.2 2-3.4 4.4-3.4h1.6c2.3 0 3.9 1.5 3.9 3.4s-1.6 3.4-3.9 3.4H15c-2.4 0-4.4-1.2-4.4-3.4z" />
+    </svg>
+  )
 }
 
 // The same marks as the star timeline, so the list and the sky read as one thing.

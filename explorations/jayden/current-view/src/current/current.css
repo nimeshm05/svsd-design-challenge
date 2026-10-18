@@ -229,6 +229,30 @@
 .cv-change-k { color: var(--cream); opacity: .8; }
 .cv-line b { color: #F6EEDB; }
 
+/* Home C's quiet ways out: her progress (the baby view) and her galaxy */
+.cv-actions { align-items: center; }
+.cv-actions-left { margin-right: auto; display: flex; gap: 10px; }
+.cv-btn.is-quiet { border-color: rgba(243, 227, 181, .22); background: transparent; color: var(--text-2); }
+.cv-btn.is-quiet:hover { border-color: rgba(243, 227, 181, .5); color: #F6EEDB; }
+.cv-btn-icon.is-svg { border: 0; border-radius: 0; fill: none; stroke: currentColor; stroke-width: 1.4; }
+
+/* Zooming out: today's arc shrinks into its star (sitting at "now", up and right of center),
+   then her galaxy opens around it. Zooming back in reverses it. */
+.cv-homec.is-zoom-out { animation: cv-zoom-out .75s cubic-bezier(.55, 0, .75, .3) forwards; transform-origin: 59% 24%; }
+.cv-homec.is-zoom-in { animation: cv-zoom-in .75s cubic-bezier(.22, 1, .36, 1) both; transform-origin: 59% 24%; }
+@keyframes cv-zoom-out { to { transform: scale(.06); opacity: 0; filter: blur(2px); } }
+@keyframes cv-zoom-in { from { transform: scale(.06); opacity: 0; filter: blur(2px); } }
+
+/* Her galaxy (Nimesh's prototype) fills the screen; the nurse button stays where it always is */
+.cv-screen { position: relative; }
+.cv-screen.is-galaxy .cv-top { visibility: hidden; }
+.cv-top, .cv-actions { position: relative; z-index: 1; }
+.cv-galaxy { position: absolute; inset: 0; z-index: 0; border-radius: 10px; overflow: hidden; background: #000; animation: cv-galaxy-in .9s ease-out both; }
+@keyframes cv-galaxy-in { from { opacity: 0; transform: scale(1.06); } }
+.cv-galaxy-back { position: absolute; z-index: 2; left: 18px; top: 16px; height: 38px; padding: 0 16px; border-radius: 19px;
+  border: 1px solid rgba(243, 227, 181, .4); background: rgba(11, 15, 20, .7); color: #F6EEDB; font-size: 15px; backdrop-filter: blur(6px); }
+@media (prefers-reduced-motion: reduce) { .cv-homec.is-zoom-out, .cv-homec.is-zoom-in, .cv-galaxy { animation-duration: .01s; } }
+
 /* Night: very dim, the same layout with less */
 .cv-screen.is-night { background: #030405; border-color: #0e1013; color: #6c7378; }
 .is-night .cv-top, .is-night .cv-line { color: #4d5459; }
@@ -287,3 +311,652 @@
 @media (prefers-reduced-motion: reduce) {
   .cv-neb, .cv-motes { animation: none; }
 }
+
+/* ================= Two styles from the design board =================
+   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Fraunces (soft, upright) + Geist.
+   Confetti Constellations: playful. Sunshine stars, thick light-blue lines, confetti, Young Serif + Figtree.
+   Both on a black sky. Each style only sets tokens; the components read them. */
+.cv-page.theme-nursery {
+  --cream: #F3E3B5; --warm: #FFB38A; --line-sky: #F3E3B5; --glow: rgba(243, 227, 181, .35);
+  --font-display: "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
+}
+.cv-page.theme-confetti {
+  --cream: #FFD23F; --warm: #FF8FC8; --line-sky: #7CC0FF; --glow: rgba(255, 210, 63, .35);
+  --font-display: "Young Serif", Georgia, serif; --font-ui: "Figtree", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
+}
+.cv-page { background: #050506; }
+.cv-page .cv-screen { font-family: var(--font-ui); background: #000; }
+.theme-nursery .cv-screen {
+  background: radial-gradient(ellipse at 68% 28%, rgba(107, 91, 214, .16), transparent 55%),
+              radial-gradient(ellipse at 40% 62%, rgba(255, 179, 138, .06), transparent 50%), #000;
+}
+.theme-confetti .cv-screen { background: radial-gradient(ellipse at 60% 30%, rgba(58, 42, 143, .22), transparent 60%), #000; }
+.cv-page .cv-top-left, .cv-page .cv-day-k, .cv-page .cv-ahead-title, .cv-page .cv-path-head b {
+  font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; letter-spacing: 0;
+}
+.cv-page .cv-top-left { font-size: clamp(18px, 2vw, 26px); color: var(--cream); }
+.cv-page .cv-her-status { font-family: var(--font-ui); }
+.theme-confetti .cv-her-status, .theme-confetti .cv-caption-title { font-weight: 600; }
+.cv-page .cv-btn.is-call { border-color: color-mix(in srgb, var(--cream) 55%, transparent); background: transparent; color: #F6EEDB; }
+.theme-confetti .cv-btn.is-call { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; }
+.theme-confetti .cv-btn.is-call .cv-btn-icon { border-color: #0a0a0a; }
+.cv-page .cv-list::before { border-left-color: color-mix(in srgb, var(--line-sky) 35%, transparent); }
+.theme-confetti .cv-list::before { border-left: 3px solid color-mix(in srgb, var(--line-sky) 70%, transparent) !important; }
+.theme-confetti .cv-path-stars::before { border-top: 3px solid color-mix(in srgb, var(--line-sky) 70%, transparent); top: 13px; }
+.cv-page .cv-term span { color: var(--cream); }
+.cv-page .cv-galaxy-back { font-family: var(--font-ui); border-color: color-mix(in srgb, var(--cream) 45%, transparent); }
+
+/* Her whole stay (the galaxy), drawn in the chosen style */
+.cv-galaxy-art, .cv-galaxy-art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cv-galaxy-title { position: absolute; z-index: 2; left: 22px; top: 70px; display: flex; flex-direction: column; gap: 2px; pointer-events: none; }
+.cv-galaxy-title b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 32px); color: var(--cream); }
+.cv-galaxy-title span { font-size: 13px; color: var(--muted); }
+.cv-twinkle { animation: cv-twinkle 6s ease-in-out infinite; }
+.cv-breathe { transform-box: fill-box; transform-origin: center; animation: cv-breathe 5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .cv-twinkle, .cv-breathe { animation: none; } }
+
+/* The galaxy page has no body, so keep the nurse button at the bottom like every other page */
+.cv-screen.is-galaxy .cv-actions { margin-top: auto; }
+/* Confetti's soft paper grain, over the whole screen */
+.theme-confetti .cv-screen::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 3; border-radius: 10px; opacity: .14; mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .9 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Confetti: the day's path is a thick light-blue paper line */
+.cv-arc.is-confetti .cv-arc-day { stroke: var(--line-sky); stroke-opacity: .55; stroke-width: 4; stroke-linecap: round; }
+.cv-arc.is-confetti .cv-arc-lit { stroke: var(--line-sky); stroke-opacity: .95; stroke-width: 5; stroke-linecap: round; }
+.cv-arc.is-confetti .cv-arc-ahead { stroke: var(--line-sky); stroke-opacity: .35; stroke-width: 3; stroke-dasharray: 2 10; stroke-linecap: round; }
+.cv-arc.is-confetti.is-line .cv-arc-day { stroke-width: 3; }
+.cv-arc.is-confetti.is-line .cv-arc-lit { stroke-width: 3.5; }
+.cv-arc.is-confetti .cv-arc-mark.change { animation: none; }
+.cv-arc.is-confetti .cv-arc-hour { fill: #9AA3C7; }
+
+/* ================= Her sky, zoomable (after Nimesh): galaxy → week → day → moment ================= */
+.cv-galaxy-art { transition: opacity .5s ease; }
+.cv-galaxy-art.is-faded { opacity: 0; }
+.cv-galaxy-nav { position: absolute; z-index: 2; left: 18px; top: 16px; display: flex; gap: 10px; align-items: center; }
+.cv-galaxy-nav .cv-galaxy-back { position: static; }
+.cv-galaxy-step { display: inline-flex; gap: 6px; }
+.cv-galaxy-step button { width: 38px; height: 38px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--cream) 35%, transparent);
+  background: rgba(11, 15, 20, .7); color: #F6EEDB; font-size: 18px; line-height: 1; }
+.cv-galaxy-step button:disabled { opacity: .3; }
+
+/* Labels and hit targets, placed over the art after the camera lands */
+.cv-glabels { position: absolute; inset: 0; z-index: 1; animation: cv-fade-in .4s ease-out both; }
+@keyframes cv-fade-in { from { opacity: 0; } }
+.cv-ghit { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 0; background: transparent; cursor: pointer; }
+.cv-ghit:focus-visible, .cv-gday:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.cv-gleader { position: absolute; transform: translate(14px, -50%); border: 0; background: none; padding: 2px 0 2px 30px;
+  font-family: var(--font-ui); font-size: 13px; color: color-mix(in srgb, var(--cream) 80%, #fff); letter-spacing: .04em; cursor: pointer; white-space: nowrap; }
+.cv-gleader::before { content: ""; position: absolute; left: 0; top: 50%; width: 24px; border-top: 1px solid color-mix(in srgb, var(--cream) 45%, transparent); }
+.cv-gleader.is-left { transform: translate(calc(-100% - 14px), -50%); padding: 2px 30px 2px 0; }
+.cv-gleader.is-left::before { left: auto; right: 0; }
+.cv-gleader.is-warm { color: var(--warm); }
+.cv-gleader.is-warm::before { border-color: color-mix(in srgb, var(--warm) 60%, transparent); }
+.cv-gleader:hover { color: #fff; }
+.theme-nursery .cv-gleader { font-family: "Geist Mono", ui-monospace, monospace; font-size: 12px; text-transform: uppercase; }
+.theme-confetti .cv-gleader { font-weight: 600; font-size: 14px; }
+.theme-confetti .cv-gleader::before { border-top-width: 2px; }
+
+.cv-gday { position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 0; background: transparent; cursor: pointer; }
+.cv-gday-label { position: absolute; display: flex; flex-direction: column; align-items: center;
+  font-size: 12px; color: var(--muted); white-space: nowrap; pointer-events: none; }
+.cv-gday-label em { font-family: var(--font-display); font-style: var(--display-style); font-size: 15px; color: var(--cream); }
+.cv-gday.is-today .cv-gday-label span { color: var(--warm); }
+.cv-gday:hover .cv-gday-label span { color: #fff; }
+
+/* Panels on the right: the week's story, then the day's */
+.cv-gpanel { position: absolute; z-index: 2; right: 22px; top: 70px; bottom: 96px; width: min(360px, 38%); box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 12px; overflow: auto; padding: 4px 4px 4px 0; animation: cv-panel-in .45s ease-out both; }
+@keyframes cv-panel-in { from { opacity: 0; transform: translateX(12px); } }
+.cv-gpanel-k { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.theme-nursery .cv-gpanel-k { font-family: "Geist Mono", ui-monospace, monospace; letter-spacing: .08em; }
+.cv-gpanel-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
+.cv-gpanel-text { margin: 0; font-size: 15px; line-height: 1.5; color: var(--text-2); }
+.cv-gpanel ul, .cv-gpanel ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.cv-gpanel-firsts button, .cv-gpanel-moments button { width: 100%; text-align: left; display: flex; gap: 10px; align-items: baseline; padding: 7px 0;
+  border: 0; border-bottom: 1px solid rgba(255, 255, 255, .07); background: none; color: var(--text); font-size: 14px; cursor: pointer; }
+.cv-gpanel-firsts button:hover, .cv-gpanel-moments button:hover { color: var(--cream); }
+.cv-gpanel-firsts em { margin-left: auto; font-style: normal; font-size: 12px; color: var(--muted); }
+.cv-gplanet { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--cream); box-shadow: 0 0 0 2px #000, 0 0 0 3px var(--warm); align-self: center; }
+.theme-confetti .cv-gplanet { background: #3ECF7A; box-shadow: 0 0 0 2px #000, 0 0 0 3.5px #FFD23F; }
+.cv-gpanel-moments button span { flex: none; width: 70px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cv-gpanel-care { padding-top: 6px; font-size: 13px; color: var(--muted); }
+.cv-gpanel-hard { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 12px; background: rgba(200, 194, 255, .07); border: 1px solid rgba(200, 194, 255, .16); }
+.theme-confetti .cv-gpanel-hard { background: rgba(185, 214, 255, .08); border-color: rgba(124, 192, 255, .3); }
+.cv-gpanel-hard p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-2); }
+.cv-gpanel-days { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.cv-gpanel-days button { height: 30px; padding: 0 11px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, .14); background: none; color: var(--text-2); font-size: 12px; cursor: pointer; }
+.cv-gpanel-days button:hover { border-color: var(--cream); color: var(--cream); }
+.cv-gpanel-days button.is-today { border-color: color-mix(in srgb, var(--warm) 60%, transparent); color: var(--warm); }
+.cv-gpanel-facts { margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cv-gpanel-facts div { display: flex; flex-direction: column; gap: 2px; }
+.cv-gpanel-facts dt { font-size: 11px; color: var(--muted); }
+.cv-gpanel-facts dd { margin: 0; font-size: 14px; color: var(--text); }
+.cv-gmoment { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--cream) 30%, transparent);
+  background: rgba(255, 255, 255, .03); animation: cv-fade-in .3s ease-out both; }
+.cv-gmoment b { font-size: 17px; font-weight: 600; color: #fff; }
+.cv-gmoment p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-2); }
+.cv-gmoment-by { font-size: 12px; color: var(--muted); }
+.cv-gmoment-close { align-self: flex-start; margin-top: 4px; height: 30px; padding: 0 12px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, .16); background: none; color: var(--text-2); font-size: 12px; }
+
+/* The day: her star in a 24-hour ring */
+.cv-gday-scene { position: absolute; inset: 0; z-index: 1; opacity: 0; transform: scale(.92); transition: opacity .5s ease, transform .6s cubic-bezier(.22, 1, .36, 1); }
+.cv-gday-scene.is-in { opacity: 1; transform: none; }
+.cv-day-scene { width: 100%; height: 100%; display: block; }
+.cv-ring-hour { fill: var(--muted); font-size: 13px; font-family: var(--font-ui); }
+.theme-nursery .cv-ring-hour { font-family: "Geist Mono", ui-monospace, monospace; font-size: 11px; }
+.cv-ring-now-label { font-size: 13px; font-family: var(--font-ui); font-weight: 600; }
+.cv-moment { cursor: pointer; transition: transform .25s; transform-box: fill-box; transform-origin: center; }
+.cv-moment:hover, .cv-moment.is-on { transform: scale(1.15); }
+.cv-moment:focus-visible { outline: none; }
+.cv-moment:focus-visible circle:first-child { stroke: var(--cream); stroke-width: 1.5; }
+@media (prefers-reduced-motion: reduce) { .cv-gday-scene, .cv-glabels, .cv-gpanel { transition: none; animation: none; } }
+/* the panel's side of the sky darkens softly, so the panel reads without a box */
+.cv-galaxy.is-week::before, .cv-galaxy.is-day::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, transparent 32%, rgba(0, 0, 0, .55) 47%, rgba(0, 0, 0, .9) 60%, #000 72%); animation: cv-fade-in .6s ease-out both; }
+
+/* Her sky in depth: far dust drifts slowly, near motes are soft and out of focus */
+.cv-galaxy { touch-action: none; cursor: grab; user-select: none; }
+.cv-galaxy.is-dragging { cursor: grabbing; }
+.cv-galaxy.is-day { cursor: default; }
+.cv-glayer, .cv-glayer svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.cv-glayer { transition: opacity .5s ease; }
+.cv-glayer.is-faded { opacity: 0; }
+.cv-glayer.is-far { animation: cv-drift 60s ease-in-out infinite alternate; }
+.cv-glayer.is-near { filter: blur(2.5px); }
+@keyframes cv-drift { to { transform: translate(-14px, 8px); } }
+.cv-galaxy.is-dragging .cv-glabels { animation: none; }
+
+/* Week names: plain, readable labels, no leader lines */
+.cv-gweek { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: 6px 14px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, .14); background: rgba(8, 8, 16, .62);
+  backdrop-filter: blur(6px); color: #F6EEDB; cursor: pointer; white-space: nowrap; font-family: var(--font-ui); transition: border-color .2s, background .2s; }
+.cv-gweek b { font-size: 14px; font-weight: 600; color: var(--cream); }
+.cv-gweek span { font-size: 12px; color: var(--text-2); }
+.cv-gweek:hover { border-color: color-mix(in srgb, var(--cream) 60%, transparent); background: rgba(16, 14, 28, .8); }
+.cv-gweek.is-today { padding: 4px 12px; border-color: color-mix(in srgb, var(--warm) 55%, transparent); }
+.cv-gweek.is-today b { color: var(--warm); font-size: 13px; }
+.theme-nursery .cv-gweek b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 17px; }
+.theme-nursery .cv-gweek.is-today b { font-family: var(--font-ui); font-style: normal; font-weight: 600; font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { .cv-glayer.is-far { animation: none; } }
+.cv-galaxy-title { transition: opacity .3s; }
+.cv-galaxy.is-panned .cv-galaxy-title { opacity: 0; }
+.cv-galaxy-center { height: 38px; padding: 0 14px; border-radius: 19px; border: 1px solid color-mix(in srgb, var(--cream) 35%, transparent);
+  background: rgba(11, 15, 20, .7); color: #F6EEDB; font-size: 14px; font-family: var(--font-ui); animation: cv-fade-in .3s ease-out both; }
+
+/* Eyebrows: sentence case in both styles, never all caps */
+.cv-page .cv-gpanel-k, .cv-page .cv-detail-k, .cv-page .cv-k, .cv-page .cv-change-k, .cv-page .cv-sheet-head h3, .cv-page .cv-status-tag {
+  text-transform: none; letter-spacing: .01em; font-family: var(--font-ui); }
+.cv-page .cv-gpanel-k, .cv-page .cv-detail-k { font-size: 13px; font-weight: 500; }
+
+/* Planet names in her sky, and each star's gentle float */
+.cv-gfirst { position: absolute; transform: translate(-50%, -50%); border: 0; background: none; padding: 2px 6px; white-space: nowrap; cursor: pointer;
+  font-family: var(--font-display); font-style: var(--display-style); font-size: 14px; color: var(--cream); text-shadow: 0 0 8px #000, 0 0 3px #000; }
+.theme-confetti .cv-gfirst { font-size: 13px; color: #9EF0C0; }
+.cv-gfirst:hover { color: #fff; }
+.cv-float { animation: cv-float 7s ease-in-out infinite; }
+@keyframes cv-float { 50% { transform: translate(var(--fx, 0), var(--fy, -2.5px)); } }
+@media (prefers-reduced-motion: reduce) { .cv-float { animation: none; } }
+
+.cv-homec { position: relative; }
+.cv-galaxy { animation: cv-fade-in .4s ease-out both; }
+
+/* The galaxy's opening story, then a nudge to zoom out once more */
+.cv-gstory { position: absolute; z-index: 3; left: 0; right: 0; bottom: 110px; margin: 0; text-align: center; pointer-events: none;
+  font-size: clamp(15px, 1.7vw, 19px); color: var(--text-2); animation: cv-becoming 3.4s ease-out both; }
+.cv-gstory b { display: block; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.8vw, 32px); color: var(--cream); }
+.cv-ghint { position: absolute; z-index: 3; left: 22px; bottom: 26px; height: 38px; padding: 0 16px; border-radius: 19px;
+  border: 1px solid color-mix(in srgb, var(--cream) 45%, transparent); background: rgba(11, 15, 20, .75); color: var(--cream);
+  font-family: var(--font-ui); font-size: 14px; animation: cv-fade-in .5s ease-out both, cv-nudge 2.4s ease-in-out 1s 3; }
+@keyframes cv-nudge { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--cream) 12%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .cv-arc.is-gather-out .cv-arc-mark, .cv-arc.is-gather-in .cv-arc-mark, .cv-gstory, .cv-becoming { animation-duration: .01s; } }
+/* the footer sits over the galaxy: only its nurse button takes taps there */
+.cv-screen.is-galaxy .cv-actions { pointer-events: none; }
+.cv-screen.is-galaxy .cv-actions > * { pointer-events: auto; }
+
+/* Background stars drift a little, each layer its own way; now and then a shooting star */
+.cv-glayer.is-mid { animation: cv-drift-mid 45s ease-in-out infinite alternate; }
+@keyframes cv-drift-mid { to { transform: translate(10px, -7px); } }
+.cv-glayer.is-near { animation: cv-drift-near 30s ease-in-out infinite alternate; }
+@keyframes cv-drift-near { to { transform: translate(-18px, -10px); } }
+.cv-shoot { position: absolute; z-index: 1; width: 130px; height: 1.5px; pointer-events: none; border-radius: 2px; transform-origin: 0 50%;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--cream) 70%, #fff)); opacity: 0;
+  animation: cv-shoot 1.3s ease-out forwards; }
+@keyframes cv-shoot {
+  0% { opacity: 0; transform: rotate(var(--a)) translateX(0) scaleX(.3); }
+  15% { opacity: .75; }
+  100% { opacity: 0; transform: rotate(var(--a)) translateX(240px) scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) { .cv-glayer.is-mid, .cv-glayer.is-near { animation: none; } }
+/* a dimmer screen for a dark room */
+.theme-nursery .cv-screen {
+  background: radial-gradient(ellipse at 68% 28%, rgba(107, 91, 214, .08), transparent 55%),
+              radial-gradient(ellipse at 40% 62%, rgba(255, 179, 138, .03), transparent 50%), #000; }
+.theme-confetti .cv-screen { background: radial-gradient(ellipse at 60% 30%, rgba(58, 42, 143, .12), transparent 60%), #000; }
+.theme-confetti .cv-screen::after { opacity: .08; }
+
+/* Fraunces at its softest, so headings feel rounded and warm rather than bookish */
+.theme-nursery { font-variation-settings: "SOFT" 100, "opsz" 36; }
+.theme-nursery :is(.cv-top-left, .cv-galaxy-title b, .cv-gpanel-title, .cv-gweek b, .cv-gfirst, .cv-gstory b, .cv-becoming, .cv-gday-label em) { font-weight: 400; letter-spacing: -.005em; }
+
+/* The way into her sky: her sky in miniature */
+.cv-minisky { width: 34px; height: 23px; flex: none; margin: -4px 2px -4px -4px; overflow: visible; }
+.cv-minisky .is-today { animation: cv-breathe 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.cv-btn:hover .cv-minisky circle { opacity: 1; }
+.cv-galaxy { animation: cv-fade-in .9s ease-out both; }
+
+/* Home's sky in depth: three layers drifting at their own pace, leaning with the pointer */
+.cv-depth { position: absolute; inset: 0; z-index: 0; overflow: hidden; border-radius: 10px; pointer-events: none; animation: cv-fade-in 1s ease-out both; }
+.cv-depth-layer { position: absolute; inset: -30px; transition: translate .8s ease-out; }
+.cv-depth-layer svg { width: 100%; height: 100%; display: block; }
+.cv-depth-layer.is-far { translate: calc(var(--px, 0) * -6px) calc(var(--py, 0) * -4px); animation: cv-drift 60s ease-in-out infinite alternate; }
+.cv-depth-layer.is-mid { translate: calc(var(--px, 0) * -14px) calc(var(--py, 0) * -9px); animation: cv-drift-mid 40s ease-in-out infinite alternate; }
+.cv-depth-layer.is-near { translate: calc(var(--px, 0) * -30px) calc(var(--py, 0) * -20px); filter: blur(2.5px); animation: cv-drift-near 26s ease-in-out infinite alternate; }
+.cv-homec { z-index: 1; }
+/* today's star and the day's marks float a little */
+.cv-arc.is-arc:not(.is-gather-out):not(.is-gather-in) :is(.cv-arc-star, .cv-arc-glow) { animation: cv-float 6s ease-in-out infinite; --fy: -3px; }
+.cv-arc.is-arc:not(.is-gather-out):not(.is-gather-in) .cv-arc-mark:not(.is-later) { animation: cv-float 8s ease-in-out infinite; --fy: -2px; }
+.cv-minisky { width: 40px; height: 27px; }
+@media (prefers-reduced-motion: reduce) { .cv-depth-layer, .cv-arc.is-arc .cv-arc-star, .cv-arc.is-arc .cv-arc-glow, .cv-arc.is-arc .cv-arc-mark { animation: none; transition: none; } }
+.cv-minisky { width: 50px; height: 33px; margin: -10px 0 -10px -8px; }
+
+/* ================= Today becomes a star =================
+   The whole day swirls in to one point (where her sky keeps today's star) and fades; a star forms there
+   while warm motes rise in from below; then her sky fades in around it. Coming back reverses it. */
+.cv-galaxy { animation: none; }
+.cv-arc { overflow: visible; }
+.cv-arc-all { transform-box: view-box; }
+.cv-arc.is-gather-out .cv-arc-all { animation: cv-arc-gather 1.9s cubic-bezier(.5, 0, .75, .35) forwards; }
+.cv-arc.is-gather-in .cv-arc-all { animation: cv-arc-gather 1.5s cubic-bezier(.2, .65, .3, 1) .35s reverse both; }
+@keyframes cv-arc-gather { 0% { transform: none; opacity: 1; } 75% { opacity: .85; } 100% { transform: scale(.02) rotate(-35deg); opacity: 0; } }
+.cv-homec.is-zoom-out .cv-homec-words { transition: opacity .6s; opacity: 0; }
+.cv-homec.is-zoom-in .cv-homec-words { animation: cv-fade-in .7s 1.3s both; }
+.cv-forming { position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: 10px; overflow: hidden; }
+.cv-forming-art, .cv-forming-art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cv-forming.is-out .cv-form-star { transform-box: fill-box; transform-origin: center; animation: cv-form 2.2s cubic-bezier(.2, .7, .3, 1) 1.2s both; }
+@keyframes cv-form { 0% { transform: scale(.1); opacity: 0; } 40% { opacity: 1; } 100% { transform: none; opacity: 1; } }
+.cv-forming.is-in { animation: cv-fade-out .9s ease-in 1.1s forwards; }
+@keyframes cv-fade-out { to { opacity: 0; } }
+.cv-warm-mote { opacity: 0; animation: cv-mote-in 1.9s cubic-bezier(.4, 0, .6, 1) both; }
+@keyframes cv-mote-in { 0% { transform: translate(var(--sx), var(--sy)); opacity: 0; } 25% { opacity: .9; } 90% { opacity: .7; } 100% { transform: none; opacity: 0; } }
+.cv-orbit { transform-box: view-box; animation: cv-orbit 16s linear infinite; }
+@keyframes cv-orbit { to { transform: rotate(360deg); } }
+.cv-form-caption { position: absolute; left: 0; right: 0; bottom: 30%; margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  text-align: center; animation: cv-caption 3.4s ease-out .3s both; }
+.cv-form-caption b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(20px, 2.4vw, 28px); color: var(--cream); }
+.cv-form-caption span { font-size: clamp(13px, 1.4vw, 16px); color: var(--text-2); animation: cv-fade-in 1s 1.2s both; }
+@keyframes cv-caption { 0% { opacity: 0; transform: translateY(6px); } 18%, 82% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+
+/* her sky fades in around today's star, and away again */
+.cv-galaxy.is-arriving :is(.cv-glayer, .cv-gfade, .cv-gline, .cv-gpending, .cv-gstar:not(.is-today)) { animation: cv-fade-in 1.8s ease-out both; }
+.cv-galaxy.is-arriving .cv-gstar:not(.is-today) { animation-delay: .2s; }
+.cv-galaxy.is-leaving :is(.cv-glayer, .cv-gfade, .cv-gline, .cv-gpending, .cv-gstar:not(.is-today), .cv-shoot) { transition: opacity .9s ease-in; opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .cv-arc.is-gather-out .cv-arc-all, .cv-arc.is-gather-in .cv-arc-all, .cv-forming.is-out .cv-form-star, .cv-warm-mote, .cv-orbit, .cv-form-caption { animation-duration: .01s; animation-delay: 0s; }
+}
+
+/* ===== One continuous move, no cuts =====
+   Out: home's header and buttons fade first; the day swirls in (eased both ways) while the star forms;
+   home's background dust fades last, so at the handoff the screen holds only the star, and her sky
+   (which opens showing only that star) fades in around it. Back: the reverse. */
+.cv-galaxy { background: transparent; }
+.cv-screen.is-forming :is(.cv-top, .cv-actions) { transition: opacity .7s ease; opacity: 0; }
+.cv-screen.is-forming .cv-depth { transition: opacity 1.1s ease 2.2s; opacity: 0; }
+.cv-screen.is-unforming :is(.cv-top, .cv-actions) { animation: cv-fade-in .9s ease 1.4s both; }
+.cv-screen.is-unforming .cv-depth { animation: cv-fade-in 1.4s ease .4s both; }
+.cv-arc.is-gather-out .cv-arc-all { animation: cv-arc-gather 2.3s cubic-bezier(.45, 0, .55, 1) forwards; }
+.cv-arc.is-gather-in .cv-arc-all { animation: cv-arc-gather 1.8s cubic-bezier(.45, 0, .55, 1) .4s reverse both; }
+@keyframes cv-arc-gather { 0% { transform: none; opacity: 1; } 60% { opacity: .9; } 100% { transform: scale(.02) rotate(-35deg); opacity: 0; } }
+.cv-forming.is-out .cv-form-star { animation: cv-form 2s cubic-bezier(.25, .6, .3, 1) 1.3s both; }
+.cv-form-caption { animation: cv-caption 3s ease-out .3s both; }
+.cv-forming.is-in { animation: cv-fade-out 1s ease-in-out 1.2s forwards; }
+/* her today's star stays put (no float), so it is exactly where home left it */
+.cv-gstar.is-today .cv-float { animation: none; }
+/* the sky's own words and buttons arrive after it, and leave first */
+.cv-galaxy-title, .cv-galaxy-nav { animation: cv-fade-in .7s ease both; transition: opacity .5s ease; }
+.cv-galaxy.is-leaving :is(.cv-galaxy-title, .cv-galaxy-nav, .cv-glabels) { opacity: 0; pointer-events: none; }
+.cv-form-caption { animation: cv-caption 2.7s ease-out .75s both; }
+
+/* ===== The day retells itself =====
+   Each moment fades off the arc as it lifts; the path and hours fade like a trail; today's star forms
+   where her sky keeps it, growing for as long as moments are arriving. */
+.cv-arc.is-gather-out .cv-arc-all { animation: none; }
+.cv-arc.is-gather-out .cv-arc-mark[data-label] { animation: cv-hide .3s ease var(--lift) forwards; }
+@keyframes cv-hide { to { opacity: 0; } }
+.cv-arc.is-gather-out :is(.cv-arc-day, .cv-arc-lit, .cv-arc-ahead, .cv-arc-hour, .cv-arc-ahead-label, .cv-dust, .is-later, .cv-arc-glow, .cv-arc-star) {
+  transition: opacity 2.4s ease 1s; opacity: 0; }
+.cv-arc.is-gather-in .cv-arc-all { animation: cv-fade-in 1.3s ease .5s both; }
+.cv-arc.is-gather-in .cv-arc-mark[data-label] { animation: cv-pop .5s cubic-bezier(.2, .8, .3, 1.3) var(--back) both; }
+@keyframes cv-pop { from { opacity: 0; transform: scale(.3); } }
+.cv-forming { pointer-events: auto; cursor: pointer; }
+.cv-forming.is-in { pointer-events: none; }
+.cv-forming.is-out .cv-form-star { animation: cv-form var(--form, 2s) cubic-bezier(.3, .4, .4, 1) .6s both; }
+.cv-form-caption { animation: cv-caption 2.6s ease-out var(--cap, .75s) both; }
+.cv-screen.is-forming .cv-depth { transition: opacity 1.1s ease var(--end, 2.2s); opacity: 0; }
+
+.cv-lift { position: absolute; width: 0; height: 0; z-index: 1; animation: cv-lift 1.7s cubic-bezier(.45, .05, .35, 1) var(--d) both; }
+.cv-lift i { position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; background: var(--cream);
+  box-shadow: 0 0 10px 3px color-mix(in srgb, var(--cream) 45%, transparent); }
+.cv-lift.is-care i { width: 6px; height: 6px; left: -3px; top: -3px; opacity: .8; }
+.cv-lift.is-family i { background: var(--warm); box-shadow: 0 0 14px 5px color-mix(in srgb, var(--warm) 50%, transparent); }
+.cv-lift span { position: absolute; left: 12px; top: -26px; white-space: nowrap; font-size: 14px; color: #F6EEDB;
+  text-shadow: 0 0 8px #000; animation: cv-lift-label 1.7s ease var(--d) both; }
+.cv-lift.is-care span { font-size: 12px; color: var(--muted); }
+.cv-lift.is-family span { font-family: var(--font-display); font-style: var(--display-style); font-size: 16px; color: var(--warm); left: -60px; top: -34px; }
+@keyframes cv-lift {
+  0% { transform: none; opacity: 0; }
+  8% { opacity: 1; }
+  35% { transform: translate(calc(var(--tx) * .2), calc(var(--ty) * .2 - 30px)); }
+  88% { opacity: .9; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(.35); opacity: 0; }
+}
+@keyframes cv-lift-label { 0% { opacity: 0; } 14%, 46% { opacity: 1; } 68%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cv-lift, .cv-lift span { animation-duration: .01s; } }
+
+/* ===== Holding today's star: her, in the star's light ===== */
+.cv-homec-words.is-hidden { visibility: hidden; }
+.cv-held { position: absolute; left: 0; right: 0; top: 30%; bottom: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  pointer-events: none; animation: cv-held-in .45s cubic-bezier(.2, .8, .3, 1) both; transform-origin: 58% -20%; }
+@keyframes cv-held-in { from { opacity: 0; transform: scale(.7); } }
+.cv-held-lens { padding: 8px 40px; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--cream) 10%, transparent), transparent 75%); }
+.cv-held-cap { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: clamp(14px, 1.5vw, 17px); color: var(--text-2); text-align: center; }
+.cv-hold-hint { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+
+/* ===== Look up: a constellation that draws itself ===== */
+.cv-lookup { width: 34px; height: 24px; flex: none; margin: -4px 2px -4px -4px; overflow: visible; }
+.cv-lookup circle { fill: var(--cream); opacity: .85; }
+.cv-lookup-line { fill: none; stroke: var(--line-sky); stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; opacity: .7;
+  stroke-dasharray: 40; stroke-dashoffset: 40; animation: cv-draw 2.4s ease .6s forwards; }
+.theme-confetti .cv-lookup-line { stroke-width: 2.2; }
+.cv-lookup-next { stroke: var(--cream); stroke-width: 1; stroke-dasharray: 1.5 2.5; opacity: .55; }
+.cv-lookup-today { fill: var(--warm); transform-box: fill-box; transform-origin: center; animation: cv-breathe 3s ease-in-out infinite; }
+.cv-lookup-btn:hover .cv-lookup-line { animation: cv-draw 1.6s ease forwards; stroke-dashoffset: 40; }
+@keyframes cv-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .cv-lookup-line { animation: none; stroke-dashoffset: 0; } }
+.cv-held-lens { width: min(340px, 60%); box-sizing: border-box; } .cv-held-lens .scan { width: 100%; }
+.cv-homec.is-zoom-out, .cv-homec.is-zoom-in { animation: none; }
+
+/* Week labels: placed by code (left/top inline), always readable over the sky */
+.cv-gday-label { transform: translate(-50%, -50%); bottom: auto; text-shadow: 0 0 6px #000, 0 0 2px #000; }
+.cv-gday-label span { color: var(--text-2); }
+/* the panel's shade starts only where the panel does, so no star or label is dimmed */
+.cv-galaxy.is-week::before, .cv-galaxy.is-day::before { background: linear-gradient(90deg, transparent 56%, rgba(0, 0, 0, .85) 64%, #000 72%); }
+
+/* Planets on today's arc */
+.cv-arc-mark .is-planet-glow { fill: var(--cream); opacity: .12; stroke: none; }
+.cv-arc-mark.first { fill: none; }
+
+/* Touch screen: nothing depends on hover. Look up's constellation redraws itself now and then. */
+.cv-lookup-btn:hover .cv-lookup-line { animation: cv-redraw 12s ease .6s infinite; }
+.cv-lookup-line { animation: cv-redraw 12s ease .6s infinite; }
+@keyframes cv-redraw { 0% { stroke-dashoffset: 40; } 20%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 40; } }
+.cv-lift.is-first i { width: 12px; height: 12px; left: -6px; top: -6px; background: #EFDCAA; box-shadow: 0 0 0 2px #000, 0 0 0 3.5px var(--warm), 0 0 14px 4px color-mix(in srgb, var(--cream) 40%, transparent); }
+.theme-confetti .cv-lift.is-first i { background: #3ECF7A; box-shadow: 0 0 0 2px #000, 0 0 0 3.5px #FFD23F; }
+.cv-lift.is-first span { font-family: var(--font-display); font-style: var(--display-style); font-size: 16px; color: var(--cream); }
+
+/* a week's area: invisible until pressed, then a soft glow shows which week you touched */
+.cv-garea { position: absolute; border: 0; border-radius: 40%; background: transparent; cursor: pointer; transition: background .2s, box-shadow .2s; }
+.cv-garea:active, .cv-garea:focus-visible { background: radial-gradient(closest-side, color-mix(in srgb, var(--cream) 10%, transparent), transparent); outline: none; }
+.cv-gweek, .cv-gfirst, .cv-ghit { z-index: 1; }
+
+/* home: a darker room */
+.theme-nursery .cv-screen { background: radial-gradient(ellipse at 68% 28%, rgba(107, 91, 214, .035), transparent 55%), #000; }
+.theme-confetti .cv-screen { background: radial-gradient(ellipse at 60% 30%, rgba(58, 42, 143, .05), transparent 60%), #000; }
+.theme-confetti .cv-screen::after { opacity: .045; }
+.cv-dust circle { opacity: .07; }
+@keyframes cv-twinkle { 50% { opacity: .2; } }
+
+/* Scrubbing: today's star stays at now (dimmed); a soft ring marks the moment you're on */
+.cv-arc-now { transition: opacity .3s; }
+.cv-arc-now.is-away { opacity: .45; }
+.cv-arc-handle { pointer-events: none; }
+.cv-arc-handle-glow { fill: var(--cream); opacity: .1; }
+.cv-arc-handle-ring { fill: none; stroke: var(--cream); stroke-width: 1.6; opacity: .85; }
+.cv-arc.is-confetti .cv-arc-handle-ring { stroke: #FFD23F; stroke-width: 2.6; }
+.cv-arc-mark.is-on { transform: scale(1.25); }
+.cv-arc.is-gather-out .cv-arc-handle { opacity: 0; transition: opacity .4s; }
+
+/* Week names without a box: just the words, softly shadowed so the sky never swallows them */
+.cv-gweek, .cv-gweek:hover, .cv-gweek.is-today { border: 0; background: none; backdrop-filter: none; padding: 2px 4px;
+  text-shadow: 0 0 10px #000, 0 0 4px #000, 0 0 2px #000; }
+.cv-gweek:active b { color: #fff; }
+
+/* ===== The way back =====
+   0.15s: today's star leaves its place in her sky and travels to "now" on the arc (1.3s), where the
+   arc's own star takes over. 1.0s: the day's line draws itself from midnight to now. 1.45s: the
+   moments unfold out of the star to their places, latest first. 2.0s: home's words and buttons. */
+.cv-forming.is-in { animation: none; }
+.cv-forming.is-in .cv-form-star { transform-box: fill-box; transform-origin: center; animation: cv-travel 1.3s cubic-bezier(.45, 0, .3, 1) .15s forwards; }
+@keyframes cv-travel { 75% { opacity: 1; } 100% { transform: translate(var(--mx, 0), var(--my, 0)) scale(.6); opacity: 0; } }
+.cv-arc.is-gather-in .cv-arc-all { animation: none; }
+.cv-arc.is-gather-in .cv-arc-now { animation: cv-fade-in .45s ease 1.25s both; }
+.cv-arc.is-gather-in :is(.cv-arc-day, .cv-arc-lit) { stroke-dasharray: 1; animation: cv-draw-line 1.3s cubic-bezier(.4, 0, .2, 1) 1s both; }
+@keyframes cv-draw-line { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.cv-arc.is-gather-in .cv-arc-mark[data-label] { animation: cv-unfold .75s cubic-bezier(.2, .7, .3, 1) var(--back) both; }
+@keyframes cv-unfold { from { transform: translate(var(--fx), var(--fy)) scale(.3); opacity: 0; } }
+.cv-arc.is-gather-in :is(.cv-arc-hour, .cv-arc-ahead, .cv-arc-ahead-label, .cv-dust, .is-later) { animation: cv-fade-in .8s ease 1.9s both; }
+.cv-homec.is-zoom-in .cv-homec-words { animation: cv-fade-in .7s ease 2s both; }
+.cv-screen.is-unforming :is(.cv-top, .cv-actions) { animation: cv-fade-in .8s ease 2s both; }
+@media (prefers-reduced-motion: reduce) {
+  .cv-forming.is-in .cv-form-star, .cv-arc.is-gather-in :is(.cv-arc-now, .cv-arc-day, .cv-arc-lit, .cv-arc-mark, .cv-arc-hour, .cv-arc-ahead, .cv-arc-ahead-label, .cv-dust, .is-later) { animation-duration: .01s; animation-delay: 0s; }
+}
+
+/* Mila's stars, at the left end of the day's arc (mirroring "What's ahead ›" at the right) */
+.cv-arc-past { cursor: pointer; }
+.cv-arc-past-hit { fill: transparent; }
+.cv-arc-past:focus-visible { outline: none; }
+.cv-arc-past:focus-visible .cv-arc-past-hit { stroke: var(--cream); stroke-width: 1.5; }
+.cv-arc-ahead-label.is-past { text-anchor: start; }
+.cv-arc .cv-lookup circle { fill: var(--cream); }
+.cv-arc .cv-lookup-line { fill: none; stroke: var(--line-sky); stroke-width: 1.2; }
+.cv-arc.is-confetti .cv-lookup-line { stroke-width: 2.2; }
+.cv-arc .cv-lookup-next { stroke: var(--cream); }
+.cv-arc .cv-lookup-today { fill: var(--warm); }
+.cv-arc.is-gather-out .cv-arc-past { transition: opacity .6s; opacity: 0; }
+.cv-arc.is-gather-in .cv-arc-past { animation: cv-fade-in .8s ease 1.9s both; }
+
+/* The two ends of the day read as clear ways in: brighter and larger, past on the left, ahead on the right */
+.cv-arc.is-arc .cv-arc-ahead-label { font-size: 19px; opacity: 1; font-weight: 500; }
+.cv-arc.is-arc .cv-arc-past .cv-arc-ahead-label { font-size: 20px; }
+.cv-arc.is-arc .cv-arc-past-hit { fill: color-mix(in srgb, var(--cream) 6%, transparent); stroke: color-mix(in srgb, var(--cream) 30%, transparent); stroke-width: 1.2; }
+.cv-arc.is-arc .cv-arc-past .cv-lookup-line { stroke-width: 1.8; opacity: .95; }
+.cv-arc.is-confetti.is-arc .cv-arc-past .cv-lookup-line { stroke-width: 2.6; }
+.cv-arc.is-arc .cv-arc-past .cv-lookup circle { opacity: 1; }
+
+/* One caption for every moment: when, what she did, one line. Fixed height so nothing jumps while scrubbing. */
+.cv-cap { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; height: 128px; justify-content: flex-start; }
+.cv-cap .cv-detail-k { min-height: 1.2em; }
+.cv-cap-title { margin: 0; font-size: clamp(20px, 2.6vw, 30px); font-weight: 500; color: #F6EEDB; line-height: 1.25;
+  max-width: 30ch; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.theme-confetti .cv-cap-title { font-weight: 600; }
+.cv-cap-line { margin: 0; min-height: 1.4em; font-size: clamp(14px, 1.5vw, 17px); color: var(--text-2); max-width: 46ch; }
+.cv-cap-line b { color: #F6EEDB; font-weight: 500; }
+.cv-arc-mark.family { fill: none; }
+
+/* "Today" in her sky sits exactly where "Mila's stars" sits on home */
+.cv-today-btn { gap: 10px; }
+.cv-today-icon { font-size: 22px; line-height: 1; color: var(--cream); margin: -2px 2px 0 -2px; }
+.cv-today-btn.is-leaving { opacity: 0; transition: opacity .5s; pointer-events: none; }
+.cv-screen.is-galaxy .cv-today-btn { animation: cv-fade-in .7s ease 1.6s both; }
+.cv-lookup-btn .cv-lookup { width: 34px; height: 24px; }
+.cv-galaxy.is-galaxy .cv-galaxy-title { top: 26px; }
+
+/* Night: home's layout, dimmed for a dark room */
+.cv-screen.is-night { background: #000; }
+.cv-screen.is-night .cv-depth { opacity: .5; }
+.is-night-home .cv-arc { opacity: .5; pointer-events: none; }
+.is-night-home .cv-cap .cv-detail-k { color: #6c7378; opacity: 1; }
+.is-night-home .cv-cap-title { color: #9aa0a4; font-weight: 400; }
+.is-night-home .cv-cap-line, .is-night-home .cv-cap-line b { color: #5f666b; }
+.cv-screen.is-night .cv-top-left, .cv-screen.is-night .cv-clock { color: #6c7378; }
+.cv-screen.is-night .cv-btn.is-call { background: transparent; border-color: #34393d; color: #a3a9ad; font-weight: 500; }
+.cv-screen.is-night .cv-btn.is-call .cv-btn-icon { border-color: #6c7378; }
+/* the caption arrives early and stays while the moments gather */
+.cv-form-caption { animation: cv-caption-long var(--capdur, 4s) ease-out var(--cap, .9s) both; }
+@keyframes cv-caption-long { 0% { opacity: 0; transform: translateY(6px); } 8%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.cv-form-caption span { animation: cv-fade-in 1s ease 1.8s both; }
+/* Night: one dim star where the day's arc would be */
+.cv-night-sky { width: 100%; display: block; aspect-ratio: 1000 / 250; }
+.cv-night-star { opacity: .5; }
+.cv-night-glow { transform-box: fill-box; transform-origin: center; animation: cv-breathe 8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .cv-night-glow { animation: none; } }
+
+/* Night: star, time, one line, centered in the screen */
+.is-night-home { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding-bottom: 40px; }
+.is-night-home .cv-night-sky { width: 160px; aspect-ratio: 200 / 120; margin-bottom: 18px; }
+.cv-night-time { margin: 0; font-family: var(--font-ui); font-size: clamp(48px, 7vw, 76px); font-weight: 400; letter-spacing: -.01em; color: #8a8f93; line-height: 1; }
+.cv-night-line { margin: 18px 0 0; font-size: clamp(16px, 1.9vw, 21px); color: #63696d; }
+.cv-screen.is-night .cv-top { visibility: hidden; }
+
+/* What's ahead: smaller, and a soft white so it doesn't read as an eyebrow */
+.cv-arc.is-arc .cv-arc-ahead-label { font-size: 15px; font-weight: 500; fill: #D9DDE0; opacity: .85; }
+
+/* ===== What's ahead, easy to scan ===== */
+.cv-top-title { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(22px, 2.6vw, 30px); color: #F6EEDB; margin-left: 4px; }
+.ah { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: clamp(16px, 2.6vw, 28px); padding-top: 6px; }
+.ah-k { margin: 0 0 10px; font-family: var(--font-ui); font-size: 13px; font-weight: 500; letter-spacing: .01em; color: var(--cream); }
+/* 1. when you can be there */
+.ah-when { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.ah-when li { display: flex; flex-direction: column; gap: 3px; padding: 14px 18px; border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--cream) 22%, transparent); background: color-mix(in srgb, var(--cream) 4%, transparent); }
+.ah-when-t { font-size: 14px; font-weight: 500; color: var(--cream); }
+.ah-when b { font-size: clamp(18px, 2vw, 22px); font-weight: 500; color: #F6EEDB; }
+.ah-when-note { font-size: 14px; color: var(--text-2); }
+/* 2. her paths: three cards, same shape */
+.ah-paths { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.ah-path { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 16px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, .08); }
+.ah-path-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ah-path-head b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(18px, 2vw, 22px); color: #F6EEDB; }
+.ah-status { font-size: 12px; padding: 2px 9px; border-radius: 999px; color: var(--text-2); border: 1px solid rgba(255, 255, 255, .14); white-space: nowrap; }
+.ah-status.is-deciding { color: var(--cream); border-color: color-mix(in srgb, var(--cream) 45%, transparent); }
+.ah-status.is-decided { color: #0b0b0b; background: var(--cream); border-color: var(--cream); }
+.ah-stars { list-style: none; margin: 0; padding: 0; display: flex; justify-content: space-between; position: relative; }
+.ah-stars::before { content: ''; position: absolute; left: 14px; right: 14px; top: 50%; border-top: 1px solid color-mix(in srgb, var(--line-sky) 40%, transparent); }
+.theme-confetti .ah-stars::before { border-top: 3px solid color-mix(in srgb, var(--line-sky) 60%, transparent); margin-top: -1px; }
+.ah-nownext { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ah-nownext dt { font-size: 12px; color: var(--muted); }
+.ah-nownext dd { margin: 0; font-size: 15px; color: #F6EEDB; }
+.ah-nownext div:last-child dd { color: var(--text-2); }
+.ah-nownext em { font-style: normal; color: var(--cream); font-size: 13px; }
+.ah-plan { margin: 0; font-size: 14px; line-height: 1.45; color: var(--text-2); }
+/* 3. waiting on a date */
+.ah-waiting { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 22px; font-size: 14px; color: var(--muted); }
+.ah-waiting .ah-k { margin: 0; }
+.ah-check b { color: var(--text-2); font-weight: 500; }
+.ah-note { flex-basis: 100%; margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+@media (max-width: 760px) { .ah-paths { grid-template-columns: 1fr; } }
+/* What's ahead fits above the footer */
+.ah { gap: 16px; padding-top: 0; }
+.ah-k { margin-bottom: 8px; }
+.ah-when li { padding: 11px 16px; }
+.ah-path { padding: 12px 14px 14px; gap: 8px; }
+.ah-plan { font-size: 13.5px; }
+.cv-screen:has(.ah) .cv-actions { margin-top: 0; }
+.ah-waiting { padding-right: 230px; }
+
+/* tapping Mila's stars: "What's ahead" leaves at once */
+.cv-arc.is-gather-out .cv-arc-ahead-label { transition: opacity .25s ease; opacity: 0; }
+
+/* Moments that changed what's on her: a thin blue ring (the figure's "new" blue), and a blue scrub ring on them */
+.cv-arc-wired { fill: none; stroke: #6CB6FF; stroke-width: 1.4; opacity: .75; }
+.cv-arc.is-confetti .cv-arc-wired { stroke-width: 2; opacity: .9; paint-order: stroke; }
+.cv-arc-handle.is-wired .cv-arc-handle-ring { stroke: #6CB6FF; }
+.cv-arc-handle.is-wired .cv-arc-handle-glow { fill: #6CB6FF; opacity: .12; }
+.cv-arc-mark.change.is-on .cv-arc-wired { opacity: 0; }
+
+/* ===== What's ahead v2: no boxes, an agenda and three open columns, even rhythm down the page ===== */
+.ah { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: 0; padding: 4px 0 8px; }
+.ah-k { margin: 0 0 14px; font-family: var(--font-ui); font-size: 14px; font-weight: 500; letter-spacing: .01em; color: var(--muted); }
+.ah-agenda { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ah-agenda li { display: grid; grid-template-columns: 210px 1fr; gap: 20px; align-items: baseline; padding: 12px 0; border-top: 1px solid rgba(255, 255, 255, .08); }
+.ah-agenda li:last-child { border-bottom: 1px solid rgba(255, 255, 255, .08); }
+.ah-agenda-t { font-size: clamp(16px, 1.8vw, 19px); font-weight: 500; color: var(--cream); }
+.ah-agenda div { display: flex; flex-direction: column; gap: 2px; }
+.ah-agenda b { font-size: clamp(18px, 2vw, 22px); font-weight: 500; color: #F6EEDB; }
+.ah-agenda div span { font-size: 15px; color: var(--text-2); }
+.ah-cols { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+.ah-col { display: flex; flex-direction: column; gap: 6px; padding: 0 28px; border-left: 1px solid rgba(255, 255, 255, .08); }
+.ah-col:first-child { padding-left: 0; border-left: 0; }
+.ah-col:last-child { padding-right: 0; }
+.ah-col-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ah-col-area { font-size: 15px; color: var(--text-2); }
+.ah-col .ah-stars { margin: 6px 0 4px; }
+.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
+.ah-next { font-size: 15px; color: var(--text-2); }
+.ah-col .ah-plan { margin-top: 6px; font-size: 14px; color: var(--muted); line-height: 1.45; }
+.ah-waiting { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 26px; font-size: 15px; color: var(--muted); }
+.ah-waiting .ah-k { margin: 0; }
+.ah-check b { color: var(--text-2); font-weight: 500; }
+@media (max-width: 760px) { .ah-cols { grid-template-columns: 1fr; gap: 20px; } .ah-col { padding: 0; border: 0; } .ah-agenda li { grid-template-columns: 1fr; gap: 2px; } }
+.ah { justify-content: flex-start; gap: 22px; padding: 2px 0 0; }
+.ah-k { margin-bottom: 8px; }
+.ah-agenda li { padding: 9px 0; }
+.ah-col .ah-stars { margin: 4px 0 2px; }
+.ah-now { font-size: clamp(20px, 2.3vw, 27px); }
+.ah-col .ah-plan { margin-top: 4px; font-size: 13.5px; }
+.ah-waiting { padding-right: 0; flex-wrap: nowrap; white-space: nowrap; font-size: 14px; }
+.cv-top:has(.cv-top-title) { margin-bottom: 4px; }
+.ah { gap: 26px; padding-top: 14px; }
+.ah-agenda div { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.ah-agenda li { padding: 11px 0; }
+.ah-agenda b { font-size: clamp(17px, 1.9vw, 20px); }
+.ah-waiting { margin-top: -4px; }
+/* Moments that changed what's on her: the star itself is soft blue (the figure's "new" color) */
+.cv-arc-mark .is-wired { fill: #8FC8FF; }
+.cv-lift.is-change i { background: #8FC8FF; box-shadow: 0 0 10px 3px rgba(143, 200, 255, .45); }
+.theme-confetti .cv-lift.is-change i { background: #C9A7FF; box-shadow: 0 0 10px 3px rgba(201, 167, 255, .45); }
+/* her figure, in the open space under the arc, only on moments that changed what's on her */
+.cv-her-fig { position: absolute; left: 50%; top: 13%; width: 230px; transform: translateX(-50%); pointer-events: none;
+  animation: cv-fade-in .4s ease both; }
+.cv-her-fig .scan { width: 100%; }
+/* the caption area holds her figure on wire moments: figure left, the same three lines right, same height */
+.cv-cap-text { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.cv-cap.is-wired { flex-direction: row; justify-content: center; align-items: center; gap: 28px; text-align: left; }
+.cv-cap.is-wired .cv-cap-text { align-items: flex-start; max-width: 420px; }
+.cv-her-fig { position: static; transform: none; width: 210px; flex: none; }
+/* her figure sits above the words (the words never move): centered in the open space under the arc */
+.cv-cap { position: relative; }
+.cv-cap.is-wired { flex-direction: column; gap: 6px; text-align: center; }
+.cv-cap.is-wired .cv-cap-text { align-items: center; max-width: none; }
+.cv-her-fig { position: absolute; left: 50%; bottom: calc(100% - 6px); transform: translateX(-50%); width: 190px; }
+.cv-her-fig { top: auto; }
+/* her figure turns when dragged */
+.cv-her-fig { pointer-events: auto; cursor: grab; touch-action: none; z-index: 3; }
+.cv-her-fig:active { cursor: grabbing; }
+.cv-her-fig-model { transform-style: preserve-3d; transition: transform .12s ease-out; will-change: transform; }
+
+/* Hierarchy on home: the center sentence first, its line second; name and clock quietly orient */
+.cv-page .cv-top-left { font-size: clamp(15px, 1.55vw, 19px); opacity: .85; }
+.cv-page .cv-clock { font-size: clamp(14px, 1.45vw, 18px); color: var(--muted); }
+.cv-cap { height: 150px; gap: 8px; }
+.cv-cap-title { font-size: clamp(26px, 3.5vw, 42px); line-height: 1.18; max-width: 26ch; }
+.cv-cap-line { font-size: clamp(15px, 1.65vw, 19px); }
+.cv-cap .cv-detail-k { font-size: clamp(13px, 1.3vw, 15px); }
+
+/* ===== Her, as a layered hologram ===== */
+.cv-her-fig { width: 260px; height: 170px; display: grid; place-items: center; cursor: grab; }
+.her3d { width: 240px; height: 150px; perspective: 520px; touch-action: none; }
+.her3d-stage { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .1s ease-out; }
+.her3d-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.her3d-bed { fill: color-mix(in srgb, var(--cream) 4%, transparent); stroke: color-mix(in srgb, var(--cream) 22%, transparent); stroke-width: 1; }
+.her3d-slice { fill: none; stroke: var(--cream); stroke-width: .9; }
+.theme-confetti .her3d-slice { stroke: #FFE79A; }
+.her3d-dev { fill: none; stroke: #B9C4CC; stroke-width: 1.4; stroke-linecap: round; opacity: .75; }
+.her3d-dev circle, .her3d-dev rect, .her3d-dev ellipse { fill: rgba(185, 196, 204, .25); }
+.her3d-dev.is-new { stroke: #6CB6FF; opacity: 1; stroke-width: 2; filter: drop-shadow(0 0 4px rgba(108, 182, 255, .8)); }
+.her3d-dev.is-new circle, .her3d-dev.is-new rect, .her3d-dev.is-new ellipse { fill: rgba(108, 182, 255, .35); }
+.her3d-dev.is-gone { stroke: #6CB6FF; opacity: .35; stroke-dasharray: 3 4; }
+.her3d-dev.is-gone circle, .her3d-dev.is-gone rect, .her3d-dev.is-gone ellipse { fill: none; }
+.cv-her-fig { height: 150px; } .her3d { transform: scale(.86); }
+
+/* the plain-English term under each moment */
+.cv-cap { height: 178px; }
+.cv-cap-term { margin: 2px 0 0; min-height: 1.3em; font-size: clamp(13px, 1.35vw, 15px); color: var(--muted); max-width: 52ch; }
+.cv-cap-term b { color: var(--text-2); font-weight: 600; }
+.ah-means { font-size: 13px; color: var(--muted); line-height: 1.35; }
+.ah { gap: 18px; padding-top: 4px; }
+.ah-agenda li { padding: 9px 0; }
+.ah-col { gap: 5px; }
