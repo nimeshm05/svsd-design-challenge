@@ -984,7 +984,7 @@
 
 /* ===== What's ahead: Tomorrow / This week ===== */
 /* tabs: a pill pair in the status-tag language (cream fill = selected) */
-.ah-tabs { align-self: flex-start; display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px;
+.ah-tabs { align-self: center; display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--cream) 25%, transparent); }
 .ah-tabs button { height: 36px; padding: 0 18px; border-radius: 18px; border: 0; background: transparent;
   font-family: var(--font-ui); font-size: 15px; font-weight: 500; color: var(--text-2); cursor: pointer; transition: background .2s, color .2s; }
@@ -1040,7 +1040,10 @@
 @media (prefers-reduced-motion: reduce) { .ah-panel, .ah-day li { animation: none; } }
 
 /* ===== This week: a seven-day calendar, and a major event's own page ===== */
-.ah-panel:has(.ah-cal-sec, .ah-ev) { overflow: auto; padding-right: 4px; }
+.ah-panel:has(.ah-ev) { overflow: auto; padding-right: 4px; }
+/* the Timeline never scrolls as a whole: it fills the panel, and only today's list scrolls inside */
+.ah-panel:has(.ah-wk) { overflow: hidden; }
+.ah-cal-sec:has(.ah-wk) { flex: 1; min-height: 0; padding-bottom: 12px; }
 .ah-cal-sec { display: flex; flex-direction: column; gap: 10px; }
 .ah-cal-sec .ah-k { margin: 0; }
 .ah-cal-scroll { overflow-x: auto; }
@@ -1068,6 +1071,94 @@
 .ah-cal-event b { font-size: 15px; font-weight: 600; line-height: 1.2; color: #FFF8E6; }
 .ah-cal-event-more { margin-top: 3px; font-size: 12px; color: color-mix(in srgb, var(--warm) 85%, #fff); }
 .ah-cal-waiting { margin-top: 2px; }
+
+/* What's ahead scrollbars: a slim, quiet pill in the screen's cream, no track (like ScrollArea's thumb) */
+.ah, .ah * { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--cream) 16%, transparent) transparent; }
+.ah *:hover { scrollbar-color: color-mix(in srgb, var(--cream) 30%, transparent) transparent; }
+@supports not (scrollbar-color: auto) {
+  .ah ::-webkit-scrollbar { width: 6px; height: 6px; }
+  .ah ::-webkit-scrollbar-track { background: transparent; }
+  .ah ::-webkit-scrollbar-thumb { border-radius: 3px; background: color-mix(in srgb, var(--cream) 16%, transparent); }
+  .ah ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--cream) 30%, transparent); }
+}
+
+/* Timeline: a week calendar. Today is a tall box with its full list on the left; the next six days are
+   equal compact boxes in a 3 × 2 grid on the right. Today matches the grid's height; its list scrolls inside. */
+.ah-wk { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); grid-template-rows: minmax(0, 1fr);
+  grid-template-areas: "today rest"; gap: 8px; }
+.ah-wk .ah-cal-day { min-width: 0; animation: cv-step-in .35s ease-out both; animation-delay: calc(var(--i, 0) * .05s); }
+.ah-wk-today { grid-area: today; min-height: 0; gap: 10px; }
+/* the list adds no height of its own (contain: size), so the row is sized by the grid and the list scrolls */
+.ah-wk-today .ah-sched-items { flex: 1 1 0; min-height: 0; overflow-y: auto; contain: size;
+  margin-inline: -8px; padding-inline: 8px; } /* room for the highlighted row's tint inside the scroll area */
+.ah-wk-today .ah-cal-head b { font-size: 17px; }
+.ah-wk-rest { grid-area: rest; min-width: 0; list-style: none; margin: 0; padding: 0; display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 8px; }
+/* fixed boxes; a day opened with "+N more" scrolls inside its own box if it runs long */
+.ah-wk-rest .ah-cal-day { min-height: 0; overflow-y: auto; }
+.ah-wk-rest .ah-cal-routine { min-width: 0; }
+.ah-wk-title { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text-2); }
+.ah-wk-rest .ah-cal-event { min-width: 0; padding: 7px 8px 6px; background: color-mix(in srgb, var(--warm) 24%, transparent); }
+.ah-wk-rest .ah-cal-event b { display: flex; align-items: flex-start; gap: 4px; width: 100%; min-width: 0; font-size: 13.5px; font-weight: 700; }
+.ah-wk-rest .ah-cal-event b .cv-pstar { margin-top: 2px; }
+/* a major event's name may take two lines before it truncates, so "Heart surgery" reads whole */
+.ah-wk-rest .ah-cal-event b > span { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere; }
+.ah-wk .cv-pstar { width: 13px; height: 13px; flex: none; }
+.ah-wk .cv-pstar path { fill: var(--warm); }
+.ah-wk .cv-pstar-glow { display: none; }
+.ah-wk-more { align-self: flex-start; margin-top: 2px; padding: 2px 0; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 600;
+  color: var(--text-2); cursor: pointer; }
+.ah-wk-more:hover { color: #F6EEDB; }
+.ah-wk-more:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 4px; }
+.ah-wk-empty { margin: 0; font-size: 12.5px; font-style: italic; color: var(--muted); }
+.ah-sched-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ah-sched-item, .ah-sched-major { display: grid; grid-template-columns: 88px 1fr auto; gap: 14px; align-items: baseline; }
+.ah-sched-item { padding: 6px 0; }
+.ah-sched-t { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ah-sched-what { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ah-sched-what b { font-size: 16px; font-weight: 500; color: var(--text-2); }
+.ah-sched-what > span { font-size: 13px; color: var(--muted); }
+.ah-sched-empty { margin: 0; padding: 6px 0; font-size: 14px; font-style: italic; color: var(--muted); }
+/* major events: a filled warm chip, bolder, with a marker, clearly something to open */
+.ah-sched-major { width: 100%; margin: 4px 0; padding: 10px 14px 10px 12px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--warm) 70%, transparent); border-left-width: 4px;
+  background: color-mix(in srgb, var(--warm) 22%, transparent); color: #fff; font: inherit; text-align: left; cursor: pointer;
+  transition: background .2s, transform .2s, box-shadow .2s; }
+.ah-sched-major:hover { background: color-mix(in srgb, var(--warm) 32%, transparent); transform: translateY(-1px);
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--warm) 70%, transparent); }
+.ah-sched-major:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.ah-sched-major .ah-sched-t { font-weight: 600; color: var(--warm); }
+.ah-sched-major .ah-sched-what b { display: flex; align-items: center; gap: 6px; font-size: 17px; font-weight: 700; color: #FFF8E6; }
+.ah-sched-major .ah-sched-what > span { color: color-mix(in srgb, var(--warm) 60%, #fff); }
+/* today, itemized: past entries quiet, the current or next one lit in cream, a "Now" line between */
+.ah-sched-items > li { transition: opacity .3s; }
+.ah-sched-item.is-past b, .ah-sched-item.is-past .ah-sched-t { color: var(--muted); font-weight: 400; }
+.ah-sched-items > li.is-past:has(.ah-sched-major) { opacity: .6; }
+.ah-wk-today .ah-sched-items .ah-sched-item.is-next { margin: 0 -8px; padding-inline: 8px; border-radius: 8px; background: color-mix(in srgb, var(--cream) 10%, transparent); }
+.ah-sched-item.is-next .ah-sched-t { color: var(--cream); font-weight: 600; }
+.ah-sched-item.is-next b { color: #FFF8E6; font-weight: 600; }
+.ah-sched-now { display: flex; align-items: center; gap: 10px; height: 18px; }
+.ah-sched-now::after { content: ''; flex: 1; height: 1px; background: rgba(255, 255, 255, .22); }
+.ah-sched-now span { padding: 1px 8px; border-radius: 999px; background: #fff; color: #0b0f14; font-size: 11px; font-weight: 700; letter-spacing: .05em; }
+.ah-sched-more { font-size: 13px; font-weight: 500; color: color-mix(in srgb, var(--warm) 85%, #fff); white-space: nowrap; }
+@media (max-width: 760px) {
+  /* the Timeline holds to the window: the screen fills it instead of growing with its content */
+  .cv-page:has(.ah-wk) { height: 100dvh; }
+  .cv-screen:has(.ah-wk) { flex: 1; min-height: 0; }
+  /* today takes only the room it needs (up to 40%), the six days get the rest */
+  .ah-wk { grid-template-columns: minmax(0, 1fr); grid-template-rows: fit-content(40%) minmax(0, 1fr); grid-template-areas: "today" "rest"; }
+  .ah-wk-today { overflow: hidden; }
+  .ah-wk-today .ah-sched-items { flex: 0 1 auto; contain: none; }
+  .ah-wk-rest .ah-cal-day { padding: 8px 8px 4px; gap: 4px; }
+  /* compact chips: time and title on one line */
+  .ah-wk-rest .ah-cal-routine { display: flex; gap: 4px; min-width: 0; }
+  .ah-wk-rest .ah-cal-routine > span:first-child { display: inline; flex: none; }
+  .ah-wk-rest .ah-cal-event { margin: 0; padding: 5px 6px; }
+  .ah-wk-rest .ah-cal-day ul { gap: 4px; }
+  .ah-wk-today { padding-bottom: 6px; gap: 4px; }
+  .ah-wk-today .ah-sched-item { padding: 3px 0; }
+}
+@media (prefers-reduced-motion: reduce) { .ah-wk .ah-cal-day { animation: none; } .ah-sched-major { transition: none; } .ah-sched-major:hover { transform: none; } }
 
 /* the event's page */
 .ah-ev { display: flex; flex-direction: column; gap: 14px; animation: cv-step-in .35s ease-out both; }

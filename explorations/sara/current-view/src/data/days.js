@@ -350,24 +350,25 @@ export const tomorrow = {
 
 // "What's ahead" → This week: today and the next six days. Routine care is a quiet line;
 // major events (surgeries, procedures) open their own page. Days are named by weekday and her day count.
+// `every`: a recurring task, every N hours from midnight. Today's box lists each one; other days show `what`.
 export const week = [
   { name: 'Tuesday', short: 'Tue', day: 23, today: true, items: [
-    { t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours' }, { t: '7 p.m.', what: 'Marcus takes over' },
+    { t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }, { t: '7 p.m.', what: 'Marcus takes over' },
   ] },
   { name: 'Wednesday', short: 'Wed', day: 24, items: [
     { t: '3 a.m.', what: 'IV insertion' }, { t: '7 a.m.', what: 'Rounds' },
     { t: '10 a.m.', what: 'Heart surgery', event: 'heart-surgery' },
-    { t: '2 p.m.', what: 'Surgeon talks with you' }, { what: 'Care every 3 hours' },
+    { t: '2 p.m.', what: 'Surgeon talks with you' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Thursday', short: 'Thu', day: 25, items: [
-    { t: '7 a.m.', what: 'Rounds' }, { t: '1 p.m.', what: 'Family meeting' }, { what: 'Care every 3 hours' },
+    { t: '7 a.m.', what: 'Rounds' }, { t: '1 p.m.', what: 'Family meeting' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Friday', short: 'Fri', day: 26, items: [
-    { t: '7 a.m.', what: 'Rounds' }, { what: 'Breathing check' }, { what: 'Care every 3 hours' },
+    { t: '7 a.m.', what: 'Rounds' }, { what: 'Breathing check' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
-  { name: 'Saturday', short: 'Sat', day: 27, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours' }] },
-  { name: 'Sunday', short: 'Sun', day: 28, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours' }] },
-  { name: 'Monday', short: 'Mon', day: 29, items: [{ t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours' }] },
+  { name: 'Saturday', short: 'Sat', day: 27, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
+  { name: 'Sunday', short: 'Sun', day: 28, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
+  { name: 'Monday', short: 'Mon', day: 29, items: [{ t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
 ]
 
 // Major events, in full. PLACEHOLDER medical content: written for the prototype only and must be
