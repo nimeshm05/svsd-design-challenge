@@ -1508,3 +1508,19 @@
 .rem-did { gap: 6px; }
 .rem-did button { padding: 4px 8px; }
 .rem-end { margin-top: 0; }
+/* her story, told one moment at a time (like going home), then everything at once */
+.rem.is-story { display: block; cursor: pointer; }
+.rem.is-story .rem-sky { position: absolute; left: 30%; right: 3%; top: 5%; bottom: 16%; width: auto; height: auto; }
+.rem-story { left: 4%; bottom: 92px; width: min(400px, 40%); cursor: default; }
+.rem-story .cv-story-text { font-size: clamp(15px, 1.5vw, 17px); line-height: 1.5; color: #e8e0cf; }
+.rem-story-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+.rem-story-foot .cv-story-dots { margin-top: 0; }
+.rem-continue { cursor: pointer; background: transparent; color: #F6EEDB; font: inherit; font-size: 14px; }
+.rem.is-end .rem-words { animation-delay: .4s; gap: 22px; max-width: 400px; }
+.rem.is-end .rem-name { margin-bottom: -8px; }
+.rem-who li { font-size: clamp(15px, 1.55vw, 18px); }
+.rem-did button span { flex: none; width: 52px; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rem-again { align-self: flex-start; cursor: pointer; background: transparent; color: var(--text-2); font: inherit; font-size: 13.5px; }
+.rem-halo { animation: cv-fade-in .8s ease both, cv-breathe 4s ease-in-out .8s infinite; }
+.rem-again { position: absolute; z-index: 2; top: 18px; right: 20px; animation: cv-fade-in .6s .6s ease both; }
+.rem.is-end .rem-words { gap: 18px; }
