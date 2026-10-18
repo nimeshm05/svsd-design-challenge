@@ -302,7 +302,6 @@ export const ahead = {
     tracks: [
       {
         area: 'Breathing', steps: ['CPAP mask', 'Nasal cannula', 'Breathing on her own'], at: 0, again: true, status: 'deciding',
-        plan: 'Back on her mask for now. Her breathing team is deciding what to try next.',
         who: 'Breathing team', review: 'Tomorrow at rounds, 10 a.m.',
       },
       {

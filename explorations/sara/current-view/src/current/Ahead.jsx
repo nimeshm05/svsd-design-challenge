@@ -1,30 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
 import { ahead, events, today, week } from '../data/days.js'
+import { glossary } from '../data/glossary.js'
+import { GlossaryTerm } from '../components/GlossaryTerm.jsx'
 import { BodyModel3D } from './BodyModel3D.jsx'
 
 // "What's ahead", in two tabs:
 //   Timeline: today and the next six days as a schedule; major events stand out and open their own page.
-//   Next Steps: where she is on each path (three open columns: where she is now is the biggest thing,
-//      what comes next is one quiet line, a short star path shows the steps in order), then one small
-//      line for what's still waiting on a date.
+//   Next Steps: three open columns, one per path (where she is now is the biggest thing, what comes
+//      next is one quiet line, a short star path shows the steps in order), then a row of small cards
+//      for what's still waiting on a date. Medical terms open a plain-language explanation when tapped.
 // Steps show order, never dates for going home; a step back is "working on this again", never failure.
-const STATUS = { decided: 'Decided', deciding: 'Being decided', waiting: 'For now' }
-// the words her team uses, in plain English
-const MEANS = {
-  'CPAP mask': 'steady air pressure through a small mask, so her lungs stay open',
-  'Nasal cannula': 'a gentle flow of air through soft prongs in her nose',
-  'Breathing on her own': 'no breathing help needed',
-  'Feeding tube': 'a thin tube through her nose to her tummy that carries her milk',
-  'First bottle': 'learning to suck, swallow and breathe together',
-  Breastfeeding: 'feeding at your breast, when you and she are ready',
-  Incubator: 'a warm, covered bed that keeps her temperature steady',
-  'Open crib': 'a regular baby bed, once she can keep herself warm',
-}
+const STATUS = { decided: 'Decided', deciding: 'Being decided', waiting: 'Current' }
 
-function Star({ state }) {
+function Star({ state, selected }) {
   return (
-    <svg className={`cv-pstar is-${state}`} viewBox="-16 -16 32 32" aria-hidden="true">
+    <svg className={`cv-pstar is-${state}${selected ? ' is-selected' : ''}`} viewBox="-16 -16 32 32" aria-hidden="true">
       {state === 'now' && <circle r="15" className="cv-pstar-glow" />}
+      {selected && state !== 'now' && <circle r="15" className="cv-pstar-ring" />}
       <path d="M0 -11L2.6 -2.6L11 0L2.6 2.6L0 11L-2.6 2.6L-11 0L-2.6 -2.6Z" />
     </svg>
   )
@@ -199,39 +191,70 @@ function WeekDay({ d, i, onOpen, blocks }) {
   )
 }
 
-// Next Steps: "Where she is on each path" (unchanged), then the one small "Waiting on a date" line.
+// Next Steps: one column per path, all the same shape (area, star path, step + status, its meaning, next),
+// then "Waiting on a date" as a row of small cards that scrolls sideways when there are more than fit.
 function NextSteps({ kind }) {
   const a = ahead[kind]
   return (
     <>
-      <section className="ah-sec" aria-labelledby="ah-paths">
-        <h3 id="ah-paths" className="ah-k">Where she is on each path</h3>
+      <section className="ah-sec" aria-label="Where she is on each path">
         <ul className="ah-cols">
-          {a.tracks.map((t) => {
-            const now = t.steps[t.at], next = t.steps[t.at + 1]
-            return (
-              <li key={t.area} className="ah-col">
-                <div className="ah-col-head">
-                  <span className="ah-col-area">{t.area}</span>
-                  <span className={`ah-status is-${t.status}`}>{STATUS[t.status]}</span>
-                </div>
-                <ol className="ah-stars" aria-label={t.steps.join(', then ')}>
-                  {t.steps.map((s, i) => <li key={s}><Star state={i < t.at ? 'done' : i === t.at ? 'now' : 'next'} /></li>)}
-                </ol>
-                <b className="ah-now">{now}</b>
-                {MEANS[now] && <span className="ah-means">{MEANS[now]}</span>}
-                {next && <span className="ah-next">Next: {next}</span>}
-                {t.status !== 'waiting' && <p className="ah-plan">{t.plan}</p>}
-              </li>
-            )
-          })}
+          {a.tracks.map((t) => <Path key={t.area} t={t} />)}
         </ul>
       </section>
-      <div className="ah-waiting" aria-label="Waiting on a date">
-        <span className="ah-k">Waiting on a date</span>
-        {a.checks.map((c) => <span key={c.what} className="ah-check"><b>{c.what}</b> · {c.note.toLowerCase()}</span>)}
-      </div>
+      <section className="ah-wait" aria-labelledby="ah-wait-k">
+        <h3 id="ah-wait-k" className="ah-k">Waiting on a date</h3>
+        <ul className="ah-wait-row">
+          {a.checks.map((c) => (
+            <li key={c.what} className="ah-wait-card">
+              <b className="ah-wait-title"><GlossaryTerm term={c.what} /></b>
+              <span className="ah-wait-note">{c.note}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </>
+  )
+}
+
+// One path. Tapping an empty (future) star peeks at that step, with a "Future" pill; tapping her current
+// star comes back. Steps she's already passed stay as they are. The current star always keeps its pulse.
+function Path({ t }) {
+  const [sel, setSel] = useState(t.at)
+  const step = t.steps[sel], next = t.steps[sel + 1], future = sel > t.at
+  const btnLabel = (s, i) => i === t.at ? `Back to her current step: ${s}`
+    : `Show ${i === t.at + 1 ? 'next' : 'later'} step: ${s}`
+  return (
+    <li className="ah-col">
+      <div className="ah-col-head"><span className="ah-col-area">{t.area}</span></div>
+      <ol className="ah-stars" aria-label={`${t.area} steps: ${t.steps.join(', then ')}`}>
+        {t.steps.map((s, i) => {
+          const state = i < t.at ? 'done' : i === t.at ? 'now' : 'next'
+          return (
+            <li key={s}>
+              {state === 'done' || !s ? <Star state={state} /> : (
+                <button type="button" className="ah-star-btn" aria-label={btnLabel(s, i)} aria-pressed={i === sel}
+                  onClick={() => setSel(i)}>
+                  <Star state={state} selected={i === sel} />
+                </button>
+              )}
+            </li>
+          )
+        })}
+      </ol>
+      <div className="ah-col-live" aria-live="polite">
+      <div key={sel} className={`ah-col-step${future ? ' is-future' : ''}`}>
+        <div className="ah-col-title">
+          <b className="ah-now"><GlossaryTerm term={step} /></b>
+          {future
+            ? <span className="ah-status is-future">Future</span>
+            : <span className={`ah-status is-${t.status}`}>{STATUS[t.status]}</span>}
+        </div>
+        {glossary[step]?.short && <span className="ah-means">{glossary[step].short}</span>}
+        {next && <span className="ah-next">Next: <GlossaryTerm term={next} /></span>}
+      </div>
+      </div>
+    </li>
   )
 }
 
