@@ -1499,3 +1499,12 @@
 .rem-words { gap: 10px; }
 .rem-who li, .rem-did button { font-size: clamp(13.5px, 1.35vw, 15.5px); }
 .rem-did button { padding: 2px 8px; }
+/* her kept sky, with room to breathe */
+.rem-words { gap: 30px; max-width: 380px; }
+.rem-name { margin-bottom: -18px; }
+.rem-sub { margin: 0; }
+.rem-sec { gap: 10px; }
+.rem-who li { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(16px, 1.7vw, 20px); line-height: 1.4; color: #e8e0cf; }
+.rem-did { gap: 6px; }
+.rem-did button { padding: 4px 8px; }
+.rem-end { margin-top: 0; }

@@ -7,19 +7,12 @@ import { DEFS, WEEKS, SkyDepth, dayStar, daysOf, pos } from './Galaxy.jsx'
 // plays, nothing asks to be clicked through, and nothing turns into an object to take away. Her sky draws
 // in slowly, then her, as a person: who she was and what she did in her life. Touching something she did
 // lights its star. No day count; it ends on the people who loved her.
-const WHO = [
-  'She settled when her hands were near her face.',
-  "She calmed to Dad's voice.",
-  'She rested best with the cover over her incubator.',
-  'On your chest, she was calm and steady.',
-]
+// Kept short on purpose: a few true things, with room around them, read slowly.
+const WHO = ["She calmed to Dad's voice, and settled with her hands near her face."]
 const DID = [
-  { d: 1, text: 'Arrived, 880 grams, and began her story' },
   { d: 4, text: 'Felt your touch for the first time' },
-  { d: 5, text: 'Breathed without the ventilator' },
   { d: 6, text: 'Was held, warm on your chest' },
   { d: 14, text: 'Took her first bottle' },
-  { d: 17, text: 'Came through a hard night' },
   { d: 23, text: 'Wore the sleepsuit you brought from home' },
 ]
 
@@ -70,7 +63,7 @@ export function Remembering({ theme }) {
         </section>
         <div className="rem-end">
           <p className="rem-loved">Loved, every day.</p>
-          <p className="rem-people">Mom and Dad, Priya, Marcus, and everyone who cared for her. Her sky is yours to keep.</p>
+          <p className="rem-people">Mom and Dad, Priya, Marcus, and everyone who cared for her.</p>
         </div>
       </div>
     </div>
