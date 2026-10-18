@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { stay, toMinutes } from "@/lib/data";
 import { momentOffset, RING_RADIUS, timeAngle } from "@/lib/layout";
-import { useStore } from "@/lib/store";
+import { fadeK, useStore } from "@/lib/store";
 import type { Day } from "@/lib/types";
 import { posOf } from "@/lib/view";
 import { C, momentCols, momentSize, momentTypes } from "./palette";
@@ -16,7 +16,7 @@ function useDayVisibility() {
   useFrame((_, dt) => {
     const { level, recap } = useStore.getState();
     const target = level === "day" || recap.active ? 1 : 0;
-    v.current += (target - v.current) * (1 - Math.exp(-dt * (target ? 2.2 : 5)));
+    v.current += (target - v.current) * fadeK(dt, target ? 2.2 : 5);
   });
   return v;
 }

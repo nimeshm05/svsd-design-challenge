@@ -66,50 +66,40 @@ export function Labels() {
 
   return (
     <>
-      {/* ---------- galaxy: chapter markers ---------- */}
+      {/* ---------- sky: one galaxy per week, named like a chapter ---------- */}
       {Array.from({ length: weekCount }, (_, i) => i + 1).map((w, i) => {
         const c = weekCenter(w);
-        const r = weekRadius(w) * 0.55;
-        const ang = Math.atan2(c[1], c[0]);
-        const p: Vec3 = [c[0] + Math.cos(ang) * r, c[1] + Math.sin(ang) * r, c[2]];
-        const dx = Math.cos(ang) * 14, dy = -Math.sin(ang) * 14;
+        // a quiet tag under each galaxy; only this week carries its chapter title, so space stays empty
+        const p: Vec3 = [c[0], c[1] - weekRadius(w) * 0.92, c[2]];
+        const current = w === weekCount;
         return (
           <At key={`w${w}`} p={p}>
             <div style={enter(showGalaxy, i)}>
-              <Leader dx={dx} dy={dy} align={dx >= 0 ? "left" : "right"}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    goWeek(w);
-                  }}
-                  className="obs text-ink-2 hover:text-ink"
-                  style={{ minHeight: 44, minWidth: 44, padding: "0 6px" }}
-                  aria-label={`Week ${w}: ${stay.weeks[w - 1].title}`}
-                >
-                  W{w}
-                </button>
-              </Leader>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goWeek(w);
+                }}
+                className="flex flex-col items-center"
+                style={{ position: "absolute", transform: "translate(-50%, 0)", minHeight: 44, minWidth: 64, whiteSpace: "nowrap" }}
+                aria-label={`Week ${w}: ${stay.weeks[w - 1].title}`}
+              >
+                <span className={`obs ${current ? "text-copper" : "text-ink-3"}`}>{current ? "This week" : `Week ${w}`}</span>
+                {current && <span className="serif-i text-ink" style={{ fontSize: 16, lineHeight: 1.2 }}>{stay.weeks[w - 1].title}</span>}
+              </button>
             </div>
           </At>
         );
       })}
-      <At p={posOf(today)}>
-        <div style={enter(showGalaxy, weekCount)}>
-          <Leader dx={Math.cos(Math.atan2(posOf(today)[1], posOf(today)[0])) * 34} dy={-Math.sin(Math.atan2(posOf(today)[1], posOf(today)[0])) * 34} align={posOf(today)[0] >= 0 ? "left" : "right"} warm>
-            <button onClick={(e) => { e.stopPropagation(); goDay(today); }} className="obs text-copper" style={{ minHeight: 44, padding: "0 4px" }} aria-label="Open today">
-              Today
-            </button>
-          </Leader>
-        </div>
-      </At>
 
       {/* ---------- week: the seven days, firsts named ---------- */}
       {days
         .filter((d) => d.week === week)
         .map((d, i) => {
           const p = posOf(d.dayIndex);
-          // alternate labels outward / inward along the spiral's normal so neighbours never collide
-          const out = Math.atan2(p[1], p[0]);
+          const gc = weekCenter(week);
+          // alternate labels outward / inward from the galaxy's core so neighbours never collide
+          const out = Math.atan2(p[1] - gc[1], p[0] - gc[0]);
           const ang = i % 2 === 0 ? out : out + Math.PI;
           const len = d.first ? 38 : 24;
           const dx = Math.cos(ang) * len, dy = -Math.sin(ang) * len;
