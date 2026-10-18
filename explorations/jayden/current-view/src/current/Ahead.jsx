@@ -14,7 +14,7 @@ const MEANS = {
   'Breathing on her own': 'no breathing help needed',
   'Feeding tube': 'a thin tube through her nose to her tummy that carries her milk',
   'First bottle': 'learning to suck, swallow and breathe together',
-  Breastfeeding: 'feeding at your breast, when you and she are ready',
+  'Feeding by mouth': 'every feed from a bottle or the breast, when she is ready',
   Incubator: 'a warm, covered bed that keeps her temperature steady',
   'Open crib': 'a regular baby bed, once she can keep herself warm',
 }

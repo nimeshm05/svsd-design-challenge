@@ -960,3 +960,137 @@
 .ah { gap: 18px; padding-top: 4px; }
 .ah-agenda li { padding: 9px 0; }
 .ah-col { gap: 5px; }
+
+/* ===== Her, in depth, from the sculpt image ===== */
+.cv-her-fig { width: 240px; height: 160px; }
+.her3d { width: 200px; height: 163px; transform: none; perspective: 560px; }
+.her3d-img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; user-select: none;
+  filter: saturate(.55) sepia(.18) brightness(.9); }
+.her3d-img:first-of-type { filter: saturate(.55) sepia(.18) brightness(.75) drop-shadow(0 0 10px color-mix(in srgb, var(--cream) 30%, transparent)); }
+.her3d-bed { position: absolute; inset: -6% -8%; border-radius: 22px; background: color-mix(in srgb, var(--cream) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cream) 18%, transparent); }
+.her3d .her3d-layer { overflow: visible; }
+.her3d .her3d-dev { stroke-width: .7; }
+.her3d .her3d-dev.is-new { stroke-width: 1; filter: drop-shadow(0 0 2px rgba(108, 182, 255, .9)); }
+.her3d { width: 176px; height: 143px; } .cv-her-fig { height: 140px; }
+
+/* Her as an outline: the contours carry their own color, so no photo filter; a soft glow on the stack */
+.her3d-img, .her3d-img:first-of-type { filter: none; }
+.her3d-stage { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cream) 22%, transparent)); }
+.her3d-bed { inset: -4% -6%; }
+/* the thin line from where a wire runs on the bed up to where it touches her */
+.her3d-post { position: absolute; width: 1px; margin-left: -.5px; transform-origin: top center; transform: rotateX(90deg);
+  background: currentColor; color: #B9C4CC; opacity: .7; }
+.her3d-post.is-new { color: #6CB6FF; opacity: 1; }
+.her3d-post.is-gone { opacity: .25; }
+
+/* ===== Her first day ===== */
+.fd { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; padding-bottom: 20px; animation: cv-fade-in .9s ease both; }
+.fd-star { margin-bottom: 6px; overflow: visible; }
+.fd-star-glow { transform-box: fill-box; transform-origin: center; animation: cv-breathe 6s ease-in-out infinite; }
+.fd-star-glow.is-inner { animation-duration: 4.5s; }
+.fd-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.6vw, 54px); line-height: 1.05; color: #F6EEDB; }
+.fd-title { margin: 0; font-size: clamp(24px, 3.2vw, 36px); font-weight: 500; line-height: 1.2; color: #F6EEDB; }
+.fd-title.is-serif { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; }
+.fd-line { margin: 0; max-width: 40ch; font-size: clamp(15px, 1.7vw, 19px); line-height: 1.45; color: var(--text-2); }
+.fd-size { margin: 8px 0 0; max-width: 42ch; font-size: clamp(14px, 1.55vw, 17px); color: var(--text-2); }
+.fd-size b { color: var(--cream); font-weight: 500; }
+.fd-who { margin: 14px 0 0; font-size: clamp(14px, 1.5vw, 16px); color: var(--muted); }
+.fd-k { margin: 14px 0 4px; font-size: 13px; color: var(--muted); }
+.fd-rested { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.fd-rested li { display: flex; align-items: baseline; gap: 14px; font-size: clamp(15px, 1.6vw, 18px); color: #F6EEDB; animation: cv-fade-in .8s ease both; }
+.fd-rested li:nth-child(2) { animation-delay: .5s; } .fd-rested li:nth-child(3) { animation-delay: 1s; }
+.fd-rested li span { width: 76px; flex: none; font-size: .82em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.fd-rested li::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--cream); flex: none; align-self: center; margin-right: -4px; }
+.fd-rested li.is-warm::before { background: var(--warm); box-shadow: 0 0 8px var(--warm); }
+/* the walkthrough */
+.fd-walk { gap: 10px; }
+.fd-model { height: 170px; display: grid; place-items: center; }
+.fd-model .her3d { transform: scale(1.15); }
+.fd-walk .fd-words { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 92px; }
+.fd-walk-nav { display: flex; align-items: center; gap: 22px; }
+.fd-dots { display: inline-flex; gap: 8px; }
+.fd-dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, .18); }
+.fd-dots i.is-past { background: color-mix(in srgb, var(--cream) 45%, transparent); }
+.fd-dots i.is-on { background: var(--cream); }
+.fd-next { height: 44px; padding: 0 26px; border-radius: 22px; border: 0; background: var(--cream); color: #111; font-size: 16px; font-weight: 600; cursor: pointer; }
+.fd-next.is-done { background: transparent; color: var(--cream); border: 1px solid color-mix(in srgb, var(--cream) 50%, transparent); }
+@media (prefers-reduced-motion: reduce) { .fd, .fd-star-glow, .fd-rested li { animation: none; } }
+.fd-size span { display: block; margin-top: 2px; color: var(--muted); }
+
+/* ===== The end of her stay ===== */
+.end { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding-bottom: 12px; animation: cv-fade-in 1s ease both; }
+.end-sky { width: min(640px, 92%); height: auto; overflow: visible; }
+.end-sky > g { animation: cv-fade-in .8s ease both; }
+.end-last { transform-box: fill-box; transform-origin: center; }
+.end-words { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.end-k { font-size: 13px; color: var(--cream); }
+.end-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(30px, 4.2vw, 48px); line-height: 1.08; color: #F6EEDB; }
+.end-line { margin: 0; max-width: 48ch; font-size: clamp(15px, 1.7vw, 19px); color: var(--text-2); }
+.end.is-not .end-title { font-size: clamp(28px, 3.8vw, 44px); }
+.end.is-not .end-line:last-child { margin-top: 8px; color: var(--muted); font-size: clamp(14px, 1.5vw, 16px); }
+.cv-proto .cv-seg button { white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .end, .end-sky > g { animation: none; } }
+
+/* ===== If she doesn't go home: the screen almost disappears ===== */
+.comfort { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding-bottom: 30px; animation: cv-fade-in 2s ease both; }
+.comfort-star { width: 120px; height: 120px; overflow: visible; }
+.comfort-glow { transform-box: fill-box; transform-origin: center; animation: cv-breathe 9s ease-in-out infinite; }
+.comfort-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(30px, 4vw, 44px); color: #d8d1c2; }
+.comfort-line { margin: 0; font-size: clamp(14px, 1.5vw, 16px); color: #6f6b65; }
+.cv-screen:has(.comfort) .cv-depth { opacity: .35; }
+.cv-screen:has(.comfort) .cv-btn.is-call { background: transparent; color: #a9a39a; border-color: #34363a; font-weight: 500; }
+.theme-confetti .cv-screen:has(.comfort) .cv-btn.is-call .cv-btn-icon { border-color: #6c7378; }
+.comfort-off { position: absolute; inset: 0; z-index: 4; border: 0; border-radius: 10px; background: #000; cursor: pointer; animation: cv-fade-in 1.2s ease both; }
+@media (prefers-reduced-motion: reduce) { .comfort, .comfort-glow, .comfort-off { animation: none; } }
+.cv-top[hidden] { display: flex; visibility: hidden; }
+
+/* ===== Her sky, as a record of her life ===== */
+.mem { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; animation: cv-fade-in 1.4s ease both; }
+.mem-sky { width: min(600px, 90%); }
+.mem-star { animation: cv-fade-in 1.2s ease both; }
+.mem-line { animation: cv-fade-in 2s ease both; }
+.mem-halo { transform-box: fill-box; transform-origin: center; animation: cv-breathe 4s ease-in-out infinite; }
+.mem-words { min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+.mem-line-in { animation: mem-in 1.4s ease both; }
+@keyframes mem-in { from { opacity: 0; transform: translateY(6px); } }
+.mem-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(28px, 3.8vw, 42px); color: #e8e0cf; }
+.mem-moment { margin: 0; max-width: 34ch; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(20px, 2.6vw, 28px); line-height: 1.3; color: #e8e0cf; }
+.mem-end { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.mem-sub { margin: 0; font-size: clamp(14px, 1.6vw, 17px); color: var(--text-2); }
+.mem-sub.is-quiet { color: #7a756e; font-size: clamp(13px, 1.4vw, 15px); }
+@media (prefers-reduced-motion: reduce) { .mem, .mem-star, .mem-line, .mem-halo, .mem-line-in { animation: none; } }
+.mem-next { height: 40px; padding: 0 20px; border-radius: 20px; border: 1px solid color-mix(in srgb, var(--cream) 35%, transparent); background: none; color: #d8d1c2;
+  font: 500 15px var(--font-ui); cursor: pointer; animation: cv-fade-in 1.2s ease both; }
+
+/* her story (walk) and the map of her life */
+.mem { gap: 14px; }
+.mem-step { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.mem-day { font-size: 13px; color: var(--cream); }
+.mem.is-map .mem-sky { width: min(480px, 70%); }
+.mem-map { display: flex; flex-direction: column; align-items: center; gap: 18px; opacity: 0; transition: opacity 1.6s ease; }
+.mem-map.is-in { opacity: 1; }
+.mem-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 28px; max-width: 760px; text-align: left; }
+.mem-list button { width: 100%; display: flex; align-items: baseline; gap: 10px; padding: 5px 8px; border: 0; border-radius: 8px; background: none; text-align: left;
+  font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(15px, 1.6vw, 18px); color: #ddd5c4; cursor: default; }
+.mem-list button i { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--cream); opacity: .6; transform: translateY(-2px); }
+.mem-list button.is-on { background: rgba(255, 255, 255, .04); color: #fff; }
+.mem-list button.is-on i { opacity: 1; box-shadow: 0 0 8px var(--cream); }
+.mem-map .mem-title { font-size: clamp(24px, 3.2vw, 34px); }
+@media (max-width: 760px) { .mem-list { grid-template-columns: 1fr; } }
+
+/* Her name opens who she is */
+.cv-name { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--cream) 35%, transparent); text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.cv-name:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; border-radius: 4px; }
+.cv-page .cv-sheet { background: #0c0c10; border-color: #24242c; }
+.cv-about { gap: 16px; }
+.cv-about-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: 30px; color: var(--cream); }
+.cv-about-age { margin: 0; font-size: 16px; color: var(--text-2); }
+.cv-about-age b { color: #F6EEDB; font-weight: 500; }
+.cv-about-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.cv-about-list li { display: flex; flex-direction: column; gap: 1px; padding-left: 16px; position: relative; }
+.cv-about-list li::before { content: ''; position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: var(--cream); }
+.cv-about-list.is-senses li::before { background: transparent; border: 1px solid var(--cream); }
+.cv-about-list span { font-size: 17px; color: #F6EEDB; line-height: 1.4; }
+.cv-about-list em { font-style: normal; font-size: 12.5px; color: var(--muted); }

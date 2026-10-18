@@ -167,6 +167,25 @@ export const skyPlanets = [
 export const today = {
   day: 23,
   clock: { label: '2:10 p.m.', night: '1:12 a.m.', h: 14.17 },
+  // Who she is: opened by tapping her name. Never medical events; her as a person.
+  // Traits come from what is already recorded (her nurses' notes, her monitors) or what a parent noticed:
+  // nothing here asks her nurses to do more.
+  about: {
+    age: '23 days old',
+    along: '30 weeks, 2 days along',
+    due: 'Her due date is about 10 weeks away.',
+    traits: [
+      { text: 'She settles when her hands are near her face.', from: "From her nurses' notes" },
+      { text: "She calms to Dad's voice.", from: 'Noticed by Dad' },
+      { text: 'She rests best with the cover over her incubator.', from: "From her nurses' notes" },
+      { text: 'During skin-to-skin, she is calm and steady.', from: 'From her monitors' },
+    ],
+    senses: [
+      'Voices are some of the clearest things she can hear now.',
+      'Her eyes open more each week, but bright light is still a lot for her.',
+      'Gentle, still touch is easier for her than stroking.',
+    ],
+  },
   // Who's caring for her right now. Parents see the team, and ask for help in one place.
   team: [
     { initials: 'P', name: 'Priya', role: 'Her nurse today', primary: true },
@@ -282,7 +301,7 @@ export const ahead = {
         who: 'Breathing and baby doctors · agreed at rounds', review: 'In about 2 days',
       },
       {
-        area: 'Feeding', steps: ['Feeding tube', 'First bottle', 'Breastfeeding'], at: 0, status: 'waiting',
+        area: 'Feeding', steps: ['Feeding tube', 'First bottle', 'Feeding by mouth'], at: 0, status: 'waiting',
         plan: 'All her milk goes through her tube while she grows stronger.',
         who: 'Baby doctors and lactation team', review: 'Talked about at rounds each week',
       },
@@ -306,7 +325,7 @@ export const ahead = {
         who: 'Breathing team', review: 'Tomorrow at rounds, 10 a.m.',
       },
       {
-        area: 'Feeding', steps: ['Feeding tube', 'First bottle', 'Breastfeeding'], at: 0, status: 'waiting',
+        area: 'Feeding', steps: ['Feeding tube', 'First bottle', 'Feeding by mouth'], at: 0, status: 'waiting',
         plan: 'All her milk goes through her tube while she grows stronger.',
         who: 'Baby doctors and lactation team', review: 'Talked about at rounds each week',
       },
@@ -330,7 +349,7 @@ const PARENT_MINUTES = [0, 45, 30, 120, 60, 162, 90, 40, 140, 70, 30, 150, 110, 
 export const stay = {
   today: 23,
   weeks: ['Hello, small one', 'Finding a rhythm', 'More help breathing', 'This week'],
-  firsts: { 4: 'First touch', 6: 'First hold', 14: 'First bottle of your milk', 23: 'Her own clothes' },
+  firsts: { 4: 'First touch', 6: 'First hold', 14: 'First bottle', 23: 'Her own clothes' },
   days: Array.from({ length: 23 }, (_, i) => {
     const d = i + 1
     return {
@@ -348,7 +367,7 @@ export const stay = {
 // told plainly and quietly, as in Nimesh's week panel.
 export const weekInfo = [
   { title: 'Hello, small one', summary: 'Mila arrived thirteen weeks early. She rested while machines did some of the work, you touched her hand on day 4, and on day 6 you held her for the first time.' },
-  { title: 'Finding a rhythm', summary: 'Her feeds grew bigger and steadier, and she slowly gained weight. On day 14 she had her first bottle of your milk.' },
+  { title: 'Finding a rhythm', summary: 'Her feeds grew bigger and steadier, and she slowly gained weight. On day 14 she had her first bottle.' },
   { title: 'More help breathing', summary: 'For part of this week Mila needed more help with her breathing, and her team stayed close.',
     hard: 'On day 17 her breathing needed more support overnight, so her team turned up her CPAP. By evening she was settled again. Her nurse can tell you what this means for her.' },
   { title: 'This week', summary: 'Her breathing needed more help again in the night, and she wore her own clothes for the first time. This week is still forming.' },
@@ -359,7 +378,7 @@ const DAY_FIRSTS = {
   23: { h: 9.4, t: '9:25 a.m.', short: 'Wore her own clothes for the first time', title: 'Her own clothes, for the first time', line: 'The soft sleepsuit you brought from home.', plain: 'Her nurse dressed her in the soft sleepsuit you brought from home.' },
   4: { h: 11, title: 'First touch', plain: 'You touched her hand for the first time, through the incubator’s porthole.' },
   6: { h: 13.2, title: 'First hold', plain: 'You held her for the first time. She stayed warm and calm on your chest.' },
-  14: { h: 15.4, title: 'First bottle of your milk', plain: 'She tried her first bottle of your milk and took a little before resting.' },
+  14: { h: 15.4, title: 'First bottle', plain: 'She tried her first bottle and took a little before resting.' },
 }
 const CALM_STORIES = ['A calm day. She slept well between care times.', 'She grew a little and rested well.', 'A quiet day of feeds and sleep.', 'She was settled and comfortable all day.']
 const fmt = (h) => {

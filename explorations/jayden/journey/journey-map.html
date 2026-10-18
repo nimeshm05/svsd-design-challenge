@@ -1,0 +1,284 @@
+<title>Mila's Long Stay</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,0..100&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a night-sky journey map in the product's own design system (DS1, Night Nursery).
+   A short brief; one day's ups and downs; then the stay in five stages, in two versions that share the
+   first three (going home, and not going home); what we take from it. */
+:root {
+  --sky: #07070a; --panel: #101016; --line: #25252e; --ink: #f2ebdc; --soft: #bcb7ad; --mute: #8a867f;
+  --cream: #f3e3b5; --copper: #ffb38a; --blue: #6cb6ff; --lilac: #c8b8ff;
+  --display: "Fraunces", Georgia, serif; --body: "Geist", "Helvetica Neue", Arial, sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--sky); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 48px 72px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 60px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; font-variation-settings: "SOFT" 100, "opsz" 72; text-wrap: balance; margin: 0; letter-spacing: -.005em; }
+h1 { font-size: clamp(36px, 5.2vw, 60px); line-height: 1.03; }
+h2 { font-size: clamp(26px, 3.1vw, 34px); line-height: 1.1; }
+h3 { font-size: 20px; line-height: 1.2; }
+p { margin: 0; }
+.k { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; color: var(--mute); }
+.lede { font-size: clamp(17px, 1.9vw, 20px); color: var(--soft); max-width: 60ch; }
+.section { display: flex; flex-direction: column; gap: 22px; }
+.section-head { display: flex; flex-direction: column; gap: 8px; max-width: 68ch; }
+.section-head p { color: var(--soft); }
+
+/* brief */
+.hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 40px; align-items: end; }
+.who { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; padding: 13px 0; border-top: 1px solid var(--line); }
+.who b { font-weight: 500; color: var(--cream); }
+.who p { font-size: 14.5px; color: var(--soft); }
+
+/* one day */
+.day-box { overflow-x: auto; }
+.day { width: 100%; min-width: 760px; display: block; }
+.day text { font-family: var(--body); }
+.day-note { font-size: 15px; color: var(--soft); max-width: 68ch; }
+.day-note b { color: var(--cream); font-weight: 500; }
+
+/* versions */
+.tabs { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; align-self: flex-start; flex-wrap: wrap; }
+.tab { font: 500 14px var(--body); color: var(--soft); background: none; border: 0; padding: 8px 16px; border-radius: 999px; cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--cream); color: #1b1712; }
+.tab.is-b[aria-selected="true"] { background: var(--lilac); }
+.tab:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.curve-box { overflow-x: auto; }
+.curve { width: 100%; min-width: 680px; display: block; }
+.curve text { font-family: var(--body); }
+.map-box { overflow-x: auto; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.map { border-collapse: collapse; width: 100%; min-width: 980px; table-layout: fixed; }
+.map th, .map td { vertical-align: top; text-align: left; padding: 14px 16px 16px; border-right: 1px solid var(--line); }
+.map tr + tr td, .map tr + tr th { border-top: 1px solid var(--line); }
+.map thead th { background: var(--panel); padding-top: 18px; }
+.map .lens { width: 132px; position: sticky; left: 0; z-index: 1; background: var(--sky); font: 400 12px var(--mono); color: var(--mute); letter-spacing: .04em; }
+.map thead .lens { background: var(--panel); }
+.st-n { font: 400 11.5px var(--mono); color: var(--mute); display: block; }
+.st-t { font-family: var(--display); font-size: 20px; color: var(--ink); display: block; margin: 4px 0 0; line-height: 1.15; }
+.map td { font-size: 14.5px; color: var(--soft); }
+.map td.feel { color: var(--ink); font-family: var(--display); font-style: italic; font-size: 16.5px; }
+.shared { color: var(--mute); }
+.fork { background: color-mix(in srgb, var(--cream) 5%, transparent); }
+.fork-b { background: color-mix(in srgb, var(--lilac) 7%, transparent); }
+.chip { display: inline-block; font: 400 11px var(--mono); padding: 2px 8px; border-radius: 999px; margin: 0 4px 6px 0; white-space: nowrap; }
+.chip.built { background: var(--cream); color: #1b1712; }
+.chip.idea { border: 1px solid var(--copper); color: var(--copper); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; font-size: 13px; color: var(--mute); }
+
+/* takeaways */
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 26px 34px; }
+.cols > div { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cols p { font-size: 15px; color: var(--soft); }
+.qs { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--soft); font-size: 15px; max-width: 78ch; }
+footer { font-size: 13px; color: var(--mute); border-top: 1px solid var(--line); padding-top: 18px; }
+@media (max-width: 760px) { .hero { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+    <p class="k">Journey map · bedside display · v2</p>
+    <h1>Mila's long stay</h1>
+    <p class="lede">A very preterm, medically complex baby, three to four months in the NICU, and the family around her. Five stages from her arrival, told two ways: the stay that ends with going home, and the one that doesn't.</p>
+  </div>
+  <div>
+    <div class="who"><b>Mila</b><p>Born at 27 weeks, 880 grams. Breathing help that goes down and back up. A stay of about 14 weeks.</p></div>
+    <div class="who"><b>Mom</b><p>C-section. First sees her a day later. Pumping, 50 minutes from the hospital.</p></div>
+    <div class="who"><b>Dad</b><p>First at the bedside. Back at work by week three, visits in the evening.</p></div>
+  </div>
+</header>
+
+<section class="section" aria-labelledby="day-h">
+  <div class="section-head">
+    <h2 id="day-h">Before the stay: a single day</h2>
+    <p>Parents tell us the stay is many ups and downs, and so is a single day. This is Mila's day 23, the day the demo shows, moment by moment.</p>
+  </div>
+  <div class="day-box">
+    <svg class="day" viewBox="0 0 1060 270" role="img" aria-labelledby="dt dd">
+      <title id="dt">Mila's day 23, from midnight to 2 p.m.</title>
+      <desc id="dd">A calm midnight feed, a restless night with oxygen dips at 3 a.m., back on her CPAP mask at 4:15, Mom arrives at 5:10, feeds settle, her own clothes for the first time at 9:25, a breathing plan still being made at 11, resting at noon and now.</desc>
+      <line x1="40" y1="135" x2="1030" y2="135" stroke="#25252e" stroke-dasharray="3 6"/>
+      <text x="40" y="34" fill="#8a867f" font-size="12">a good moment</text>
+      <text x="40" y="250" fill="#8a867f" font-size="12">a hard moment</text>
+      <polyline fill="none" stroke="#f3e3b5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+        points="70,115 175,175 260,222 330,90 400,120 545,110 620,62 735,160 860,118 990,105"/>
+      <g font-size="12" fill="#bcb7ad">
+        <circle cx="70" cy="115" r="4" fill="#f3e3b5"/><text x="70" y="98" text-anchor="middle">12 a.m. · a calm feed</text>
+        <circle cx="175" cy="175" r="4" fill="#f3e3b5"/><text x="175" y="200" text-anchor="middle">3 a.m. · oxygen dips</text>
+        <circle cx="260" cy="222" r="5" fill="#6cb6ff"/><text x="268" y="246" fill="#6cb6ff">4:15 · back on her CPAP mask</text>
+        <circle cx="330" cy="90" r="5" fill="#ffb38a"/><text x="330" y="72" text-anchor="middle" fill="#ffb38a">5:10 · Mom came in</text>
+        <circle cx="400" cy="120" r="4" fill="#f3e3b5"/><text x="420" y="150">6 a.m. · resting with her mask</text>
+        <circle cx="620" cy="62" r="6" fill="none" stroke="#f3e3b5" stroke-width="2"/><text x="620" y="44" text-anchor="middle" fill="#f3e3b5">9:25 · her own clothes, a first</text>
+        <circle cx="735" cy="160" r="4" fill="#f3e3b5"/><text x="735" y="186" text-anchor="middle">11 a.m. · a plan, still being made</text>
+        <circle cx="860" cy="118" r="4" fill="#f3e3b5"/><text x="860" y="100" text-anchor="middle">12 p.m. · her noon feed</text>
+        <path d="M990 93Q992 103 1002 105Q992 107 990 117Q988 107 978 105Q988 103 990 93Z" fill="#f3e3b5"/><text x="990" y="80" text-anchor="middle" fill="#f3e3b5">2:10 · now, resting</text>
+      </g>
+    </svg>
+  </div>
+  <p class="day-note">A parent who leaves at night and comes back at 2 p.m. missed all of it. The bedside screen's job is to give that day back: <b>each moment on the day's arc, in the order it happened, in warm words with the clinical term beside them</b>. And at the end of every day, the day becomes a star.</p>
+</section>
+
+<section class="section" aria-labelledby="stay-h">
+  <div class="section-head">
+    <h2 id="stay-h">The stay, in five stages</h2>
+    <p>The first three stages are shared. The last two depend on how her story goes.</p>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Version of the journey">
+    <button class="tab" role="tab" id="tab-home" aria-controls="v-home" aria-selected="true" type="button">Going home</button>
+    <button class="tab is-b" role="tab" id="tab-not" aria-controls="v-not" aria-selected="false" type="button">Not going home</button>
+  </div>
+  <div class="legend"><span><span class="chip built">built</span>in the prototype now</span><span><span class="chip idea">idea</span>proposed, not built</span></div>
+
+  <!-- Version A: going home -->
+  <div id="v-home" role="tabpanel" aria-labelledby="tab-home" class="section">
+    <div class="curve-box">
+      <svg class="curve" viewBox="0 0 1000 230" role="img" aria-label="Feelings across the stay, going home: shock at arrival, lifting while learning her, a jagged long middle, hopeful getting ready, joy and fear at going home.">
+        <line x1="60" y1="115" x2="980" y2="115" stroke="#25252e" stroke-dasharray="3 6"/>
+        <polyline fill="none" stroke="#f3e3b5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+          points="120,190 300,110 360,80 400,175 440,95 480,160 520,90 560,170 600,105 660,120 780,70 900,45"/>
+        <g fill="#f3e3b5"><circle cx="120" cy="190" r="5"/><circle cx="300" cy="110" r="5"/><circle cx="520" cy="90" r="5"/><circle cx="780" cy="70" r="5"/><circle cx="900" cy="45" r="5"/></g>
+        <g font-size="12" fill="#bcb7ad" text-anchor="middle"><text x="120" y="218">Arrival</text><text x="300" y="218">Learning her</text><text x="520" y="218">The long middle</text><text x="780" y="218">Getting ready</text><text x="900" y="218">Going home</text></g>
+        <text x="520" y="40" fill="#8a867f" font-size="12" text-anchor="middle">ups and downs, every week</text>
+      </svg>
+    </div>
+    <div class="map-box" tabindex="0" aria-label="Going home map, scrolls sideways">
+      <table class="map">
+        <thead><tr>
+          <th class="lens" scope="col">Stage</th>
+          <th scope="col"><span class="st-n">1 · first days</span><span class="st-t">Arrival</span></th>
+          <th scope="col"><span class="st-n">2 · first weeks</span><span class="st-t">Learning her</span></th>
+          <th scope="col"><span class="st-n">3 · weeks to months</span><span class="st-t">The long middle</span></th>
+          <th scope="col" class="fork"><span class="st-n">4 · last weeks</span><span class="st-t">Getting ready</span></th>
+          <th scope="col" class="fork"><span class="st-n">5 · the end of the stay</span><span class="st-t">Going home</span></th>
+        </tr></thead>
+        <tbody>
+          <tr><th class="lens" scope="row">Mila</th>
+            <td>On a ventilator, wires and lines, in an incubator.</td>
+            <td>First touch, first hold, first milk. Breathing help eases.</td>
+            <td>Slow gains with setbacks: more breathing help, infections, tests.</td>
+            <td class="fork">Feeding by mouth, keeping warm in an open crib.</td>
+            <td class="fork">Home around her due date, maybe with oxygen.</td></tr>
+          <tr><th class="lens" scope="row">Parents feel</th>
+            <td class="feel">Shock, separation</td>
+            <td class="feel">Love, fragile hope</td>
+            <td class="feel">Worn out, guilty, up and down</td>
+            <td class="feel fork">Hopeful, scared of no monitors</td>
+            <td class="feel fork">Joy, and fear</td></tr>
+          <tr><th class="lens" scope="row">Pain point</th>
+            <td>Mom misses the first hours. Nobody has time to explain every wire.</td>
+            <td>Medical words used as if they know them. Firsts happen while they're away.</td>
+            <td>"What happened while I was gone?" Days blur, progress disappears, rounds are missed.</td>
+            <td class="fork">"Ready" keeps moving, and nobody can promise a date.</td>
+            <td class="fork">Her story is scattered across phones and paperwork.</td></tr>
+          <tr><th class="lens" scope="row">The screen</th>
+            <td><span class="chip built">her first star</span><span class="chip built">what's on her</span><span class="chip built">Mom's first visit</span></td>
+            <td><span class="chip built">plain-English terms</span><span class="chip built">firsts as planets</span></td>
+            <td><span class="chip built">today's arc</span><span class="chip built">her 3D model</span><span class="chip built">Mila's stars</span><span class="chip built">when you can be there</span><span class="chip built">night view</span></td>
+            <td class="fork"><span class="chip built">paths in steps</span><span class="chip idea">practice checklist</span></td>
+            <td class="fork"><span class="chip idea">keepsake sky</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Version B: not going home -->
+  <div id="v-not" role="tabpanel" aria-labelledby="tab-not" class="section" hidden>
+    <div class="curve-box">
+      <svg class="curve" viewBox="0 0 1000 230" role="img" aria-label="Feelings across the stay, not going home: the same start, a jagged middle, then a fall when care changes to comfort, and grief held with love at goodbye.">
+        <line x1="60" y1="115" x2="980" y2="115" stroke="#25252e" stroke-dasharray="3 6"/>
+        <polyline fill="none" stroke="#f3e3b5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+          points="120,190 300,110 360,80 400,175 440,95 480,160 520,90 560,170 600,140"/>
+        <polyline fill="none" stroke="#c8b8ff" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="round" points="600,140 780,200 900,180"/>
+        <g fill="#f3e3b5"><circle cx="120" cy="190" r="5"/><circle cx="300" cy="110" r="5"/><circle cx="520" cy="90" r="5"/></g>
+        <g fill="#c8b8ff"><circle cx="780" cy="200" r="5"/><circle cx="900" cy="180" r="5"/></g>
+        <g font-size="12" fill="#bcb7ad" text-anchor="middle"><text x="120" y="218">Arrival</text><text x="300" y="218">Learning her</text><text x="520" y="218">The long middle</text><text x="780" y="218" fill="#c8b8ff">When care changes</text><text x="900" y="218" fill="#c8b8ff">Saying goodbye</text></g>
+      </svg>
+    </div>
+    <div class="map-box" tabindex="0" aria-label="Not going home map, scrolls sideways">
+      <table class="map">
+        <thead><tr>
+          <th class="lens" scope="col">Stage</th>
+          <th scope="col"><span class="st-n">1 · first days</span><span class="st-t">Arrival</span></th>
+          <th scope="col"><span class="st-n">2 · first weeks</span><span class="st-t">Learning her</span></th>
+          <th scope="col"><span class="st-n">3 · weeks to months</span><span class="st-t">The long middle</span></th>
+          <th scope="col" class="fork-b"><span class="st-n">4 · days</span><span class="st-t">When care changes</span></th>
+          <th scope="col" class="fork-b"><span class="st-n">5 · hours, and after</span><span class="st-t">Saying goodbye</span></th>
+        </tr></thead>
+        <tbody>
+          <tr><th class="lens" scope="row">Mila</th>
+            <td class="shared">Same as going home</td>
+            <td class="shared">Same as going home</td>
+            <td class="shared">Same, until her body stops being able to recover.</td>
+            <td class="fork-b">Her team and family decide together to focus on her comfort.</td>
+            <td class="fork-b">Held by her family, free of most of her wires.</td></tr>
+          <tr><th class="lens" scope="row">Parents feel</th>
+            <td class="feel shared">Shock, separation</td>
+            <td class="feel shared">Love, fragile hope</td>
+            <td class="feel shared">Worn out, guilty, up and down</td>
+            <td class="feel fork-b">Disbelief, grief beginning, guilt</td>
+            <td class="feel fork-b">Grief, held together with love</td></tr>
+          <tr><th class="lens" scope="row">Pain point</th>
+            <td class="shared">Same</td>
+            <td class="shared">Same</td>
+            <td class="shared">Same</td>
+            <td class="fork-b">Screens built around progress and going home suddenly hurt: plans, steps, "what's ahead".</td>
+            <td class="fork-b">Everything was about where she was going. There is little record of the life she lived.</td></tr>
+          <tr><th class="lens" scope="row">The screen</th>
+            <td class="shared"><span class="chip built">her first star</span><span class="chip built">what's on her</span></td>
+            <td class="shared"><span class="chip built">plain-English terms</span><span class="chip built">firsts as planets</span></td>
+            <td class="shared"><span class="chip built">today's arc</span><span class="chip built">Mila's stars</span></td>
+            <td class="fork-b"><span class="chip idea">comfort mode: no plans, no steps, her sky and her nurse</span></td>
+            <td class="fork-b"><span class="chip idea">her sky, kept: every star, her firsts, who was with her</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="section-head" style="color:var(--soft);font-size:15px">This version is why the product never assumes a happy ending: no countdowns, no going-home dates, setbacks told as part of her story, and a sky that means as much if she doesn't go home.</p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="take-h">
+  <div class="section-head"><h2 id="take-h">What this means for the story we tell</h2></div>
+  <div class="cols">
+    <div><h3>Show a real day</h3><p>Demo day 23, a harder day: a restless night, back on her CPAP mask, Mom arriving before dawn, her own clothes for the first time. Ups and downs in one arc.</p></div>
+    <div><h3>Give the day back</h3><p>The parent who wasn't there sees what happened, in order, in words they can follow, and who was with her.</p></div>
+    <div><h3>Keep every day</h3><p>Every day becomes a star, so the weeks don't blur and progress is still visible after setbacks.</p></div>
+    <div><h3>Be right in both endings</h3><p>Nothing on the screen depends on going home. The same sky holds her life either way.</p></div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="q-h">
+  <div class="section-head"><h2 id="q-h">To check in interviews</h2></div>
+  <ol class="qs">
+    <li>What does a typical day look like for a complex baby, and which moments do parents most wish they'd seen?</li>
+    <li>How are parents told about an overnight setback today?</li>
+    <li>Do nurses walk parents through the equipment at the first visit, and in what order?</li>
+    <li>For families moving to comfort care: what, if anything, should the bedside screen show?</li>
+  </ol>
+</section>
+
+<footer>Jayden · bedside-display exploration · synthetic family and data · October 2026</footer>
+</div>
+
+<script>
+(() => {
+  const tabs = [...document.querySelectorAll('[role="tab"]')]
+  const show = (id) => tabs.forEach((t) => {
+    const on = t.getAttribute('aria-controls') === id
+    t.setAttribute('aria-selected', on ? 'true' : 'false')
+    t.tabIndex = on ? 0 : -1
+    document.getElementById(t.getAttribute('aria-controls')).hidden = !on
+  })
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => show(t.getAttribute('aria-controls')))
+    t.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+      const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]
+      n.focus(); show(n.getAttribute('aria-controls'))
+    })
+  })
+  if (location.hash === '#not-home') show('v-not')
+})()
+</script>

@@ -3,6 +3,8 @@ import { days, today } from '../data/days.js'
 import { Scan } from '../components/Scan.jsx'
 import { SkyArc } from './SkyArc.jsx'
 import { HerModel } from './HerModel.jsx'
+import { FirstDay } from './FirstDay.jsx'
+import { Ending, Comfort, LifeSky } from './Ending.jsx'
 import { Ahead } from './Ahead.jsx'
 import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen } from './Galaxy.jsx'
 import './current.css'
@@ -13,6 +15,8 @@ import './current.css'
 //   Her progress: the day view (her baby drawing, a line of stars to scrub, the day's list)
 //   Her galaxy:   zoom out into her whole stay (galaxy → week → day → moment, after Nimesh's galaxy)
 //   What's ahead: her care plans, from the end of the arc
+const CHAPTERS = [['born', '1 · Mila is born'], ['story', '2 · Her story begins'], ['day', '3 · A day'], ['sky', '4 · Her sky'], ['home', '5 · Going home'], ['not', "6 · If she doesn't go home"]]
+
 export function CurrentView({ onSky }) {
   const kind = 'harder' // Mila is a complex baby: her day is shown as it really goes, setbacks included
   const [night, setNight] = useState(false)
@@ -21,9 +25,22 @@ export function CurrentView({ onSky }) {
   const [zoom, setZoom] = useState(null) // 'out' | 'in' while the sky is zooming
   const [theme, setTheme] = useState('nursery') // the two styles from the design board
   const [team, setTeam] = useState(false)
+  const [about, setAbout] = useState(false) // who she is: opened by tapping her name
+  // Her first day (chapters 1 and 2): how her story begins
+  // The demo tells her whole story as chapters: born, her story begins, a day in the long middle,
+  // her sky, then going home, or, if she doesn't go home, a screen that almost disappears.
+  const [chapter, setChapter] = useState('born')
+  const [mode, setMode] = useState('story') // 'story' (the six chapters) | 'bedside' (just the regular screen, day or night)
+  const fstage = chapter === 'born' ? 'arrival' : 'visit'
+  const [walk, setWalk] = useState(null) // the "What's on her" walkthrough step, or null
+  const first = (chapter === 'born' || chapter === 'story') && !night
+  const ending = chapter === 'home' || chapter === 'not' ? chapter : null
+  const comfort = chapter === 'not' && !night
+  const [dark, setDark] = useState(false) // comfort care: the family can turn the screen off
+  const [memory, setMemory] = useState(false) // her sky, opened only when the family chooses
   const d = today[kind]
   const onSub = page !== 'home' && page !== 'galaxy' && !night // a page with Back
-  const onC = !night && page === 'home'
+  const onC = !night && page === 'home' && (chapter === 'day' || chapter === 'sky')
   // Today becomes a star: the day retells itself. Its moments lift off the arc in order, each with a few
   // words, and drift to where her sky keeps today's star; the family moment joins last. Then her sky
   // fades in around that star. Tap to skip. Coming back, the sky fades away and the day returns.
@@ -52,6 +69,10 @@ export function CurrentView({ onSky }) {
     setZoom('out')
     formT.current = setTimeout(toSky, (end + 2.1) * 1000)
   }
+  const goChapter = (c) => {
+    setWalk(null); setTeam(false); setNight(false); setDark(false); setMemory(false); setPage('home'); setChapter(c)
+    if (c === 'sky') setTimeout(() => document.querySelector('.cv-lookup-btn')?.click(), 400) // today becomes a star
+  }
   const zoomIn = () => {
     setPage('home'); setZoom('in')
     setTimeout(() => setZoom(null), 3000)
@@ -75,7 +96,10 @@ export function CurrentView({ onSky }) {
       {/* Prototype controls: not part of the bedside screen */}
       <div className="cv-proto" role="toolbar" aria-label="Prototype controls">
         <span className="cv-proto-k">Prototype</span>
-        <Seg value={night ? 'night' : 'day'} onChange={(v) => setNight(v === 'night')} options={[['day', 'Day'], ['night', 'Night']]} />
+        <Seg value={mode} onChange={(m) => { setMode(m); goChapter(m === 'story' ? 'born' : 'day') }} options={[['story', 'Story'], ['bedside', 'Bedside']]} />
+        {mode === 'story'
+          ? <Seg value={chapter} onChange={goChapter} options={CHAPTERS} />
+          : <Seg value={night ? 'night' : 'day'} onChange={(v) => setNight(v === 'night')} options={[['day', 'Day'], ['night', 'Night']]} />}
         <Seg value={theme} onChange={setTheme} options={[['nursery', 'DS1'], ['confetti', 'DS2']]} />
       </div>
 
@@ -88,16 +112,26 @@ export function CurrentView({ onSky }) {
         }}>
         {page === 'home' && !night && <SkyDepth theme={theme} />}
         {zoom && page === 'home' && !night && <FormingOverlay theme={theme} mode={zoom} {...(zoom === 'out' ? form : {})} onSkip={zoom === 'out' ? toSky : undefined} />}
-        {page === 'galaxy' && !night && <Galaxy theme={theme} onBack={() => { setSkyExit(0); zoomIn() }} exit={skyExit} />}
-        <header className="cv-top">
+        {page === 'galaxy' && !night && <Galaxy theme={theme} onBack={() => { setSkyExit(0); setChapter('day'); zoomIn() }} exit={skyExit} />}
+        <header className="cv-top" hidden={comfort}>
           <span className="cv-top-left">
             {onSub && page !== 'ahead' && <button type="button" className="cv-back" onClick={() => setPage('home')}>‹ Back</button>}
-            {page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? `Mila · Day ${today.day}` : null}
+            {first ? 'Mila · Day 1' : ending ? `Mila · Day ${ending === 'home' ? 98 : 41}` : page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? <><button type="button" className="cv-name" onClick={() => setAbout(true)} aria-label="Mila: who she is">Mila</button> · Day {today.day}</> : null}
           </span>
-          <span className="cv-clock">{night ? today.clock.night : today.clock.label}</span>
+          <span className="cv-clock">{first ? (chapter === 'born' ? '4:20 a.m.' : '5:10 a.m.') : ending ? (ending === 'home' ? '10:30 a.m.' : '') : night ? today.clock.night : today.clock.label}</span>
         </header>
 
-        {page === 'galaxy' && !night
+        {comfort && memory
+          ? <LifeSky key="map" theme={theme} life="not" mode="map" />
+          : chapter === 'home' && memory && !night
+          ? <LifeSky key="walk" theme={theme} life="home" mode="walk" />
+          : comfort
+          ? <Comfort theme={theme} dark={dark} onWake={() => setDark(false)} />
+          : ending && !night
+          ? <Ending ending={ending} theme={theme} />
+          : first
+          ? <FirstDay stage={fstage} theme={theme} walk={walk} setWalk={setWalk} />
+          : page === 'galaxy' && !night
           ? null
           : onSub && page === 'ahead'
           ? <Ahead kind={kind} />
@@ -108,6 +142,31 @@ export function CurrentView({ onSky }) {
           : <HomeC key={kind} d={d} h={cH} setH={setCH} zoom={zoom} theme={theme} onAhead={() => setPage('ahead')} onZoomOut={zoomOut} />}
 
         <footer className="cv-actions">
+          {/* comfort care: the family decides whether the screen is on at all */}
+          {comfort && !dark && !memory && (
+            <div className="cv-actions-left">
+              <button type="button" className="cv-btn is-quiet" onClick={() => setMemory(true)}><span className="cv-today-icon" aria-hidden="true">✦</span>Her sky</button>
+              <button type="button" className="cv-btn is-quiet" onClick={() => setDark(true)}>Turn off the screen</button>
+            </div>
+          )}
+          {ending === 'home' && !night && (
+            <div className="cv-actions-left">
+              {memory
+                ? <button type="button" className="cv-btn is-quiet cv-today-btn" onClick={() => setMemory(false)}><span className="cv-today-icon" aria-hidden="true">‹</span>Close</button>
+                : <button type="button" className="cv-btn is-quiet" onClick={() => setMemory(true)}><span className="cv-today-icon" aria-hidden="true">✦</span>Her story</button>}
+            </div>
+          )}
+          {comfort && memory && (
+            <div className="cv-actions-left">
+              <button type="button" className="cv-btn is-quiet cv-today-btn" onClick={() => setMemory(false)}><span className="cv-today-icon" aria-hidden="true">‹</span>Close</button>
+            </div>
+          )}
+          {/* her first day: her nurse can open "What's on her" while explaining */}
+          {first && fstage !== 'arrival' && walk == null && (
+            <div className="cv-actions-left">
+              <button type="button" className="cv-btn is-quiet" onClick={() => setWalk(0)}>What&apos;s on her</button>
+            </div>
+          )}
           {/* back to today: always bottom left, wherever you are */}
           {page === 'ahead' && !night && (
             <div className="cv-actions-left">
@@ -131,7 +190,7 @@ export function CurrentView({ onSky }) {
             </div>
           )}
           {/* her sky is for looking back; asking for her nurse belongs with today */}
-          {page !== 'galaxy' && (
+          {page !== 'galaxy' && !(comfort && dark) && (
             <button type="button" className="cv-btn is-call" onClick={() => setTeam(true)}>
               <span className="cv-btn-icon" aria-hidden="true">☎</span>Ask for her nurse
             </button>
@@ -140,6 +199,7 @@ export function CurrentView({ onSky }) {
       </div>
 
       {team && <TeamSheet onClose={() => setTeam(false)} />}
+      {about && <AboutSheet onClose={() => setAbout(false)} />}
     </div>
   )
 }
@@ -421,6 +481,34 @@ function routineSoFar() {
 
 // Parents see who's caring for her, and ask for help in one place. The request goes to her nurse;
 // the charge nurse covers if she's busy. Urgent help stays with the nurse call button by her bed.
+// Who she is, behind her name: her as a person, her age two ways, and what she can sense this week.
+function AboutSheet({ onClose }) {
+  const a = today.about
+  return (
+    <div className="cv-scrim" onClick={onClose}>
+      <div className="cv-sheet cv-about" role="dialog" aria-label="Mila, who she is" onClick={(e) => e.stopPropagation()}>
+        <div className="cv-sheet-head">
+          <p className="cv-about-name">Mila</p>
+          <button type="button" className="cv-close" onClick={onClose}>Close</button>
+        </div>
+        <p className="cv-about-age"><b>{a.age}</b> · {a.along}. {a.due}</p>
+        <div className="cv-sheet-sec">
+          <span className="cv-k">Who she is</span>
+          <ul className="cv-about-list">
+            {a.traits.map((t) => <li key={t.text}><span>{t.text}</span><em>{t.from}</em></li>)}
+          </ul>
+        </div>
+        <div className="cv-sheet-sec">
+          <span className="cv-k">What she can sense this week</span>
+          <ul className="cv-about-list is-senses">
+            {a.senses.map((t) => <li key={t}><span>{t}</span></li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function TeamSheet({ onClose }) {
   const [asked, setAsked] = useState(false)
   return (
