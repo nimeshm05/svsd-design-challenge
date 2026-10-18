@@ -321,7 +321,6 @@ export const ahead = {
     tracks: [
       {
         area: 'Breathing', steps: ['CPAP mask', 'Nasal cannula', 'Breathing on her own'], at: 0, again: true, status: 'deciding',
-        plan: 'Back on her mask for now. Her breathing team is deciding what to try next.',
         who: 'Breathing team', review: 'Tomorrow at rounds, 10 a.m.',
       },
       {
@@ -340,6 +339,77 @@ export const ahead = {
       { when: 'Tomorrow · 10 a.m.', what: 'Rounds about her breathing', note: 'Her breathing team will talk it through with you.' },
       { when: 'Thursday', what: 'Family meeting', note: 'Her doctors, nurse and social worker, about the next few weeks.' },
     ],
+  },
+}
+
+// "What's ahead" → Tomorrow: the next day only, so parents can take it one day at a time.
+// Sample data. Notes say what happens and where a parent fits in; they never predict how it will go.
+export const tomorrow = {
+  day: 'Wednesday',
+  // Prototype: pretend it's already 6 a.m. on that day, so finished items show as done.
+  // Items before nowH are done; an item at nowH is happening now. Set to null for a day not yet started.
+  nowH: 6,
+  items: [
+    { h: 3, t: '3 a.m.', what: 'IV insertion', note: 'A new IV line, so it’s ready for her surgery.' },
+    { h: 6, t: '6 a.m.', what: 'Care time', note: 'Diaper change and temperature check. You’re welcome to be there.' },
+    { h: 7, t: '7 a.m.', what: 'Morning rounds', note: 'Her team talks through her day. You can join and ask anything.' },
+    { h: 10, t: '10 a.m.', what: 'Heart surgery', note: 'Her team will show you where to wait and keep you updated.' },
+    { h: 14, t: '2 p.m.', what: 'Her surgeon talks with you', note: 'They’ll come find you to share how it went.' },
+    { h: 17, t: '5 p.m.', what: 'Time to sit with her', note: 'Her nurse will help you settle in by her bed.' },
+  ],
+  // the rest of the week, one quiet line per day; days with nothing planned say so plainly
+  rest: [
+    { day: 'Thursday', line: 'Family meeting with her team' },
+    { day: 'Friday', line: 'Breathing check' },
+    { day: 'Saturday', line: 'Her usual care times' },
+    { day: 'Sunday', line: 'Her usual care times' },
+  ],
+}
+
+// "What's ahead" → This week: today and the next six days. Routine care is a quiet line;
+// major events (surgeries, procedures) open their own page. Days are named by weekday and her day count.
+// `every`: a recurring task, every N hours from midnight. Today's box lists each one; other days show `what`.
+export const week = [
+  { name: 'Tuesday', short: 'Tue', day: 23, today: true, items: [
+    { t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }, { t: '7 p.m.', what: 'Marcus takes over' },
+  ] },
+  { name: 'Wednesday', short: 'Wed', day: 24, items: [
+    { t: '3 a.m.', what: 'IV insertion' }, { t: '7 a.m.', what: 'Rounds' },
+    { t: '10 a.m.', what: 'Heart surgery', event: 'heart-surgery' },
+    { t: '2 p.m.', what: 'Surgeon talks with you' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+  ] },
+  { name: 'Thursday', short: 'Thu', day: 25, items: [
+    { t: '7 a.m.', what: 'Rounds' }, { t: '1 p.m.', what: 'Family meeting' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+  ] },
+  { name: 'Friday', short: 'Fri', day: 26, items: [
+    { t: '7 a.m.', what: 'Rounds' }, { what: 'Breathing check' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+  ] },
+  { name: 'Saturday', short: 'Sat', day: 27, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
+  { name: 'Sunday', short: 'Sun', day: 28, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
+  { name: 'Monday', short: 'Mon', day: 29, items: [{ t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
+]
+
+// Major events, in full. PLACEHOLDER medical content: written for the prototype only and must be
+// reviewed by her care team before any parent sees it. Calm, plain, never a promise about how it goes.
+export const events = {
+  'heart-surgery': {
+    name: 'Heart surgery',
+    when: 'Tomorrow, Wednesday · Day 24',
+    time: '10 a.m.',
+    target: 'heart',
+    targetLabel: 'Her heart',
+    involves: [
+      'Her surgeons will close a small blood vessel near her heart. Before birth, this vessel lets blood skip the lungs. It usually closes on its own after birth, and for her it hasn’t yet.',
+      'She’ll be asleep and comfortable the whole time, with medicine so she feels no pain. Her surgeon will explain exactly what they plan to do when you meet.',
+    ],
+    risks: [
+      'Like any surgery, there is a small chance of bleeding or infection. Her team watches for both closely.',
+      'She may need more breathing help for a while afterwards, while she rests and heals.',
+      'Her cry may sound softer or hoarse for a time.',
+    ],
+    duration: 'About 1 to 2 hours',
+    done: 'Around 12 p.m.',
+    doneNote: 'This is an estimate. If it takes longer, her team will let you know.',
   },
 }
 
@@ -364,21 +434,33 @@ export const stay = {
 }
 
 // Weeks of her stay: a title, a short summary, and (when there was one) what was hard,
-// told plainly and quietly, as in Nimesh's week panel.
+// told plainly and quietly, as in Nimesh's week panel. `caption` is the few words under each week's
+// name in her sky, in a parent's gentle voice.
 export const weekInfo = [
-  { title: 'Hello, small one', summary: 'Mila arrived thirteen weeks early. She rested while machines did some of the work, you touched her hand on day 4, and on day 6 you held her for the first time.' },
-  { title: 'Finding a rhythm', summary: 'Her feeds grew bigger and steadier, and she slowly gained weight. On day 14 she had her first bottle.' },
-  { title: 'More help breathing', summary: 'For part of this week Mila needed more help with her breathing, and her team stayed close.',
+  { title: 'Hello, small one', caption: 'Hello, small one', summary: 'Mila arrived thirteen weeks early. She rested while machines did some of the work, you touched her hand on day 4, and on day 6 you held her for the first time.' },
+  { title: 'Finding a rhythm', caption: 'Getting to know you', summary: 'Her feeds grew bigger and steadier, and she slowly gained weight. On day 14 she had her first bottle.' },
+  { title: 'More help breathing', caption: 'Holding on together', summary: 'For part of this week Mila needed more help with her breathing, and her team stayed close.',
     hard: 'On day 17 her breathing needed more support overnight, so her team turned up her CPAP. By evening she was settled again. Her nurse can tell you what this means for her.' },
-  { title: 'This week', summary: 'Her breathing needed more help again in the night, and she wore her own clothes for the first time. This week is still forming.' },
+  { title: 'This week', caption: 'Right here beside you', summary: 'Her breathing needed more help again in the night, and she wore her own clothes for the first time. This week is still forming.' },
 ]
 
 const SUPPORT_LABEL = { ventilator: 'Ventilator', cpap: 'CPAP', 'high-flow': 'Nasal cannula' }
 const DAY_FIRSTS = {
   23: { h: 9.4, t: '9:25 a.m.', short: 'Wore her own clothes for the first time', title: 'Her own clothes, for the first time', line: 'The soft sleepsuit you brought from home.', plain: 'Her nurse dressed her in the soft sleepsuit you brought from home.' },
   4: { h: 11, title: 'First touch', plain: 'You touched her hand for the first time, through the incubator’s porthole.' },
-  6: { h: 13.2, title: 'First hold', plain: 'You held her for the first time. She stayed warm and calm on your chest.' },
+  6: { h: 14.25, title: 'First hold', plain: 'You held her for the first time. She stayed warm and calm on your chest.' },
   14: { h: 15.4, title: 'First bottle', plain: 'She tried her first bottle and took a little before resting.' },
+}
+// The few things a parent most needs to know about a day, in order. A thing can open to more:
+// `at` is the hour it happened, `detail` what her nurse noted, `img` a photo slot for it.
+const DAY_THINGS = {
+  6: [
+    { title: 'Her feeds grew a little', text: 'She now gets a little more milk through her feeding tube at each care time.' },
+    { title: 'You held her for the first time', at: 14.25,
+      detail: { title: 'Kangaroo hold, 45 min', text: 'She rested skin-to-skin on your chest, and her heart rate and breathing stayed steady the whole time.',
+        img: '/images/kangaroo-hold.jpg', alt: 'A mother in a NICU chair holding her tiny baby skin-to-skin on her chest in a kangaroo hold, a soft blanket over them both.' } },
+    { title: 'Steady on CPAP', text: 'Her gentle breathing help stayed the same, and her monitors were quiet for most of the day.' },
+  ],
 }
 const CALM_STORIES = ['A calm day. She slept well between care times.', 'She grew a little and rested well.', 'A quiet day of feeds and sleep.', 'She was settled and comfortable all day.']
 const fmt = (h) => {
@@ -418,5 +500,6 @@ export function dayDetail(d) {
     : d === 17 ? 'She needed more breathing help for a while, and settled by evening.'
     : d === 21 ? 'She moved to gentler breathing help.'
     : CALM_STORIES[d % CALM_STORIES.length]
-  return { ...day, isToday, nowH, first: DAY_FIRSTS[d]?.title, story, supportLabel: SUPPORT_LABEL[day.support], moments: m }
+  return { ...day, isToday, nowH, first: DAY_FIRSTS[d]?.title, story, supportLabel: SUPPORT_LABEL[day.support], moments: m,
+    things: DAY_THINGS[d]?.map((x) => (x.at != null ? { ...x, t: fmt(x.at) } : x)) }
 }

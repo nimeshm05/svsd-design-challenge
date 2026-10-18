@@ -1,16 +1,17 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { days, today } from '../data/days.js'
 import { Scan } from '../components/Scan.jsx'
 import { SkyArc } from './SkyArc.jsx'
 import { HerModel } from './HerModel.jsx'
 import { FirstDay } from './FirstDay.jsx'
-import { Ending, Comfort, LifeSky } from './Ending.jsx'
+import { Comfort, LifeSky } from './Ending.jsx'
 import { Ahead } from './Ahead.jsx'
-import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen } from './Galaxy.jsx'
+import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen, todayFormsAt } from './Galaxy.jsx'
+import { Discharge } from './Discharge.jsx'
 import './current.css'
 
 // Bedside current view: Home C, minimal and low-light, read from the parent chair, in either of
-// the two styles from the design board. Every page keeps the same header and "Ask for her nurse"
+// the two styles from the design board. Every page keeps the same header and "Contact care team"
 // in the same corner. Today is an arc across the screen; drag today's star along it. From here:
 //   Her progress: the day view (her baby drawing, a line of stars to scrub, the day's list)
 //   Her galaxy:   zoom out into her whole stay (galaxy → week → day → moment, after Nimesh's galaxy)
@@ -20,9 +21,10 @@ const CHAPTERS = [['born', '1 · Mila is born'], ['story', '2 · Her story begin
 export function CurrentView({ onSky }) {
   const kind = 'harder' // Mila is a complex baby: her day is shown as it really goes, setbacks included
   const [night, setNight] = useState(false)
-  const [page, setPage] = useState('home') // 'home' | 'ahead' | 'progress' | 'galaxy'
+  const [page, setPage] = useState('home') // 'home' | 'ahead' | 'progress' | 'galaxy' | 'discharge'
   const [cH, setCH] = useState(today.clock.h) // where today's star sits on Home C's arc
-  const [zoom, setZoom] = useState(null) // 'out' | 'in' while the sky is zooming
+  // arriving from the galaxy (?from=galaxy): open mid zoom-in, as if we flew into today's star
+  const [zoom, setZoom] = useState(() => (new URLSearchParams(window.location.search).get('from') === 'galaxy' ? 'in' : null)) // 'out' | 'in' while the sky is zooming
   const [theme, setTheme] = useState('nursery') // the two styles from the design board
   const [team, setTeam] = useState(false)
   const [about, setAbout] = useState(false) // who she is: opened by tapping her name
@@ -34,12 +36,11 @@ export function CurrentView({ onSky }) {
   const fstage = chapter === 'born' ? 'arrival' : 'visit'
   const [walk, setWalk] = useState(null) // the "What's on her" walkthrough step, or null
   const first = (chapter === 'born' || chapter === 'story') && !night
-  const ending = chapter === 'home' || chapter === 'not' ? chapter : null
   const comfort = chapter === 'not' && !night
   const [dark, setDark] = useState(false) // comfort care: the family can turn the screen off
   const [memory, setMemory] = useState(false) // her sky, opened only when the family chooses
   const d = today[kind]
-  const onSub = page !== 'home' && page !== 'galaxy' && !night // a page with Back
+  const onSub = page !== 'home' && page !== 'galaxy' && page !== 'discharge' && !night // a page with Back
   const onC = !night && page === 'home' && (chapter === 'day' || chapter === 'sky')
   // Today becomes a star: the day retells itself. Its moments lift off the arc in order, each with a few
   // words, and drift to where her sky keeps today's star; the family moment joins last. Then her sky
@@ -54,7 +55,7 @@ export function CurrentView({ onSky }) {
     const el = document.querySelector('.cv-screen')
     if (!el) return
     const r = el.getBoundingClientRect(), ox = r.left + el.clientLeft, oy = r.top + el.clientTop
-    const target = todayOnScreen(el.clientWidth, el.clientHeight)
+    const target = todayFormsAt(el.clientWidth, el.clientHeight)
     const marks = [...el.querySelectorAll('.cv-arc.is-arc .cv-arc-mark[data-label]')]
     // every moment, the family's too, in the order it happened; each lifts off as its turn comes
     const lifts = [
@@ -70,13 +71,24 @@ export function CurrentView({ onSky }) {
     formT.current = setTimeout(toSky, (end + 2.1) * 1000)
   }
   const goChapter = (c) => {
-    setWalk(null); setTeam(false); setNight(false); setDark(false); setMemory(false); setPage('home'); setChapter(c)
+    setWalk(null); setTeam(false); setNight(false); setDark(false); setMemory(false); setPage(c === 'home' ? 'discharge' : 'home'); setChapter(c)
     if (c === 'sky') setTimeout(() => document.querySelector('.cv-lookup-btn')?.click(), 400) // today becomes a star
   }
   const zoomIn = () => {
     setPage('home'); setZoom('in')
     setTimeout(() => setZoom(null), 3000)
   }
+  useEffect(() => {
+    if (zoom !== 'in') return
+    // drop the flag so a refresh opens home normally
+    const q = new URLSearchParams(window.location.search)
+    if (q.get('from') === 'galaxy') {
+      q.delete('from')
+      window.history.replaceState(null, '', `${window.location.pathname}${q.size ? `?${q}` : ''}`)
+      const t = setTimeout(() => setZoom(null), 3000)
+      return () => clearTimeout(t)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   // Coming back: today's star travels from its place in her sky to "now" on the arc
   useLayoutEffect(() => {
     if (zoom !== 'in') return
@@ -103,7 +115,7 @@ export function CurrentView({ onSky }) {
         <Seg value={theme} onChange={setTheme} options={[['nursery', 'DS1'], ['confetti', 'DS2']]} />
       </div>
 
-      <div className={`cv-screen ${night ? 'is-night' : ''} ${page === 'galaxy' && !night ? 'is-galaxy' : ''} ${zoom === 'out' ? 'is-forming' : zoom === 'in' ? 'is-unforming' : ''}`} role="region" aria-label="Bedside display"
+      <div className={`cv-screen ${night ? 'is-night' : ''} ${(page === 'galaxy' || page === 'discharge') && !night ? 'is-galaxy' : ''} ${zoom === 'out' ? 'is-forming' : zoom === 'in' ? 'is-unforming' : ''}`} role="region" aria-label="Bedside display"
         style={form ? { '--end': `${form.end}s` } : undefined}
         onPointerMove={(e) => { // the home sky's depth layers lean a little toward the pointer
           const r = e.currentTarget.getBoundingClientRect()
@@ -112,27 +124,24 @@ export function CurrentView({ onSky }) {
         }}>
         {page === 'home' && !night && <SkyDepth theme={theme} />}
         {zoom && page === 'home' && !night && <FormingOverlay theme={theme} mode={zoom} {...(zoom === 'out' ? form : {})} onSkip={zoom === 'out' ? toSky : undefined} />}
-        {page === 'galaxy' && !night && <Galaxy theme={theme} onBack={() => { setSkyExit(0); setChapter('day'); zoomIn() }} exit={skyExit} />}
+        {page === 'galaxy' && !night && <Galaxy theme={theme} onBack={() => { setSkyExit(0); setChapter('day'); zoomIn() }} onDischarge={() => setPage('discharge')} exit={skyExit} />}
+        {page === 'discharge' && !night && <Discharge theme={theme} onBack={() => setPage('galaxy')} />}
         <header className="cv-top" hidden={comfort}>
           <span className="cv-top-left">
             {onSub && page !== 'ahead' && <button type="button" className="cv-back" onClick={() => setPage('home')}>‹ Back</button>}
-            {first ? 'Mila · Day 1' : ending ? `Mila · Day ${ending === 'home' ? 98 : 41}` : page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? <><button type="button" className="cv-name" onClick={() => setAbout(true)} aria-label="Mila: who she is">Mila</button> · Day {today.day}</> : null}
+            {first ? 'Mila · Day 1' : comfort ? 'Mila · Day 41' : page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? <><button type="button" className="cv-name" onClick={() => setAbout(true)} aria-label="Mila: who she is">Mila</button> · Day {today.day}</> : null}
           </span>
-          <span className="cv-clock">{first ? (chapter === 'born' ? '4:20 a.m.' : '5:10 a.m.') : ending ? (ending === 'home' ? '10:30 a.m.' : '') : night ? today.clock.night : today.clock.label}</span>
+          <span className="cv-clock">{first ? (chapter === 'born' ? '4:20 a.m.' : '5:10 a.m.') : comfort ? '' : night ? today.clock.night : today.clock.label}</span>
         </header>
 
-        {comfort && memory
+        {(page === 'galaxy' || page === 'discharge') && !night
+          ? null
+          : comfort && memory
           ? <LifeSky key="map" theme={theme} life="not" mode="map" />
-          : chapter === 'home' && memory && !night
-          ? <LifeSky key="walk" theme={theme} life="home" mode="walk" />
           : comfort
           ? <Comfort theme={theme} dark={dark} onWake={() => setDark(false)} />
-          : ending && !night
-          ? <Ending ending={ending} theme={theme} />
           : first
           ? <FirstDay stage={fstage} theme={theme} walk={walk} setWalk={setWalk} />
-          : page === 'galaxy' && !night
-          ? null
           : onSub && page === 'ahead'
           ? <Ahead kind={kind} />
           : onSub && page === 'progress'
@@ -147,13 +156,6 @@ export function CurrentView({ onSky }) {
             <div className="cv-actions-left">
               <button type="button" className="cv-btn is-quiet" onClick={() => setMemory(true)}><span className="cv-today-icon" aria-hidden="true">✦</span>Her sky</button>
               <button type="button" className="cv-btn is-quiet" onClick={() => setDark(true)}>Turn off the screen</button>
-            </div>
-          )}
-          {ending === 'home' && !night && (
-            <div className="cv-actions-left">
-              {memory
-                ? <button type="button" className="cv-btn is-quiet cv-today-btn" onClick={() => setMemory(false)}><span className="cv-today-icon" aria-hidden="true">‹</span>Close</button>
-                : <button type="button" className="cv-btn is-quiet" onClick={() => setMemory(true)}><span className="cv-today-icon" aria-hidden="true">✦</span>Her story</button>}
             </div>
           )}
           {comfort && memory && (
@@ -189,10 +191,10 @@ export function CurrentView({ onSky }) {
               </button>
             </div>
           )}
-          {/* her sky is for looking back; asking for her nurse belongs with today */}
-          {page !== 'galaxy' && !(comfort && dark) && (
+          {/* her sky is for looking back; contacting her care team belongs with today */}
+          {page !== 'galaxy' && page !== 'discharge' && !(comfort && dark) && (
             <button type="button" className="cv-btn is-call" onClick={() => setTeam(true)}>
-              <span className="cv-btn-icon" aria-hidden="true">☎</span>Ask for her nurse
+              <span className="cv-btn-icon" aria-hidden="true">☎</span>Contact care team
             </button>
           )}
         </footer>
@@ -477,10 +479,15 @@ function routineSoFar() {
   ].filter(([c]) => c > 0).map(([c, one, many]) => `${c} ${c === 1 ? one : many}`).join(' · ')
 }
 
-/* ---------------- Ask for her nurse ---------------- */
+/* ---------------- Contact care team ---------------- */
 
-// Parents see who's caring for her, and ask for help in one place. The request goes to her nurse;
-// the charge nurse covers if she's busy. Urgent help stays with the nurse call button by her bed.
+// Gentle starting points for the note. A parent can tap one, write their own, or send nothing at all.
+const helpPrompts = [
+  'Could you come by when you have a moment?',
+  'I’d like help holding her.',
+  'I have a question about today.',
+]
+
 // Who she is, behind her name: her as a person, her age two ways, and what she can sense this week.
 function AboutSheet({ onClose }) {
   const a = today.about
@@ -509,32 +516,70 @@ function AboutSheet({ onClose }) {
   )
 }
 
+// Parents see who's caring for her, and reach out in one place. The request goes to her nurse
+// (the charge nurse covers if she's busy), with an optional note. Urgent help stays with the
+// nurse call button by her bed. Steps: team → note → sent.
 function TeamSheet({ onClose }) {
-  const [asked, setAsked] = useState(false)
+  const nurse = today.team.find((p) => p.primary) ?? today.team[0]
+  const [step, setStep] = useState('team')
+  const [note, setNote] = useState('')
+  const title = step === 'team' ? 'Her team right now' : step === 'note' ? `Contact ${nurse.name}` : 'Sent'
   return (
     <div className="cv-scrim" onClick={onClose}>
-      <div className="cv-sheet" role="dialog" aria-label="Her team right now" onClick={(e) => e.stopPropagation()}>
+      <div className="cv-sheet" role="dialog" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <div className="cv-sheet-head">
-          <h3>Her team right now</h3>
-          <button type="button" className="cv-close" onClick={onClose}>Close</button>
+          <h3>{title}</h3>
+          <button type="button" className="cv-close" onClick={onClose}>{step === 'sent' ? 'Done' : 'Close'}</button>
         </div>
-        <ul className="cv-team">
-          {today.team.map((p) => (
-            <li key={p.name} className={p.primary ? 'is-primary' : ''}>
-              <span className="cv-avatar">{p.initials}</span>
-              <span className="cv-who"><b>{p.name}</b><span>{p.role}</span></span>
-            </li>
-          ))}
-        </ul>
-        {asked ? (
-          <div className="cv-asked">
-            <p className="cv-sheet-lead">Priya knows you&apos;d like help.</p>
-            <p>She&apos;ll come by as soon as she can. If she&apos;s with another baby, the charge nurse will come instead.</p>
-          </div>
-        ) : (
-          <button type="button" className="cv-help-btn" onClick={() => setAsked(true)}>Ask for help</button>
+
+        {step === 'team' && (
+          <>
+            <ul className="cv-team">
+              {today.team.map((p) => (
+                <li key={p.name} className={p.primary ? 'is-primary' : ''}>
+                  <span className="cv-avatar">{p.initials}</span>
+                  <span className="cv-who"><b>{p.name}</b><span>{p.role}</span></span>
+                </li>
+              ))}
+            </ul>
+            <button type="button" className="cv-help-btn" onClick={() => setStep('note')}>Contact {nurse.name}</button>
+            <p className="cv-muted">If it feels urgent, press the nurse call button by her bed.</p>
+          </>
         )}
-        <p className="cv-muted">If it feels urgent, press the nurse call button by her bed.</p>
+
+        {step === 'note' && (
+          <div className="cv-compose">
+            <div className="cv-compose-to">
+              <span className="cv-avatar">{nurse.initials}</span>
+              <span className="cv-who"><b>{nurse.name}</b><span>{nurse.role}</span></span>
+            </div>
+            <label className="cv-k" htmlFor="cv-note">Add a note, if you&apos;d like</label>
+            <textarea id="cv-note" className="cv-note" rows={3} value={note} onChange={(e) => setNote(e.target.value)}
+              placeholder={`Write to ${nurse.name}…`} />
+            <div className="cv-prompts">
+              {helpPrompts.map((p, i) => (
+                <button key={p} type="button" className="cv-pill cv-prompt" style={{ '--i': i }}
+                  aria-pressed={note === p} onClick={() => setNote(p)}>{p}</button>
+              ))}
+            </div>
+            <button type="button" className="cv-help-btn" onClick={() => setStep('sent')}>Ask for help</button>
+            <button type="button" className="cv-compose-back" onClick={() => setStep('team')}>‹ Back to her team</button>
+          </div>
+        )}
+
+        {step === 'sent' && (
+          <div className="cv-sent">
+            <div className="cv-asked">
+              <p className="cv-sheet-lead">{nurse.name} has been contacted.</p>
+              <p>She&apos;ll come by as soon as she can. If she&apos;s with another baby, the charge nurse will come instead.</p>
+              {note.trim() && <p className="cv-sent-note">“{note.trim()}”</p>}
+            </div>
+            <div className="cv-urgent" role="note">
+              <span className="cv-urgent-icon" aria-hidden="true">!</span>
+              <p>If this is an emergency, press the nurse call button by her bed.</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -5,5 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   // While prototyping, never let the browser reuse an old copy of a file, so a refresh always shows the latest
-  server: { headers: { 'Cache-Control': 'no-store' } },
+  // fixed port so the galaxy (port 3000) knows where her page lives
+  server: { port: 5174, strictPort: true, headers: { 'Cache-Control': 'no-store' } },
 })
