@@ -173,14 +173,15 @@ function confettiDay(d, x, y, s = 1) {
   const shape = points === 4 ? sparkle(x, y, r * 1.2, 0.28) : starN(x, y, r, points, points > 5 ? 0.52 : 0.46)
   return g + `<path d="${shape}" fill="${tint}" stroke="${tint}" stroke-width="${1.4 * s}" stroke-linejoin="round" opacity="${bright}" filter="url(#g-soft)"/>`
 }
-export const dayStar = (theme, d, x, y, s = 1) => {
-  if (stay.firsts[d.d] && d.d !== stay.today) {
+// done: her stay is whole (no day still forming), as when her sky is kept to remember her
+export const dayStar = (theme, d, x, y, s = 1, done = false) => {
+  if (stay.firsts[d.d] && (d.d !== stay.today || done)) {
     const i = FIRSTS.indexOf(d.d)
     return `<circle cx="${x}" cy="${y}" r="${24 * s}" fill="url(#${theme === 'confetti' ? 'g-butter' : 'g-cream'})" opacity=".55"/>` +
       (theme === 'confetti' ? planet(x, y, 11 * s, ['#3ecf7a', '#ff8fc8', '#7cc0ff'][i % 3], '#ffd23f', 'filter="url(#g-soft)"')
         : planet(x, y, 10 * s, ['#f6e7b8', '#c8b8ff', '#9ee6c4'][i % 3], '#ffb38a'))
   }
-  if (d.d === stay.today) return formingStar(theme, x, y, s)
+  if (d.d === stay.today && !done) return formingStar(theme, x, y, s)
   return theme === 'confetti' ? confettiDay(d, x, y, s) : nurseryDay(d, x, y, s)
 }
 

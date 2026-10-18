@@ -5,7 +5,8 @@ import { Scan } from '../components/Scan.jsx'
 import { SkyArc } from './SkyArc.jsx'
 import { HerModel } from './HerModel.jsx'
 import { FirstDay } from './FirstDay.jsx'
-import { Comfort, LifeSky } from './Ending.jsx'
+import { Comfort } from './Ending.jsx'
+import { Remembering } from './Remembering.jsx'
 import { Ahead } from './Ahead.jsx'
 import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen, todayFormsAt } from './Galaxy.jsx'
 import { Discharge } from './Discharge.jsx'
@@ -145,7 +146,7 @@ export function CurrentView({ onSky }) {
         {(page === 'galaxy' || page === 'discharge') && !night
           ? null
           : comfort && memory
-          ? <LifeSky key="map" theme={theme} life="not" mode="map" />
+          ? <Remembering key="rem" theme={theme} />
           : comfort
           ? <Comfort theme={theme} dark={dark} onWake={() => setDark(false)} />
           : first
