@@ -15,13 +15,13 @@ const W = 1000
 const H = 625
 const CX = 500
 const CY = 312
-const WEEKS = weekInfo.length
-const daysOf = (w) => stay.days.filter((d) => d.week === w)
+export const WEEKS = weekInfo.length
+export const daysOf = (w) => stay.days.filter((d) => d.week === w)
 
 /* ---------- Layout: a round galaxy of weeks ----------
    Each week is its own small constellation in its own patch of sky. The weeks wind outward around the
    center as her stay goes on (week 1 at the top, then clockwise), so a long stay keeps the round shape. */
-function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s) }
+export function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s) }
 const POS = (() => {
   const out = []
   for (let w = 1; w <= WEEKS; w++) {
@@ -50,7 +50,7 @@ const WEEK_AT = Array.from({ length: WEEKS }, (_, i) => {
   const pts = daysOf(i + 1).map((d) => POS[d.d - 1])
   return [pts.reduce((t, p) => t + p[0], 0) / pts.length, pts.reduce((t, p) => t + p[1], 0) / pts.length]
 })
-const pos = (d) => POS[d - 1]
+export const pos = (d) => POS[d - 1]
 
 /* ---------- Camera: each level is a view box; the subject sits left of the panel ---------- */
 function frameBox(points, pad) {
@@ -100,7 +100,7 @@ const dust = (seed, n, colors, op, x0 = 0, y0 = 0, w = W, h = H, size = 1) => {
 }
 const NTINTS_G = () => ['#FFDCB5', '#D9CEFF', '#BDEBD3', '#C4E0FF', '#FFC9D8', '#F3E3B5', '#B9B4E6', '#FFB38A'].map((c) =>
   `<radialGradient id="g-n${c.slice(1)}"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".3" stop-color="${c}" stop-opacity=".22"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`).join('')
-const DEFS = `<defs>
+export const DEFS = `<defs>
   <filter id="g-soft"><feTurbulence type="turbulence" baseFrequency=".05" numOctaves="1" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
  <filter id="g-cloud" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="34"/></filter>
   <filter id="g-blur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="60"/></filter>
@@ -140,7 +140,7 @@ function confettiDay(d, x, y, s = 1) {
   const shape = points === 4 ? sparkle(x, y, r * 1.2, 0.28) : starN(x, y, r, points, points > 5 ? 0.52 : 0.46)
   return g + `<path d="${shape}" fill="${tint}" stroke="${tint}" stroke-width="${1.4 * s}" stroke-linejoin="round" opacity="${bright}" filter="url(#g-soft)"/>`
 }
-const dayStar = (theme, d, x, y, s = 1) => {
+export const dayStar = (theme, d, x, y, s = 1) => {
   if (stay.firsts[d.d] && d.d !== stay.today) {
     const i = FIRSTS.indexOf(d.d)
     return `<circle cx="${x}" cy="${y}" r="${24 * s}" fill="url(#${theme === 'confetti' ? 'g-butter' : 'g-cream'})" opacity=".55"/>` +
@@ -465,7 +465,7 @@ function placeLabels() {
 const LABEL_AT = placeLabels()
 
 /* ---------- The galaxy ---------- */
-export function Galaxy({ theme, onBack, exit = 0 }) {
+export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   // it opens close on today's star (where the home screen left it) and pulls back to show its week
   const [view, setView] = useState({ level: 'galaxy' })
   const [story, setStory] = useState(true) // while her sky fades in around today's star
@@ -734,6 +734,9 @@ export function Galaxy({ theme, onBack, exit = 0 }) {
           <b>Mila&apos;s stars</b>
           <span>{stay.days.length} days · {WEEKS} weeks · each day a star · drag to look around, tap a week to look closer</span>
         </div>
+      )}
+      {view.level === 'galaxy' && !story && onDischarge && (
+        <button type="button" className="cv-btn is-quiet is-small cv-discharge-btn" onClick={onDischarge}>Time to discharge!</button>
       )}
       {view.level === 'week' && landed && <WeekPanel w={view.w} onDay={goDay} />}
       {view.level === 'day' && landed && <DayPanel day={day} sel={sel} onPick={setSel} />}

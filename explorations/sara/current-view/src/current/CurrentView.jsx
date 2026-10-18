@@ -5,6 +5,7 @@ import { SkyArc } from './SkyArc.jsx'
 import { HerModel } from './HerModel.jsx'
 import { Ahead } from './Ahead.jsx'
 import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen } from './Galaxy.jsx'
+import { Discharge } from './Discharge.jsx'
 import './current.css'
 
 // Bedside current view: Home C, minimal and low-light, read from the parent chair, in either of
@@ -16,14 +17,14 @@ import './current.css'
 export function CurrentView({ onSky }) {
   const kind = 'harder' // Mila is a complex baby: her day is shown as it really goes, setbacks included
   const [night, setNight] = useState(false)
-  const [page, setPage] = useState('home') // 'home' | 'ahead' | 'progress' | 'galaxy'
+  const [page, setPage] = useState('home') // 'home' | 'ahead' | 'progress' | 'galaxy' | 'discharge'
   const [cH, setCH] = useState(today.clock.h) // where today's star sits on Home C's arc
   // arriving from the galaxy (?from=galaxy): open mid zoom-in, as if we flew into today's star
   const [zoom, setZoom] = useState(() => (new URLSearchParams(window.location.search).get('from') === 'galaxy' ? 'in' : null)) // 'out' | 'in' while the sky is zooming
   const [theme, setTheme] = useState('nursery') // the two styles from the design board
   const [team, setTeam] = useState(false)
   const d = today[kind]
-  const onSub = page !== 'home' && page !== 'galaxy' && !night // a page with Back
+  const onSub = page !== 'home' && page !== 'galaxy' && page !== 'discharge' && !night // a page with Back
   const onC = !night && page === 'home'
   // Today becomes a star: the day retells itself. Its moments lift off the arc in order, each with a few
   // words, and drift to where her sky keeps today's star; the family moment joins last. Then her sky
@@ -91,7 +92,7 @@ export function CurrentView({ onSky }) {
         <Seg value={theme} onChange={setTheme} options={[['nursery', 'DS1'], ['confetti', 'DS2']]} />
       </div>
 
-      <div className={`cv-screen ${night ? 'is-night' : ''} ${page === 'galaxy' && !night ? 'is-galaxy' : ''} ${zoom === 'out' ? 'is-forming' : zoom === 'in' ? 'is-unforming' : ''}`} role="region" aria-label="Bedside display"
+      <div className={`cv-screen ${night ? 'is-night' : ''} ${(page === 'galaxy' || page === 'discharge') && !night ? 'is-galaxy' : ''} ${zoom === 'out' ? 'is-forming' : zoom === 'in' ? 'is-unforming' : ''}`} role="region" aria-label="Bedside display"
         style={form ? { '--end': `${form.end}s` } : undefined}
         onPointerMove={(e) => { // the home sky's depth layers lean a little toward the pointer
           const r = e.currentTarget.getBoundingClientRect()
@@ -100,7 +101,8 @@ export function CurrentView({ onSky }) {
         }}>
         {page === 'home' && !night && <SkyDepth theme={theme} />}
         {zoom && page === 'home' && !night && <FormingOverlay theme={theme} mode={zoom} {...(zoom === 'out' ? form : {})} onSkip={zoom === 'out' ? toSky : undefined} />}
-        {page === 'galaxy' && !night && <Galaxy theme={theme} onBack={() => { setSkyExit(0); zoomIn() }} exit={skyExit} />}
+        {page === 'galaxy' && !night && <Galaxy theme={theme} onBack={() => { setSkyExit(0); zoomIn() }} onDischarge={() => setPage('discharge')} exit={skyExit} />}
+        {page === 'discharge' && !night && <Discharge theme={theme} onBack={() => setPage('galaxy')} />}
         <header className="cv-top">
           <span className="cv-top-left">
             {onSub && page !== 'ahead' && <button type="button" className="cv-back" onClick={() => setPage('home')}>‹ Back</button>}
@@ -109,7 +111,7 @@ export function CurrentView({ onSky }) {
           <span className="cv-clock">{night ? today.clock.night : today.clock.label}</span>
         </header>
 
-        {page === 'galaxy' && !night
+        {(page === 'galaxy' || page === 'discharge') && !night
           ? null
           : onSub && page === 'ahead'
           ? <Ahead kind={kind} />
@@ -143,7 +145,7 @@ export function CurrentView({ onSky }) {
             </div>
           )}
           {/* her sky is for looking back; contacting her care team belongs with today */}
-          {page !== 'galaxy' && (
+          {page !== 'galaxy' && page !== 'discharge' && (
             <button type="button" className="cv-btn is-call" onClick={() => setTeam(true)}>
               <span className="cv-btn-icon" aria-hidden="true">☎</span>Contact care team
             </button>
