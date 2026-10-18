@@ -250,10 +250,12 @@ export const today = {
   },
   harder: {
     status: 'Resting on her CPAP mask, after a long night.',
+    // one line on the home screen: [words] in brackets are clinical terms, tappable for what they mean
+    statusOne: 'Resting on her [CPAP] mask after a long night',
     statusTerm: { word: 'CPAP', means: 'a small mask that gives steady air pressure so her lungs stay open' },
     changes: [
       {
-        t: '4:15 a.m.', h: 4.25, title: 'She is back on the CPAP mask', short: 'Back on her CPAP mask for a while', line: 'Her breathing needed more support in the night. She is resting now.',
+        t: '4:15 a.m.', h: 4.25, title: 'She is back on the CPAP mask', short: 'Back on her CPAP mask for a while', one: 'Back on her [CPAP] mask for more breathing support', line: 'Her breathing needed more support in the night. She is resting now.',
         plain: 'Her breathing needed more support overnight, so the team put the mask back on. She is resting now.',
         term: { word: 'CPAP', means: 'a small mask that gives steady air pressure so her lungs stay open' },
         by: 'Marcus, her night nurse', device: 'cpap',
@@ -261,7 +263,7 @@ export const today = {
     ],
     decisions: [
       {
-        t: '11:00 a.m.', h: 11, status: 'deciding', team: 'Breathing', short: 'A plan, still being made', line: 'Her breathing team is deciding when she can go back to her nasal cannula.',
+        t: '11:00 a.m.', h: 11, status: 'deciding', team: 'Breathing', short: 'A plan, still being made', one: 'Deciding when she can go back to her [nasal cannula]', line: 'Her breathing team is deciding when she can go back to her nasal cannula.',
         term: { word: 'Nasal cannula', means: 'soft prongs in her nose that give a gentle flow of air' },
         text: 'Her breathing team is still deciding what to try next.',
         source: 'From her breathing team',
@@ -270,14 +272,14 @@ export const today = {
     upcoming: [{ when: 'Tomorrow, 10 a.m.', short: 'Rounds with you', text: 'Her breathing team will talk it through with you at rounds.' }],
     waiting: [{ short: 'Eye exam', text: 'An eye exam to check how her eyes are growing.', note: 'Date not set yet' }],
     care: [
-      { h: 0, t: '12:00 a.m.', diaper: 'Wet diaper', sleep: 'Slept before and after', short: 'A midnight feed', line: 'A fresh diaper, then back to sleep.' },
-      { h: 3, t: '3:00 a.m.', diaper: 'Wet diaper', sleep: 'Unsettled, then slept', short: 'A restless night', line: 'A few brief dips in her oxygen, then she slept.', term: { word: 'Oxygen dips (desats)', means: 'her oxygen level dropping for a moment; her nurse watches closely and helps' } },
-      { h: 6, t: '6:00 a.m.', diaper: 'Wet diaper', sleep: 'Resting on CPAP', short: 'Her early feed', line: 'Resting with her CPAP mask on.' },
-      { h: 9, t: '9:00 a.m.', diaper: 'Wet and dirty diaper', sleep: 'Slept after', short: 'Her morning feed', line: 'Through her feeding tube, then a long nap.', term: { word: 'Feeding tube', means: 'a thin tube through her nose to her tummy that carries her milk' } },
-      { h: 12, t: '12:00 p.m.', diaper: 'Wet diaper', sleep: 'Resting since', short: 'Her noon feed', line: 'She has been resting since.' },
+      { h: 0, t: '12:00 a.m.', diaper: 'Wet diaper', sleep: 'Slept before and after', short: 'A midnight feed', one: 'A midnight feed, then back to sleep', line: 'A fresh diaper, then back to sleep.' },
+      { h: 3, t: '3:00 a.m.', diaper: 'Wet diaper', sleep: 'Unsettled, then slept', short: 'A restless night', one: 'A restless night, with a few [oxygen dips]', line: 'A few brief dips in her oxygen, then she slept.', term: { word: 'Oxygen dips (desats)', means: 'her oxygen level dropping for a moment; her nurse watches closely and helps' } },
+      { h: 6, t: '6:00 a.m.', diaper: 'Wet diaper', sleep: 'Resting on CPAP', short: 'Her early feed', one: 'Her early feed, resting on her [CPAP] mask', line: 'Resting with her CPAP mask on.' },
+      { h: 9, t: '9:00 a.m.', diaper: 'Wet and dirty diaper', sleep: 'Slept after', short: 'Her morning feed', one: 'Her morning feed through her [feeding tube], then a long nap', line: 'Through her feeding tube, then a long nap.', term: { word: 'Feeding tube', means: 'a thin tube through her nose to her tummy that carries her milk' } },
+      { h: 12, t: '12:00 p.m.', diaper: 'Wet diaper', sleep: 'Resting since', short: 'Her noon feed', one: 'Her noon feed, and resting since', line: 'She has been resting since.' },
     ],
     saved: [{ h: 5.2, t: '5:10 a.m.', text: 'Mom came in before her early feed', short: 'Mom came in before her early feed', line: 'Noted by Marcus, her night nurse.', from: 'Noted by Marcus, her night nurse' }],
-    firsts: [{ h: 9.4, t: '9:25 a.m.', short: 'Wore her own clothes for the first time', title: 'Her own clothes, for the first time', line: 'The soft sleepsuit you brought from home.', plain: 'Her nurse dressed her in the soft sleepsuit you brought from home.' }],
+    firsts: [{ h: 9.4, t: '9:25 a.m.', short: 'Wore her own clothes for the first time', one: 'Wore the soft sleepsuit you brought from home', title: 'Her own clothes, for the first time', line: 'The soft sleepsuit you brought from home.', plain: 'Her nurse dressed her in the soft sleepsuit you brought from home.' }],
     setup: {
       start: ['cannula', 'feeding', 'heart', 'temp', 'pulse'],
       changes: [{ h: 4.25, add: ['cpap'], remove: ['cannula'] }],

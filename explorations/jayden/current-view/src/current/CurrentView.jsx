@@ -1,5 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { days, today } from '../data/days.js'
+import { glossary } from '../data/glossary.js'
 import { Scan } from '../components/Scan.jsx'
 import { SkyArc } from './SkyArc.jsx'
 import { HerModel } from './HerModel.jsx'
@@ -131,7 +132,15 @@ export function CurrentView({ onSky }) {
             {onSub && page !== 'ahead' && <button type="button" className="cv-back" onClick={() => setPage('home')}>‹ Back</button>}
             {first ? 'Mila · Day 1' : comfort ? 'Mila · Day 41' : page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? <><button type="button" className="cv-name" onClick={() => setAbout(true)} aria-label="Mila: who she is">Mila</button> · Day {today.day}</> : null}
           </span>
-          <span className="cv-clock">{first ? (chapter === 'born' ? '4:20 a.m.' : '5:10 a.m.') : comfort ? '' : night ? today.clock.night : today.clock.label}</span>
+          <span className="cv-top-right">
+            <span className="cv-clock">{first ? (chapter === 'born' ? '4:20 a.m.' : '5:10 a.m.') : comfort ? '' : night ? today.clock.night : today.clock.label}</span>
+            {/* her sky is for looking back; contacting her care team belongs with today */}
+            {!comfort && page !== 'galaxy' && page !== 'discharge' && (
+              <button type="button" className="cv-btn is-call is-top" onClick={() => setTeam(true)}>
+                <span className="cv-btn-icon" aria-hidden="true">☎</span>Contact care team
+              </button>
+            )}
+          </span>
         </header>
 
         {(page === 'galaxy' || page === 'discharge') && !night
@@ -186,13 +195,18 @@ export function CurrentView({ onSky }) {
           )}
           {onC && (
             <div className="cv-actions-left">
-              <button type="button" className="cv-btn is-quiet cv-lookup-btn" onClick={zoomOut}>
+              <button type="button" className="cv-btn is-tertiary cv-lookup-btn" onClick={zoomOut}>
                 <LookUpIcon />Mila&apos;s stars
               </button>
             </div>
           )}
-          {/* her sky is for looking back; contacting her care team belongs with today */}
-          {page !== 'galaxy' && page !== 'discharge' && !(comfort && dark) && (
+          {onC && (
+            <button type="button" className="cv-btn is-primary cv-ahead-btn" onClick={() => setPage('ahead')}>
+              What&apos;s ahead<span aria-hidden="true">›</span>
+            </button>
+          )}
+          {/* with the screen almost gone, her care team stays down here, the one thing on it */}
+          {comfort && !dark && (
             <button type="button" className="cv-btn is-call" onClick={() => setTeam(true)}>
               <span className="cv-btn-icon" aria-hidden="true">☎</span>Contact care team
             </button>
@@ -336,6 +350,13 @@ function HomeC({ d, h, setH, zoom, theme, onAhead, onZoomOut }) {
   const current = marks.filter((m) => m.h <= h + 0.001).at(-1)
   const glow = Math.min(1, (marks.length + d.saved.length * 2) / 12)
   const wiredHere = !atNow && d.setup.changes.some((c) => Math.abs(c.h - h) < 0.01)
+  const one = atNow ? d.statusOne ?? d.status : current ? current.one ?? current.short : 'The start of her day'
+  const when = atNow ? <>Right now · Next feed <b>{d.next.t}</b></>
+    : !current ? hourLabel(h)
+    : current.kind === 'family' ? `${current.t} · ${current.from}`
+    : current.kind === 'decision' ? `${current.t} · ${current.team} team · ${current.status === 'decided' ? 'Decided' : 'Still deciding'}`
+    : current.kind === 'first' ? `${current.t} · A first`
+    : current.t
 
   return (
     // Pinching out over the sky (a trackpad pinch arrives as ctrl + wheel) opens her stars.
@@ -343,19 +364,68 @@ function HomeC({ d, h, setH, zoom, theme, onAhead, onZoomOut }) {
       <SkyArc h={h} nowH={nowH} marks={marks} later={later} glow={glow} onChange={setH} onFuture={onAhead} theme={theme} gather={zoom} />
       {/* One layout for every moment, always the same size: when, what she did, one line. Nothing jumps. */}
       {/* on a moment that changed what's on her, one tap shows her too, in the same space as the words */}
-      <div className={`cv-homec-words cv-cap ${wiredHere ? 'is-wired' : ''}`} aria-live="polite">
-        {wiredHere && <HerFigure d={d} h={h} />}
-        <div className="cv-cap-text">
-        <span className="cv-detail-k">{atNow ? 'Right now' : current ? current.t : hourLabel(h)}</span>
-        <p className="cv-cap-title">{atNow ? keepTimes(d.status) : current ? current.short : 'The start of her day'}</p>
-        <p className="cv-cap-line">
-          {atNow ? <>Next feed <b>{d.next.t}</b> · <span className="cv-you">{d.next.you}</span></> : current?.line ?? ''}
-        </p>
-        {/* the clinical word, when there is one, in plain English */}
-        <p className="cv-cap-term">{(() => { const t = atNow ? d.statusTerm : current?.term; return t ? <><b>{t.word}</b> · {t.means}</> : '' })()}</p>
-        </div>
+      {/* One line for every moment: when, then what happened, always on one line. A clinical word in it
+          can be tapped for what it means; on a moment that changed what's on her, she is there too. */}
+      <div className="cv-homec-words cv-cap" aria-live="polite">
+        <span className="cv-detail-k">{when}</span>
+        <OneLine key={one} text={one} figure={wiredHere ? <HerFigure d={d} h={h} /> : null} />
       </div>
     </div>
+  )
+}
+
+// Clinical words, in plain English. Glossary entries (Sara's) give the fuller explanation where they exist.
+const TERMS = {
+  cpap: { word: 'CPAP', g: 'CPAP mask', means: 'a small mask that gives steady air pressure so her lungs stay open' },
+  'nasal cannula': { word: 'Nasal cannula', g: 'Nasal cannula', means: 'soft prongs in her nose that give a gentle flow of air' },
+  'oxygen dips': { word: 'Oxygen dips', stands: 'Her team may call them desats (desaturations)', means: 'her oxygen level dropping for a moment; her nurse watches closely and helps' },
+  'feeding tube': { word: 'Feeding tube', g: 'Feeding tube', means: 'a thin tube through her nose to her tummy that carries her milk' },
+}
+
+// Her status on one line: shrinks a little to fit the width rather than wrapping. [Words] in brackets are
+// clinical terms: a tap opens what they mean in a small popover, with her 3D model when it shows the change.
+function OneLine({ text, figure }) {
+  const p = useRef(null)
+  const [open, setOpen] = useState(null)
+  useLayoutEffect(() => {
+    const el = p.current
+    if (!el) return
+    const fit = () => {
+      el.style.fontSize = ''
+      let fs = parseFloat(getComputedStyle(el).fontSize)
+      while (el.scrollWidth > el.clientWidth + 1 && fs > 16) { fs -= 1; el.style.fontSize = `${fs}px` }
+    }
+    fit()
+    window.addEventListener('resize', fit)
+    return () => window.removeEventListener('resize', fit)
+  }, [text])
+  useEffect(() => {
+    if (!open) return
+    const close = (e) => { if (!e.target.closest?.('.cv-pop, .cv-term-btn')) setOpen(null) }
+    const key = (e) => { if (e.key === 'Escape') setOpen(null) }
+    document.addEventListener('pointerdown', close)
+    document.addEventListener('keydown', key)
+    return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', key) }
+  }, [open])
+  const parts = text.split(/\[([^\]]+)\]/)
+  const t = open && TERMS[open.toLowerCase()]
+  const g = t?.g && glossary[t.g]
+  return (
+    <>
+      <p ref={p} className="cv-cap-title cv-one">
+        {parts.map((s, i) => (i % 2
+          ? <button key={i} type="button" className={`cv-term-btn ${open === s ? 'is-open' : ''}`} aria-expanded={open === s} onClick={() => setOpen(open === s ? null : s)}>{s}</button>
+          : <Fragment key={i}>{s}</Fragment>))}
+      </p>
+      {t && (
+        <div className="cv-pop" role="dialog" aria-label={`${t.word}: what it means`}>
+          {figure}
+          <p className="cv-pop-word">{t.word}</p>
+          {(g?.stands ?? t.stands) && <p className="cv-pop-stands">{g?.stands ?? t.stands}</p>}
+          <p className="cv-pop-means">{g?.body ?? `${t.means[0].toUpperCase()}${t.means.slice(1)}.`}</p>
+        </div>
+      )}
+    </>
   )
 }
 
