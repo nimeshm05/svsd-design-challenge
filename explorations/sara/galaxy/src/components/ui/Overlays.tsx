@@ -128,6 +128,25 @@ export function MotionFade() {
   );
 }
 
+/** Flying into today's star: the screen fades to black just before her page opens. */
+export function LeaveFade() {
+  const leaving = useStore((s) => s.leaving);
+  // coming back with the browser's Back button restores this page as it was; lift the black
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => e.persisted && useStore.getState().setLeaving(false);
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, []);
+  return (
+    <motion.div
+      className="absolute inset-0 z-50 bg-black"
+      style={{ pointerEvents: leaving ? "auto" : "none" }}
+      initial={false}
+      animate={{ opacity: leaving ? 1 : 0, transition: { duration: leaving ? 1.1 : 0.4, delay: leaving ? 0.15 : 0, ease: [0.55, 0, 0.75, 0.3] } }}
+    />
+  );
+}
+
 /** The facts, as a readable timeline. For screen readers and for parents who just want the list. */
 export function ListView() {
   const listView = useStore((s) => s.listView);

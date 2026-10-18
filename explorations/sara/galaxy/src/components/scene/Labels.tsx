@@ -55,7 +55,7 @@ export function Labels() {
   const days = useStore((s) => s.days);
   const recap = useStore((s) => s.recap.active);
   const listView = useStore((s) => s.listView);
-  const { goWeek, goDay, openMoment } = useStore.getState();
+  const { goWeek, goDay, openMoment, openTodayPage } = useStore.getState();
   if (listView) return null;
 
   const showGalaxy = level === "galaxy" && settled && !recap;
@@ -109,7 +109,8 @@ export function Labels() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    goDay(d.dayIndex);
+                    if (d.dayIndex === today) openTodayPage();
+                    else goDay(d.dayIndex);
                   }}
                   aria-label={`Day ${d.dayIndex}, ${dateLabel(d.date)}${d.first ? `, ${d.first}` : ""}. ${d.story}`}
                   style={{ position: "absolute", left: -24, top: -24, width: 48, height: 48, borderRadius: 24 }}

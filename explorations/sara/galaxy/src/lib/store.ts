@@ -1,6 +1,7 @@
 "use client";
 import { create } from "zustand";
 import { stay } from "./data";
+import { TODAY_PAGE_URL } from "./links";
 import type { Day, Moment } from "./types";
 
 export type Level = "galaxy" | "week" | "day";
@@ -24,10 +25,13 @@ type State = {
   lite: boolean;
   settled: boolean; // camera has arrived; UI may enter
   cine: boolean; // cinematic framing (recap)
+  leaving: boolean; // flying into today's star on the way to her page
 
   goGalaxy: () => void;
   goWeek: (w: number) => void;
   goDay: (d: number) => void;
+  openTodayPage: () => void;
+  setLeaving: (v: boolean) => void;
   up: () => void;
   openMoment: (m: Moment | null) => void;
   openTerm: (t: string | null) => void;
@@ -59,10 +63,22 @@ export const useStore = create<State>((set, get) => ({
   lite: false,
   settled: false,
   cine: false,
+  leaving: false,
 
   goGalaxy: () => set({ level: "galaxy", moment: null, settled: false }),
   goWeek: (w) => set({ level: "week", week: w, moment: null, settled: false }),
   goDay: (d) => set({ level: "day", day: d, week: Math.ceil(d / 7), moment: null, settled: false }),
+  openTodayPage: () => {
+    const { leaving, reducedMotion } = get();
+    if (leaving) return;
+    const url = `${TODAY_PAGE_URL}?from=galaxy`;
+    if (reducedMotion) return void (window.location.href = url);
+    // the camera dives into today's star while the screen fades to black, then her page zooms in from the sky
+    const d = stay.today.dayIndex;
+    set({ leaving: true, level: "day", day: d, week: Math.ceil(d / 7), moment: null, settled: false });
+    setTimeout(() => (window.location.href = url), 1300);
+  },
+  setLeaving: (v) => set({ leaving: v }),
   up: () => {
     const { level, moment } = get();
     if (moment) return set({ moment: null });

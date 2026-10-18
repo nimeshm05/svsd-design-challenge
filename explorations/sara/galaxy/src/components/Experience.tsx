@@ -8,7 +8,7 @@ import { screenToWorld, worldToScreen } from "./scene/refs";
 import { galaxies } from "@/lib/galaxies";
 import { momentOffset } from "@/lib/layout";
 import { Header } from "./ui/Header";
-import { ListView, MotionFade, Recap, Toast } from "./ui/Overlays";
+import { LeaveFade, ListView, MotionFade, Recap, Toast } from "./ui/Overlays";
 import { LevelPanels } from "./ui/Panels";
 import { LegendSheet, MomentSheet, TermSheet } from "./ui/Sheets";
 
@@ -128,6 +128,12 @@ export function Experience() {
       const w = screenToWorld(cx - r.left, cy - r.top, r.width, r.height);
       if (!w) return;
       if (s.level === "galaxy") {
+        // today's star sits outside the galaxies; tapping it opens her page
+        const t = worldToScreen(posOf(stay.today.dayIndex), r.width, r.height);
+        if (t && Math.hypot(t[0] - (cx - r.left), t[1] - (cy - r.top)) < 36) {
+          s.openTodayPage();
+          return;
+        }
         // the galaxy whose disk is under the finger (projected, so depth doesn't matter)
         let best = 0, bd = Infinity;
         galaxies.forEach((g) => {
@@ -155,7 +161,8 @@ export function Experience() {
             best = i + 1;
           }
         });
-        if (best) s.goDay(best);
+        if (best === stay.today.dayIndex) s.openTodayPage();
+        else if (best) s.goDay(best);
       }
     };
     const step = (dir: 1 | -1) => {
@@ -251,6 +258,7 @@ export function Experience() {
     <div ref={wrap} className="fixed inset-0 overflow-hidden bg-space" style={{ touchAction: "none" }}>
       <Scene />
       <MotionFade />
+      <LeaveFade />
       <Header onReplayRecap={runRecap} onLegend={() => setLegend(true)} />
       <LevelPanels />
       <ListView />
