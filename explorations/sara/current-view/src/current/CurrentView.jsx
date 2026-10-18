@@ -4,7 +4,7 @@ import { Scan } from '../components/Scan.jsx'
 import { SkyArc } from './SkyArc.jsx'
 import { HerModel } from './HerModel.jsx'
 import { Ahead } from './Ahead.jsx'
-import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen } from './Galaxy.jsx'
+import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen, todayFormsAt } from './Galaxy.jsx'
 import { Discharge } from './Discharge.jsx'
 import './current.css'
 
@@ -39,7 +39,7 @@ export function CurrentView({ onSky }) {
     const el = document.querySelector('.cv-screen')
     if (!el) return
     const r = el.getBoundingClientRect(), ox = r.left + el.clientLeft, oy = r.top + el.clientTop
-    const target = todayOnScreen(el.clientWidth, el.clientHeight)
+    const target = todayFormsAt(el.clientWidth, el.clientHeight)
     const marks = [...el.querySelectorAll('.cv-arc.is-arc .cv-arc-mark[data-label]')]
     // every moment, the family's too, in the order it happened; each lifts off as its turn comes
     const lifts = [

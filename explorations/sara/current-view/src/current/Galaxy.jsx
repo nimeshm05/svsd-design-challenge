@@ -18,18 +18,22 @@ const CY = 312
 export const WEEKS = weekInfo.length
 export const daysOf = (w) => stay.days.filter((d) => d.week === w)
 
-/* ---------- Layout: a round galaxy of weeks ----------
-   Each week is its own small constellation in its own patch of sky. The weeks wind outward around the
-   center as her stay goes on (week 1 at the top, then clockwise), so a long stay keeps the round shape. */
+/* ---------- Layout: her weeks in a loose zigzag ----------
+   Each week is its own small constellation in its own patch of sky, set left to right along her stay,
+   alternating high and low (week 1 high, week 2 low, …). Each week sits a little off its mark, seeded by
+   its number, so the path feels drawn by hand and never moves between renders. A longer stay spaces the
+   weeks out along the same line (the sky grows, and the camera frames all of it). */
 export function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s) }
+const PATH = { from: [215, 330], to: [805, 330], minStep: 190, zig: 78, jitter: 22, gap: 70 }
+const DIR = Math.atan2(PATH.to[1] - PATH.from[1], PATH.to[0] - PATH.from[0])
+const U = [Math.cos(DIR), Math.sin(DIR)], N = [U[1], -U[0]] // along her stay, and across it (toward upper left)
 const POS = (() => {
-  const out = []
-  for (let w = 1; w <= WEEKS; w++) {
-    const days = daysOf(w), a = -Math.PI / 2 + (w - 1) * 1.75, r = 120 + (w - 1) * 32
-    const c = [CX + Math.cos(a) * r, CY + Math.sin(a) * r * 0.9]
-    let heading = a + Math.PI / 2 + (hash(w) - 0.5) * 0.8
+  // each week's shape: a gentle, curling walk along the path, never too close to a star already placed
+  const shapes = Array.from({ length: WEEKS }, (_, i) => {
+    const w = i + 1, days = daysOf(w)
+    let heading = DIR + (hash(w) - 0.5) * 0.8
     const pts = [[0, 0]]
-    for (let k = 1; k < days.length; k++) { // a gentle, curling walk, never too close to a star already placed
+    for (let k = 1; k < days.length; k++) {
       const d = days[k].d, prev = pts[k - 1]
       let best = null
       for (let t = 0; t < 14 && !best; t++) {
@@ -40,10 +44,38 @@ const POS = (() => {
       pts.push(best ?? [prev[0] + Math.cos(heading) * 32, prev[1] + Math.sin(heading) * 32])
     }
     const mx = pts.reduce((t, p) => t + p[0], 0) / pts.length, my = pts.reduce((t, p) => t + p[1], 0) / pts.length
-    pts.forEach((p) => out.push([c[0] + p[0] - mx, c[1] + p[1] - my]))
-  }
-  return out
+    return pts.map((p) => [p[0] - mx, p[1] - my])
+  })
+  // where each week sits: evenly along the line, nudged along and across it by its own seed
+  const mid = [(PATH.from[0] + PATH.to[0]) / 2, (PATH.from[1] + PATH.to[1]) / 2]
+  const span = Math.hypot(PATH.to[0] - PATH.from[0], PATH.to[1] - PATH.from[1])
+  const lay = (step) => shapes.map((pts, i) => {
+    const w = i + 1
+    const along = (i - (WEEKS - 1) / 2) * step + (hash(w * 7 + 2) - 0.5) * 24
+    // a zigzag: week 1 high, week 2 low, week 3 high… each a little off its mark
+    const across = (i % 2 ? -1 : 1) * PATH.zig + (hash(w * 13 + 5) - 0.5) * 2 * PATH.jitter
+    const c = [mid[0] + U[0] * along + N[0] * across, mid[1] + U[1] * along + N[1] * across]
+    return pts.map((p) => [c[0] + p[0], c[1] + p[1]])
+  })
+  // weeks never touch: if any two come too close, space the whole path out a little more
+  const apart = (weeks) => weeks.every((a, i) => weeks.slice(i + 1).every((b) => a.every((p) => b.every((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) >= PATH.gap))))
+  let step = Math.max(PATH.minStep, WEEKS > 1 ? span / (WEEKS - 1) : 0), weeks = lay(step)
+  for (let k = 0; k < 40 && !apart(weeks); k++) weeks = lay((step += 8))
+  return weeks.flat()
 })()
+// her whole sky (at least the screen's own drawing space), with room around the outermost stars
+const SKY = [
+  Math.min(0, ...POS.map((p) => p[0] - 50)), Math.min(0, ...POS.map((p) => p[1] - 50)),
+  Math.max(W, ...POS.map((p) => p[0] + 50)), Math.max(H, ...POS.map((p) => p[1] + 50)),
+]
+// The view of her whole sky on a screen of this shape. The art fills the screen and crops ("slice"), so on
+// a narrower or wider screen the view widens until every constellation shows. On the bedside screen it's
+// exactly the drawing space, so the way in from today (and back) lines up as before.
+function skyBox(cw = W, ch = H) {
+  const a = cw / ch, sw = SKY[2] - SKY[0], sh = SKY[3] - SKY[1]
+  const vw = Math.max(sw, sh * (W / H), (sw * W) / (a * H), sh * a), vh = vw * (H / W)
+  return [(SKY[0] + SKY[2]) / 2 - vw / 2, (SKY[1] + SKY[3]) / 2 - vh / 2, vw, vh]
+}
 // each star sits at its own depth, so stars slide past each other as the camera moves
 const DEPTH = stay.days.map((d) => (hash(d.d * 7 + 1) - 0.5) * 0.05) // kept shallow so a constellation holds together
 const WEEK_AT = Array.from({ length: WEEKS }, (_, i) => {
@@ -60,11 +92,12 @@ function frameBox(points, pad) {
   const vw = Math.max(440, bw / 0.46, (bh / 0.72) * (W / H)), vh = vw * (H / W) // never closer than about 2×
   return [cx - vw * 0.28, cy - vh / 2, vw, vh]
 }
-function boxFor(view) {
+function boxFor(view, size) {
   if (view.level === 'today') return [0, 0, W, H]
+  if (view.level === 'galaxy') return skyBox(size[0], size[1])
   if (view.level === 'week') return frameBox(daysOf(view.w).map((d) => pos(d.d)), 60)
   if (view.level === 'day') { const [x, y] = pos(view.d); const vw = 150, vh = vw * (H / W); return [x - vw * 0.32, y - vh / 2, vw, vh] }
-  return [0, 0, W, H]
+  return skyBox(size[0], size[1])
 }
 const ease = (t) => 1 - Math.pow(1 - t, 3)
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
@@ -186,7 +219,10 @@ function drawStay(theme) {
   b += `<line class="cv-gpending" stroke="${confetti ? '#7cc0ff' : '#f3e3b5'}" stroke-width="${confetti ? 3 : 1.2}" stroke-dasharray="${confetti ? '2 9' : '3 6'}" stroke-linecap="round" opacity="${confetti ? 0.55 : 0.35}"/>`
   stay.days.forEach((d) => {
     const [x, y] = pos(d.d)
-    b += `<g class="cv-gstar${d.d === stay.today ? ' is-today' : ''}" data-d="${d.d}"><g class="cv-float" style="--fx:${((hash(d.d + 3) - 0.5) * 5).toFixed(1)}px;--fy:${(-2 - hash(d.d + 4) * 3).toFixed(1)}px;animation-duration:${(6 + hash(d.d + 2) * 4).toFixed(1)}s;animation-delay:-${(hash(d.d) * 9).toFixed(1)}s">${dayStar(theme, d, x, y)}</g></g>`
+    const star = `<g class="cv-float" style="--fx:${((hash(d.d + 3) - 0.5) * 5).toFixed(1)}px;--fy:${(-2 - hash(d.d + 4) * 3).toFixed(1)}px;animation-duration:${(6 + hash(d.d + 2) * 4).toFixed(1)}s;animation-delay:-${(hash(d.d) * 9).toFixed(1)}s">${dayStar(theme, d, x, y)}</g>`
+    // today's star arrives from where it formed
+    b += `<g class="cv-gstar${d.d === stay.today ? ' is-today' : ''}" data-d="${d.d}">${d.d === stay.today
+      ? `<g class="cv-garrive" style="--ax:${(FORM_AT[0] - x).toFixed(1)}px;--ay:${(FORM_AT[1] - y).toFixed(1)}px">${star}</g>` : star}</g>`
   })
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${DEFS}${b}</svg>`
 }
@@ -299,17 +335,20 @@ function DayScene({ theme, day, sel, onPick }) {
   )
 }
 
-export function todayOnScreen(cw, ch) {
-  const [x, y] = pos(stay.today), s = Math.max(cw / W, ch / H)
-  return [(cw - W * s) / 2 + x * s, (ch - H * s) / 2 + y * s]
-}
+// Today's star forms in the middle of the screen, a little high so it has room above the caption;
+// only when her sky opens does it travel to its own place.
+const FORM_AT = [W / 2, H / 2 - 48]
+const onScreen = ([x, y], cw, ch) => { const s = Math.max(cw / W, ch / H); return [(cw - W * s) / 2 + x * s, (ch - H * s) / 2 + y * s] }
+export const todayFormsAt = (cw, ch) => onScreen(FORM_AT, cw, ch)
+export const todayOnScreen = (cw, ch) => onScreen(pos(stay.today), cw, ch)
 
 /* ---------- The day retells itself (home → her sky, and back) ----------
    Each of today's moments lifts off the arc in the order it happened, says its few words, and drifts
    into today's star, which grows a little with each. The family moment joins last, rising from below,
    where the parents sit. The star is drawn in the sky's own space, exactly where her sky keeps it. */
 export function FormingOverlay({ theme, mode, lifts = [], target = [0, 0], end = 3, onSkip }) {
-  const [x, y] = pos(stay.today)
+  // forming, the star sits in the middle, a little high; coming back it starts in her sky
+  const [x, y] = mode === 'out' ? FORM_AT : pos(stay.today)
   const html = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${DEFS}` +
     `<g class="cv-form-star">${formingStar(theme, x, y)}</g></svg>`
   return (
@@ -402,12 +441,50 @@ function WeekPanel({ w, onDay }) {
   )
 }
 
+// The day's few things to know, numbered as on the day page. A thing with a time opens in place.
+function DayThings({ things }) {
+  const [open, setOpen] = useState(null)
+  const [noImg, setNoImg] = useState(false)
+  return (
+    <section className="cv-gthings" aria-label="3 things to know today">
+      <span className="cv-gpanel-k">3 things to know today</span>
+      <ol>
+        {things.map((x, i) => (
+          <li key={x.title}>
+            <span className="cv-gthings-num">{i + 1}</span>
+            <div className="cv-gthings-text">
+              <b>{x.title}</b>
+              {x.text && <span>{x.text}</span>}
+              {x.detail && (
+                <button type="button" className="cv-gthings-at" aria-expanded={open === i} aria-controls={`cv-gthing-${i}`}
+                  onClick={() => setOpen(open === i ? null : i)}>{x.t}</button>
+              )}
+              {x.detail && open === i && (
+                <div className="cv-gmoment cv-gthings-detail" id={`cv-gthing-${i}`}>
+                  <b>{x.detail.title}</b>
+                  <p>{x.detail.text}</p>
+                  <figure className="cv-gthings-img">
+                    {noImg ? <figcaption>{x.detail.alt}</figcaption>
+                      : <img src={x.detail.img} alt={x.detail.alt} onError={() => setNoImg(true)} />}
+                  </figure>
+                  <button type="button" className="cv-gmoment-close" onClick={() => setOpen(null)}>Close</button>
+                </div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
 function DayPanel({ day, sel, onPick }) {
   const m = sel != null ? day.moments[sel] : null
   return (
     <aside className="cv-gpanel" aria-label={`Day ${day.d}`}>
       <span className="cv-gpanel-k">{day.isToday ? 'Today' : `Day ${day.d}`} · Week {day.week}</span>
       <h3 className="cv-gpanel-title">{day.first ?? (day.isToday ? `Day ${day.d}` : `Day ${day.d}`)}</h3>
+      {day.things && <DayThings key={day.d} things={day.things} />}
       <p className="cv-gpanel-text">{day.story}</p>
       <dl className="cv-gpanel-facts">
         <div><dt>Breathing help</dt><dd>{day.supportLabel}</dd></div>
@@ -436,31 +513,30 @@ function DayPanel({ day, sel, onPick }) {
 }
 
 /* ---------- Labels: placed once, clear of every star and of the screen's own buttons ---------- */
-const KEEP_CLEAR = [[0, 0, 390, 130]] // the title
+const KEEP_CLEAR = [[0, 0, 390, 130], [W - 200, 0, W, 70], [0, H - 90, 170, H]] // the title, "Time to discharge!", "Today"
 function placeLabels() {
   const placed = []
   const free = (cx, cy, hw, hh) =>
-    cx - hw > 10 && cx + hw < W - 10 && cy - hh > 10 && cy + hh < H - 10 &&
+    cx - hw > SKY[0] + 10 && cx + hw < SKY[2] - 10 && cy - hh > SKY[1] + 10 && cy + hh < SKY[3] - 10 &&
     !POS.some(([px, py]) => Math.hypot(Math.max(Math.abs(px - cx) - hw, 0), Math.max(Math.abs(py - cy) - hh, 0)) < 16) &&
     ![...KEEP_CLEAR, ...placed].some(([x0, y0, x1, y1]) => cx + hw > x0 && cx - hw < x1 && cy + hh > y0 && cy - hh < y1)
-  const place = ([sx, sy], hw, hh) => {
-    const out = Math.atan2(sy - CY, sx - CX)
+  const place = ([sx, sy], hw, hh, out = Math.atan2(sy - CY, sx - CX)) => {
     for (let k = 0; k < 300; k += 4) {
-      for (const da of [0, 0.4, -0.4, 0.8, -0.8]) {
+      for (const da of [0, 0.4, -0.4, 0.8, -0.8, 1.2, -1.2]) {
         const cx = sx + Math.cos(out + da) * k, cy = sy + Math.sin(out + da) * k
         if (free(cx, cy, hw, hh)) { placed.push([cx - hw - 6, cy - hh - 6, cx + hw + 6, cy + hh + 6]); return [cx, cy] }
       }
     }
     return [sx, sy + 30]
   }
+  // week names sit beside the path, on alternating sides (above it, then below), so they read in order
+  const across = Math.atan2(N[1], N[0])
   const weeks = Array.from({ length: WEEKS }, (_, i) => {
     const pts = daysOf(i + 1).map((d) => pos(d.d))
-    return place([pts.reduce((t, p) => t + p[0], 0) / pts.length, pts.reduce((t, p) => t + p[1], 0) / pts.length], 66, 22)
+    return place([pts.reduce((t, p) => t + p[0], 0) / pts.length, pts.reduce((t, p) => t + p[1], 0) / pts.length], 66, 22, across + (i % 2 ? Math.PI : 0))
   })
   const today = place(pos(stay.today), 34, 13)
-  // firsts (the planets) are named too, close under their planet
-  const firsts = FIRSTS.filter((d) => d !== stay.today).map((d) => [d, place([pos(d)[0], pos(d)[1] + 26], stay.firsts[d].length * 3.3 + 8, 9)])
-  return { weeks, today, firsts }
+  return { weeks, today }
 }
 const LABEL_AT = placeLabels()
 
@@ -474,6 +550,9 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   const [sel, setSel] = useState(null)
   const [, setTick] = useState(0) // re-places labels while you drag
   const [fly, setFly] = useState(0)
+  const [info, setInfo] = useState(false) // "How to navigate", opened from ⓘ by the title
+  const infoBtn = useRef(null)
+  const infoBox = useRef(null)
   const host = useRef(null)
   const box = useRef([0, 0, W, H])
   const sizeRef = useRef([W, H])
@@ -505,7 +584,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   }
 
   // fly between levels
-  const target = boxFor(view)
+  const target = boxFor(view, size)
   const rest_ = useRef(target) // where the camera rests for this level; stars line up exactly there
   useLayoutEffect(() => {
     rest_.current = target
@@ -530,7 +609,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
     const done = setTimeout(() => { cancelAnimationFrame(raf); applyBox(to); arrive() }, dur + 150)
     return () => { cancelAnimationFrame(raf); clearTimeout(done) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view.level, view.w, view.d, art, layers, fly])
+  }, [view.level, view.w, view.d, art, layers, fly, target[0], target[1], target[2]])
 
   useEffect(() => { const t = setTimeout(() => setStory(false), 2200); return () => clearTimeout(t) }, [])
   // "Today" (bottom left, in the screen's footer) takes her back from any level
@@ -551,7 +630,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   }
   // keep some of her sky on screen however far you drag
   const clampBox = (b) => {
-    const cx = Math.min(W + 60, Math.max(-60, b[0] + b[2] / 2)), cy = Math.min(H + 60, Math.max(-60, b[1] + b[3] / 2))
+    const cx = Math.min(SKY[2] + 60, Math.max(SKY[0] - 60, b[0] + b[2] / 2)), cy = Math.min(SKY[3] + 60, Math.max(SKY[1] - 60, b[1] + b[3] / 2))
     return [cx - b[2] / 2, cy - b[3] / 2, b[2], b[3]]
   }
 
@@ -564,6 +643,10 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   const leave = () => { setLeaving(true); setTimeout(onBack, 1000) }
   const goToday = () => { setSel(null); if (view.level === 'galaxy' && !panned) leave(); else setView({ level: 'today' }) }
   const goDay = (d) => (d >= stay.today ? goToday() : (setSel(null), setView({ level: 'day', d: Math.max(1, d) })))
+  // the tip takes focus when it opens and hands it back to ⓘ when it closes
+  const closeInfo = () => { setInfo(false); infoBtn.current?.focus() }
+  useEffect(() => { if (info) infoBox.current?.focus() }, [info])
+  useEffect(() => { if (view.level !== 'galaxy' || panned) setInfo(false) }, [view.level, panned])
   const up = () => (view.level === 'day' ? goWeek(stay.days[view.d - 1].week) : view.level === 'week' ? goGalaxy() : view.level === 'galaxy' ? goToday() : null)
 
   // Drag to look around her sky (galaxy and week). On a day, swipe sideways for the day before or after.
@@ -571,7 +654,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   const justDragged = useRef(false)
   const onPointerDown = (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return
-    if (e.target.closest('.cv-gpanel, .cv-galaxy-nav')) return
+    if (e.target.closest('.cv-gpanel, .cv-galaxy-nav, .cv-ginfo, .cv-ginfo-btn')) return
     drag.current = { x: e.clientX, y: e.clientY, box: [...box.current], moved: false, id: e.pointerId }
     justDragged.current = false
   }
@@ -611,7 +694,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
       if (e.ctrlKey) {
         const r = el.getBoundingClientRect()
         const wx = b[0] + (e.clientX - r.left - (cw - b[2] * s) / 2) / s, wy = b[1] + (e.clientY - r.top - (ch - b[3] * s) / 2) / s
-        const vw = Math.min(1300, Math.max(220, b[2] * Math.exp(e.deltaY * 0.01))), k = vw / b[2]
+        const vw = Math.min(Math.max(1300, skyBox(cw, ch)[2] * 1.3), Math.max(220, b[2] * Math.exp(e.deltaY * 0.01))), k = vw / b[2]
         if (e.deltaY > 0 && view.level === 'week' && vw > target[2] * 1.3) { goGalaxy(); return }
         applyBox(clampBox([wx - (wx - b[0]) * k, wy - (wy - b[1]) * k, vw, vw * (H / W)]))
       } else applyBox(clampBox([b[0] + e.deltaX / s, b[1] + e.deltaY / s, b[2], b[3]]))
@@ -623,6 +706,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
 
   useEffect(() => {
     const onKey = (e) => {
+      if (info) { if (e.key === 'Escape') { e.preventDefault(); closeInfo() } return } // Esc closes the tip, not the sky
       if (e.key === 'Escape') { e.preventDefault(); up() }
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         const k = e.key === 'ArrowRight' ? 1 : -1
@@ -677,7 +761,8 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
 
       {/* Galaxy: each week named in plain words; every star opens its week */}
       {view.level === 'galaxy' && landed && !story && (
-        <div className="cv-glabels">
+        // drawn small (a phone), her sky keeps only the week names and today, so nothing crowds
+        <div className={`cv-glabels ${scaleOf(box.current) < 0.6 ? 'is-compact' : ''}`}>
           {Array.from({ length: WEEKS }, (_, i) => {
             const pts = daysOf(i + 1).map((d) => project(starAt(d.d, box.current, target)))
             const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1])
@@ -687,20 +772,16 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
           })}
           {stay.days.map((d) => {
             const [x, y] = project(starAt(d.d, box.current, target))
-            return <button key={d.d} type="button" className="cv-ghit" style={{ left: x, top: y }} aria-label={`Week ${d.week}, day ${d.d}`}
+            return <button key={d.d} type="button" className={`cv-ghit ${d.d === stay.today ? 'is-today' : ''}`} style={{ left: x, top: y }} aria-label={`Week ${d.week}, day ${d.d}`}
               onClick={() => (d.d === stay.today ? goDay(d.d) : goWeek(d.week))} />
           })}
           {LABEL_AT.weeks.map((p, i) => {
             const [x, y] = project(p)
             return (
               <button key={i} type="button" className="cv-gweek" style={{ left: x, top: y }} onClick={() => goWeek(i + 1)}>
-                <b>Week {i + 1}</b><span>{weekInfo[i].title}</span>
+                <b>Week {i + 1}</b><span>{weekInfo[i].caption}</span>
               </button>
             )
-          })}
-          {LABEL_AT.firsts.map(([d, p]) => {
-            const [x, y] = project(p)
-            return <button key={d} type="button" className="cv-gfirst" style={{ left: x, top: y }} onClick={() => goDay(d)}>{stay.firsts[d]}</button>
           })}
           {(() => {
             const [x, y] = project(LABEL_AT.today)
@@ -731,9 +812,33 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
 
       {view.level === 'galaxy' && !story && (
         <div className="cv-galaxy-title">
-          <b>Mila&apos;s stars</b>
-          <span>{stay.days.length} days · {WEEKS} weeks · each day a star · drag to look around, tap a week to look closer</span>
+          <div className="cv-galaxy-head">
+            <b>Mila&apos;s stars</b>
+            <button ref={infoBtn} type="button" className="cv-ginfo-btn" aria-label="How to navigate" aria-expanded={info} aria-controls="cv-ginfo"
+              onClick={() => (info ? closeInfo() : setInfo(true))}>
+              <span className="cv-btn-icon" aria-hidden="true">i</span>
+            </button>
+          </div>
+          <p className="cv-gsum">
+            <b>{stay.days.length}</b> {stay.days.length === 1 ? 'star' : 'stars'}, gathered into <b>{WEEKS}</b> {WEEKS === 1 ? 'constellation' : 'constellations'}
+          </p>
         </div>
+      )}
+      {view.level === 'galaxy' && !story && info && (
+        <>
+          <div className="cv-ginfo-scrim" onClick={closeInfo} aria-hidden="true" />
+          <div className="cv-sheet cv-ginfo" id="cv-ginfo" role="dialog" aria-label="How to navigate" ref={infoBox} tabIndex={-1}>
+            <div className="cv-sheet-head">
+              <h3>How to look around</h3>
+              <button type="button" className="cv-close" onClick={closeInfo}>Close</button>
+            </div>
+            <ul className="cv-help">
+              <li><b>Each day is a star.</b> Each week of her stay makes its own constellation.</li>
+              <li><b>Drag</b> to look around her sky. <b>Center</b> brings you back.</li>
+              <li><b>Tap a week</b> to look closer, then a day to see it.</li>
+            </ul>
+          </div>
+        </>
       )}
       {view.level === 'galaxy' && !story && onDischarge && (
         <button type="button" className="cv-btn is-quiet is-small cv-discharge-btn" onClick={onDischarge}>Time to discharge!</button>

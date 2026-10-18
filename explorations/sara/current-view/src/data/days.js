@@ -416,21 +416,33 @@ export const stay = {
 }
 
 // Weeks of her stay: a title, a short summary, and (when there was one) what was hard,
-// told plainly and quietly, as in Nimesh's week panel.
+// told plainly and quietly, as in Nimesh's week panel. `caption` is the few words under each week's
+// name in her sky, in a parent's gentle voice.
 export const weekInfo = [
-  { title: 'Hello, small one', summary: 'Mila arrived thirteen weeks early. She rested while machines did some of the work, you touched her hand on day 4, and on day 6 you held her for the first time.' },
-  { title: 'Finding a rhythm', summary: 'Her feeds grew bigger and steadier, and she slowly gained weight. On day 14 she had her first bottle of your milk.' },
-  { title: 'More help breathing', summary: 'For part of this week Mila needed more help with her breathing, and her team stayed close.',
+  { title: 'Hello, small one', caption: 'Hello, small one', summary: 'Mila arrived thirteen weeks early. She rested while machines did some of the work, you touched her hand on day 4, and on day 6 you held her for the first time.' },
+  { title: 'Finding a rhythm', caption: 'Getting to know you', summary: 'Her feeds grew bigger and steadier, and she slowly gained weight. On day 14 she had her first bottle of your milk.' },
+  { title: 'More help breathing', caption: 'Holding on together', summary: 'For part of this week Mila needed more help with her breathing, and her team stayed close.',
     hard: 'On day 17 her breathing needed more support overnight, so her team turned up her CPAP. By evening she was settled again. Her nurse can tell you what this means for her.' },
-  { title: 'This week', summary: 'Her breathing needed more help again in the night, and she wore her own clothes for the first time. This week is still forming.' },
+  { title: 'This week', caption: 'Right here beside you', summary: 'Her breathing needed more help again in the night, and she wore her own clothes for the first time. This week is still forming.' },
 ]
 
 const SUPPORT_LABEL = { ventilator: 'Ventilator', cpap: 'CPAP', 'high-flow': 'Nasal cannula' }
 const DAY_FIRSTS = {
   23: { h: 9.4, t: '9:25 a.m.', short: 'Wore her own clothes for the first time', title: 'Her own clothes, for the first time', line: 'The soft sleepsuit you brought from home.', plain: 'Her nurse dressed her in the soft sleepsuit you brought from home.' },
   4: { h: 11, title: 'First touch', plain: 'You touched her hand for the first time, through the incubator’s porthole.' },
-  6: { h: 13.2, title: 'First hold', plain: 'You held her for the first time. She stayed warm and calm on your chest.' },
+  6: { h: 14.25, title: 'First hold', plain: 'You held her for the first time. She stayed warm and calm on your chest.' },
   14: { h: 15.4, title: 'First bottle of your milk', plain: 'She tried her first bottle of your milk and took a little before resting.' },
+}
+// The few things a parent most needs to know about a day, in order. A thing can open to more:
+// `at` is the hour it happened, `detail` what her nurse noted, `img` a photo slot for it.
+const DAY_THINGS = {
+  6: [
+    { title: 'Her feeds grew a little', text: 'She now gets a little more of your milk through her feeding tube at each care time.' },
+    { title: 'You held her for the first time', at: 14.25,
+      detail: { title: 'Kangaroo hold, 45 min', text: 'She rested skin-to-skin on your chest, and her heart rate and breathing stayed steady the whole time.',
+        img: '/images/kangaroo-hold.jpg', alt: 'A mother in a NICU chair holding her tiny baby skin-to-skin on her chest in a kangaroo hold, a soft blanket over them both.' } },
+    { title: 'Steady on CPAP', text: 'Her gentle breathing help stayed the same, and her monitors were quiet for most of the day.' },
+  ],
 }
 const CALM_STORIES = ['A calm day. She slept well between care times.', 'She grew a little and rested well.', 'A quiet day of feeds and sleep.', 'She was settled and comfortable all day.']
 const fmt = (h) => {
@@ -470,5 +482,6 @@ export function dayDetail(d) {
     : d === 17 ? 'She needed more breathing help for a while, and settled by evening.'
     : d === 21 ? 'She moved to gentler breathing help.'
     : CALM_STORIES[d % CALM_STORIES.length]
-  return { ...day, isToday, nowH, first: DAY_FIRSTS[d]?.title, story, supportLabel: SUPPORT_LABEL[day.support], moments: m }
+  return { ...day, isToday, nowH, first: DAY_FIRSTS[d]?.title, story, supportLabel: SUPPORT_LABEL[day.support], moments: m,
+    things: DAY_THINGS[d]?.map((x) => (x.at != null ? { ...x, t: fmt(x.at) } : x)) }
 }
