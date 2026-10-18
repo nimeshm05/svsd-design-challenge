@@ -1461,3 +1461,4 @@
 /* the arc's own "What's ahead" label gives way to the button */
 .cv-arc-ahead-label:not(.is-past) { display: none; }
 .cv-page .cv-screen.is-night .cv-btn.is-call.is-top { color: #a3a9ad; border-color: #34393d; }
+.cv-one { font-size: clamp(20px, 2.6vw, 30px); }

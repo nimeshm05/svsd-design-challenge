@@ -28,7 +28,6 @@ export function CurrentView({ onSky }) {
   const [zoom, setZoom] = useState(() => (new URLSearchParams(window.location.search).get('from') === 'galaxy' ? 'in' : null)) // 'out' | 'in' while the sky is zooming
   const [theme, setTheme] = useState('nursery') // the two styles from the design board
   const [team, setTeam] = useState(false)
-  const [about, setAbout] = useState(false) // who she is: opened by tapping her name
   // Her first day (chapters 1 and 2): how her story begins
   // The demo tells her whole story as chapters: born, her story begins, a day in the long middle,
   // her sky, then going home, or, if she doesn't go home, a screen that almost disappears.
@@ -130,14 +129,14 @@ export function CurrentView({ onSky }) {
         <header className="cv-top" hidden={comfort}>
           <span className="cv-top-left">
             {onSub && page !== 'ahead' && <button type="button" className="cv-back" onClick={() => setPage('home')}>‹ Back</button>}
-            {first ? 'Mila · Day 1' : comfort ? 'Mila · Day 41' : page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? <><button type="button" className="cv-name" onClick={() => setAbout(true)} aria-label="Mila: who she is">Mila</button> · Day {today.day}</> : null}
+            {first ? 'Mila · Day 1' : comfort ? 'Mila · Day 41' : page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? `Mila · Day ${today.day}` : null}
           </span>
           <span className="cv-top-right">
             <span className="cv-clock">{first ? (chapter === 'born' ? '4:20 a.m.' : '5:10 a.m.') : comfort ? '' : night ? today.clock.night : today.clock.label}</span>
             {/* her sky is for looking back; contacting her care team belongs with today */}
             {!comfort && page !== 'galaxy' && page !== 'discharge' && (
               <button type="button" className="cv-btn is-call is-top" onClick={() => setTeam(true)}>
-                <span className="cv-btn-icon" aria-hidden="true">☎</span>Contact care team
+                <span className="cv-btn-icon" aria-hidden="true">☎</span>Care team
               </button>
             )}
           </span>
@@ -208,14 +207,13 @@ export function CurrentView({ onSky }) {
           {/* with the screen almost gone, her care team stays down here, the one thing on it */}
           {comfort && !dark && (
             <button type="button" className="cv-btn is-call" onClick={() => setTeam(true)}>
-              <span className="cv-btn-icon" aria-hidden="true">☎</span>Contact care team
+              <span className="cv-btn-icon" aria-hidden="true">☎</span>Care team
             </button>
           )}
         </footer>
       </div>
 
       {team && <TeamSheet onClose={() => setTeam(false)} />}
-      {about && <AboutSheet onClose={() => setAbout(false)} />}
     </div>
   )
 }
@@ -349,7 +347,6 @@ function HomeC({ d, h, setH, zoom, theme, onAhead, onZoomOut }) {
   const later = [15, 18, 21].filter((x) => x > nowH).map((x) => ({ h: x, kind: 'care' }))
   const current = marks.filter((m) => m.h <= h + 0.001).at(-1)
   const glow = Math.min(1, (marks.length + d.saved.length * 2) / 12)
-  const wiredHere = !atNow && d.setup.changes.some((c) => Math.abs(c.h - h) < 0.01)
   const one = atNow ? d.statusOne ?? d.status : current ? current.one ?? current.short : 'The start of her day'
   const when = atNow ? <>Right now · Next feed <b>{d.next.t}</b></>
     : !current ? hourLabel(h)
@@ -368,7 +365,7 @@ function HomeC({ d, h, setH, zoom, theme, onAhead, onZoomOut }) {
           can be tapped for what it means; on a moment that changed what's on her, she is there too. */}
       <div className="cv-homec-words cv-cap" aria-live="polite">
         <span className="cv-detail-k">{when}</span>
-        <OneLine key={one} text={one} figure={wiredHere ? <HerFigure d={d} h={h} /> : null} />
+        <OneLine key={one} text={one} d={d} h={h} />
       </div>
     </div>
   )
@@ -376,15 +373,16 @@ function HomeC({ d, h, setH, zoom, theme, onAhead, onZoomOut }) {
 
 // Clinical words, in plain English. Glossary entries (Sara's) give the fuller explanation where they exist.
 const TERMS = {
-  cpap: { word: 'CPAP', g: 'CPAP mask', means: 'a small mask that gives steady air pressure so her lungs stay open' },
-  'nasal cannula': { word: 'Nasal cannula', g: 'Nasal cannula', means: 'soft prongs in her nose that give a gentle flow of air' },
+  cpap: { word: 'CPAP', g: 'CPAP mask', device: 'cpap', means: 'a small mask that gives steady air pressure so her lungs stay open' },
+  'nasal cannula': { word: 'Nasal cannula', g: 'Nasal cannula', device: 'cannula', means: 'soft prongs in her nose that give a gentle flow of air' },
   'oxygen dips': { word: 'Oxygen dips', stands: 'Her team may call them desats (desaturations)', means: 'her oxygen level dropping for a moment; her nurse watches closely and helps' },
-  'feeding tube': { word: 'Feeding tube', g: 'Feeding tube', means: 'a thin tube through her nose to her tummy that carries her milk' },
+  'feeding tube': { word: 'Feeding tube', g: 'Feeding tube', device: 'feeding', means: 'a thin tube through her nose to her tummy that carries her milk' },
 }
 
 // Her status on one line: shrinks a little to fit the width rather than wrapping. [Words] in brackets are
-// clinical terms: a tap opens what they mean in a small popover, with her 3D model when it shows the change.
-function OneLine({ text, figure }) {
+// clinical terms: a tap opens what they mean in a small popover; when the term is something on her, her 3D
+// model is there too, with it lit.
+function OneLine({ text, d, h }) {
   const p = useRef(null)
   const [open, setOpen] = useState(null)
   useLayoutEffect(() => {
@@ -419,7 +417,7 @@ function OneLine({ text, figure }) {
       </p>
       {t && (
         <div className="cv-pop" role="dialog" aria-label={`${t.word}: what it means`}>
-          {figure}
+          {t.device && <HerFigure d={d} h={h} device={t.device} />}
           <p className="cv-pop-word">{t.word}</p>
           {(g?.stands ?? t.stands) && <p className="cv-pop-stands">{g?.stands ?? t.stands}</p>}
           <p className="cv-pop-means">{g?.body ?? `${t.means[0].toUpperCase()}${t.means.slice(1)}.`}</p>
@@ -431,11 +429,14 @@ function OneLine({ text, figure }) {
 
 // Her, softly drawn, as she was at that moment: what's new glows, what came off stays as a faint ghost
 // Her, as a soft hologram: drag to turn her and see her from another side
-function HerFigure({ d, h }) {
-  const { present, changed } = setupAt(d, h)
+// device: the thing a term names, lit on her (shown in place of the breathing help it stands in for)
+const SWAPS = { cpap: 'cannula', cannula: 'cpap' }
+function HerFigure({ d, h, device }) {
+  let { present, changed } = setupAt(d, h)
+  if (device) { present = [...present.filter((x) => x !== SWAPS[device]), ...(present.includes(device) ? [] : [device])]; changed = [device] }
   return (
     <div className="cv-her-fig">
-      <HerModel present={present} changed={changed} label="Mila as she was then, with what was on her. Drag to turn her." />
+      <HerModel present={present} changed={changed} label="Mila, with what was on her. Drag to turn her." />
     </div>
   )
 }
@@ -557,34 +558,6 @@ const helpPrompts = [
   'I’d like help holding her.',
   'I have a question about today.',
 ]
-
-// Who she is, behind her name: her as a person, her age two ways, and what she can sense this week.
-function AboutSheet({ onClose }) {
-  const a = today.about
-  return (
-    <div className="cv-scrim" onClick={onClose}>
-      <div className="cv-sheet cv-about" role="dialog" aria-label="Mila, who she is" onClick={(e) => e.stopPropagation()}>
-        <div className="cv-sheet-head">
-          <p className="cv-about-name">Mila</p>
-          <button type="button" className="cv-close" onClick={onClose}>Close</button>
-        </div>
-        <p className="cv-about-age"><b>{a.age}</b> · {a.along}. {a.due}</p>
-        <div className="cv-sheet-sec">
-          <span className="cv-k">Who she is</span>
-          <ul className="cv-about-list">
-            {a.traits.map((t) => <li key={t.text}><span>{t.text}</span><em>{t.from}</em></li>)}
-          </ul>
-        </div>
-        <div className="cv-sheet-sec">
-          <span className="cv-k">What she can sense this week</span>
-          <ul className="cv-about-list is-senses">
-            {a.senses.map((t) => <li key={t}><span>{t}</span></li>)}
-          </ul>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // Parents see who's caring for her, and reach out in one place. The request goes to her nurse
 // (the charge nurse covers if she's busy), with an optional note. Urgent help stays with the
