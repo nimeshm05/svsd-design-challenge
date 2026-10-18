@@ -2,31 +2,33 @@
 // a "focus rect" (in NDC) says where on screen the subject should sit, so the UI
 // panels never cover it.
 import { stay } from "./data";
-import { centroid, radiusAround, RING_RADIUS, spiralPositions, type Vec3 } from "./layout";
+import { dayPositions, galaxies } from "./galaxies";
+import { RING_RADIUS, type Vec3 } from "./layout";
 import type { Level } from "./store";
 
 export const FOV = 35;
 const TAN = Math.tan(((FOV / 2) * Math.PI) / 180);
 
-export const positions = spiralPositions(stay.days.length);
+export const positions = dayPositions;
 export const posOf = (dayIndex: number): Vec3 => positions[dayIndex - 1];
 
 export const weekCount = Math.ceil(stay.days.length / 7);
 export const weekPoints = (w: number) => positions.slice((w - 1) * 7, Math.min(w * 7, positions.length));
-export const weekCenter = (w: number) => centroid(weekPoints(w));
-export const weekRadius = (w: number) => Math.max(0.85, radiusAround(weekCenter(w), weekPoints(w)) + 0.25);
+// a week is framed as its whole galaxy
+export const weekCenter = (w: number): Vec3 => galaxies[w - 1].center;
+export const weekRadius = (w: number) => galaxies[w - 1].radius * 0.86;
 
-const galaxyCenter: Vec3 = (() => {
+// the top level ("the sky") frames every week's galaxy
+const skyBox = (() => {
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  for (const p of positions) {
-    minX = Math.min(minX, p[0]);
-    maxX = Math.max(maxX, p[0]);
-    minY = Math.min(minY, p[1]);
-    maxY = Math.max(maxY, p[1]);
+  for (const g of galaxies) {
+    minX = Math.min(minX, g.center[0] - g.radius);
+    maxX = Math.max(maxX, g.center[0] + g.radius);
+    minY = Math.min(minY, g.center[1] - g.radius);
+    maxY = Math.max(maxY, g.center[1] + g.radius);
   }
-  return [(minX + maxX) / 2, (minY + maxY) / 2, 0];
+  return { c: [(minX + maxX) / 2, (minY + maxY) / 2, 0] as Vec3, hw: (maxX - minX) / 2 + 0.3, hh: (maxY - minY) / 2 + 0.3 };
 })();
-const galaxyRadius = radiusAround(galaxyCenter, positions) + 0.95; // room for chapter labels
 
 type Rect = { cx: number; cy: number; w: number; h: number }; // NDC
 
@@ -39,9 +41,9 @@ export function focusRect(level: Level | "cinematic", aspect: number): Rect {
   return { cx: 0, cy: 0.33, w: 1.9, h: 0.7 };
 }
 
-export function frame(center: Vec3, radius: number, rect: Rect, aspect: number): Vec3 {
+export function frame(center: Vec3, radius: number, rect: Rect, aspect: number, radiusY = radius): Vec3 {
   const zW = radius / (TAN * aspect * (rect.w / 2));
-  const zH = radius / (TAN * (rect.h / 2));
+  const zH = radiusY / (TAN * (rect.h / 2));
   const dist = Math.max(zW, zH);
   const x = center[0] - rect.cx * TAN * aspect * dist;
   const y = center[1] - rect.cy * TAN * dist;
@@ -49,7 +51,9 @@ export function frame(center: Vec3, radius: number, rect: Rect, aspect: number):
 }
 
 export function viewFor(level: Level | "cinematic", week: number, day: number, aspect: number): Vec3 {
-  if (level === "galaxy") return frame(galaxyCenter, galaxyRadius, focusRect("galaxy", aspect), aspect);
+  if (level === "galaxy") {
+    return frame(skyBox.c, skyBox.hw, focusRect("galaxy", aspect), aspect, skyBox.hh);
+  }
   if (level === "week") return frame(weekCenter(week), weekRadius(week), focusRect("week", aspect), aspect);
   if (level === "cinematic") return frame(posOf(day), RING_RADIUS * 1.9, focusRect("cinematic", aspect), aspect);
   return frame(posOf(day), RING_RADIUS * 1.38, focusRect("day", aspect), aspect);

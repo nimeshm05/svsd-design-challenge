@@ -6,12 +6,13 @@ import { Suspense, useMemo } from "react";
 import * as THREE from "three";
 import { useStore } from "@/lib/store";
 import { FOV } from "@/lib/view";
-import { Constellations, Dust, VoiceMotes } from "./Ambient";
+import { Constellations, VoiceMotes } from "./Ambient";
+import { DeepField } from "./DeepField";
+import { Galaxies } from "./Galaxies";
 import { Arrival } from "./Arrival";
 import { CameraRig } from "./CameraRig";
 import { DayRing } from "./DayRing";
 import { Labels } from "./Labels";
-import { Nebula } from "./Nebula";
 import { Stars } from "./Stars";
 
 export function Scene() {
@@ -30,8 +31,9 @@ export function Scene() {
     >
       <Suspense fallback={null}>
         {/* far → near parallax: nebula far, dust through depth, stars mid, UI near */}
-        <Nebula lite={lite} />
-        <Dust count={lite ? 700 : 1400} />
+        {/* far → near parallax: deep field far, week galaxies mid, day stars and UI near */}
+        <DeepField lite={lite} />
+        <Galaxies />
         <Constellations />
         <Stars />
         <VoiceMotes />
@@ -40,7 +42,7 @@ export function Scene() {
         <Labels />
         <CameraRig />
         {fx && <EffectComposer multisampling={0} enableNormalPass={false}>
-          <Bloom mipmapBlur intensity={0.9} luminanceThreshold={0.55} luminanceSmoothing={0.3} radius={0.72} />
+          <Bloom mipmapBlur intensity={0.8} luminanceThreshold={0.5} luminanceSmoothing={0.3} radius={0.7} />
           <ChromaticAberration offset={caOffset} radialModulation modulationOffset={0.35} blendFunction={BlendFunction.NORMAL} />
           <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
           <Vignette offset={0.28} darkness={0.72} />

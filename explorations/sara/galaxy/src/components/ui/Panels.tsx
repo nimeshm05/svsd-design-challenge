@@ -199,7 +199,7 @@ export function GalaxyFooter() {
       animate={{ opacity: settled ? 1 : 0, transition: { duration: 0.6 } }}
       exit={{ opacity: 0, transition: { duration: 0.2 } }}
     >
-      <p className="obs max-w-[16ch] leading-relaxed text-ink-3">Day 1 is at the centre. Tap a week.</p>
+      <p className="obs max-w-[17ch] leading-relaxed text-ink-3">Each galaxy is a week. Tap one to go inside.</p>
       <div className="pointer-events-auto flex gap-2">
         <button onClick={() => goWeek(Math.ceil(today / 7))} className="obs min-h-11 rounded-full border border-hair px-4 text-ink-2 hover:text-ink">
           This week

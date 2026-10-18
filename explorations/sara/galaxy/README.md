@@ -2,7 +2,9 @@
 
 **Status:** promising
 
-A baby's NICU stay as a stellar nursery. Every moment (a feed, a diaper, skin-to-skin, a nurse's note, a grandma's voice note) becomes light. Days are stars, weeks are constellations, the whole stay is a galaxy spiralling out from day 1. Parents can zoom from the galaxy into a week, into a day, and open a single moment.
+A baby's NICU stay as a stellar nursery. Every moment (a feed, a diaper, skin-to-skin, a nurse's note, a grandma's voice note) becomes light.
+
+**On this branch (`visual-exploration-week-galaxies`), each week is its own realistic spiral galaxy** floating in a deep field: the first week at the top, this week at the bottom, biggest and closest. Tap a galaxy to fly inside; that week's seven days are bright stars joined into a constellation along one spiral arm. Tap a star for the day's 24-hour ring, then a moment. (The `visual-exploration-galaxy` branch has the earlier model: the whole stay as one galaxy, weeks as constellations.)
 
 Built from `build-prompt.md` (the NICU galaxy brief). All data is **synthetic**; Arjun is not a real baby.
 

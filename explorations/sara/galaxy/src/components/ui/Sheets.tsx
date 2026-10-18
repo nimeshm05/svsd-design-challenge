@@ -192,20 +192,20 @@ export function TermSheet() {
 }
 
 const legend: { k: string; t: string; shape: ReactNode }[] = [
-  { k: "A star", t: "One day.", shape: <span className="block h-2 w-2 rounded-full bg-core shadow-[0_0_10px_#F3EEFF]" /> },
-  { k: "Its size", t: "His weight that day. The galaxy grows as he does.", shape: <span className="block h-3 w-3 rounded-full bg-core/80" /> },
-  { k: "Its brightness", t: "How the day went. Harder days glow softer and cooler, never dark.", shape: <span className="block h-2 w-2 rounded-full bg-periwinkle/60" /> },
-  { k: "A copper halo", t: "You were there. The warmer, the longer.", shape: <span className="block h-4 w-4 rounded-full border border-copper/70 shadow-[0_0_12px_#FFB38A]" /> },
-  { k: "The spikes", t: "Breathing help. More help, more and finer spikes. They soften as he needs less.", shape: <span className="relative block h-4 w-4"><span className="absolute left-1/2 top-0 h-4 w-px bg-copper" /><span className="absolute left-0 top-1/2 h-px w-4 bg-copper/60" /></span> },
-  { k: "Orbiting motes", t: "Voice notes from family.", shape: <span className="block h-1.5 w-1.5 rounded-full bg-periwinkle" /> },
-  { k: "A constellation", t: "One week, one chapter.", shape: <svg width="18" height="12" aria-hidden><path d="M1 10 7 3l5 5 5-6" stroke="#A9A4FF" strokeWidth="1" fill="none" /></svg> },
+  { k: "A galaxy", t: "One week, one chapter. The newest week is the biggest and closest.", shape: <span className="block h-3 w-4 rounded-[50%] bg-[radial-gradient(circle,#FFE2B0_0%,#B9CCFF_45%,transparent_70%)]" /> },
+  { k: "Its size", t: "His weight that week. Each galaxy is a little bigger than the last.", shape: <span className="block h-3 w-3 rounded-full bg-ink-2/60" /> },
+  { k: "A warm, golden core", t: "Time you spent with him that week. The warmer, the more.", shape: <span className="block h-2.5 w-2.5 rounded-full bg-copper shadow-[0_0_10px_#FFB38A]" /> },
+  { k: "Rose knots in the arms", t: "Star-forming nurseries: the week's firsts.", shape: <span className="block h-1.5 w-1.5 rounded-full bg-[#FF8FB6]" /> },
+  { k: "A softer, bluer galaxy", t: "A harder week. Never dark.", shape: <span className="block h-2 w-2 rounded-full bg-periwinkle/60" /> },
+  { k: "Bright stars inside", t: "The days of that week, joined into a constellation along one arm, from the core outward.", shape: <svg width="18" height="12" aria-hidden><path d="M1 10 7 3l5 5 5-6" stroke="#A9A4FF" strokeWidth="1" fill="none" /></svg> },
+  { k: "A star's spikes and halo", t: "Spikes are breathing help (they soften as he needs less). A copper halo means you were there.", shape: <span className="relative block h-4 w-4"><span className="absolute left-1/2 top-0 h-4 w-px bg-copper" /><span className="absolute left-0 top-1/2 h-px w-4 bg-copper/60" /></span> },
 ];
 
 export function LegendSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <BottomSheet open={open} onClose={onClose} label="How to read the sky">
       <h2 className="serif-i text-[30px] text-ink">How to read the sky</h2>
-      <p className="mt-2 text-[14px] leading-relaxed text-ink-2">Every moment of {stay.baby.name}&apos;s stay becomes light. Day 1 is at the centre; each day after spirals outward.</p>
+      <p className="mt-2 text-[14px] leading-relaxed text-ink-2">Every moment of {stay.baby.name}&apos;s stay becomes light. Each week is its own galaxy, from the first at the top to this week, closest to you.</p>
       <dl className="mt-5">
         {legend.map((l) => (
           <div key={l.k} className="flex gap-4 border-t border-hair py-3">

@@ -3,8 +3,9 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo } from "react";
 import * as THREE from "three";
 import { stay } from "@/lib/data";
+import { galaxies } from "@/lib/galaxies";
 import { coreSize } from "@/lib/layout";
-import { useStore } from "@/lib/store";
+import { fadeK, useStore } from "@/lib/store";
 import type { Day, Support } from "@/lib/types";
 import { posOf } from "@/lib/view";
 import { C } from "./palette";
@@ -12,25 +13,30 @@ import { starFrag, starVert } from "./shaders";
 
 // More breathing help → more, thinner spikes. Spikes simplify as the baby needs less help.
 const spikeSpec: Record<Support, { lines: number; w: number; len: number }> = {
-  ventilator: { lines: 4, w: 0.0042, len: 0.64 },
-  cpap: { lines: 3, w: 0.0058, len: 0.6 },
-  "high-flow": { lines: 3, w: 0.0075, len: 0.5 },
-  "low-flow": { lines: 2, w: 0.0095, len: 0.42 },
-  "room-air": { lines: 2, w: 0.013, len: 0.32 },
+  // lengths stay close so every day reads clearly inside its galaxy; the count carries the meaning
+  ventilator: { lines: 4, w: 0.0065, len: 0.66 },
+  cpap: { lines: 3, w: 0.0072, len: 0.62 },
+  "high-flow": { lines: 3, w: 0.0072, len: 0.56 },
+  "low-flow": { lines: 2, w: 0.0085, len: 0.52 },
+  "room-air": { lines: 2, w: 0.0095, len: 0.48 },
 };
-const brightness = { calm: 1, mixed: 0.82, hard: 0.64 } as const; // hard days dimmer, never dark
+const brightness = { calm: 1, mixed: 0.88, hard: 0.76 } as const; // hard days dimmer, never dark
 const cool = { calm: 0, mixed: 0.35, hard: 1 } as const;
 // milestones drawn as a ringed planet instead of a spiked star
 const planetFirsts = new Set(["First bath"]);
-const PLANET_SCALE = 1.9; // planets read larger than the stars around them
+const PLANET_SCALE = 1.3; // planets read larger than the stars around them
 
 export function starAttributes(d: Day) {
   const s = spikeSpec[d.support];
   const b = brightness[d.mood];
   const growth = 1 + Math.max(0, d.weightGrams - 900) / 2200;
+  // scale with the week's galaxy so day-stars read the same size on screen in every week
+  const g = galaxies[d.week - 1];
+  // never shrink below full size: early weeks' smaller galaxies were swallowing their stars
+  const fit = g ? Math.max(1.05, g.radius / 2.1) : 1;
   return {
-    core: coreSize(d.weightGrams),
-    size: s.len * (0.78 + 0.22 * b) * growth,
+    core: Math.max(0.03, coreSize(d.weightGrams) * 0.9) * fit,
+    size: s.len * (0.85 + 0.15 * b) * growth * 0.68 * fit,
     bright: b,
     warm: Math.min(1, d.parentMinutes / 210),
     lines: s.lines,
@@ -109,20 +115,26 @@ export function makeStarGeometry(days: Day[], pos: (d: Day) => [number, number, 
 export function Stars() {
   const days = useStore((s) => s.days);
   const material = useMemo(() => makeStarMaterial(0), []);
-  const geometry = useMemo(() => makeStarGeometry(days, (d) => posOf(d.dayIndex), stay.today.dayIndex), [days]);
+  const geometry = useMemo(() => {
+    const g = makeStarGeometry(days, (d) => posOf(d.dayIndex), stay.today.dayIndex);
+    // day stars start hidden (only today shows) and fade in when you enter a galaxy
+    const f = g.getAttribute("aFocus") as THREE.InstancedBufferAttribute;
+    days.forEach((d, i) => (f.array[i] = d.dayIndex === stay.today.dayIndex ? 0.8 : 0));
+    return g;
+  }, [days]);
 
   useFrame((s, dt) => {
     material.uniforms.uTime.value = s.clock.elapsedTime;
     const { level, week, day, pulse, recap } = useStore.getState();
     const focus = geometry.getAttribute("aFocus") as THREE.InstancedBufferAttribute;
     const pul = geometry.getAttribute("aPulse") as THREE.InstancedBufferAttribute;
-    const k = 1 - Math.exp(-dt * 3.2);
+    const k = fadeK(dt, 3.2);
     const now = performance.now();
     for (let i = 0; i < days.length; i++) {
       const d = days[i];
-      let target = 1;
-      if (recap.active) target = d.dayIndex === day ? 1 : 0.45;
-      else if (level === "week") target = d.week === week ? 1 : 0.22;
+      let target = d.dayIndex === stay.today.dayIndex ? 0.8 : 0;
+      if (recap.active) target = d.dayIndex === day ? 1 : d.week === week ? 0.3 : 0;
+      else if (level === "week") target = d.week === week ? 1 : 0;
       else if (level === "day") target = d.dayIndex === day ? 1 : 0.1;
       focus.array[i] += (target - focus.array[i]) * k;
       pul.array[i] = pulse && pulse.day === d.dayIndex ? Math.max(0, 1 - (now - pulse.at) / 2600) : 0;

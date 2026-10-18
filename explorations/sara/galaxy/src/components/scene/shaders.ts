@@ -154,8 +154,8 @@ float spike(vec2 uv, float a, float w, float len, float px){
   float t = abs(dot(uv, d)) / len;
   float p = abs(dot(uv, vec2(-d.y, d.x)));
   float ww = w * (1.0 - 0.8 * clamp(t, 0.0, 1.0));
-  float wp = max(ww, px * 0.7);
-  float e = ww / wp; // energy conservation when the spike is thinner than a pixel
+  float wp = max(ww, px * 1.0);
+  float e = max(0.65, ww / wp); // keep thin spikes visible even below a pixel wide
   return exp(-(p * p) / (wp * wp)) * pow(max(1.0 - t, 0.0), 2.4) * e;
 }
 
@@ -182,7 +182,8 @@ void main(){
     vec2 q = vec2(ca * uv.x - sa * uv.y, sa * uv.x + ca * uv.y);
     float ell = length(vec2(q.x, q.y / 0.32));
     float rw = max(cr * 0.32, px * 0.7);
-    float ring = exp(-pow((ell - cr * 3.6) / rw, 2.0)) * (cr * 0.32 / rw);
+    float rd = (ell - cr * 3.6) / rw;   // squared, not pow(): pow of a negative base is undefined in GLSL
+    float ring = exp(-rd * rd) * (cr * 0.32 / rw);
     float behind = step(0.0, q.y) * smoothstep(cr * 1.5, cr * 1.1, r);
     s = ring * (1.0 - behind) * 0.9;
   } else {
@@ -202,11 +203,14 @@ void main(){
   float warm = clamp(vWarm + todayPulse * 0.8, 0.0, 1.5);
   // halo sized in world units (vHalo), independent of the core
   float ringR = vHalo;
-  float halo = exp(-pow((r - ringR) / (vHalo * 0.45), 2.0)) * 0.42 + exp(-pow(r / (vHalo * 0.9), 2.0)) * 0.22;
+  float hr = (r - ringR) / (vHalo * 0.45);   // squares, not pow(): pow of a negative base is undefined in GLSL
+  float hw = r / (vHalo * 0.9);
+  float halo = exp(-hr * hr) * 0.42 + exp(-hw * hw) * 0.22;
 
   // arrival ripple
   float ripR = cr * (2.0 + 14.0 * (1.0 - vPulse));
-  float ripple = vPulse * exp(-pow((r - ripR) / (cr * 0.9), 2.0));
+  float rp = (r - ripR) / (cr * 0.9);
+  float ripple = vPulse * exp(-rp * rp);
 
   vec3 coreCol = mix(uCoreCol, uPeri, vCool * 0.45);
   vec3 col = vec3(0.0);

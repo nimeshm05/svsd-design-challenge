@@ -5,6 +5,7 @@ import { stay } from "@/lib/data";
 import { useStore } from "@/lib/store";
 import { posOf, positions } from "@/lib/view";
 import { screenToWorld, worldToScreen } from "./scene/refs";
+import { galaxies } from "@/lib/galaxies";
 import { momentOffset } from "@/lib/layout";
 import { Header } from "./ui/Header";
 import { ListView, MotionFade, Recap, Toast } from "./ui/Overlays";
@@ -12,18 +13,6 @@ import { LevelPanels } from "./ui/Panels";
 import { LegendSheet, MomentSheet, TermSheet } from "./ui/Sheets";
 
 const Scene = dynamic(() => import("./scene/Scene").then((m) => m.Scene), { ssr: false });
-
-function nearestDay(x: number, y: number) {
-  let best = 0, bd = Infinity;
-  positions.forEach((p, i) => {
-    const d = Math.hypot(p[0] - x, p[1] - y);
-    if (d < bd) {
-      bd = d;
-      best = i + 1;
-    }
-  });
-  return { day: best, dist: bd };
-}
 
 export function Experience() {
   const wrap = useRef<HTMLDivElement>(null);
@@ -138,9 +127,36 @@ export function Experience() {
       const r = el.getBoundingClientRect();
       const w = screenToWorld(cx - r.left, cy - r.top, r.width, r.height);
       if (!w) return;
-      const n = nearestDay(w[0], w[1]);
-      if (s.level === "galaxy" && n.dist < 1.4) s.goWeek(Math.ceil(n.day / 7));
-      else if (s.level === "week" && n.dist < 0.5) s.goDay(n.day);
+      if (s.level === "galaxy") {
+        // the galaxy whose disk is under the finger (projected, so depth doesn't matter)
+        let best = 0, bd = Infinity;
+        galaxies.forEach((g) => {
+          const c = worldToScreen(g.center, r.width, r.height);
+          const e = worldToScreen([g.center[0] + g.radius, g.center[1], g.center[2]], r.width, r.height);
+          if (!c || !e) return;
+          const d = Math.hypot(c[0] - (cx - r.left), c[1] - (cy - r.top)) / Math.max(30, Math.abs(e[0] - c[0]));
+          if (d < bd) {
+            bd = d;
+            best = g.week;
+          }
+        });
+        if (best && bd < 1.3) s.goWeek(best);
+        return;
+      }
+      if (s.level === "week") {
+        let best = 0, bd = 36; // px
+        positions.forEach((p, i) => {
+          if (Math.ceil((i + 1) / 7) !== s.week) return;
+          const q = worldToScreen(p, r.width, r.height);
+          if (!q) return;
+          const d = Math.hypot(q[0] - (cx - r.left), q[1] - (cy - r.top));
+          if (d < bd) {
+            bd = d;
+            best = i + 1;
+          }
+        });
+        if (best) s.goDay(best);
+      }
     };
     const step = (dir: 1 | -1) => {
       const s = useStore.getState();

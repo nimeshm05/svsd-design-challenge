@@ -113,3 +113,8 @@ export const useStore = create<State>((set, get) => ({
 
 // handy for demos and debugging from the console
 if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") (window as unknown as { __store: typeof useStore }).__store = useStore;
+
+/** Exponential ease factor for per-frame fades; snaps (1) under reduced motion. */
+export function fadeK(dt: number, rate: number) {
+  return useStore.getState().reducedMotion ? 1 : 1 - Math.exp(-dt * rate);
+}
