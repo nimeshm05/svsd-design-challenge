@@ -153,8 +153,8 @@ float spike(vec2 uv, float a, float w, float len, float px){
   float t = abs(dot(uv, d)) / len;
   float p = abs(dot(uv, vec2(-d.y, d.x)));
   float ww = w * (1.0 - 0.8 * clamp(t, 0.0, 1.0));
-  float wp = max(ww, px * 0.7);
-  float e = ww / wp; // energy conservation when the spike is thinner than a pixel
+  float wp = max(ww, px * 1.0);
+  float e = max(0.65, ww / wp); // keep thin spikes visible even below a pixel wide
   return exp(-(p * p) / (wp * wp)) * pow(max(1.0 - t, 0.0), 2.4) * e;
 }
 

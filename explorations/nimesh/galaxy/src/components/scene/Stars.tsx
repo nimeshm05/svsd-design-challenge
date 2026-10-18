@@ -14,13 +14,13 @@ import { starFrag, starVert } from "./shaders";
 // More breathing help → more, thinner spikes. Spikes simplify as the baby needs less help.
 const spikeSpec: Record<Support, { lines: number; w: number; len: number }> = {
   // lengths stay close so every day reads clearly inside its galaxy; the count carries the meaning
-  ventilator: { lines: 4, w: 0.0042, len: 0.64 },
-  cpap: { lines: 3, w: 0.0058, len: 0.6 },
+  ventilator: { lines: 4, w: 0.0065, len: 0.66 },
+  cpap: { lines: 3, w: 0.0072, len: 0.62 },
   "high-flow": { lines: 3, w: 0.0072, len: 0.56 },
   "low-flow": { lines: 2, w: 0.0085, len: 0.52 },
   "room-air": { lines: 2, w: 0.0095, len: 0.48 },
 };
-const brightness = { calm: 1, mixed: 0.82, hard: 0.64 } as const; // hard days dimmer, never dark
+const brightness = { calm: 1, mixed: 0.88, hard: 0.76 } as const; // hard days dimmer, never dark
 const cool = { calm: 0, mixed: 0.35, hard: 1 } as const;
 
 export function starAttributes(d: Day) {
@@ -29,7 +29,8 @@ export function starAttributes(d: Day) {
   const growth = 1 + Math.max(0, d.weightGrams - 900) / 2200;
   // scale with the week's galaxy so day-stars read the same size on screen in every week
   const g = galaxies[d.week - 1];
-  const fit = g ? g.radius / 2.1 : 1;
+  // never shrink below full size: early weeks' smaller galaxies were swallowing their stars
+  const fit = g ? Math.max(1.05, g.radius / 2.1) : 1;
   return {
     core: Math.max(0.03, coreSize(d.weightGrams) * 0.9) * fit,
     size: s.len * (0.85 + 0.15 * b) * growth * 0.68 * fit,
