@@ -107,7 +107,7 @@ const DEVICES = {
 
 export function HerModel({ present = [], changed = [], label, still = false }) {
   const [model, setModel] = useState(null)
-  const [rot, setRot] = useState([48, 34]) // tilt, turn: lying across, leaning toward you
+  const [rot, setRot] = useState(() => (still ? [0, 0] : [48, 34])) // tilt, turn: a still picture is flat and straight-on
   const drag = useRef(null)
   useEffect(() => { let on = true; trace().then((m) => on && setModel(m)); return () => { on = false } }, [])
   const shown = Object.keys(DEVICES).filter((id) => present.includes(id) || changed.includes(id))
