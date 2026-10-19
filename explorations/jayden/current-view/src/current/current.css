@@ -1955,3 +1955,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .bf-dev.is-new { fill: color-mix(in srgb, var(--warm) 40%, transparent); stroke: var(--warm); stroke-width: 1.6;
   filter: drop-shadow(0 0 3px color-mix(in srgb, var(--warm) 75%, transparent)); }
 .bf-dev.is-new .bf-wire { opacity: .9; }
+/* while one thing is lit, everything else on her steps back */
+.bf-dev { transition: stroke .4s ease, fill .4s ease, opacity .4s ease; }
+.bf:has(.bf-dev.is-new) .bf-dev:not(.is-new) { opacity: .25; }
