@@ -588,110 +588,28 @@ function routineSoFar() {
 /* ---------------- Contact care team ---------------- */
 
 // Gentle starting points for the note. A parent can tap one, write their own, or send nothing at all.
-const helpPrompts = [
-  'Could you come by when you have a moment?',
-  'I’d like help holding her.',
-  'I have a question about today.',
-]
-
 // Parents see who's caring for her, and reach out in one place. The request goes to her nurse
 // (the charge nurse covers if she's busy), with an optional note. Urgent help stays with the
 // nurse call button by her bed. Steps: team → note → sent.
+// Who's caring for her: just the people, her nurse today first.
 function TeamSheet({ onClose }) {
   const nurse = today.team.find((p) => p.primary) ?? today.team[0]
-  const others = today.team.filter((p) => p !== nurse)
-  const backup = others.find((p) => /charge/i.test(p.role))
-  const [step, setStep] = useState('team') // 'team' | 'ask' | 'sent'
-  const [reason, setReason] = useState(helpPrompts[0])
-  const [note, setNote] = useState('')
-  const titleId = 'ts-title'
+  const people = [nurse, ...today.team.filter((p) => p !== nurse)]
   return (
     <div className="cv-scrim ts-scrim" onClick={onClose}>
-      <div className={`ts is-${step}`} role="dialog" aria-modal="true" aria-labelledby={titleId} onClick={(e) => e.stopPropagation()}>
-        {step !== 'sent' && (
-          <header className="ts-head">
-            {step === 'ask' ? <NavBack label="Her team" onClick={() => setStep('team')} /> : <span />}
-            <CloseButton onClick={onClose} />
-          </header>
-        )}
-
-        {step === 'team' && (
-          <div className="ts-body" key="team">
-            <div className="ts-title-block">
-              <h2 id={titleId} className="ts-title">Her care team</h2>
-              <p className="ts-sub">Right now · {today.clock.label}</p>
-            </div>
-
-            <section className="ts-lead" aria-label="Her nurse">
-              <span className="ts-avatar is-lead" aria-hidden="true">{nurse.initials}</span>
-              <div className="ts-who">
-                <b>{nurse.name}</b>
-                <span>{nurse.role}</span>
-              </div>
-            </section>
-            <button type="button" className="nav-btn is-primary ts-cta" onClick={() => setStep('ask')}>
-              <span>Ask {nurse.name} to come by</span>
-            </button>
-
-            <section className="ts-sec">
-              <h3 className="cv-gsec-k">Also caring for her</h3>
-              <ul className="ts-list">
-                {others.map((p) => (
-                  <li key={p.name}>
-                    <span className="ts-avatar" aria-hidden="true">{p.initials}</span>
-                    <div className="ts-who"><b>{p.name}</b><span>{p.role}</span></div>
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <p className="ts-urgent"><PhoneIcon /><span>Urgent? Press the nurse call button by her bed.</span></p>
-          </div>
-        )}
-
-        {step === 'ask' && (
-          <div className="ts-body" key="ask">
-            <div className="ts-title-block">
-              <h2 id={titleId} className="ts-title">Ask {nurse.name}</h2>
-              <p className="ts-sub">She&apos;ll come by as soon as she can.</p>
-            </div>
-            <fieldset className="ts-sec ts-reasons">
-              <legend className="cv-gsec-k">What would help?</legend>
-              {helpPrompts.map((p) => (
-                <label key={p} className={`ts-reason ${reason === p ? 'is-on' : ''}`}>
-                  <input type="radio" name="ts-reason" value={p} checked={reason === p} onChange={() => setReason(p)} />
-                  <span className="ts-radio" aria-hidden="true" />
-                  <span>{p}</span>
-                </label>
-              ))}
-            </fieldset>
-            <section className="ts-sec">
-              <label className="cv-gsec-k" htmlFor="ts-note">A note, if you&apos;d like</label>
-              <textarea id="ts-note" className="ts-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder={`Anything ${nurse.name} should know…`} />
-            </section>
-            <div className="ts-actions">
-              <button type="button" className="nav-btn is-primary ts-cta" onClick={() => setStep('sent')}><span>Send to {nurse.name}</span></button>
-            </div>
-          </div>
-        )}
-
-        {step === 'sent' && (
-          <div className="ts-body ts-done" key="sent">
-            <span className="ts-check" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" /></svg>
-            </span>
-            <div className="ts-title-block is-center">
-              <h2 id={titleId} className="ts-title">{nurse.name} knows</h2>
-              <p className="ts-sub">She&apos;ll come by as soon as she can.{backup && <> If she&apos;s with another baby, {backup.name} will come instead.</>}</p>
-            </div>
-            <div className="ts-sent-what">
-              <span>{reason}</span>
-              {note.trim() && <span className="ts-sent-note">“{note.trim()}”</span>}
-            </div>
-            <button type="button" className="nav-btn is-primary ts-cta" onClick={onClose}><span>Done</span></button>
-            <p className="ts-urgent is-center"><PhoneIcon /><span>Urgent? Press the nurse call button by her bed.</span></p>
-          </div>
-        )}
+      <div className="ts" role="dialog" aria-modal="true" aria-labelledby="ts-title" onClick={(e) => e.stopPropagation()}>
+        <header className="ts-head">
+          <h2 id="ts-title" className="ts-title">Her care team</h2>
+          <CloseButton onClick={onClose} />
+        </header>
+        <ul className="ts-list">
+          {people.map((p) => (
+            <li key={p.name}>
+              <b>{p.name}</b>
+              <span>{p.role}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   )
