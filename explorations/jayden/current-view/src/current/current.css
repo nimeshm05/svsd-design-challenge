@@ -1904,3 +1904,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page :is(.fd-dots, .cv-story-dots) i.is-past { background: color-mix(in srgb, var(--cream) 35%, transparent); }
 .cv-page :is(.fd-dots, .cv-story-dots) i.is-on { width: 20px; background: var(--cream); }
 .cv-page .cv-story-dots { align-self: flex-start; margin-top: 10px; }
+
+/* "What's on her": the explanation is always two balanced lines; dots and Next sit on the bottom bar */
+.cv-page .fd-walk .fd-words { min-height: 0; }
+.cv-page .fd-walk .fd-line { max-width: 44ch; text-wrap: balance; line-height: 1.35;
+  min-height: calc(2lh); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.cv-page .fd-walk-nav { position: absolute; z-index: 2; left: var(--edge-x); right: var(--edge-x); bottom: var(--edge-y); height: var(--nav-h);
+  display: flex; align-items: center; justify-content: center; gap: 0; }
+.cv-page .fd-walk-nav .fd-next { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+/* standard button: the old one-off size and colours no longer apply */
+.cv-page .nav-btn.fd-next { height: var(--nav-h); padding: 0 var(--nav-px); border-radius: 999px; font-size: var(--nav-fs); }
+.cv-page .nav-btn.fd-next.is-trailing { padding-right: calc(var(--nav-px) - 2px); }
+.cv-page .nav-btn.fd-next.is-done { background: var(--cream); border-color: var(--cream); color: #0a0a0a; }
+.cv-page .fd.fd-walk { position: static; } /* so the bottom bar anchors to the screen, like every other bottom bar */

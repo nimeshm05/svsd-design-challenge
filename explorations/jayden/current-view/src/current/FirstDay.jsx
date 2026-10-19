@@ -1,4 +1,5 @@
 import { HerModel } from './HerModel.jsx'
+import { ChevronRight } from './NavIcons.jsx'
 
 // Her first day on the bedside screen: how her story begins.
 // Parents first stand here in shock, often hours after she was born. Nothing asks anything of them:
@@ -61,8 +62,8 @@ export function FirstDay({ stage, theme, walk, setWalk }) {
             {FIRST.on.map((o, i) => <i key={o.id} className={i === walk || (done && i === FIRST.on.length - 1) ? 'is-on' : i < walk ? 'is-past' : ''} />)}
           </span>
           {done
-            ? <button type="button" className="fd-next is-done" onClick={() => setWalk(null)}>Done</button>
-            : <button type="button" className="fd-next" onClick={() => setWalk(walk + 1)}>Next</button>}
+            ? <button type="button" className="nav-btn is-primary fd-next is-done" onClick={() => setWalk(null)}><span>Done</span></button>
+            : <button type="button" className="nav-btn is-primary is-trailing fd-next" onClick={() => setWalk(walk + 1)}><span>Next</span><ChevronRight /></button>}
         </div>
       </div>
     )
