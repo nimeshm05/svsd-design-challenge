@@ -665,7 +665,7 @@ const CONSTRAINTS = [
   { who: 'Baby', c: 'Sensitive to light, needs quiet rest', r: 'Dark mode, silent, angled away from the incubator' },
   { who: 'Nurse', c: '“You have to be quick… life or death.”', r: 'Zero new tasks; content comes from charting' },
   { who: 'Family', c: 'Not every baby goes home', r: 'Nothing assumes an outcome; sensitive news only after a clinician talks with the family' },
-  { who: 'Privacy', c: '[to fill in]', r: '[to fill in]', todo: true },
+  { who: 'Privacy', c: 'HIPAA laws', r: 'Resides in the room itself (only authorized personnel); sleep mode shows no important information' },
 ]
 function Constraints() {
   return (
@@ -726,7 +726,30 @@ function KOpen() {
         <span><Icon name="nurse" size={64} color="var(--comprehension)" />Nurse</span>
         <span><Icon name="parent" size={64} />Family</span>
       </R>
-      <R d={2} as="p" className="statement-p">Every bedside has <L>three people to protect</L>: the baby, the nurse, and the family.</R>
+      <R d={2} as="p" className="statement-p">Our design has to work for <L>three people</L> at every bedside: the baby, the nurse, and the family.</R>
+    </div>
+  )
+}
+
+/* ---------- 07 · Previous iterations: where three features started ---------- */
+const ITERS = [
+  { src: './shots/iter-galaxy.png', t: 'Exploring the galaxy’s visual direction', c: 'Beautifully crafted, but too layered and complex for a tired parent at the bedside.', alt: 'An early version: her stay drawn as a dense, swirling galaxy.' },
+  { src: './shots/iter-day-report.png', t: 'Mapping the content and information architecture', c: 'Too much at once. We cut the content and layout down to the essentials.', alt: 'An early version: a full report of her day, section by section.' },
+  { src: './shots/iter-setup-3d.png', t: '3D models for detailed care visuals', c: 'In the moment, parents needed other information more than a 3D model.', alt: 'An early version: a 3D model of the baby and everything on her.' },
+]
+function Iterations() {
+  return (
+    <div className="iters">
+      <R d={0} className="k">07 · Previous iterations</R>
+      <R d={1} as="h2" className="h">Where it started.</R>
+      <div className="iter-row">
+        {ITERS.map((x, k) => (
+          <R key={x.src} d={2 + k * 0.7} as="figure" className="iter">
+            <div className="iter-frame"><img src={x.src} alt={x.alt} /></div>
+            <figcaption><b>{x.t}</b><span>{x.c}</span></figcaption>
+          </R>
+        ))}
+      </div>
     </div>
   )
 }
@@ -825,8 +848,10 @@ export const SLIDES = [
   { id: 'mom', section: '06 · Constraints', View: Mom },
   { id: 'modality', section: '06 · Constraints', View: Modality },
 
-  { id: 'board', section: '07 · The product', planet: true, View: Storyboard },
-  ...FEATURES.map((f) => ({ id: f.id, section: '07 · The product', feature: f.show, View: Feature(f) })),
+  { id: 'iterations', section: '07 · Previous iterations', planet: true, View: Iterations },
+
+  { id: 'board', section: '08 · The product', planet: true, View: Storyboard },
+  ...FEATURES.map((f) => ({ id: f.id, section: '08 · The product', feature: f.show, View: Feature(f) })),
   { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
   { id: 'close', section: 'Mila’s Sky', View: Close },
 ]
