@@ -1672,3 +1672,7 @@
 .cv-page .nav-pager { position: absolute; z-index: 3; left: var(--edge-x); bottom: var(--edge-y); display: flex; gap: var(--nav-gap); }
 .cv-page .nav-pager .nav-btn:disabled { opacity: .3; }
 .cv-galaxy.is-leaving .nav-pager { opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+
+/* No visible scrollbars anywhere (scrolling, wheel and touch still work) */
+html, body, .cv-page, .cv-page * { scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar { display: none; width: 0; height: 0; }
