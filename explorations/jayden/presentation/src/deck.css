@@ -506,3 +506,16 @@ body:has(.panel) { overflow: auto; }
   0% { transform: translate(var(--fx), var(--fy)) rotate(var(--r)); opacity: 1; }
   100% { transform: none; opacity: 1; box-shadow: inset 4px 0 0 var(--c), 0 6px 16px rgba(0, 0, 0, .35); }
 }
+/* the three pillars, on the top layer of the affinity map */
+.brain .brain-stage { margin-top: 6px; }
+.brain-pillars { position: absolute; z-index: 3; left: 50%; top: 18px; transform: translateX(-50%); display: flex; gap: 10px; padding: 8px; border-radius: 999px;
+  background: rgba(5, 5, 6, .82); backdrop-filter: blur(6px); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+.brain-pillars span { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 10px; border-radius: 999px; font-family: var(--display); font-size: 17px; color: var(--text); }
+.brain-pillars span.is-connection { background: color-mix(in srgb, var(--connection) 14%, transparent); }
+.brain-pillars span.is-comprehension { background: color-mix(in srgb, var(--comprehension) 14%, transparent); }
+.brain-pillars span.is-awareness { background: color-mix(in srgb, var(--awareness) 14%, transparent); }
+.brain .shot { max-height: calc(100vh - 250px); }
+/* the hand-off: as the map leaves, its chips vanish at once and the same chips are already there on the
+   next slide, in the same spots, so they read as one set of notes sliding to their principles */
+.slide-brainstorm.is-past .brain-chip { animation: none !important; opacity: 0 !important; transition: none; }
+.slide-sort.is-on { opacity: 1; transition: transform 1s var(--ease), filter .7s ease; transition-delay: 0s; }

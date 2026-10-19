@@ -11,7 +11,7 @@ const LABELS = {
   gap: 'The gap: how parents make sense of it', asked: 'So we asked them: 4 interviews',
   heard: 'What’s said isn’t what’s heard', telephone: 'Both sides of the conversation',
   'p-open': 'It came down to three things', pillars: 'The three pillars (builds)', problem: 'Problem statement', compete: 'Competitive analysis', hmw: 'Opportunity: how might we (builds)',
-  principles: 'Each pain point became a principle', brainstorm: 'Our affinity map', sort: 'Ideas float to their principles', thread: 'What the ideas had in common',
+  principles: 'Each pain point became a principle', brainstorm: 'Brainstorm: ideas over our affinity map', sort: 'Ideas float to their principles', thread: 'What the ideas had in common',
   idea: 'Every day becomes a star', 's-open': 'Stars never disappear', system: 'The story layer: design system',
   'k-open': 'Three people to protect', constraints: 'Constraints table', mom: 'A tired mom in a hospital bed', modality: 'Touch, remote or gesture',
   product: 'The live prototype', 'both-close': 'Mila’s Sky holds both (builds)', close: 'Every star is hers to keep',

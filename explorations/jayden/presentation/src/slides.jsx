@@ -281,13 +281,15 @@ const THEMES = [
 ]
 // the ideas we pulled from the map, mixed (not grouped by principle yet), lifted over it as chips
 const ideas = () => [0, 1, 2, 3, 4].flatMap((k) => PS.map((p) => SORTED[p][k]))
-const CHIP_AT = (k) => [3 + (k % 5) * 19.2 + ((k * 7) % 5) - 2, 8 + Math.floor(k / 5) * 31 + ((k * 11) % 7) - 3]
+const CHIP_AT = (k) => [3 + (k % 5) * 19.2 + ((k * 7) % 5) - 2, 19 + Math.floor(k / 5) * 27 + ((k * 11) % 7) - 3]
 function Brainstorm() {
   return (
     <div className="brain">
       <R d={0} className="k">Brainstorm</R>
-      <R d={1} as="h2" className="h">Every idea we had, grouped into six themes.</R>
-      <R d={2} className="brain-stage"><Shot src="./shots/affinity-map.webp" alt="Our affinity map: sticky notes from Jayden, Sara and Nimesh grouped into six themes: baby health status and progress tracking; a visual and interactive baby avatar; charting and medical information access; storytelling and narrative content for parents; emotional support and celebrating milestones; sharing and communication between stakeholders." />
+      <R d={1} className="brain-stage">
+      <div className="brain-pillars">
+        {PS.map((p) => <span key={p} className={`is-${p}`}><Icon name={p} size={24} color={PILLARS[p].color} />{PILLARS[p].name}</span>)}
+      </div><Shot src="./shots/affinity-map.webp" alt="Our affinity map: sticky notes from Jayden, Sara and Nimesh grouped into six themes: baby health status and progress tracking; a visual and interactive baby avatar; charting and medical information access; storytelling and narrative content for parents; emotional support and celebrating milestones; sharing and communication between stakeholders." />
       {ideas().map((t, k) => {
         const [x, y] = CHIP_AT(k)
         return <span key={t} className="sticky brain-chip" data-idea={t} style={{ left: `${x}%`, top: `${y}%`, '--k': k, '--r': `${((k * 37) % 5) - 2}deg` }}>{t}</span>
