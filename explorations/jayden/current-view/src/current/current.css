@@ -1624,7 +1624,10 @@
 }
 .cv-page .nav-btn:has(> svg:first-child) { padding-left: calc(var(--nav-px) - 2px); }
 .cv-page .nav-btn.is-trailing { padding-right: calc(var(--nav-px) - 2px); }
-.cv-page .nav-btn.is-icon { width: var(--nav-h); padding: 0; }
+.cv-page .nav-btn.is-icon, .cv-page .nav-btn.is-icon:has(> svg:first-child) { width: var(--nav-h); padding: 0; } /* beats the icon-side padding rule */
+/* a chevron's weight sits at its point: nudge each half a pixel toward its open side so it reads centred */
+.cv-page .nav-btn.is-icon .nav-ic.is-left { translate: .5px 0; }
+.cv-page .nav-btn.is-icon .nav-ic.is-right { translate: -.5px 0; }
 
 .nav-ic, .cv-page .nav-ic { height: var(--ic); width: auto; flex: none; display: block; overflow: visible;
   fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
@@ -1641,3 +1644,5 @@
 .cv-proto { max-width: 100%; justify-content: center; }
 .cv-proto .cv-seg { flex-wrap: wrap; max-width: 100%; }
 .cv-page { overflow-x: hidden; }
+.theme-confetti .nav-btn.is-icon .nav-ic.is-left { translate: .5px -.6px; }
+.theme-confetti .nav-btn.is-icon .nav-ic.is-right { translate: -.5px -.6px; }

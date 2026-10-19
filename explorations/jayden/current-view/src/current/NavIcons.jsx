@@ -5,11 +5,11 @@
 const svg = (viewBox, cls = '') => ({ className: `nav-ic ${cls}`, viewBox, 'aria-hidden': true })
 
 export function ChevronLeft() {
-  return <svg {...svg('-1 -1 8 14', 'is-chev')}><path d="M6 0 0 6l6 6" /></svg>
+  return <svg {...svg('-1 -1 8 14', 'is-chev is-left')}><path d="M6 0 0 6l6 6" /></svg>
 }
 
 export function ChevronRight() {
-  return <svg {...svg('-1 -1 8 14', 'is-chev')}><path d="M0 0l6 6-6 6" /></svg>
+  return <svg {...svg('-1 -1 8 14', 'is-chev is-right')}><path d="M0 0l6 6-6 6" /></svg>
 }
 
 export function PhoneIcon() {
