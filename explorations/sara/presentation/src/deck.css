@@ -623,6 +623,15 @@ body:has(.panel) { overflow: auto; }
   100% { transform: rotate(var(--r)); opacity: 1; }
 }
 .is-static .floater { box-shadow: 0 6px 16px rgba(0, 0, 0, .35); }
+/* where they land: straight and all one height, so the three columns line up row for row. The chip is
+   that height on the brainstorm too, so nothing resizes in flight (a growing card would push the cards
+   below it mid-flight). The flight still leaves from the chip's spot and tilt on the brainstorm. */
+.brain-chip, .sort .floater { min-height: 50px; display: flex; align-items: center; }
+.sort .floater { transform: none; }
+@keyframes float-from {
+  0% { transform: translate(var(--fx), var(--fy)) rotate(var(--r)); opacity: 1; }
+  100% { transform: none; opacity: 1; }
+}
 
 /* ===== The product, along her stay ===== */
 /* storyboard: six sketched moments on one thread, each with a star like a constellation */

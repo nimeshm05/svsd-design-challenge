@@ -362,9 +362,22 @@ const THEMES = [
 const tilt = (t) => `${(t.length % 5) - 2}deg`
 const ideas = () => [0, 1, 2, 3, 4].flatMap((k) => PS.map((p) => SORTED[p][k]))
 const CHIP_AT = (k) => [3 + (k % 5) * 19.2 + ((k * 7) % 5) - 2, 19 + Math.floor(k / 5) * 27 + ((k * 11) % 7) - 3]
-function Brainstorm() {
+// where each chip was on screen (its center, bob and tilt included) the moment the brainstorm was left.
+// Read in a layout cleanup, which runs before the slide's own classes change: once the slide is past,
+// its stage snaps back to its hidden pose (18px lower) and the bob stops, so reading later is off.
+const CHIP_LEFT = new Map()
+function Brainstorm({ active }) {
+  const host = useRef(null)
+  useLayoutEffect(() => {
+    if (!active) return
+    const el = host.current
+    return () => el?.querySelectorAll('.brain-chip').forEach((c) => {
+      const r = c.getBoundingClientRect()
+      CHIP_LEFT.set(c.dataset.idea, [r.left + r.width / 2, r.top + r.height / 2])
+    })
+  }, [active])
   return (
-    <div className="brain">
+    <div className="brain" ref={host}>
       <R d={0} className="k">Brainstorm</R>
       <R d={1} className="brain-pillars">
         {PS.map((p) => <span key={p} className={`is-${p}`}><Icon name={p} size={26} color={PILLARS[p].color} />{PILLARS[p].name}</span>)}
@@ -576,11 +589,14 @@ function Sort({ active }) {
     if (!active || !host.current) return
     host.current.querySelectorAll('.floater').forEach((el, n) => {
       el.style.animation = 'none'; el.style.transform = 'none'
+      // centers, not corners: a tilted chip's box is wider than the chip, but its center is where the chip is
       const to = el.getBoundingClientRect()
-      const from = document.querySelector(`.slide-brainstorm .brain-chip[data-idea="${el.dataset.idea}"]`)?.getBoundingClientRect()
+      const r = document.querySelector(`.slide-brainstorm .brain-chip[data-idea="${el.dataset.idea}"]`)?.getBoundingClientRect()
+      const from = CHIP_LEFT.get(el.dataset.idea) ?? (r && [r.left + r.width / 2, r.top + r.height / 2])
+      CHIP_LEFT.delete(el.dataset.idea)
       const [sx, sy] = scatter(n + 1)
-      el.style.setProperty('--fx', `${from ? from.left - to.left : sx}px`)
-      el.style.setProperty('--fy', `${from ? from.top - to.top : sy}px`)
+      el.style.setProperty('--fx', `${from ? from[0] - (to.left + to.width / 2) : sx}px`)
+      el.style.setProperty('--fy', `${from ? from[1] - (to.top + to.height / 2) : sy}px`)
       void el.offsetWidth
       el.style.animation = ''; el.style.transform = ''
     })
@@ -800,7 +816,7 @@ export const SLIDES = [
 
   { id: 'brainstorm', section: '04 · Ideation', planet: true, View: Brainstorm },
   { id: 'sort', section: '04 · Ideation', tint: 'all', View: Sort },
-  { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>The ideas we kept coming back to all did one thing: <L>turn her care into a story</L>.</> }) },
+  { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>Turn the pieces of a baby’s care into <L>a{' '}story</L>.</> }) },
 
   { id: 'film', section: '05 · The idea and the story layer', planet: true, bare: true, View: Film },
 
