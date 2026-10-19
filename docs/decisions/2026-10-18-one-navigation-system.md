@@ -18,3 +18,13 @@
 - Naming matches titles: the week view's back said "Her sky" while the screen it returns to is titled "Mila's stars". It now says Mila's stars.
 
 **Why:** A parent glancing from the chair should find "back" in the same place on every screen, and nothing should jump between pages. Consistent height and inset also make the screen calmer, which matters more here than on most interfaces.
+
+## Update: up and sideways look different (her sky)
+
+**Problem:** In a week or a day, "‹ Week 2" (go up a level) sat right next to ‹ › (previous / next day). Three chevrons, two different jobs, so parents couldn't tell which was which.
+
+**Chose:**
+- **Up = a breadcrumb, top-left:** "Today / Mila's stars / Week 2 / Day 12". It shows where you are; tap any earlier step to go up. Slashes, not chevrons, so it never reads as previous/next. The current step is cream and not a link.
+- **Sideways = a named pager, bottom-left:** "‹ Day 11 · Day 13 ›" (or weeks). Each side names its destination; the day before today reads "Today ›"; at an end, that side is dimmed.
+
+**Rejected:** different icons on the same row (e.g. an up-arrow for back). Still three similar controls in one place; position and form together make the difference unmistakable.

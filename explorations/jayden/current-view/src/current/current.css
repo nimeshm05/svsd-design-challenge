@@ -1648,10 +1648,27 @@
 .theme-confetti .nav-btn.is-icon .nav-ic.is-right { translate: -.5px -.6px; }
 
 /* Day panel: plain description, then label/value metrics in two columns */
-.cv-page .cv-gpanel-desc { display: flex; flex-direction: column; gap: 6px; }
-.cv-page .cv-gpanel-desc p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--text-2); }
+.cv-page .cv-gpanel-desc { display: flex; flex-direction: column; gap: 4px; }
+.cv-page .cv-gpanel-desc p { margin: 0; font-size: 15px; line-height: 1.35; color: var(--text-2); }
 .cv-page .cv-gfacts { margin: 0; display: flex; flex-direction: column; border-top: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
 .cv-page .cv-gfacts-row { display: grid; grid-template-columns: 112px 1fr; column-gap: 16px; align-items: baseline; padding: 9px 0;
   border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
 .cv-page .cv-gfacts dt { font-size: 13px; color: var(--muted); }
 .cv-page .cv-gfacts dd { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Breadcrumb (where you are, top-left) and pager (sideways, bottom-left) in her sky.
+   Up and sideways look different on purpose: slashes up top, named chevron buttons below. */
+.cv-page .nav-crumbs ol { list-style: none; margin: 0; padding: 0 6px; height: var(--nav-h); display: flex; align-items: center;
+  border: 1px solid var(--nav-border); border-radius: 999px; background: rgba(8, 10, 14, .55); }
+.cv-page .nav-crumbs li { display: flex; align-items: center; }
+.cv-page .nav-crumb { position: relative; display: flex; align-items: center; height: var(--nav-h); padding: 0 8px; margin: 0; border: 0; background: none;
+  font-family: var(--font-ui); font-size: var(--nav-fs); font-weight: 500; line-height: 1; color: var(--text-2); white-space: nowrap; cursor: pointer; }
+.cv-page button.nav-crumb::before { content: ''; position: absolute; inset: 50% 0 auto; height: var(--nav-hit); transform: translateY(-50%); }
+.cv-page button.nav-crumb:hover { color: #fff; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--cream) 50%, transparent); text-underline-offset: 4px; }
+.cv-page button.nav-crumb:focus-visible { outline: 2px solid var(--cream); outline-offset: -2px; border-radius: 999px; }
+.cv-page .nav-crumb.is-here { color: var(--cream); cursor: default; }
+.cv-page .nav-crumbs-sep { color: color-mix(in srgb, var(--cream) 30%, transparent); font-size: var(--nav-fs); line-height: 1; }
+
+.cv-page .nav-pager { position: absolute; z-index: 3; left: var(--edge-x); bottom: var(--edge-y); display: flex; gap: var(--nav-gap); }
+.cv-page .nav-pager .nav-btn:disabled { opacity: .3; }
+.cv-galaxy.is-leaving .nav-pager { opacity: 0; pointer-events: none; transition: opacity .5s ease; }

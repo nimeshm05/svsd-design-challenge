@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { CenterIcon, ChevronLeft, ChevronRight, InfoIcon, NavBack } from './NavIcons.jsx'
+import { CenterIcon, ChevronLeft, ChevronRight, InfoIcon } from './NavIcons.jsx'
 import { stay, weekInfo, dayDetail } from '../data/days.js'
 
 // Her whole stay, after Nimesh's galaxy (explorations/nimesh/galaxy): one space and one camera.
@@ -775,8 +775,17 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
     })
   })()
   const day = view.level === 'day' ? dayDetail(view.d) : null
-  // "back" always names where it goes; the sky is titled Mila's stars, so that's its name here too
-  const backLabel = view.level === 'day' ? `Week ${stay.days[view.d - 1].week}` : view.level === 'week' ? "Mila's stars" : 'Today'
+  const wOf = (d) => stay.days[d - 1].week
+  const crumbs = [
+    { label: 'Today', go: goToday },
+    { label: "Mila's stars", go: view.level === 'galaxy' ? null : goGalaxy },
+    ...(view.level === 'week' || view.level === 'day' ? [{ label: `Week ${view.level === 'week' ? view.w : wOf(view.d)}`, go: view.level === 'day' ? () => goWeek(wOf(view.d)) : null }] : []),
+    ...(view.level === 'day' ? [{ label: `Day ${view.d}`, go: null }] : []),
+  ]
+  const prev = view.level === 'week' ? (view.w > 1 ? { label: `Week ${view.w - 1}`, go: () => goWeek(view.w - 1) } : null)
+    : view.level === 'day' ? (view.d > 1 ? { label: `Day ${view.d - 1}`, go: () => goDay(view.d - 1) } : null) : null
+  const next = view.level === 'week' ? (view.w < WEEKS ? { label: `Week ${view.w + 1}`, go: () => goWeek(view.w + 1) } : null)
+    : view.level === 'day' ? { label: view.d + 1 >= stay.today ? 'Today' : `Day ${view.d + 1}`, go: () => goDay(view.d + 1) } : null
   const faded = view.level === 'day' ? 'is-faded' : ''
   const layer = (l) => <div key={l.name} className={`cv-glayer is-${l.name} ${faded}`} data-k={l.k} dangerouslySetInnerHTML={{ __html: l.html }} />
 
@@ -875,18 +884,35 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
       {view.level === 'week' && landed && <WeekPanel w={view.w} onDay={goDay} />}
       {view.level === 'day' && landed && <DayPanel day={day} sel={sel} onPick={setSel} />}
 
+      {/* Where you are, top-left: a breadcrumb. Tap any earlier step to go up a level.
+          Slashes, not chevrons, so it never reads as "previous / next". */}
       <div className="cv-galaxy-nav" hidden={view.level === 'today' || story}>
-        <NavBack label={backLabel} onClick={up} />
-        {view.level !== 'galaxy' && (
-          <span className="nav-step" role="group" aria-label={view.level === 'week' ? 'Weeks' : 'Days'}>
-            <button type="button" className="nav-btn is-icon" onClick={() => (view.level === 'week' ? goWeek(view.w - 1) : goDay(view.d - 1))}
-              disabled={view.level === 'week' ? view.w <= 1 : view.d <= 1} aria-label={view.level === 'week' ? 'Previous week' : 'Previous day'}><ChevronLeft /></button>
-            <button type="button" className="nav-btn is-icon" onClick={() => (view.level === 'week' ? goWeek(view.w + 1) : goDay(view.d + 1))}
-              disabled={view.level === 'week' && view.w >= WEEKS} aria-label={view.level === 'week' ? 'Next week' : 'Next day'}><ChevronRight /></button>
-          </span>
-        )}
+        <nav className="nav-crumbs" aria-label="Where you are">
+          <ol>
+            {crumbs.map((c, i) => (
+              <li key={c.label}>
+                {i > 0 && <span className="nav-crumbs-sep" aria-hidden="true">/</span>}
+                {c.go
+                  ? <button type="button" className="nav-crumb" onClick={c.go}>{c.label}</button>
+                  : <span className="nav-crumb is-here" aria-current="page">{c.label}</span>}
+              </li>
+            ))}
+          </ol>
+        </nav>
         {panned && <button type="button" className="nav-btn" onClick={recenter}><CenterIcon /><span>Center</span></button>}
       </div>
+
+      {/* Moving sideways, bottom-left: the day or week before and after, each named. */}
+      {(view.level === 'week' || view.level === 'day') && !story && (
+        <nav className="nav-pager" aria-label={view.level === 'week' ? 'Other weeks' : 'Other days'}>
+          <button type="button" className="nav-btn nav-pager-prev" disabled={!prev} onClick={prev?.go}>
+            <ChevronLeft /><span>{prev ? prev.label : view.level === 'week' ? 'Previous week' : 'Previous day'}</span>
+          </button>
+          <button type="button" className="nav-btn is-trailing nav-pager-next" disabled={!next} onClick={next?.go}>
+            <span>{next ? next.label : 'Next week'}</span><ChevronRight />
+          </button>
+        </nav>
+      )}
     </div>
   )
 }
