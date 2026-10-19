@@ -1533,3 +1533,6 @@
 .fd-size b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
 .fd-size span { display: block; margin-top: 0; font-size: clamp(15px, 1.6vw, 18px); color: var(--text-2); }
 .fd-size em { font-style: normal; font-size: clamp(13px, 1.35vw, 15px); color: var(--muted); }
+/* her name is the one big thing; her weight reads as a fact beneath it, in the plain type */
+.fd-size b { font-family: var(--font-ui); font-style: normal; font-weight: 500; font-size: clamp(17px, 1.8vw, 21px); letter-spacing: .01em; color: #F6EEDB; }
+.fd-group + .fd-group { margin-top: 26px; }
