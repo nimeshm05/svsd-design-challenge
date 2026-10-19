@@ -480,7 +480,6 @@ function dayParagraphs(day) {
 }
 
 function DayPanel({ day, sel, onPick }) {
-  const m = sel != null ? day.moments[sel] : null
   const [open, setOpen] = useState(null) // a "thing" opened from its time
   const [noImg, setNoImg] = useState(false)
   const paras = dayParagraphs(day)
@@ -517,22 +516,25 @@ function DayPanel({ day, sel, onPick }) {
       </Sec>
       {moments.length > 0 && (
         <Sec title="Moments">
-          {m ? (
-            <div className="cv-gmoment">
-              <span className="cv-gmoment-t">{m.t}</span>
-              <b>{m.title}</b>
-              <p>{m.plain}</p>
-              {m.by && <span className="cv-gmoment-by">{m.by}</span>}
-              <CloseButton className="cv-gmoment-close" onClick={() => onPick(null)} />
-            </div>
-          ) : (
-            <ol className="cv-grows">
-              {moments.map((x) => {
-                const i = day.moments.indexOf(x)
-                return <li key={i}><button type="button" onClick={() => onPick(i)}><span className="cv-grows-k">{x.t}</span><span className="cv-grows-v">{x.title}</span></button></li>
-              })}
-            </ol>
-          )}
+          {/* tap a moment: its description opens under its title, in place; tap again to close */}
+          <ol className="cv-grows">
+            {moments.map((x) => {
+              const i = day.moments.indexOf(x), on = i === sel
+              return (
+                <li key={i} className={on ? 'is-open' : ''}>
+                  <button type="button" aria-expanded={on} aria-controls={`cv-gm-${day.d}-${i}`} onClick={() => onPick(on ? null : i)}>
+                    <span className="cv-grows-k">{x.t}</span><span className="cv-grows-v">{x.title}</span>
+                  </button>
+                  {on && (
+                    <div className="cv-grows-desc" id={`cv-gm-${day.d}-${i}`}>
+                      <p>{x.plain}</p>
+                      {x.by && <span className="cv-grows-by">{x.by}</span>}
+                    </div>
+                  )}
+                </li>
+              )
+            })}
+          </ol>
         </Sec>
       )}
     </aside>

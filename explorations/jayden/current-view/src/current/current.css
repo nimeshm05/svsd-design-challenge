@@ -1766,3 +1766,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .nav-dot:focus-visible i { outline: 2px solid var(--cream); outline-offset: 3px; }
 .cv-page .nav-dot { transition: width .35s cubic-bezier(.22, 1, .36, 1); }
 .cv-galaxy.is-leaving .nav-dots { opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+
+/* Moments: a row opens in place — the description sits under its title, in the value column */
+.cv-page .cv-grows > li { border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-grows > li > button { border-bottom: 0; }
+.cv-page .cv-grows > li.is-open .cv-grows-v { color: var(--cream); }
+.cv-page .cv-grows-desc { margin: -4px 0 0 120px; padding: 0 0 12px; display: flex; flex-direction: column; gap: 6px; animation: cv-grows-in .3s ease both; }
+.cv-page .cv-grows-desc p { margin: 0; font-size: 14px; line-height: 1.4; color: var(--text-2); text-wrap: pretty; }
+.cv-page .cv-grows-by { font-size: 12px; color: var(--muted); }
+@keyframes cv-grows-in { from { opacity: 0; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .cv-page .cv-grows-desc { animation: none; } }
+/* dots: centred under the sky, but never closer to Close than a clear gap (Close ≈ 100px wide, dots ≈ 160px) */
+.cv-page .nav-dots { left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2), calc(var(--edge-x) + 100px + 24px + 80px)); }
+/* final rule: left edge = centred under the sky (minus half the dots), but never left of Close + a gap */
+.cv-page .nav-dots { transform: none; left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2 - 80px), calc(var(--edge-x) + 112px)); }
+.cv-page .nav-dot { width: clamp(13px, 1.6vw, 20px); }
+.cv-page .nav-dot.is-on { width: clamp(24px, 2.7vw, 34px); }
+.cv-page .nav-dot.is-on i { width: clamp(14px, 1.6vw, 20px); }
+.cv-page .nav-dots { padding: 0 clamp(4px, .65vw, 8px); left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2 - 80px), calc(var(--edge-x) + clamp(96px, 9vw, 112px))); }
