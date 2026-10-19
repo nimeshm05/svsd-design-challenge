@@ -1895,3 +1895,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .her3d-post.is-new { color: var(--warm); }
 .cv-page .her3d-bed { background: color-mix(in srgb, var(--cream) 3%, transparent); border-color: color-mix(in srgb, var(--cream) 14%, transparent); }
 .cv-page .her3d-stage { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cream) 14%, transparent)); }
+
+/* Every dot pagination looks like the week/day dots: 6px faded-cream dots ~20px apart,
+   the current one a 20px cream pill, on a faint dark capsule */
+.cv-page :is(.fd-dots, .cv-story-dots) { display: inline-flex; align-items: center; gap: 0; height: 28px; padding: 0 8px; border-radius: 999px; background: rgba(8, 10, 14, .45); }
+.cv-page :is(.fd-dots, .cv-story-dots) i { display: block; flex: none; width: 6px; height: 6px; margin: 0 7px; border-radius: 3px; opacity: 1;
+  background: color-mix(in srgb, var(--cream) 35%, transparent); transition: width .35s cubic-bezier(.22, 1, .36, 1), background-color .25s; }
+.cv-page :is(.fd-dots, .cv-story-dots) i.is-past { background: color-mix(in srgb, var(--cream) 35%, transparent); }
+.cv-page :is(.fd-dots, .cv-story-dots) i.is-on { width: 20px; background: var(--cream); }
+.cv-page .cv-story-dots { align-self: flex-start; margin-top: 10px; }
