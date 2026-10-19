@@ -1555,7 +1555,8 @@
   display: flex; align-items: center; gap: var(--nav-gap);
 }
 .cv-page .cv-galaxy-nav[hidden] { display: none; }
-.cv-page .cv-discharge-btn, .cv-page .cv-story-ctls {
+/* (.nav-btn sets position: relative for its hit area, so the corner button needs the higher specificity) */
+.cv-page .nav-btn.cv-discharge-btn, .cv-page .cv-story-ctls {
   position: absolute; z-index: 3; right: var(--edge-x); top: var(--edge-y); height: var(--nav-h); display: flex; align-items: center;
 }
 /* titles start one bar below the top bar */
