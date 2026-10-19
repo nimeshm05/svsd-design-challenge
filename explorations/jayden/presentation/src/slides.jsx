@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { StarGlyph } from './glyphs.jsx'
+import { Icon, StarGlyph } from './glyphs.jsx'
 
 // The case study as one story. Its spine: NICU parents live two things at once (the fight and the
 // celebration), and Mila's Sky is a place that holds both. Each chapter opens on a realization, said
@@ -99,7 +99,7 @@ function Wall() {
   return (
     <div className="wall">
       <R d={0} className="k">Secondary research</R>
-      <R d={1} as="h2" className="h">Eight studies and standards, one wall.</R>
+      <R d={1} as="h2" className="h wall-h">The NICU environment <L>shapes how babies develop</L>, how nurses work, and how parents cope.</R>
       <R d={2}><Shot src="./shots/research-wall.webp" alt="Our secondary research board: eight papers and standards on hospital exposures, noise and light, nurses' alarm challenges, incubator acoustics, sensory stimulation, NICU sound levels, NICU design standards and single-family rooms, each summarized in a table with sticky notes." /></R>
     </div>
   )
@@ -113,8 +113,8 @@ function Asked() {
       <R d={1} className="asked-n">4</R>
       <R d={2} className="asked-nk">interviews</R>
       <R d={3} className="asked-who">
-        <span><i className="dot is-parent" /><i className="dot is-parent" />2 parents</span>
-        <span><i className="dot is-nurse" /><i className="dot is-nurse" />2 nurses</span>
+        <span><Icon name="parent" size={40} /><Icon name="parent" size={40} />2 parents</span>
+        <span><Icon name="nurse" size={40} color="var(--comprehension)" /><Icon name="nurse" size={40} color="var(--comprehension)" />2 nurses</span>
       </R>
     </div>
   )
@@ -143,11 +143,11 @@ function Telephone() {
       <R d={0} className="k">In their words</R>
       <R d={1} className="bubble is-nurse">
         <p>&ldquo;We tell them everything, but sometimes it&apos;s too much, they don&apos;t understand.&rdquo;</p>
-        <span>Retired NICU nurse</span>
+        <span><Icon name="nurse" size={22} color="var(--comprehension)" />Retired NICU nurse</span>
       </R>
       <R d={4} className="bubble is-parent">
         <p>&ldquo;The hospital is like an elaborate game of telephone.&rdquo;</p>
-        <span>NICU parent</span>
+        <span><Icon name="parent" size={22} />NICU parent</span>
       </R>
     </div>
   )
@@ -167,7 +167,7 @@ function Pillars({ step }) {
       <div className="cols">
         {PAINS.map((x, k) => (
           <div key={x.p} className={`col is-${x.p} ${step >= k ? 'is-in' : ''}`}>
-            <span className="col-head"><StarGlyph size={18} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</span>
+            <span className="col-head"><Icon name={x.p} size={30} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</span>
             <p className="col-pain">{x.pain}</p>
             <figure className="q"><blockquote>&ldquo;{x.q}&rdquo;</blockquote></figure>
           </div>
@@ -185,7 +185,7 @@ function Problem({ active }) {
   const [fly, setFly] = useState(null)
   useLayoutEffect(() => {
     if (!active) { setFly(null); return }
-    const from = PS.map((p) => document.querySelector(`.slide-pillars .col.is-${p} .col-head .glyph`)?.getBoundingClientRect())
+    const from = PS.map((p) => document.querySelector(`.slide-pillars .col.is-${p} .col-head .icon`)?.getBoundingClientRect())
     const to = PS.map((p) => host.current?.querySelector(`mark.is-${p}`)?.getClientRects()[0])
     if (from.some((r) => !r) || to.some((r) => !r)) return
     setFly(PS.map((p, k) => ({ p, x: from[k].left + from[k].width / 2, y: from[k].top + from[k].height / 2, dx: to[k].left - (from[k].left + from[k].width / 2), dy: to[k].top + to[k].height / 2 - (from[k].top + from[k].height / 2) })))
@@ -198,7 +198,7 @@ function Problem({ active }) {
       </p>
       {fly?.map((f, k) => (
         <span key={f.p} className="flystar" style={{ left: f.x, top: f.y, '--dx': `${f.dx}px`, '--dy': `${f.dy}px`, '--k': k }}>
-          <StarGlyph size={18} color={PILLARS[f.p].color} />
+          <Icon name={f.p} size={30} color={PILLARS[f.p].color} />
         </span>
       ))}
     </div>
@@ -241,7 +241,7 @@ function Compete() {
         </R>
         {PS.map((p, k) => (
           <R key={p} d={3 + k * 0.7} className={`mx-row is-${p}`}>
-            <span className={`pill is-${p}`}>{PILLARS[p].name}</span>
+            <span className={`pill is-${p}`}><Icon name={p} size={18} color="#0b0b0b" />{PILLARS[p].name}</span>
             {MATRIX[p].map((c, j) => c
               ? <span key={j} className="mx-cell"><b>{c.does}</b><span className="mx-take">{c.take}</span></span>
               : <span key={j} className="mx-cell is-none" aria-label="Not addressed">✕</span>)}
@@ -257,7 +257,7 @@ function HMW({ step }) {
   const on = (n) => (step >= n ? 'is-in' : '')
   return (
     <div className="center statement hmw">
-      <R d={0} className="k">How might we</R>
+      <R d={0} className="k">Opportunity</R>
       <R d={1} as="p" className="statement-p">
         …turn a baby&apos;s care into a story that helps parents{' '}
         <span className={`hmw-part ${on(1)}`}><L p="connection">feel connected</L>,</span>{' '}
@@ -279,14 +279,19 @@ const THEMES = [
   { t: 'Celebrating milestones', ideas: ['Milestones like a first poop, first skin-to-skin', 'Reminders of her bravery and strength'] },
   { t: 'Sharing with others', ideas: ['Updates parents can share with family', 'Channels between parents and the care team'] },
 ]
+// the ideas we pulled from the map, mixed (not grouped by principle yet), lifted over it as chips
+const ideas = () => [0, 1, 2, 3, 4].flatMap((k) => PS.map((p) => SORTED[p][k]))
+const CHIP_AT = (k) => [3 + (k % 5) * 19.2 + ((k * 7) % 5) - 2, 8 + Math.floor(k / 5) * 31 + ((k * 11) % 7) - 3]
 function Brainstorm() {
   return (
     <div className="brain">
       <R d={0} className="k">Brainstorm</R>
       <R d={1} as="h2" className="h">Every idea we had, grouped into six themes.</R>
-      <R d={2}><Shot src="./shots/affinity-map.webp" alt="Our affinity map: sticky notes from Jayden, Sara and Nimesh grouped into six themes: baby health status and progress tracking; a visual and interactive baby avatar; charting and medical information access; storytelling and narrative content for parents; emotional support and celebrating milestones; sharing and communication between stakeholders." /></R>
-      <R d={3} className="brain-themes">
-        {THEMES.map((x) => <span key={x.t}>{x.t}</span>)}
+      <R d={2} className="brain-stage"><Shot src="./shots/affinity-map.webp" alt="Our affinity map: sticky notes from Jayden, Sara and Nimesh grouped into six themes: baby health status and progress tracking; a visual and interactive baby avatar; charting and medical information access; storytelling and narrative content for parents; emotional support and celebrating milestones; sharing and communication between stakeholders." />
+      {ideas().map((t, k) => {
+        const [x, y] = CHIP_AT(k)
+        return <span key={t} className="sticky brain-chip" data-idea={t} style={{ left: `${x}%`, top: `${y}%`, '--k': k, '--r': `${((k * 37) % 5) - 2}deg` }}>{t}</span>
+      })}
       </R>
     </div>
   )
@@ -391,7 +396,7 @@ function Principles() {
       <div className="flow-grid is-two">
         <R d={2} className="flow-hd">Pain point</R><R d={2} className="flow-hd">Principle</R>
         {FLOW.map((x, k) => [
-          <R key={`${x.p}a`} d={3 + k} className={`flow-cell is-${x.p}`}><StarGlyph size={14} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</R>,
+          <R key={`${x.p}a`} d={3 + k} className={`flow-cell is-${x.p}`}><Icon name={x.p} size={28} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</R>,
           <R key={`${x.p}b`} d={3.4 + k} className="flow-cell is-principle">{x.principle}</R>,
         ])}
       </div>
@@ -406,20 +411,35 @@ const SORTED = {
   awareness: ['A clock that shows progress hour by hour', 'Journey timeline', 'Upcoming plans from different doctors in one place', 'Notifications for new updates', 'Standup information'],
 }
 const scatter = (n) => { const a = Math.sin(n * 91.7) * 43758.5; const b = Math.sin(n * 37.3) * 15731.7; return [(a - Math.floor(a) - 0.5) * 700, (b - Math.floor(b) - 0.5) * 340 + 120] }
-function Sort() {
+function Sort({ active }) {
+  const host = useRef(null)
+  // each chip starts exactly where it floated on the affinity map, then flies to its principle
+  useLayoutEffect(() => {
+    if (!active || !host.current) return
+    host.current.querySelectorAll('.floater').forEach((el, n) => {
+      el.style.animation = 'none'; el.style.transform = 'none'
+      const to = el.getBoundingClientRect()
+      const from = document.querySelector(`.slide-brainstorm .brain-chip[data-idea="${el.dataset.idea}"]`)?.getBoundingClientRect()
+      const [sx, sy] = scatter(n + 1)
+      el.style.setProperty('--fx', `${from ? from.left - to.left : sx}px`)
+      el.style.setProperty('--fy', `${from ? from.top - to.top : sy}px`)
+      void el.offsetWidth
+      el.style.animation = ''; el.style.transform = ''
+    })
+  }, [active])
   return (
-    <div className="sort">
+    <div className="sort" ref={host}>
       <R d={0} className="k">Ideas, sorted by principle</R>
       <div className="sort-cols">
         {FLOW.map((x, c) => (
           <div key={x.p} className={`sort-col is-${x.p}`}>
             <R d={1 + c * 0.3} className="sort-head">
-              <span><StarGlyph size={14} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</span>
+              <span><Icon name={x.p} size={22} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</span>
               <b>{x.principle}</b>
             </R>
             {SORTED[x.p].map((t, k) => {
-              const n = c * 7 + k, [fx, fy] = scatter(n + 1)
-              return <span key={t} className="sticky floater" style={{ '--fx': `${(1 - c) * 360 + fx}px`, '--fy': `${fy}px`, '--n': n, '--r': `${((n * 37) % 5) - 2}deg` }}>{t}</span>
+              const n = c * 7 + k
+              return <span key={t} className="sticky floater" data-idea={t} style={{ '--n': n, '--r': `${((n * 37) % 5) - 2}deg` }}>{t}</span>
             })}
           </div>
         ))}
@@ -481,7 +501,7 @@ function Constraints() {
         <R d={1} className="crow is-head" role="row"><span role="columnheader">For</span><span role="columnheader">Constraint</span><span role="columnheader">Our response</span></R>
         {CONSTRAINTS.map((x, k) => (
           <R key={x.who} d={2 + k} className={`crow ${x.todo ? 'is-todo' : ''}`} role="row">
-            <span role="cell" className="crow-who">{x.who}</span><span role="cell">{x.c}</span><span role="cell" className="crow-r">{x.r}</span>
+            <span role="cell" className="crow-who"><Icon name={x.who === 'Family' ? 'parent' : x.who.toLowerCase()} size={30} />{x.who}</span><span role="cell">{x.c}</span><span role="cell" className="crow-r">{x.r}</span>
           </R>
         ))}
       </div>
@@ -519,6 +539,20 @@ function System() {
           <p>&ldquo;Mila&apos;s Sky&rdquo; makes it her story, not a chart: hopeful and reassuring.</p>
         </R>
       </div>
+    </div>
+  )
+}
+
+function KOpen() {
+  return (
+    <div className="center statement">
+      <R d={0} className="k">06 · Constraints</R>
+      <R d={1} className="people">
+        <span><Icon name="baby" size={64} />Baby</span>
+        <span><Icon name="nurse" size={64} color="var(--comprehension)" />Nurse</span>
+        <span><Icon name="parent" size={64} />Family</span>
+      </R>
+      <R d={2} as="p" className="statement-p">Every bedside has <L>three people to protect</L>: the baby, the nurse, and the family.</R>
     </div>
   )
 }
@@ -591,9 +625,8 @@ export const SLIDES = [
   { id: 'both', section: 'Hook', View: statement({ k: 'The tension', big: true, children: <>NICU parents live <L>both things at once</L>, every day.</> }) },
   { id: 'nicu', section: 'The NICU', planet: true, View: statement({ k: 'The NICU', children: <>The neonatal intensive care unit is where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
   { id: 'environment', section: 'The NICU', View: Environment },
-  { id: 'wall', section: '01 · Research', View: Wall },
+  { id: 'wall', section: '01 · Research', planet: true, View: Wall },
 
-  { id: 'secondary', section: '01 · Research', planet: true, View: statement({ k: '01 · Secondary research', children: <>The NICU environment <L>shapes how babies develop</L>, how nurses work, and how parents cope.</> }) },
   { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn&apos;t tell us <L>how parents make sense of it</L>.</> }) },
   { id: 'asked', section: '01 · Research', View: Asked },
   { id: 'heard', section: '01 · Research', View: Heard },
@@ -615,7 +648,7 @@ export const SLIDES = [
   { id: 's-open', section: '05 · The story layer', View: statement({ k: 'The story layer', children: <>Stars <L>never disappear</L>, because &ldquo;you are still moving forward even if you feel stuck.&rdquo;</> }) },
   { id: 'system', section: '05 · The story layer', View: System },
 
-  { id: 'k-open', section: '06 · Constraints', planet: true, View: statement({ k: '06 · Constraints', children: <>Every bedside has <L>three people to protect</L>: the baby, the nurse, and the family.</> }) },
+  { id: 'k-open', section: '06 · Constraints', planet: true, View: KOpen },
   { id: 'constraints', section: '06 · Constraints', View: Constraints },
   { id: 'mom', section: '06 · Constraints', View: Mom },
   { id: 'modality', section: '06 · Constraints', View: Modality },

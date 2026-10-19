@@ -477,3 +477,32 @@ body:has(.panel) { overflow: auto; }
 /* chapters flow on, side by side, so the whole story fits on a screen or two */
 .panel-flow { display: flex; flex-wrap: wrap; gap: 26px 40px; padding-top: 18px; }
 .panel-group { padding-top: 0; }
+
+/* symbols */
+.icon { flex: none; overflow: visible; }
+.asked-who span { gap: 4px; }
+.asked-who .icon + .icon { margin-left: -10px; }
+.bubble span { display: flex; align-items: center; gap: 8px; }
+.bubble.is-parent span { justify-content: flex-end; }
+.crow-who { display: flex; align-items: center; gap: 12px; }
+.col-head .icon, .flow-cell .icon { filter: drop-shadow(0 0 8px color-mix(in srgb, currentColor 30%, transparent)); }
+.pill { display: inline-flex; align-items: center; gap: 6px; }
+.people { display: flex; gap: 56px; margin-bottom: 30px; }
+.people span { display: flex; flex-direction: column; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.flystar .icon { filter: drop-shadow(0 0 10px currentColor); }
+.wall-h { max-width: 30ch; }
+
+/* brainstorm: the idea chips float over the affinity map */
+.brain-stage { position: relative; }
+.brain-chip { position: absolute; max-width: 17%; font-size: 13px; padding: 7px 10px; z-index: 2; transform: rotate(var(--r)); opacity: 0; }
+.is-on .brain-chip { animation: chip-in .9s calc(1.2s + var(--k) * .08s) var(--ease) both, bob 6s calc(2.6s + var(--k) * .3s) ease-in-out infinite; }
+@keyframes chip-in { from { opacity: 0; transform: translateY(16px) rotate(var(--r)) scale(.9); } to { opacity: 1; transform: rotate(var(--r)); } }
+@keyframes bob { 50% { transform: translateY(-5px) rotate(var(--r)); } }
+.is-static .brain-chip { opacity: 1; }
+.slide-sort.is-on, .slide-sort.is-next { transform: none; filter: none; }
+.is-on .floater { animation: float-in 1.5s calc(.2s + var(--n) * .05s) cubic-bezier(.45, 0, .2, 1) both; }
+.is-on .floater { animation-name: float-from; }
+@keyframes float-from {
+  0% { transform: translate(var(--fx), var(--fy)) rotate(var(--r)); opacity: 1; }
+  100% { transform: none; opacity: 1; box-shadow: inset 4px 0 0 var(--c), 0 6px 16px rgba(0, 0, 0, .35); }
+}
