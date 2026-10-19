@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { CenterIcon, ChevronLeft, ChevronRight, InfoIcon } from './NavIcons.jsx'
 import { stay, weekInfo, dayDetail } from '../data/days.js'
 
@@ -417,66 +417,43 @@ function ShootingStars() {
 }
 
 /* ---------- Panels ---------- */
+// A panel section: a small heading, then its content, on one spacing rhythm.
+function Sec({ title, children, className = '' }) {
+  return (
+    <section className={`cv-gsec ${className}`}>
+      {title && <h4 className="cv-gsec-k">{title}</h4>}
+      {children}
+    </section>
+  )
+}
+
 function WeekPanel({ w, onDay }) {
   const info = weekInfo[w - 1]
   const firsts = daysOf(w).filter((d) => stay.firsts[d.d])
   return (
     <aside className="cv-gpanel" aria-label={`Week ${w}`}>
-      <span className="cv-gpanel-k">Week {w}</span>
       <h3 className="cv-gpanel-title">{info.title}</h3>
-      <p className="cv-gpanel-text">{info.summary}</p>
+      <div className="cv-gpanel-desc"><p>{info.summary}</p></div>
+      {info.hard && <Sec title="What changed"><div className="cv-gpanel-desc"><p>{info.hard}</p></div></Sec>}
       {firsts.length > 0 && (
-        <ul className="cv-gpanel-firsts">
-          {firsts.map((d) => <li key={d.d}><button type="button" onClick={() => onDay(d.d)}><span className="cv-gplanet" aria-hidden="true" />{stay.firsts[d.d]} <em>Day {d.d}</em></button></li>)}
-        </ul>
+        <Sec title="Firsts">
+          <ul className="cv-grows">
+            {firsts.map((d) => (
+              <li key={d.d}>
+                <button type="button" onClick={() => onDay(d.d)}>
+                  <span className="cv-grows-k">Day {d.d}</span><span className="cv-grows-v"><span className="cv-gplanet" aria-hidden="true" />{stay.firsts[d.d]}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Sec>
       )}
-      {info.hard && (
-        <div className="cv-gpanel-hard">
-          <span className="cv-gpanel-k">What changed</span>
-          <p>{info.hard}</p>
+      <Sec title="Days">
+        <div className="cv-gpanel-days">
+          {daysOf(w).map((d) => <button key={d.d} type="button" onClick={() => onDay(d.d)} className={d.d === stay.today ? 'is-today' : ''}>Day {d.d}</button>)}
         </div>
-      )}
-      <div className="cv-gpanel-days">
-        {daysOf(w).map((d) => <button key={d.d} type="button" onClick={() => onDay(d.d)} className={d.d === stay.today ? 'is-today' : ''}>Day {d.d}</button>)}
-      </div>
+      </Sec>
     </aside>
-  )
-}
-
-// The day's few things to know, numbered as on the day page. A thing with a time opens in place.
-function DayThings({ things }) {
-  const [open, setOpen] = useState(null)
-  const [noImg, setNoImg] = useState(false)
-  return (
-    <section className="cv-gthings" aria-label="3 things to know today">
-      <span className="cv-gpanel-k">3 things to know today</span>
-      <ol>
-        {things.map((x, i) => (
-          <li key={x.title}>
-            <span className="cv-gthings-num">{i + 1}</span>
-            <div className="cv-gthings-text">
-              <b>{x.title}</b>
-              {x.text && <span>{x.text}</span>}
-              {x.detail && (
-                <button type="button" className="cv-gthings-at" aria-expanded={open === i} aria-controls={`cv-gthing-${i}`}
-                  onClick={() => setOpen(open === i ? null : i)}>{x.t}</button>
-              )}
-              {x.detail && open === i && (
-                <div className="cv-gmoment cv-gthings-detail" id={`cv-gthing-${i}`}>
-                  <b>{x.detail.title}</b>
-                  <p>{x.detail.text}</p>
-                  <figure className="cv-gthings-img">
-                    {noImg ? <figcaption>{x.detail.alt}</figcaption>
-                      : <img src={x.detail.img} alt={x.detail.alt} onError={() => setNoImg(true)} />}
-                  </figure>
-                  <button type="button" className="cv-gmoment-close" onClick={() => setOpen(null)}>Close</button>
-                </div>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
-    </section>
   )
 }
 
@@ -497,38 +474,75 @@ function Facts({ rows }) {
 const familyTime = (min) =>
   min ? [Math.floor(min / 60) && `${Math.floor(min / 60)} h`, min % 60 && `${min % 60} min`].filter(Boolean).join(' ') : '—'
 
+// The day in plain paragraphs: its story, then what else a parent should know, then its care times.
+// A "thing to know" that repeats the story isn't said twice, but its time (and what it opens) joins the story.
+function dayParagraphs(day) {
+  const story = { text: day.story }
+  const rest = []
+  for (const x of day.things ?? []) {
+    if (day.story.toLowerCase().startsWith(x.title.toLowerCase())) { if (x.detail) story.thing = x; continue }
+    rest.push({ text: [x.title.replace(/\.?$/, '.'), x.text].filter(Boolean).join(' '), thing: x.detail ? x : null })
+  }
+  const cares = day.moments.filter((m) => m.kind === 'care').length
+  return [story, ...rest, ...(cares ? [{ text: `${cares} care times, each with a feed and a diaper change.` }] : [])]
+}
+
 function DayPanel({ day, sel, onPick }) {
   const m = sel != null ? day.moments[sel] : null
-  const cares = day.moments.filter((x) => x.kind === 'care').length
+  const [open, setOpen] = useState(null) // a "thing" opened from its time
+  const [noImg, setNoImg] = useState(false)
+  const paras = dayParagraphs(day)
+  const moments = day.moments.filter((x) => x.kind !== 'care')
   return (
     <aside className="cv-gpanel" aria-label={`Day ${day.d}`}>
       <h3 className="cv-gpanel-title">{day.first ?? `Day ${day.d}`}</h3>
-      {day.things && <DayThings key={day.d} things={day.things} />}
-      {/* the day in plain words: what it was like, then what it held */}
       <div className="cv-gpanel-desc">
-        <p>{day.story}</p>
-        {cares > 0 && <p>{cares} care times, each with a feed and a diaper change.</p>}
+        {paras.map((p, i) => (
+          <Fragment key={i}>
+            <p>
+              {p.text}
+              {p.thing && <> <button type="button" className="cv-gpanel-at" aria-expanded={open === i} onClick={() => setOpen(open === i ? null : i)}>{p.thing.t}</button></>}
+            </p>
+            {p.thing && open === i && (
+              <div className="cv-gmoment">
+                <b>{p.thing.detail.title}</b>
+                <p>{p.thing.detail.text}</p>
+                <figure className="cv-gthings-img">
+                  {noImg ? <figcaption>{p.thing.detail.alt}</figcaption>
+                    : <img src={p.thing.detail.img} alt={p.thing.detail.alt} onError={() => setNoImg(true)} />}
+                </figure>
+                <button type="button" className="cv-gmoment-close" onClick={() => setOpen(null)}>Close</button>
+              </div>
+            )}
+          </Fragment>
+        ))}
       </div>
-      <Facts rows={[
-        ['Breathing help', day.supportLabel],
-        ['Weight', `${day.weight.toLocaleString()} g`],
-        ['Family time', familyTime(day.parent)],
-      ]} />
-      {m ? (
-        <div className="cv-gmoment">
-          <span className="cv-gpanel-k">{m.t}</span>
-          <b>{m.title}</b>
-          <p>{m.plain}</p>
-          {m.by && <span className="cv-gmoment-by">{m.by}</span>}
-          <button type="button" className="cv-gmoment-close" onClick={() => onPick(null)}>All moments</button>
-        </div>
-      ) : (
-        <ol className="cv-gpanel-moments">
-          {day.moments.filter((x) => x.kind !== 'care').map((x) => {
-            const i = day.moments.indexOf(x)
-            return <li key={i}><button type="button" onClick={() => onPick(i)}><span>{x.t}</span>{x.title}</button></li>
-          })}
-        </ol>
+      <Sec title="Her day at a glance">
+        <Facts rows={[
+          ['Breathing help', day.supportLabel],
+          ['Weight', `${day.weight.toLocaleString()} g`],
+          ['Family time', familyTime(day.parent)],
+        ]} />
+      </Sec>
+      {moments.length > 0 && (
+        <Sec title="Moments">
+          {m ? (
+            <div className="cv-gmoment">
+              <span className="cv-gmoment-t">{m.t}</span>
+              <b>{m.title}</b>
+              <p>{m.plain}</p>
+              {m.by && <span className="cv-gmoment-by">{m.by}</span>}
+              <button type="button" className="cv-gmoment-close" onClick={() => onPick(null)}>All moments</button>
+            </div>
+          ) : (
+            <ol className="cv-grows">
+              {moments.map((x) => {
+                const i = day.moments.indexOf(x)
+                return <li key={i}><button type="button" onClick={() => onPick(i)}><span className="cv-grows-k">{x.t}</span><span className="cv-grows-v">{x.title}</span></button></li>
+              })}
+            </ol>
+          )}
+        </Sec>
       )}
     </aside>
   )
