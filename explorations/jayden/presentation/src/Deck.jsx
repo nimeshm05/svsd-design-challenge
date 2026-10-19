@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { SLIDES } from './slides.jsx'
 import { StarGlyph } from './glyphs.jsx'
 
-// The case study as a website you present from. One slide at a time; → / space / click "Next" to go on.
+// The case study as a website you present from. One idea at a time; → / space / the › button to go on.
 // Behind every slide, the night sky drifts a little further with each step, its color warming to the
 // pillar being told, and along the bottom her constellation grows: one star per slide, a planet for each
 // chapter's opening. The story of the product, told in the product's own language.
@@ -12,23 +12,29 @@ const fromHash = () => {
   return Number.isFinite(n) ? Math.min(N - 1, Math.max(0, n - 1)) : 0
 }
 
+// some slides build in steps (a realization, then what we did about it): → shows the next step first
+const STEPS = (k) => SLIDES[k].steps ?? 1
+
 export function Deck() {
-  const [i, setI] = useState(fromHash)
-  const go = useCallback((n) => setI(Math.min(N - 1, Math.max(0, n))), [])
+  const [at, setAt] = useState(() => ({ i: fromHash(), step: 0 }))
+  const { i, step } = at
+  const go = useCallback((n) => setAt({ i: Math.min(N - 1, Math.max(0, n)), step: 0 }), [])
+  const next = useCallback(() => setAt(({ i, step }) => (step < STEPS(i) - 1 ? { i, step: step + 1 } : i < N - 1 ? { i: i + 1, step: 0 } : { i, step })), [])
+  const prev = useCallback(() => setAt(({ i, step }) => (step > 0 ? { i, step: step - 1 } : i > 0 ? { i: i - 1, step: STEPS(i - 1) - 1 } : { i, step })), [])
   useEffect(() => { window.history.replaceState(null, '', `#${i + 1}`) }, [i])
   useEffect(() => {
     const key = (e) => {
       if (e.target.closest?.('input, textarea')) return
-      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); setI((v) => Math.min(N - 1, v + 1)) }
-      if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); setI((v) => Math.max(0, v - 1)) }
-      if (e.key === 'Home') setI(0)
-      if (e.key === 'End') setI(N - 1)
+      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); next() }
+      if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); prev() }
+      if (e.key === 'Home') go(0)
+      if (e.key === 'End') go(N - 1)
     }
-    const hash = () => setI(fromHash())
+    const hash = () => { const n = fromHash(); setAt((a) => (a.i === n ? a : { i: n, step: 0 })) }
     window.addEventListener('keydown', key)
     window.addEventListener('hashchange', hash)
     return () => { window.removeEventListener('keydown', key); window.removeEventListener('hashchange', hash) }
-  }, [])
+  }, [next, prev, go])
 
   const s = SLIDES[i]
   return (
@@ -41,8 +47,8 @@ export function Deck() {
 
       <main className="deck-stage">
         {SLIDES.map((S, k) => (
-          <section key={S.id} className={`slide slide-${S.id} ${k === i ? 'is-on' : k < i ? 'is-past' : 'is-next'}`} aria-hidden={k !== i} inert={k !== i}>
-            <S.View active={k === i} />
+          <section key={S.id} className={`slide slide-${S.id} ${k === i ? 'is-on' : k < i ? 'is-past' : 'is-next'} is-step-${k === i ? step : k < i ? STEPS(k) - 1 : 0}`} aria-hidden={k !== i} inert={k !== i}>
+            <S.View active={k === i} step={k === i ? step : 0} />
           </section>
         ))}
       </main>
@@ -50,8 +56,8 @@ export function Deck() {
       <footer className="deck-foot">
         <Progress i={i} go={go} />
         <span className="deck-arrows">
-          <button type="button" onClick={() => go(i - 1)} disabled={i === 0} aria-label="Previous slide">‹</button>
-          <button type="button" onClick={() => go(i + 1)} disabled={i === N - 1} aria-label="Next slide">›</button>
+          <button type="button" onClick={prev} disabled={i === 0 && step === 0} aria-label="Previous">‹</button>
+          <button type="button" onClick={next} disabled={i === N - 1 && step === STEPS(i) - 1} aria-label="Next">›</button>
         </span>
       </footer>
     </div>
