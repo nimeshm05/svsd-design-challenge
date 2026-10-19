@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { CenterIcon, ChevronLeft, ChevronRight, CloseButton, InfoIcon } from './NavIcons.jsx'
+import { CenterIcon, CloseButton, InfoIcon } from './NavIcons.jsx'
 import { stay, weekInfo, dayDetail } from '../data/days.js'
 
 // Her whole stay, after Nimesh's galaxy (explorations/nimesh/galaxy): one space and one camera.
@@ -717,11 +717,33 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   }
   const onClickCapture = (e) => { if (justDragged.current) { e.stopPropagation(); e.preventDefault(); justDragged.current = false } }
 
-  // Two-finger scroll looks around; pinch zooms toward your fingers
+  // Two-finger scroll looks around (sideways swipes page in a week or day); pinch zooms toward your fingers
+  const swipe = useRef({ x: 0, done: false, t: 0 })
   useEffect(() => {
     const el = host.current
     const onWheel = (e) => {
-      if (view.level === 'day' || !landed || e.target.closest('.cv-gpanel')) return
+      if (!landed || e.target.closest('.cv-gpanel')) return
+      // In a week or a day, a sideways swipe moves to the one before or after. One move per gesture:
+      // the trackpad's momentum keeps sending events, so wait for a short quiet gap before the next.
+      if (!e.ctrlKey && (view.level === 'week' || view.level === 'day')) {
+        const sw = swipe.current
+        clearTimeout(sw.t)
+        sw.t = setTimeout(() => { sw.x = 0; sw.done = false }, 220)
+        const sideways = Math.abs(e.deltaX) > Math.abs(e.deltaY)
+        if (sideways || view.level === 'day') {
+          e.preventDefault()
+          if (sw.done || !sideways) return
+          sw.x += e.deltaX
+          if (Math.abs(sw.x) > 40) {
+            sw.done = true
+            const k = sw.x > 0 ? 1 : -1 // fingers move left → content moves left → the next one
+            if (view.level === 'week') goWeek(view.w + k)
+            else if (view.d + k >= 1 && view.d + k < stay.today) goDay(view.d + k) // never swipe out of her sky by accident
+          }
+          return
+        }
+      }
+      if (view.level === 'day') return
       e.preventDefault()
       const b = box.current, s = scaleOf(b), [cw, ch] = sizeRef.current
       if (e.ctrlKey) {
@@ -744,7 +766,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         const k = e.key === 'ArrowRight' ? 1 : -1
         if (view.level === 'week') goWeek(view.w + k)
-        if (view.level === 'day') goDay(view.d + k)
+        if (view.level === 'day' && view.d + k >= 1 && view.d + k < stay.today) goDay(view.d + k)
       }
     }
     window.addEventListener('keydown', onKey)
@@ -786,10 +808,11 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
     ...(view.level === 'week' || view.level === 'day' ? [{ label: `Week ${view.level === 'week' ? view.w : wOf(view.d)}`, go: view.level === 'day' ? () => goWeek(wOf(view.d)) : null }] : []),
     ...(view.level === 'day' ? [{ label: `Day ${view.d}`, go: null }] : []),
   ]
-  const prev = view.level === 'week' ? (view.w > 1 ? { label: `Week ${view.w - 1}`, go: () => goWeek(view.w - 1) } : null)
-    : view.level === 'day' ? (view.d > 1 ? { label: `Day ${view.d - 1}`, go: () => goDay(view.d - 1) } : null) : null
-  const next = view.level === 'week' ? (view.w < WEEKS ? { label: `Week ${view.w + 1}`, go: () => goWeek(view.w + 1) } : null)
-    : view.level === 'day' ? { label: view.d + 1 >= stay.today ? 'Today' : `Day ${view.d + 1}`, go: () => goDay(view.d + 1) } : null
+  const dots = view.level === 'week'
+    ? Array.from({ length: WEEKS }, (_, i) => ({ key: `w${i + 1}`, label: `Week ${i + 1}`, on: view.w === i + 1, go: () => goWeek(i + 1) }))
+    : view.level === 'day'
+      ? daysOf(wOf(view.d)).filter((d) => d.d < stay.today).map((d) => ({ key: `d${d.d}`, label: `Day ${d.d}`, on: view.d === d.d, go: () => goDay(d.d) }))
+      : []
   const faded = view.level === 'day' ? 'is-faded' : ''
   const layer = (l) => <div key={l.name} className={`cv-glayer is-${l.name} ${faded}`} data-k={l.k} dangerouslySetInnerHTML={{ __html: l.html }} />
 
@@ -907,15 +930,14 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
         {panned && <button type="button" className="nav-btn" onClick={recenter}><CenterIcon /><span>Center</span></button>}
       </div>
 
-      {/* Moving sideways, bottom centre of the sky: the day or week before and after, each named. */}
-      {(view.level === 'week' || view.level === 'day') && !story && (
-        <nav className="nav-pager" aria-label={view.level === 'week' ? 'Other weeks' : 'Other days'}>
-          <button type="button" className="nav-btn nav-pager-prev" disabled={!prev} onClick={prev?.go}>
-            <ChevronLeft /><span>{prev ? prev.label : view.level === 'week' ? 'Previous week' : 'Previous day'}</span>
-          </button>
-          <button type="button" className="nav-btn is-trailing nav-pager-next" disabled={!next} onClick={next?.go}>
-            <span>{next ? next.label : 'Next week'}</span><ChevronRight />
-          </button>
+      {/* Moving sideways, bottom centre of the sky: dots, one per week (in a week) or per day of
+          this week (in a day). Swipe sideways on the trackpad, use ← →, or tap a dot. */}
+      {(view.level === 'week' || view.level === 'day') && !story && dots.length > 1 && (
+        <nav className="nav-dots" aria-label={view.level === 'week' ? 'Weeks' : 'Days'}>
+          {dots.map((x) => (
+            <button key={x.key} type="button" className={`nav-dot ${x.on ? 'is-on' : ''}`} aria-label={x.label}
+              aria-current={x.on ? 'page' : undefined} onClick={x.go}><i /></button>
+          ))}
         </nav>
       )}
     </div>

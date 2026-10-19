@@ -38,3 +38,13 @@
 - The week/day pager moved to the bottom centre of the sky area, clear of Close.
 
 **Why:** The thing you tapped to go somewhere is the thing you tap to come back, in the same spot. Nothing to search for, and the transition explains itself.
+
+## Update: dots and a swipe instead of ‹ › buttons
+
+**Chose:** In a week or a day, moving sideways is a gesture, not a pair of buttons. A two-finger sideways swipe on the trackpad moves to the week or day before or after (swipe left for the next). Dots at the bottom centre show where you are (one per week in a week; one per day of this week in a day; the current one is a cream pill) and can be tapped. ← → still work, and so does dragging on a day.
+
+**Details that matter:**
+- One swipe = one step. A trackpad keeps sending scroll events as momentum; we count a step once, then wait for a short quiet gap.
+- In a week, a mostly vertical two-finger scroll still pans, and pinch still zooms.
+- You can't swipe out of her sky by accident: past the last day before today (or before day 1), a swipe does nothing. Closing is always the Close button.
+- No dots when there's only one item to show.

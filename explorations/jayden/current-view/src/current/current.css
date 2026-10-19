@@ -1751,3 +1751,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .cv-sheet-head .nav-btn { flex: none; }
 .cv-page .cv-gmoment .nav-btn.is-close { align-self: flex-start; margin-top: 4px; }
 .cv-page .nav-ic.is-x { height: calc(var(--ic) * .82); }
+
+/* Dot pagination: bottom centre of the sky. The current dot stretches into a pill. */
+.cv-page .nav-dots { position: absolute; z-index: 3; bottom: var(--edge-y); left: calc((100% - min(380px, 36%) - var(--edge-x)) / 2); transform: translateX(-50%);
+  height: var(--nav-h); display: flex; align-items: center; gap: 2px; padding: 0 8px; border-radius: 999px; background: rgba(8, 10, 14, .45); }
+.cv-page .nav-dot { position: relative; display: grid; place-items: center; width: 20px; height: var(--nav-h); padding: 0; margin: 0; border: 0; background: none; cursor: pointer; }
+.cv-page .nav-dot::before { content: ''; position: absolute; inset: 50% auto auto 50%; width: 32px; height: var(--nav-hit); transform: translate(-50%, -50%); } /* easy to tap */
+.cv-page .nav-dot i { display: block; width: 6px; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--cream) 35%, transparent);
+  transition: width .35s cubic-bezier(.22, 1, .36, 1), background-color .25s; }
+.cv-page .nav-dot:hover i { background: color-mix(in srgb, var(--cream) 70%, transparent); }
+.cv-page .nav-dot.is-on { width: 34px; }
+.cv-page .nav-dot.is-on i { width: 20px; background: var(--cream); }
+.cv-page .nav-dot:focus-visible { outline: none; }
+.cv-page .nav-dot:focus-visible i { outline: 2px solid var(--cream); outline-offset: 3px; }
+.cv-page .nav-dot { transition: width .35s cubic-bezier(.22, 1, .36, 1); }
+.cv-galaxy.is-leaving .nav-dots { opacity: 0; pointer-events: none; transition: opacity .5s ease; }
