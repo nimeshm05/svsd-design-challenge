@@ -70,22 +70,23 @@ export function FirstDay({ stage, theme, walk, setWalk }) {
 
   return (
     <div className="fd">
-      <FirstStar theme={theme} big />
       {stage === 'arrival' ? (
         <>
-          {/* two quiet groups with room between them: who she is, then how small she is */}
-          <div className="fd-group">
-            <p className="fd-name">Mila</p>
-            <p className="fd-born">Born today at {FIRST.born}</p>
+          {/* laid out wide, not stacked: her star with its one note beside it, her name, then two facts side by side */}
+          <div className="fd-star-row">
+            <FirstStar theme={theme} big />
+            <span className="fd-star-note">Her star is as big as she is.</span>
           </div>
-          <div className="fd-group fd-size">
-            <b>{FIRST.grams} grams</b>
-            <span>{FIRST.feel[0].toUpperCase() + FIRST.feel.slice(1)}.</span>
-            <em>Her star is as big as she is.</em>
+          <p className="fd-name">Mila</p>
+          <div className="fd-facts">
+            <div><b>{FIRST.born}</b><span>Born today</span></div>
+            <i aria-hidden="true" />
+            <div><b>{FIRST.grams} grams</b><span>{FIRST.feel[0].toUpperCase() + FIRST.feel.slice(1)}</span></div>
           </div>
         </>
       ) : (
         <>
+          <FirstStar theme={theme} big />
           <p className="fd-title is-serif">Every day becomes a star.</p>
           <p className="fd-line">Tonight, her first one.</p>
         </>
