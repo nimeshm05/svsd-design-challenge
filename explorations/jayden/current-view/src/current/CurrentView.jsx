@@ -430,7 +430,7 @@ function HerFigure({ d, h, device }) {
 // A constellation that draws itself, with today's star at its end still twinkling
 function LookUpIcon() {
   return (
-    <svg className="cv-lookup" viewBox="0 0 34 24" aria-hidden="true">
+    <svg className="cv-lookup" viewBox="1.2 0 32.6 22" aria-hidden="true">
       <polyline className="cv-lookup-line" points="3,20 10,14 16,17 23,9" />
       <line className="cv-lookup-next" x1="23" y1="9" x2="30" y2="4" />
       {[[3, 20], [10, 14], [16, 17], [23, 9]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.6" />)}

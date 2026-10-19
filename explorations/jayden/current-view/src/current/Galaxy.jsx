@@ -756,7 +756,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   })()
   const day = view.level === 'day' ? dayDetail(view.d) : null
   // "back" always names where it goes; the sky is titled Mila's stars, so that's its name here too
-  const backLabel = view.level === 'day' ? `Week ${stay.days[view.d - 1].week}` : view.level === 'week' ? 'Mila\u2019s stars' : 'Today'
+  const backLabel = view.level === 'day' ? `Week ${stay.days[view.d - 1].week}` : view.level === 'week' ? "Mila's stars" : 'Today'
   const faded = view.level === 'day' ? 'is-faded' : ''
   const layer = (l) => <div key={l.name} className={`cv-glayer is-${l.name} ${faded}`} data-k={l.k} dangerouslySetInnerHTML={{ __html: l.html }} />
 

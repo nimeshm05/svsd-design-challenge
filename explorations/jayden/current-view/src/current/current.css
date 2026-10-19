@@ -1539,6 +1539,7 @@
   --nav-border: color-mix(in srgb, var(--cream) 32%, transparent);
   --nav-border-hi: color-mix(in srgb, var(--cream) 60%, transparent);
 }
+/* navigation scales with the screen (1176px wide at full size), so a small window is the same screen, smaller */
 .cv-page .cv-screen { padding: var(--edge-y) var(--edge-x); }
 
 /* the two bars */
@@ -1586,11 +1587,7 @@
 .cv-page .nav-btn.is-icon { width: var(--nav-h); padding: 0; }
 .cv-page .nav-step { display: inline-flex; gap: 4px; }
 
-.nav-ic { width: 16px; height: 16px; flex: none; display: block; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.cv-page .nav-btn.is-icon .nav-ic { width: 18px; height: 18px; }
 .cv-page .nav-btn.is-icon::before { left: 50%; width: var(--nav-hit); transform: translate(-50%, -50%); }
-/* the mini sky on "Mila's stars" keeps its drawing, sized to the icon row */
-.cv-page .nav-btn .cv-lookup { width: 24px; height: 17px; margin: 0; overflow: visible; }
 
 /* the info button by "Mila's stars": an icon-only quiet button */
 .cv-page .cv-ginfo-btn { width: 32px; height: 32px; margin: 0; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: var(--text-2); background: transparent; }
@@ -1608,3 +1605,38 @@
 
 /* retire the old one-off controls where they might still render */
 .cv-page .cv-today-btn, .cv-page .cv-back-today { display: none; }
+
+/* ---- scale + icons ----
+   Every nav number scales with the window (full size at ~1230px wide, never below a readable floor),
+   so a small window shows the same screen, smaller, instead of oversized buttons on a tiny screen.
+   Icons: cropped viewBoxes, one optical height (--ic) against the label's cap height, 1.5px stroke. */
+.cv-page {
+  --edge-x: clamp(16px, 3.25vw, 40px); --edge-y: clamp(14px, 2.6vw, 32px);
+  --nav-h: clamp(28px, 2.95vw, 36px); --nav-gap: clamp(6px, .65vw, 8px);
+  --nav-fs: clamp(12px, 1.14vw, 14px); --nav-px: clamp(10px, 1.14vw, 14px);
+  --ic: clamp(10px, .98vw, 12px);
+}
+.cv-page .nav-btn { font-size: var(--nav-fs); padding: 0 var(--nav-px); gap: calc(var(--ic) * .58); }
+.cv-page .nav-btn > span { padding-top: 0; }
+@supports (text-box: trim-both cap alphabetic) {
+  .cv-page .nav-btn > span { text-box: trim-both cap alphabetic; } /* centre on the cap height, not the line box */
+}
+.cv-page .nav-btn:has(> svg:first-child) { padding-left: calc(var(--nav-px) - 2px); }
+.cv-page .nav-btn.is-trailing { padding-right: calc(var(--nav-px) - 2px); }
+.cv-page .nav-btn.is-icon { width: var(--nav-h); padding: 0; }
+
+.nav-ic, .cv-page .nav-ic { height: var(--ic); width: auto; flex: none; display: block; overflow: visible;
+  fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.nav-ic * { vector-effect: non-scaling-stroke; }
+.cv-page .nav-ic.is-chev { height: calc(var(--ic) * .86); }               /* a chevron reads larger than its box */
+.cv-page .nav-btn.is-icon .nav-ic.is-chev { height: calc(var(--ic) * 1.05); }
+.cv-page .cv-ginfo-btn .nav-ic { height: calc(var(--ic) * 1.15); }
+/* the mini sky on "Mila's stars": same height as the other icons, its own colours */
+.cv-page .nav-btn .cv-lookup { height: calc(var(--ic) * 1.0); width: auto; margin: 0; overflow: visible; }
+/* Figtree (theme 2) sits its cap height ~0.6px higher than Geist: lift the icons to match */
+.theme-confetti .nav-btn > svg { translate: 0 -0.6px; }
+
+/* prototype bar: wrap, never push the page sideways */
+.cv-proto { max-width: 100%; justify-content: center; }
+.cv-proto .cv-seg { flex-wrap: wrap; max-width: 100%; }
+.cv-page { overflow-x: hidden; }

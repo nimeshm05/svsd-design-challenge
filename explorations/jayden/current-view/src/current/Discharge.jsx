@@ -415,7 +415,7 @@ export function Discharge({ theme, onBack }) {
     <div className={`cv-discharge is-${theme} is-${story.phase}`}>
       <SkyDepth theme={theme} />
       <div className="cv-mobile" ref={host} role="img" aria-label={`A baby mobile made of Mila's stars: ${WEEKS} weeks, one constellation hanging for each. Drag to turn it.`} />
-      <div className="nav-bar-top"><NavBack label="Mila’s stars" onClick={onBack} /></div>
+      <div className="nav-bar-top"><NavBack label="Mila's stars" onClick={onBack} /></div>
 
       {story.phase === 'intro' && (
         <div className="cv-story" key={story.step} aria-live="polite" onClick={() => ctl.current?.next()}>

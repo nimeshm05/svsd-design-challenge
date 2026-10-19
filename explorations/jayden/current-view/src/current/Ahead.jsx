@@ -264,7 +264,7 @@ function EventDetail({ ev, onBack, backRef }) {
   return (
     <section className="ah-ev" aria-labelledby="ah-ev-title">
       <div className="ah-ev-top">
-        <NavBack btnRef={backRef} label="What’s ahead" onClick={onBack} />
+        <NavBack btnRef={backRef} label="What's ahead" onClick={onBack} />
         <span className="ah-review">Placeholder content · for care-team review</span>
       </div>
       <div className="ah-ev-grid">
