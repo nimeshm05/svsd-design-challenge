@@ -78,7 +78,7 @@ export function FirstDay({ stage, theme, walk, setWalk }) {
             <BabyFront present={FIRST.on.map((o) => o.id)} changed={done ? [] : [item.id]}
               label={done ? 'Mila, with everything on her right now.' : `Mila, with her ${item.name.toLowerCase()} lit.`} />
           </div>
-          <div className="fd-words">
+          <div className="fd-words" key={walk}>
             <p className="fd-title">{done ? 'That\u2019s everything on her right now.' : item.name}</p>
             <p className="fd-line">{done ? 'You can talk to her. When her nurse says it\u2019s okay, you can touch her through the portholes.' : item.means}</p>
           </div>

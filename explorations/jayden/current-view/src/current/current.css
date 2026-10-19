@@ -1960,3 +1960,26 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .bf:has(.bf-dev.is-new) .bf-dev:not(.is-new) { opacity: .25; }
 .bf-img { transition: opacity .4s ease; }
 .bf:has(.bf-dev.is-new) .bf-img { opacity: .45; }
+/* the dots and the button stay in one place on every step: pinned near the bottom of her story,
+   with the dots' room kept even when they're hidden, so "What's on her" → "Next" → "Done" never moves */
+.cv-page .fd { position: relative; padding-bottom: 132px; }
+.cv-page .fd-walk-nav { position: absolute; left: 0; right: 0; bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.cv-page .fd-dots.is-hidden { display: inline-flex; visibility: hidden; }
+.cv-page .cv-screen > .fd { align-self: stretch; }
+/* her story never grows the screen: the picture gives up height first, so the button can't be pushed */
+.cv-page .cv-screen > .fd { min-height: 0; padding-bottom: 112px; }
+.cv-page .fd-walk-nav { bottom: 24px; }
+.cv-page .fd-walk .fd-model { flex: 0 1 220px; height: auto; min-height: 120px; }
+.cv-page .fd-walk .fd-model .bf { height: 100%; max-height: 220px; }
+@media (max-width: 760px) { .cv-page .cv-screen:has(> .fd) { min-height: min(640px, 86vh); } }
+
+/* her story moves gently: whatever is new rises in, the words again on each step (keyed by step);
+   the dots and the button never animate, so they stay put */
+@keyframes fd-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.cv-page .fd > :not(.fd-walk-nav) { animation: fd-rise .6s cubic-bezier(.22, 1, .36, 1) both; }
+.cv-page .fd > :nth-child(2):not(.fd-walk-nav) { animation-delay: .06s; }
+.cv-page .fd > :nth-child(3):not(.fd-walk-nav) { animation-delay: .12s; }
+.cv-page .fd > :nth-child(4):not(.fd-walk-nav) { animation-delay: .18s; }
+.cv-page .fd-walk .fd-words { animation-duration: .45s; animation-delay: 0s; }
+.cv-page .fd-walk-nav { animation: none; }
+@media (prefers-reduced-motion: reduce) { .cv-page .fd > * { animation: none; } }
