@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Icon, StarGlyph } from './glyphs.jsx'
 import { Storyboard, Stretch } from './demo.jsx'
 
@@ -398,15 +398,26 @@ const WEEKS = [
   [[780, 260], [830, 230], [880, 250]],
 ]
 const TODAY = WEEKS[3][2]
+// her firsts (days 4, 6, 14 and 23) become planets; day 17, the hard night, stays lit
+const FIRSTS = [WEEKS[0][3], WEEKS[0][5], WEEKS[1][6], TODAY]
+const HARD = WEEKS[2][2]
 function Idea({ step = 0 }) {
   return (
-    <div className={`idea2 is-beat-${step}`}>
+    <div className={`idea2 is-beat-${Math.min(step, 2)} ${step >= 3 ? `is-later is-b${step}` : ''}`}>
       <div className="idea2-field" aria-hidden="true">
         <svg className="idea2-sky" viewBox="0 0 1000 480" preserveAspectRatio="xMidYMid meet">
           {WEEKS.map((w, i) => <polyline key={i} className="idea2-line" style={{ '--w': i }} points={w.map((p) => p.join(',')).join(' ')} />)}
           {WEEKS.flatMap((w, i) => w.map(([x, y], j) => (x === TODAY[0] && y === TODAY[1]) ? null : (
             <path key={`${i}-${j}`} className="idea2-day" style={{ '--n': i * 7 + j }} transform={`translate(${x} ${y})`} d="M0 -7Q1 -1 7 0Q1 1 0 7Q-1 1 -7 0Q-1 -1 0 -7Z" />
           )))}
+          {FIRSTS.map(([x, y], k) => (
+            <g key={k} transform={`translate(${x} ${y}) rotate(-18)`}>
+              <g className="idea2-planet" style={{ '--k': k }}>
+                <circle r="16" className="idea2-planet-glow" /><ellipse rx="15" ry="4.5" className="idea2-ring" /><circle r="6.5" className="idea2-body" />
+              </g>
+            </g>
+          ))}
+          <circle className="idea2-hard" cx={HARD[0]} cy={HARD[1]} r="20" />
         </svg>
         {MOMENTS.map((m, k) => (
           <span key={m.m} className={`moment is-${m.kind ?? 'care'}`} style={{ left: `${m.x}%`, top: `${m.y}%`, '--k': k }}>
@@ -414,13 +425,41 @@ function Idea({ step = 0 }) {
           </span>
         ))}
         <span className="idea2-star"><span className="idea2-burst" /><StarGlyph size={84} color="#FFF8E6" /></span>
+        <span className="idea2-name">Mila&apos;s Sky</span>
       </div>
       <div className="idea2-words">
         <div className="k idea2-k">05 · The idea</div>
         <p className="idea2-line-0">Her day is full of small moments.</p>
         <p className="statement-p is-big idea2-line-1">Every day becomes <L>a star</L>.</p>
         <p className="statement-p idea2-line-2">Her stay becomes <L>a sky that only grows</L>.</p>
+        <p className="statement-p idea2-line-3">Her firsts become <L>planets</L>.<span>Big moments, defined by parents: &ldquo;Yes, he pooped!… in its own way, it&apos;s beautiful.&rdquo;</span></p>
+        <p className="statement-p idea2-line-4">Stars <L>never disappear</L>, even on hard days.<span>&ldquo;You are still moving forward even if you feel stuck.&rdquo;</span></p>
+        <p className="statement-p idea2-line-5">It&apos;s <L>her</L> story, not a chart.</p>
       </div>
+    </div>
+  )
+}
+
+// The concept as one short film that plays by itself (no sound; the captions carry it): her day's moments
+// gather into a star, her stay becomes a sky, her firsts become planets, hard days stay lit, and the sky
+// takes her name. About 40 seconds; Replay restarts it.
+const BEATS = [0, 5, 11, 18, 25, 32] // when each beat starts, in seconds
+const FILM_END = 40
+function Film({ active, thumb }) {
+  const [t, setT] = useState(thumb ? FILM_END : 0)
+  const [run, setRun] = useState(0)
+  useEffect(() => {
+    if (!active) { setT(0); return }
+    const t0 = performance.now()
+    const id = setInterval(() => { const v = (performance.now() - t0) / 1000; setT(Math.min(v, FILM_END)); if (v >= FILM_END) clearInterval(id) }, 100)
+    return () => clearInterval(id)
+  }, [active, run])
+  const beat = BEATS.findLastIndex((b) => t >= b)
+  return (
+    <div className="film">
+      <Idea key={run} step={beat} />
+      <div className="film-bar" aria-hidden="true"><i style={{ width: `${(t / FILM_END) * 100}%` }} /></div>
+      {!thumb && t >= FILM_END && <button type="button" className="film-replay" onClick={() => setRun((r) => r + 1)}>Replay</button>}
     </div>
   )
 }
@@ -686,9 +725,7 @@ export const SLIDES = [
   { id: 'sort', section: '04 · Ideation', tint: 'all', View: Sort },
   { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>The ideas we kept coming back to all did one thing: <L>turn her care into a story</L>.</> }) },
 
-  { id: 'idea', section: '05 · The idea', planet: true, steps: 3, View: Idea },
-  { id: 's-open', section: '05 · The story layer', View: statement({ k: 'The story layer', children: <>Stars <L>never disappear</L>, because &ldquo;you are still moving forward even if you feel stuck.&rdquo;</> }) },
-  { id: 'system', section: '05 · The story layer', View: System },
+  { id: 'film', section: '05 · The idea and the story layer', planet: true, View: Film },
 
   { id: 'k-open', section: '06 · Constraints', planet: true, View: KOpen },
   { id: 'constraints', section: '06 · Constraints', View: Constraints },
