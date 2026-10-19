@@ -1,74 +1,145 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-// Her, as a soft hologram you can turn: her body is a stack of contour slices at different depths
-// (like a tracing in starlight, not a realistic body), lying on her mattress, with what's on her
-// floating just above. Turning it makes the layers shift against each other, so it reads as a volume.
-// New things glow blue; what came off stays as a faint dashed ghost.
-const W = 240
-const H = 150
-// her parts, seen from above (head on the left): center, half-length, half-width, how tall (depth)
-const PARTS = [
-  { cx: 58, cy: 75, rx: 27, ry: 25, rz: 24 }, // head
-  { cx: 118, cy: 75, rx: 38, ry: 28, rz: 20 }, // body
-  { cx: 108, cy: 40, rx: 24, ry: 7, rz: 7 }, // arm
-  { cx: 108, cy: 110, rx: 24, ry: 7, rz: 7 }, // arm
-  { cx: 176, cy: 62, rx: 28, ry: 8, rz: 8 }, // leg
-  { cx: 176, cy: 88, rx: 28, ry: 8, rz: 8 }, // leg
-]
-const SLICES = Array.from({ length: 11 }, (_, i) => -20 + i * 5) // heights through her body
+// Her, in depth, traced from one image (public/her.webp, a sculpt seen from above): an outline, a little
+// abstracted, never a photo. On first load: cut her out of the white background, estimate how thick she
+// is at every point (from her silhouette, nudged by the image's shading), then draw a glowing contour of
+// her at each height, like a topographic drawing. The contours sit at their heights in one 3D stage, so
+// turning her shows her shape. What's on her sits on her body at the right height, with a thin line down
+// to the mattress and the wire running along it. New things glow blue; what came off is a faint ghost.
+const SRC = '/her.webp'
+const LEVELS = [0, 0.32, 0.58, 0.8] // her outline, then three soft contours toward the middle of her
+const DEPTH = 30 // px from her back to the top of her tummy
+const AW = 100, AH = 81.4 // overlay units (the image's aspect)
 
-// what can be on her, drawn on the top layer: [contact points], and the line that leads away
+let cache = null // traced once, then reused
+function trace() {
+  if (cache) return cache
+  cache = new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      const w = 340, h = Math.round((img.height / img.width) * w)
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h
+      const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, w, h)
+      const px = cx.getImageData(0, 0, w, h).data
+      // 1. cut out: the background is white (her soft shadow on the ground is left out too)
+      const inside = new Uint8Array(w * h), lum = new Float32Array(w * h)
+      for (let i = 0; i < w * h; i++) {
+        const r = px[i * 4], g = px[i * 4 + 1], b = px[i * 4 + 2]
+        inside[i] = Math.min(r, g, b) < 236 && r > 70 ? 1 : 0
+        lum[i] = (0.3 * r + 0.59 * g + 0.11 * b) / 255
+      }
+      // 2. thickness: distance to her outline (two-pass chamfer), shaped like a soft dome, plus shading
+      const dist = new Float32Array(w * h)
+      for (let i = 0; i < w * h; i++) dist[i] = inside[i] ? 1e9 : 0
+      const at = (x, y) => (x < 0 || y < 0 || x >= w || y >= h ? 0 : dist[y * w + x])
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const i = y * w + x
+        if (dist[i]) dist[i] = Math.min(dist[i], at(x - 1, y) + 1, at(x, y - 1) + 1, at(x - 1, y - 1) + 1.4, at(x + 1, y - 1) + 1.4)
+      }
+      for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) {
+        const i = y * w + x
+        if (dist[i]) dist[i] = Math.min(dist[i], at(x + 1, y) + 1, at(x, y + 1) + 1, at(x + 1, y + 1) + 1.4, at(x - 1, y + 1) + 1.4)
+      }
+      let max = 1
+      for (let i = 0; i < w * h; i++) if (inside[i] && dist[i] > max) max = dist[i]
+      const depth = new Float32Array(w * h).fill(-1)
+      for (let i = 0; i < w * h; i++) if (inside[i]) depth[i] = 0.94 * Math.sqrt(Math.min(1, dist[i] / max)) + 0.06 * lum[i]
+      // smooth it a little, so the contours are clean, calm lines
+      for (let pass = 0; pass < 3; pass++) {
+        const src2 = depth.slice()
+        for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+          const i = y * w + x
+          if (!inside[i]) continue
+          let sum = 0, n = 0
+          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const v = src2[i + dy * w + dx]; if (v >= 0) { sum += v; n++ } }
+          depth[i] = sum / n
+        }
+      }
+      // 3. contours: at each height, the edge of everything at least that thick, drawn as a soft line
+      const layers = []
+      for (let k = 0; k < LEVELS.length; k++) {
+        const t = LEVELS[k], out = cx.createImageData(w, h), o = out.data
+        const on = (x, y) => x >= 0 && y >= 0 && x < w && y < h && depth[y * w + x] >= t
+        const a = k === 0 ? 235 : Math.round(255 * (0.55 - k * 0.08)) // her outline brightest, the inner lines quieter
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+          if (!on(x, y) || (on(x - 1, y) && on(x + 1, y) && on(x, y - 1) && on(x, y + 1))) continue
+          for (const [dx, dy] of (k === 0 ? [[0, 0], [1, 0], [0, 1]] : [[0, 0]])) { // outline two pixels wide, inner lines one
+            const j = ((y + dy) * w + (x + dx)) * 4
+            if (j >= o.length) continue
+            o[j] = 255; o[j + 1] = 246; o[j + 2] = 224; o[j + 3] = a
+          }
+        }
+        if (k === 0) { // a faint fill on the lowest contour, so she reads as one shape
+          for (let i = 0; i < w * h; i++) if (depth[i] >= 0 && !o[i * 4 + 3]) { o[i * 4] = 243; o[i * 4 + 1] = 227; o[i * 4 + 2] = 181; o[i * 4 + 3] = 26 }
+        }
+        cx.putImageData(out, 0, 0)
+        layers.push({ z: t * DEPTH, url: cv.toDataURL('image/png') })
+      }
+      // how high her body is at a point (overlay units), so what's on her sits on her
+      const heightAt = (ux, uy) => {
+        const x = Math.round((ux / AW) * w), y = Math.round((uy / AH) * h)
+        let best = 0
+        for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) {
+          const xx = x + dx, yy = y + dy
+          if (xx >= 0 && yy >= 0 && xx < w && yy < h) best = Math.max(best, depth[yy * w + xx])
+        }
+        return best * DEPTH
+      }
+      resolve({ layers, heightAt })
+    }
+    img.onerror = () => resolve({ layers: [], heightAt: () => 0 })
+    img.src = SRC
+  })
+  return cache
+}
+
+// What can be on her: where it touches her (overlay units), its mark there, and the wire along the bed
 const DEVICES = {
-  cpap: { label: 'CPAP mask', d: 'M30 75 C 20 92, 10 104, -6 112', shape: <ellipse cx="38" cy="75" rx="9" ry="13" /> },
-  cannula: { label: 'Nasal cannula', d: 'M34 70 C 24 60, 12 54, -6 50 M34 80 C 24 92, 12 98, -6 102', shape: <path d="M34 70 Q 30 75 34 80" /> },
-  feeding: { label: 'Feeding tube', d: 'M36 76 C 20 70, 6 62, -6 58', shape: <circle cx="38" cy="76" r="1.8" /> },
-  heart: { label: 'Heart stickers', d: 'M104 62 C 150 40, 200 30, 246 26 M104 88 C 150 112, 200 124, 246 128 M140 75 C 180 70, 210 60, 246 52', shape: <><circle cx="104" cy="62" r="3" /><circle cx="104" cy="88" r="3" /><circle cx="140" cy="75" r="3" /></> },
-  temp: { label: 'Temperature probe', d: 'M126 82 C 170 100, 210 108, 246 110', shape: <circle cx="126" cy="82" r="2.6" /> },
-  pulse: { label: 'Pulse sensor', d: 'M202 88 C 220 92, 232 96, 246 98', shape: <rect x="196" y="84" width="10" height="8" rx="3" /> },
-  iv: { label: 'IV line', d: 'M98 110 C 120 130, 180 142, 246 144', shape: <circle cx="98" cy="110" r="2.6" /> },
+  vent: { at: [[70, 23]], mark: (x, y) => <rect x={x - 2} y={y - 1.5} width="5" height="3" rx="1" />, wire: 'M70 23 C 82 30, 94 34, 104 34' },
+  cpap: { at: [[71, 20]], mark: (x, y) => <ellipse cx={x} cy={y} rx="5" ry="6.5" transform={`rotate(-35 ${x} ${y})`} />, wire: 'M71 20 C 80 28, 92 30, 104 28' },
+  cannula: { at: [[72, 19]], mark: (x, y) => <path d={`M${x - 2} ${y - 2} Q ${x + 2} ${y} ${x - 1} ${y + 3}`} />, wire: 'M72 19 C 84 14, 94 12, 104 12' },
+  feeding: { at: [[70, 23]], mark: (x, y) => <circle cx={x} cy={y} r=".9" />, wire: 'M70 23 C 82 16, 94 15, 104 16' },
+  heart: { at: [[53, 23], [67, 37], [49, 43]], mark: (x, y) => <circle cx={x} cy={y} r="1.6" />, wire: 'M53 23 C 74 32, 92 42, 104 44 M67 37 C 82 46, 94 50, 104 52 M49 43 C 70 56, 90 60, 104 60' },
+  temp: { at: [[56, 50]], mark: (x, y) => <circle cx={x} cy={y} r="1.4" />, wire: 'M56 50 C 76 62, 92 66, 104 68' },
+  pulse: { at: [[30, 74]], mark: (x, y) => <rect x={x - 3.5} y={y - 2.5} width="7" height="5" rx="2" />, wire: 'M30 74 C 56 80, 86 78, 104 74' },
+  iv: { at: [[43, 29]], mark: (x, y) => <circle cx={x} cy={y} r="1.4" />, wire: 'M43 29 C 64 12, 88 6, 104 6' },
 }
 
 export function HerModel({ present = [], changed = [], label }) {
-  const [rot, setRot] = useState([52, -22]) // tilt, turn: start leaning toward you, a little turned
+  const [model, setModel] = useState(null)
+  const [rot, setRot] = useState([48, 34]) // tilt, turn: lying across, leaning toward you
   const drag = useRef(null)
+  useEffect(() => { let on = true; trace().then((m) => on && setModel(m)); return () => { on = false } }, [])
   const shown = Object.keys(DEVICES).filter((id) => present.includes(id) || changed.includes(id))
+  const cls = (id) => `her3d-dev ${changed.includes(id) && present.includes(id) ? 'is-new' : ''} ${!present.includes(id) ? 'is-gone' : ''}`
   return (
     <div className="her3d" role="img" aria-label={label}
       onPointerDown={(e) => { drag.current = { x: e.clientX, y: e.clientY, rot }; e.currentTarget.setPointerCapture(e.pointerId) }}
       onPointerMove={(e) => {
         const g = drag.current
         if (!g) return
-        setRot([Math.max(5, Math.min(75, g.rot[0] - (e.clientY - g.y) * 0.4)), Math.max(-80, Math.min(80, g.rot[1] + (e.clientX - g.x) * 0.5))])
+        setRot([Math.max(0, Math.min(72, g.rot[0] - (e.clientY - g.y) * 0.4)), Math.max(-90, Math.min(120, g.rot[1] + (e.clientX - g.x) * 0.5))])
       }}
       onPointerUp={() => { drag.current = null }} onPointerCancel={() => { drag.current = null }}>
       <div className="her3d-stage" style={{ transform: `rotateX(${rot[0]}deg) rotateZ(${rot[1]}deg)` }}>
-        {/* her mattress, underneath */}
-        <svg className="her3d-layer" viewBox={`0 0 ${W} ${H}`} style={{ transform: 'translateZ(-26px)' }}>
-          <rect x="6" y="10" width={W - 12} height={H - 20} rx="18" className="her3d-bed" />
+        <div className="her3d-bed" />
+        {/* wires lie along her mattress */}
+        <svg className="her3d-layer" viewBox={`0 0 ${AW} ${AH}`} style={{ transform: 'translateZ(.5px)' }}>
+          {shown.map((id) => <g key={id} className={cls(id)}><path d={DEVICES[id].wire} /></g>)}
         </svg>
-        {/* her body, slice by slice */}
-        {SLICES.map((z) => (
-          <svg key={z} className="her3d-layer" viewBox={`0 0 ${W} ${H}`} style={{ transform: `translateZ(${z}px)` }}>
-            {PARTS.map((p, i) => {
-              const k = 1 - (z / p.rz) ** 2
-              if (k <= 0) return null
-              const s = Math.sqrt(k)
-              return <ellipse key={i} cx={p.cx} cy={p.cy} rx={p.rx * s} ry={p.ry * s} className="her3d-slice" style={{ opacity: 0.25 + 0.55 * s }} />
-            })}
-          </svg>
-        ))}
-        {/* what's on her, floating just above */}
-        <svg className="her3d-layer is-top" viewBox={`-10 0 ${W + 20} ${H}`} style={{ transform: 'translateZ(26px)' }}>
-          {shown.map((id) => {
-            const dv = DEVICES[id], isNew = changed.includes(id) && present.includes(id), gone = !present.includes(id)
-            return (
-              <g key={id} className={`her3d-dev ${isNew ? 'is-new' : ''} ${gone ? 'is-gone' : ''}`}>
-                <path d={dv.d} />
-                {dv.shape}
-              </g>
-            )
-          })}
-        </svg>
+        {model?.layers.map((l, i) => <img key={i} className="her3d-img" src={l.url} alt="" draggable="false" style={{ transform: `translateZ(${l.z.toFixed(1)}px)` }} />)}
+        {/* each thing sits on her body at its height, with a thin line down to where its wire runs */}
+        {model && shown.flatMap((id) => DEVICES[id].at.map(([x, y], j) => {
+          const z = model.heightAt(x, y) + 0.6
+          return (
+            <div key={`${id}${j}`}>
+              <span className={`her3d-post ${cls(id)}`} style={{ left: `${x}%`, top: `${(y / AH) * 100}%`, height: z }} />
+              <svg className="her3d-layer" viewBox={`0 0 ${AW} ${AH}`} style={{ transform: `translateZ(${z.toFixed(1)}px)` }}>
+                <g className={cls(id)}>{DEVICES[id].mark(x, y)}</g>
+              </svg>
+            </div>
+          )
+        }))}
       </div>
     </div>
   )
