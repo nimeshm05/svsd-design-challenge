@@ -1557,3 +1557,4 @@
 .fd-size b { font-size: clamp(15px, 1.5vw, 17px); }
 .fd-size span { font-size: clamp(13px, 1.35vw, 15px); }
 .fd-size em { font-size: clamp(12px, 1.2vw, 13.5px); }
+.fd-size span b { font-size: inherit; }
