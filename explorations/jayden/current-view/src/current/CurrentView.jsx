@@ -617,14 +617,14 @@ function TeamSheet({ onClose }) {
         <ul className="ts-list">
           {people.map((p) => (
             <li key={p.name} className={p.from ? 'is-later' : ''}>
-              <img className="ts-photo" src={p.img} alt="" />
+              <img className="ts-photo" src={p.photo ?? p.img} alt="" onError={(e) => { if (p.img && !e.currentTarget.src.endsWith(p.img)) e.currentTarget.src = p.img }} />
               <span className="ts-person"><b>{p.name}</b><span>{availability(p)}</span></span>
             </li>
           ))}
         </ul>
         <button type="button" className={`nav-btn is-primary ts-cta ts-call ${call ? `is-${call}` : ''}`} disabled={!!call} onClick={ring}>
           {call === 'called' ? <CheckIcon /> : <PhoneIcon />}
-          <span aria-live="polite">{call === 'calling' ? `Calling ${nurse.name}…` : call === 'called' ? `${nurse.name} has been called` : 'Call her nurse'}</span>
+          <span aria-live="polite">{call === 'calling' ? 'Calling…' : call === 'called' ? 'Called' : 'Call'}</span>
         </button>
       </div>
     </div>
