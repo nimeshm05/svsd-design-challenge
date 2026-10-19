@@ -601,6 +601,12 @@ function TeamSheet({ onClose }) {
   const [calls, setCalls] = useState({}) // name → 'calling' | 'called'
   const timers = useRef([])
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
+  // no Close button: tap outside the sheet, or press Esc
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
   const call = (p) => {
     setCalls((c) => ({ ...c, [p.name]: 'calling' }))
     timers.current.push(setTimeout(() => setCalls((c) => ({ ...c, [p.name]: 'called' })), 1400))
@@ -610,7 +616,6 @@ function TeamSheet({ onClose }) {
       <div className="ts" role="dialog" aria-modal="true" aria-labelledby="ts-title" onClick={(e) => e.stopPropagation()}>
         <header className="ts-head">
           <h2 id="ts-title" className="ts-title">Her care team</h2>
-          <CloseButton onClick={onClose} />
         </header>
         <ul className="ts-list">
           {people.map((p) => {
