@@ -1545,3 +1545,11 @@
 .fd-facts > i { width: 1px; background: color-mix(in srgb, var(--cream) 18%, transparent); }
 .fd-facts b { font-weight: 500; font-size: clamp(17px, 1.8vw, 21px); color: #F6EEDB; }
 .fd-facts span { font-size: clamp(13px, 1.4vw, 15px); color: var(--muted); }
+/* Day 1, stacked again, in smaller type so it reads as one quiet column */
+.fd-name { font-size: clamp(30px, 3.6vw, 44px); }
+.fd-born { font-size: clamp(12.5px, 1.3vw, 14.5px); }
+.fd-group { gap: 4px; }
+.fd-group + .fd-group { margin-top: 20px; }
+.fd-size b { font-size: clamp(15px, 1.5vw, 17px); }
+.fd-size span { font-size: clamp(13px, 1.35vw, 15px); }
+.fd-size em { font-size: clamp(12px, 1.2vw, 13.5px); }
