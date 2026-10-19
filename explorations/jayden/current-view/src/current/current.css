@@ -1941,3 +1941,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .fd-walk-nav { flex-direction: column; gap: 14px; }
 .cv-page .fd-dots.is-hidden { display: none; }
 @media (prefers-reduced-motion: reduce) { .cv-page .mb-in, .cv-page .mb-out { animation: none; } .cv-page .mb-label, .cv-page .mb-chev { transition: none; } }
+
+/* "What's on her": her, front-facing and still, with what's on her marked where it touches her */
+.fd-model { height: 220px; }
+.bf { position: relative; height: 100%; aspect-ratio: 272 / 397; }
+.bf-img { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; pointer-events: none;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--cream) 12%, transparent)); }
+.bf-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.bf-dev { fill: color-mix(in srgb, var(--cream) 22%, transparent); stroke: color-mix(in srgb, var(--cream) 50%, transparent);
+  stroke-width: 1.2; vector-effect: non-scaling-stroke; transition: stroke .4s ease, fill .4s ease; }
+.bf-dev * { vector-effect: non-scaling-stroke; }
+.bf-wire { fill: none; stroke-linecap: round; opacity: .55; }
+.bf-dev.is-new { fill: color-mix(in srgb, var(--warm) 40%, transparent); stroke: var(--warm); stroke-width: 1.6;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--warm) 75%, transparent)); }
+.bf-dev.is-new .bf-wire { opacity: .9; }

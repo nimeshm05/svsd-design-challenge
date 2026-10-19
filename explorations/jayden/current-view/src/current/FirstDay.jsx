@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { HerModel } from './HerModel.jsx'
+import { BabyFront } from './BabyFront.jsx'
 import { ChevronRight } from './NavIcons.jsx'
 
 // Her first day on the bedside screen: how her story begins.
@@ -75,7 +75,7 @@ export function FirstDay({ stage, theme, walk, setWalk }) {
       {walking ? (
         <>
           <div className="fd-model">
-            <HerModel still present={FIRST.on.map((o) => o.id)} changed={done ? [] : [item.id]}
+            <BabyFront present={FIRST.on.map((o) => o.id)} changed={done ? [] : [item.id]}
               label={done ? 'Mila, with everything on her right now.' : `Mila, with her ${item.name.toLowerCase()} lit.`} />
           </div>
           <div className="fd-words">
