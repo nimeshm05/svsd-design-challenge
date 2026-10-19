@@ -1524,3 +1524,12 @@
 .rem-halo { animation: cv-fade-in .8s ease both, cv-breathe 4s ease-in-out .8s infinite; }
 .rem-again { position: absolute; z-index: 2; top: 18px; right: 20px; animation: cv-fade-in .6s .6s ease both; }
 .rem.is-end .rem-words { gap: 18px; }
+
+/* Her first day: fewer things at once. Her name and when, then, after a breath, how small she is */
+.fd-group { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.fd-group + .fd-group { margin-top: 30px; }
+.fd-born { margin: 0; font-size: clamp(14px, 1.5vw, 17px); color: var(--muted); }
+.fd-size { margin: 0; max-width: none; }
+.fd-size b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
+.fd-size span { display: block; margin-top: 0; font-size: clamp(15px, 1.6vw, 18px); color: var(--text-2); }
+.fd-size em { font-style: normal; font-size: clamp(13px, 1.35vw, 15px); color: var(--muted); }
