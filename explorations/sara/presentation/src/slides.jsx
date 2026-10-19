@@ -3,6 +3,8 @@ import { Icon, StarGlyph } from './glyphs.jsx'
 import { Puzzle } from './puzzle.jsx'
 import { FEATURES, Feature, Storyboard } from './demo.jsx'
 
+export const ITER_MODE = 'focus' // 'focus' = one at a time, then into the row · 'row' = current staggered fade-in
+
 // The case study as one story. Its spine: NICU parents live two things at once (the fight and the
 // celebration), and Mila's Sky is a place that holds both. Each chapter opens on a realization, said
 // big, with its key phrase lit; the slides after it are the evidence or what we did about it. The three
@@ -733,11 +735,11 @@ function KOpen() {
 
 /* ---------- 07 · Previous iterations: where three features started ---------- */
 const ITERS = [
-  { src: './shots/iter-galaxy.png', t: 'Exploring the galaxy’s visual direction', c: 'Beautifully crafted, but too layered and complex for a tired parent at the bedside.', alt: 'An early version: her stay drawn as a dense, swirling galaxy.' },
-  { src: './shots/iter-day-report.png', t: 'Mapping the content and information architecture', c: 'Too much at once. We cut the content and layout down to the essentials.', alt: 'An early version: a full report of her day, section by section.' },
-  { src: './shots/iter-setup-3d.png', t: '3D models for detailed care visuals', c: 'In the moment, parents needed other information more than a 3D model.', alt: 'An early version: a 3D model of the baby and everything on her.' },
+  { src: './shots/iter-galaxy.webp', t: 'Exploring the galaxy’s visual direction', c: 'Beautifully crafted, but too layered and complex for a tired parent at the bedside.', alt: 'An early version: her stay drawn as a dense, swirling galaxy.' },
+  { src: './shots/iter-day-report.webp', t: 'Mapping the content and information architecture', c: 'Too much at once. We cut the content and layout down to the essentials.', alt: 'An early version: a full report of her day, section by section.' },
+  { src: './shots/iter-setup-3d.webp', t: '3D models for detailed care visuals', c: 'In the moment, parents needed other information more than a 3D model.', alt: 'An early version: a 3D model of the baby and everything on her.' },
 ]
-function Iterations() {
+function IterationsRow() {
   return (
     <div className="iters">
       <R d={0} className="k">07 · Previous iterations</R>
@@ -753,6 +755,92 @@ function Iterations() {
     </div>
   )
 }
+
+// focus: each iteration arrives large, then travels (FLIP: translate + scale) into its slot as the next arrives.
+// Every figure always sits in its slot, so the row never reflows; "large" and "waiting" are transforms on top.
+const LIFT = 1.3 // the large caption's scale
+const twice = (f) => requestAnimationFrame(() => requestAnimationFrame(f))
+function IterationsFocus({ step, active, thumb }) {
+  const N = ITERS.length
+  const row = useRef(null)
+  const [g, setG] = useState(null)
+  useLayoutEffect(() => {
+    const el = row.current
+    if (!el || thumb) return
+    const slide = el.closest('.slide')
+    // layout offsets, not screen rects, so the slide's entrance and our own transforms don't skew them
+    const measure = () => {
+      let top = 0
+      for (let n = el; n && n !== slide; n = n.offsetParent) top += n.offsetTop
+      const w = el.clientWidth
+      const gap = 32
+      setG([...el.querySelectorAll('.iter')].map((fig) => {
+        const fr = fig.querySelector('.iter-frame'), cap = fig.querySelector('figcaption')
+        const sw = fr.offsetWidth, r = fr.offsetHeight / sw, cw = cap.offsetWidth * LIFT
+        const fw = Math.min((slide.clientHeight - 96 - top) / r, w * 0.62, w - gap - cw)
+        const fh = fw * r, s = fw / sw, x0 = (w - fw - gap - cw) / 2, sx = fig.offsetLeft
+        const cx = x0 + fw + gap - sx - cap.offsetLeft, cy = (fh - cap.offsetHeight * LIFT) / 2 - cap.offsetTop
+        return {
+          frame: { big: `translate(${x0 - sx}px, 0) scale(${s})`, wait: `translate(${x0 - sx + fw * 0.03}px, ${fh * 0.03}px) scale(${s * 0.94})` },
+          cap: { big: `translate(${cx}px, ${cy}px) scale(${LIFT})`, wait: `translate(${cx}px, ${cy + 10}px) scale(${LIFT})` },
+        }
+      }))
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    document.fonts?.ready.then(measure)
+    return () => ro.disconnect()
+  }, [thumb])
+
+  // which step is on screen; it holds while the slide leaves, and lags a beat for the reduced-motion crossfade
+  const [shown, setShown] = useState(thumb ? N : step)
+  const [jump, setJump] = useState(false)
+  const [fading, setFading] = useState(false)
+  const was = useRef({ active, step })
+  const fwd = useRef(true)
+  useLayoutEffect(() => {
+    if (thumb) return
+    const p = was.current
+    was.current = { active, step }
+    if (!active) return
+    // arriving at the slide (from either side) or skipping steps: show the state, don't replay the flights
+    if (!p.active || Math.abs(step - p.step) > 1) {
+      setShown(step); setFading(false); setJump(true); twice(() => setJump(false))
+      return
+    }
+    if (step === p.step) return
+    fwd.current = step > p.step
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setFading(true)
+      const t = setTimeout(() => { setShown(step); setFading(false) }, 300)
+      return () => clearTimeout(t)
+    }
+    setShown(step)
+  }, [active, step, thumb])
+
+  const at = thumb ? N : shown
+  return (
+    <div className="iters">
+      <R d={0} className="k">07 · Previous iterations</R>
+      <R d={1} as="h2" className="h">Where it started.</R>
+      <div ref={row} className={`iter-row is-focus ${jump || thumb ? 'is-jump' : ''} ${fading ? 'is-fading' : ''}`}>
+        {ITERS.map((x, k) => {
+          const state = k < at ? 'slot' : k === at ? 'big' : 'wait'
+          const t = g?.[k]
+          return (
+            <R key={x.src} d={2} as="figure" className={`iter is-${state} ${state === 'slot' && at < N ? 'is-dim' : ''}`}
+              style={{ '--d': 2, '--wait': state === 'big' && fwd.current ? '150ms' : '0ms' }}>
+              <div className="iter-frame" style={{ transform: state === 'slot' || !t ? 'none' : t.frame[state] }}><img src={x.src} alt={x.alt} /></div>
+              <figcaption style={{ transform: state === 'slot' || !t ? 'none' : t.cap[state] }}><b>{x.t}</b><span>{x.c}</span></figcaption>
+            </R>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+const Iterations = ITER_MODE === 'focus' ? IterationsFocus : IterationsRow
 
 /* ---------- 06 · At her bedside: the product, live ---------- */
 const CHAPTERS = [
@@ -800,8 +888,9 @@ function Product({ thumb }) {
 function Both({ step }) {
   return (
     <div className="center statement both-close">
-      <R d={0} as="p" className="statement-p">NICU parents live both things at once, every day.</R>
-      <p className={`statement-p is-big hmw-part ${step >= 1 ? 'is-in' : ''}`}>Mila&apos;s Sky <L>holds both</L>.</p>
+      <R d={0} as="p" className="statement-p">“There are going to be peaks and valleys… But that doesn’t mean you’re moving backward. You are still moving forward, even if you feel stuck.”</R>
+      <R d={2} className="hook-who">Current NICU parent</R>
+      <p className={`statement-p is-big hmw-part ${step >= 1 ? 'is-in' : ''}`}>Mila&apos;s Sky shows that <L>every day counts</L>.</p>
     </div>
   )
 }
@@ -848,7 +937,7 @@ export const SLIDES = [
   { id: 'mom', section: '06 · Constraints', View: Mom },
   { id: 'modality', section: '06 · Constraints', View: Modality },
 
-  { id: 'iterations', section: '07 · Previous iterations', planet: true, View: Iterations },
+  { id: 'iterations', section: '07 · Previous iterations', planet: true, steps: ITER_MODE === 'focus' ? 4 : 1, View: Iterations },
 
   { id: 'board', section: '08 · The product', planet: true, View: Storyboard },
   ...FEATURES.map((f) => ({ id: f.id, section: '08 · The product', feature: f.show, View: Feature(f) })),
