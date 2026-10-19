@@ -1524,3 +1524,84 @@
 .rem-halo { animation: cv-fade-in .8s ease both, cv-breathe 4s ease-in-out .8s infinite; }
 .rem-again { position: absolute; z-index: 2; top: 18px; right: 20px; animation: cv-fade-in .6s .6s ease both; }
 .rem.is-end .rem-words { gap: 18px; }
+
+/* ======================================================================================
+   Navigation system. One inset, two bars, one button spec, one icon set.
+   - Every page: a top bar (back + title on the left, the corner action on the right) and a
+     bottom bar (secondary actions left, the one primary action right), both on the same
+     inset from the screen edge, including her sky, a week, a day and the discharge mobile.
+   - "Back" is always top-left and always names where it goes: ‹ Today, ‹ Mila's stars, ‹ Week 2.
+   - Buttons: 44px tall, 15px medium label, 18px SVG icon, 8px icon-label gap. The icon side
+     gets 4px less padding so the icon and label look optically centred.
+   ====================================================================================== */
+.cv-page {
+  --edge-x: 40px; --edge-y: 32px; --nav-h: 44px; --nav-gap: 10px;
+  --nav-border: color-mix(in srgb, var(--cream) 32%, transparent);
+  --nav-border-hi: color-mix(in srgb, var(--cream) 60%, transparent);
+}
+.cv-page .cv-screen { padding: var(--edge-y) var(--edge-x); }
+
+/* the two bars */
+.cv-page .cv-top { min-height: var(--nav-h); align-items: center; margin: 0; }
+.cv-page .cv-top-left, .cv-page .cv-top-right { display: flex; align-items: center; gap: 16px; min-height: var(--nav-h); }
+.cv-page .cv-top-left .cv-top-title { margin: 0; line-height: 1; }
+.cv-page .cv-actions { min-height: var(--nav-h); align-items: center; gap: var(--nav-gap); margin-top: auto; }
+.cv-page .cv-actions-left { gap: var(--nav-gap); align-items: center; }
+
+/* overlays (her sky, the discharge mobile) sit on exactly the same bars */
+.cv-page .cv-galaxy-nav, .cv-page .nav-bar-top {
+  position: absolute; z-index: 3; left: var(--edge-x); top: var(--edge-y); height: var(--nav-h);
+  display: flex; align-items: center; gap: var(--nav-gap);
+}
+.cv-page .cv-galaxy-nav[hidden] { display: none; }
+.cv-page .cv-discharge-btn, .cv-page .cv-story-ctls {
+  position: absolute; z-index: 3; right: var(--edge-x); top: var(--edge-y); height: var(--nav-h); display: flex; align-items: center;
+}
+/* titles start one bar below the top bar */
+.cv-page .cv-galaxy-title, .cv-page .cv-galaxy.is-galaxy .cv-galaxy-title { left: var(--edge-x); top: calc(var(--edge-y) + var(--nav-h) + 22px); gap: 6px; }
+.cv-page .cv-discharge .cv-galaxy-title { top: calc(var(--edge-y) + var(--nav-h) + 22px); }
+.cv-page .cv-galaxy-head { gap: 4px; }
+.cv-page .cv-story { left: var(--edge-x); bottom: var(--edge-y); }
+.cv-page .cv-sheet.cv-ginfo { left: var(--edge-x); top: calc(var(--edge-y) + var(--nav-h) + 96px); }
+
+/* the button */
+.cv-page .nav-btn {
+  box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: none;
+  height: var(--nav-h); padding: 0 18px; margin: 0; border-radius: 999px;
+  border: 1px solid var(--nav-border); background: rgba(8, 10, 14, .55); color: #F1EADB;
+  font-family: var(--font-ui); font-size: 15px; font-weight: 500; line-height: 1; letter-spacing: 0; white-space: nowrap;
+  cursor: pointer; transition: border-color .2s, background-color .2s, color .2s, opacity .2s;
+}
+.cv-page .nav-btn > span { display: block; line-height: 1; padding-top: 1px; } /* cap-height centring */
+.cv-page .nav-btn:has(> svg:first-child) { padding-left: 14px; }
+.cv-page .nav-btn.is-trailing { padding-right: 14px; }
+.cv-page .nav-btn:hover { border-color: var(--nav-border-hi); background: rgba(243, 227, 181, .06); color: #fff; }
+.cv-page .nav-btn:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
+.cv-page .nav-btn:disabled { opacity: .32; cursor: default; pointer-events: none; }
+
+.cv-page .nav-btn.is-primary { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; }
+.cv-page .nav-btn.is-primary:hover { background: #fff3cf; border-color: #fff3cf; color: #000; }
+.cv-page .nav-btn.is-icon { width: var(--nav-h); padding: 0; }
+.cv-page .nav-step { display: inline-flex; gap: 6px; }
+
+.nav-ic { width: 18px; height: 18px; flex: none; display: block; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.cv-page .nav-btn.is-icon .nav-ic { width: 20px; height: 20px; }
+/* the mini sky on "Mila's stars" keeps its drawing, sized to the icon row */
+.cv-page .nav-btn .cv-lookup { width: 27px; height: 19px; margin: 0; overflow: visible; }
+
+/* the info button by "Mila's stars": an icon-only quiet button */
+.cv-page .cv-ginfo-btn { width: 36px; height: 36px; margin: 0; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: var(--text-2); background: transparent; }
+.cv-page .cv-ginfo-btn:hover, .cv-page .cv-ginfo-btn[aria-expanded="true"] { color: var(--cream); background: rgba(243, 227, 181, .08); }
+
+/* theme 2 (confetti): same geometry, its own colours */
+.theme-confetti .nav-btn.is-call { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; }
+
+/* night and comfort care: same geometry, almost no light */
+.cv-screen.is-night .nav-btn, .cv-screen:has(.comfort) .nav-btn { background: transparent; border-color: #2c3135; color: #9aa0a4; font-weight: 500; }
+.cv-screen.is-night .nav-btn:hover, .cv-screen:has(.comfort) .nav-btn:hover { border-color: #4a5055; color: #c9ced1; }
+
+/* the event detail page in What's ahead: its back sits on the same bar height */
+.cv-page .ah-ev-top { min-height: var(--nav-h); display: flex; align-items: center; gap: 16px; }
+
+/* retire the old one-off controls where they might still render */
+.cv-page .cv-today-btn, .cv-page .cv-back-today { display: none; }

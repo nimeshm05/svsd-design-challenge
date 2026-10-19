@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { CenterIcon, ChevronLeft, ChevronRight, InfoIcon, NavBack } from './NavIcons.jsx'
 import { stay, weekInfo, dayDetail } from '../data/days.js'
 
 // Her whole stay, after Nimesh's galaxy (explorations/nimesh/galaxy): one space and one camera.
@@ -544,8 +545,14 @@ const LABEL_AT = placeLabels()
 /* ---------- The galaxy ---------- */
 export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   // it opens close on today's star (where the home screen left it) and pulls back to show its week
-  const [view, setView] = useState({ level: 'galaxy' })
-  const [story, setStory] = useState(true) // while her sky fades in around today's star
+  // review links: ?gweek=3 or ?gday=12 open straight into a week or a day
+  const [view, setView] = useState(() => {
+    const q = new URLSearchParams(window.location.search)
+    if (q.get('gday')) return { level: 'day', d: +q.get('gday') }
+    if (q.get('gweek')) return { level: 'week', w: +q.get('gweek') }
+    return { level: 'galaxy' }
+  })
+  const [story, setStory] = useState(() => !new URLSearchParams(window.location.search).get('page')) // while her sky fades in around today's star
   const [leaving, setLeaving] = useState(false) // while it fades away again, back to today
   const [landed, setLanded] = useState(true)
   const [sel, setSel] = useState(null)
@@ -748,7 +755,8 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
     })
   })()
   const day = view.level === 'day' ? dayDetail(view.d) : null
-  const backLabel = view.level === 'day' ? `‹ Week ${stay.days[view.d - 1].week}` : view.level === 'week' ? '‹ Her sky' : '‹ Today'
+  // "back" always names where it goes; the sky is titled Mila's stars, so that's its name here too
+  const backLabel = view.level === 'day' ? `Week ${stay.days[view.d - 1].week}` : view.level === 'week' ? 'Mila\u2019s stars' : 'Today'
   const faded = view.level === 'day' ? 'is-faded' : ''
   const layer = (l) => <div key={l.name} className={`cv-glayer is-${l.name} ${faded}`} data-k={l.k} dangerouslySetInnerHTML={{ __html: l.html }} />
 
@@ -817,7 +825,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
             <b>Mila&apos;s stars</b>
             <button ref={infoBtn} type="button" className="cv-ginfo-btn" aria-label="How to navigate" aria-expanded={info} aria-controls="cv-ginfo"
               onClick={() => (info ? closeInfo() : setInfo(true))}>
-              <span className="cv-btn-icon" aria-hidden="true">i</span>
+              <InfoIcon />
             </button>
           </div>
           <p className="cv-gsum">
@@ -842,22 +850,22 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
         </>
       )}
       {view.level === 'galaxy' && !story && onDischarge && (
-        <button type="button" className="cv-btn is-quiet is-small cv-discharge-btn" onClick={onDischarge}>Time to discharge!</button>
+        <button type="button" className="nav-btn nav-corner cv-discharge-btn" onClick={onDischarge}><span>Time to discharge!</span></button>
       )}
       {view.level === 'week' && landed && <WeekPanel w={view.w} onDay={goDay} />}
       {view.level === 'day' && landed && <DayPanel day={day} sel={sel} onPick={setSel} />}
 
       <div className="cv-galaxy-nav" hidden={view.level === 'today' || story}>
-        {view.level !== 'galaxy' && <button type="button" className="cv-galaxy-back" onClick={up}>{backLabel}</button>}
+        <NavBack label={backLabel} onClick={up} />
         {view.level !== 'galaxy' && (
-          <span className="cv-galaxy-step">
-            <button type="button" onClick={() => (view.level === 'week' ? goWeek(view.w - 1) : goDay(view.d - 1))}
-              disabled={view.level === 'week' ? view.w <= 1 : view.d <= 1} aria-label={view.level === 'week' ? 'Previous week' : 'Previous day'}>‹</button>
-            <button type="button" onClick={() => (view.level === 'week' ? goWeek(view.w + 1) : goDay(view.d + 1))}
-              disabled={view.level === 'week' && view.w >= WEEKS} aria-label={view.level === 'week' ? 'Next week' : 'Next day'}>›</button>
+          <span className="nav-step" role="group" aria-label={view.level === 'week' ? 'Weeks' : 'Days'}>
+            <button type="button" className="nav-btn is-icon" onClick={() => (view.level === 'week' ? goWeek(view.w - 1) : goDay(view.d - 1))}
+              disabled={view.level === 'week' ? view.w <= 1 : view.d <= 1} aria-label={view.level === 'week' ? 'Previous week' : 'Previous day'}><ChevronLeft /></button>
+            <button type="button" className="nav-btn is-icon" onClick={() => (view.level === 'week' ? goWeek(view.w + 1) : goDay(view.d + 1))}
+              disabled={view.level === 'week' && view.w >= WEEKS} aria-label={view.level === 'week' ? 'Next week' : 'Next day'}><ChevronRight /></button>
           </span>
         )}
-        {panned && <button type="button" className="cv-galaxy-center" onClick={recenter}>Center</button>}
+        {panned && <button type="button" className="nav-btn" onClick={recenter}><CenterIcon /><span>Center</span></button>}
       </div>
     </div>
   )

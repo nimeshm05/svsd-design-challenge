@@ -1,3 +1,4 @@
+import { NavBack } from './NavIcons.jsx'
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
@@ -414,7 +415,7 @@ export function Discharge({ theme, onBack }) {
     <div className={`cv-discharge is-${theme} is-${story.phase}`}>
       <SkyDepth theme={theme} />
       <div className="cv-mobile" ref={host} role="img" aria-label={`A baby mobile made of Mila's stars: ${WEEKS} weeks, one constellation hanging for each. Drag to turn it.`} />
-      <button type="button" className="cv-galaxy-back" onClick={onBack}>‹ Mila&apos;s stars</button>
+      <div className="nav-bar-top"><NavBack label="Mila’s stars" onClick={onBack} /></div>
 
       {story.phase === 'intro' && (
         <div className="cv-story" key={story.step} aria-live="polite" onClick={() => ctl.current?.next()}>
@@ -441,8 +442,8 @@ export function Discharge({ theme, onBack }) {
 
       <div className="cv-story-ctls">
         {story.phase === 'mobile'
-          ? <button type="button" className="cv-story-ctl" onClick={() => ctl.current?.replay()}>Replay</button>
-          : <button type="button" className="cv-story-ctl" onClick={() => ctl.current?.skip()}>Skip to mobile</button>}
+          ? <button type="button" className="nav-btn" onClick={() => ctl.current?.replay()}><span>Replay</span></button>
+          : <button type="button" className="nav-btn" onClick={() => ctl.current?.skip()}><span>Skip to mobile</span></button>}
       </div>
     </div>
   )

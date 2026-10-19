@@ -10,6 +10,7 @@ import { Remembering } from './Remembering.jsx'
 import { Ahead } from './Ahead.jsx'
 import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen, todayFormsAt } from './Galaxy.jsx'
 import { Discharge } from './Discharge.jsx'
+import { ChevronRight, NavBack, PhoneIcon, SparkleIcon } from './NavIcons.jsx'
 import './current.css'
 
 // Bedside current view: Home C, minimal and low-light, read from the parent chair, in either of
@@ -18,22 +19,25 @@ import './current.css'
 //   Her progress: the day view (her baby drawing, a line of stars to scrub, the day's list)
 //   Her galaxy:   zoom out into her whole stay (galaxy → week → day → moment, after Nimesh's galaxy)
 //   What's ahead: her care plans, from the end of the arc
+// Review links: ?chapter=born|story|day|sky|home|not  ?page=home|ahead|progress|galaxy|discharge  ?night=1  ?theme=confetti  ?team=1
+const qp = (k) => new URLSearchParams(window.location.search).get(k)
+
 const CHAPTERS = [['born', '1 · Mila is born'], ['story', '2 · Her story begins'], ['day', '3 · A day'], ['sky', '4 · Her sky'], ['home', '5 · Going home'], ['not', "6 · If she doesn't go home"]]
 
 export function CurrentView({ onSky }) {
   const kind = 'harder' // Mila is a complex baby: her day is shown as it really goes, setbacks included
-  const [night, setNight] = useState(false)
-  const [page, setPage] = useState('home') // 'home' | 'ahead' | 'progress' | 'galaxy' | 'discharge'
+  const [night, setNight] = useState(() => qp('night') === '1')
+  const [page, setPage] = useState(() => qp('page') || 'home') // 'home' | 'ahead' | 'progress' | 'galaxy' | 'discharge'
   const [cH, setCH] = useState(today.clock.h) // where today's star sits on Home C's arc
   // arriving from the galaxy (?from=galaxy): open mid zoom-in, as if we flew into today's star
   const [zoom, setZoom] = useState(() => (new URLSearchParams(window.location.search).get('from') === 'galaxy' ? 'in' : null)) // 'out' | 'in' while the sky is zooming
-  const [theme, setTheme] = useState('nursery') // the two styles from the design board
-  const [team, setTeam] = useState(false)
+  const [theme, setTheme] = useState(() => qp('theme') || 'nursery') // the two styles from the design board
+  const [team, setTeam] = useState(() => qp('team') === '1')
   // Her first day (chapters 1 and 2): how her story begins
   // The demo tells her whole story as chapters: born, her story begins, a day in the long middle,
   // her sky, then going home, or, if she doesn't go home, a screen that almost disappears.
-  const [chapter, setChapter] = useState('born')
-  const [mode, setMode] = useState('story') // 'story' (the six chapters) | 'bedside' (just the regular screen, day or night)
+  const [chapter, setChapter] = useState(() => qp('chapter') || 'born')
+  const [mode, setMode] = useState(() => qp('mode') || 'story') // 'story' (the six chapters) | 'bedside' (just the regular screen, day or night)
   const fstage = chapter === 'born' ? 'arrival' : 'visit'
   const [walk, setWalk] = useState(null) // the "What's on her" walkthrough step, or null
   const first = (chapter === 'born' || chapter === 'story') && !night
@@ -129,15 +133,15 @@ export function CurrentView({ onSky }) {
         {page === 'discharge' && !night && <Discharge theme={theme} onBack={() => setPage('galaxy')} />}
         <header className="cv-top" hidden={comfort}>
           <span className="cv-top-left">
-            {onSub && page !== 'ahead' && <button type="button" className="cv-back" onClick={() => setPage('home')}>‹ Back</button>}
+            {onSub && <NavBack label="Today" onClick={() => setPage('home')} />}
             {first ? 'Mila · Day 1' : comfort ? 'Mila · Day 41' : page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? `Mila · Day ${today.day}` : null}
           </span>
           <span className="cv-top-right">
             <span className="cv-clock">{first ? (chapter === 'born' ? '4:20 a.m.' : '5:10 a.m.') : comfort ? '' : night ? today.clock.night : today.clock.label}</span>
             {/* her sky is for looking back; contacting her care team belongs with today */}
             {!comfort && page !== 'galaxy' && page !== 'discharge' && (
-              <button type="button" className="cv-btn is-call is-top" onClick={() => setTeam(true)}>
-                <span className="cv-btn-icon" aria-hidden="true">☎</span>Care team
+              <button type="button" className="nav-btn is-call" onClick={() => setTeam(true)}>
+                <PhoneIcon /><span>Care team</span>
               </button>
             )}
           </span>
@@ -163,47 +167,33 @@ export function CurrentView({ onSky }) {
           {/* comfort care: the family decides whether the screen is on at all */}
           {comfort && !dark && !memory && (
             <div className="cv-actions-left">
-              <button type="button" className="cv-btn is-quiet" onClick={() => setMemory(true)}><span className="cv-today-icon" aria-hidden="true">✦</span>Her sky</button>
-              <button type="button" className="cv-btn is-quiet" onClick={() => setDark(true)}>Turn off the screen</button>
+              <button type="button" className="nav-btn" onClick={() => setMemory(true)}><SparkleIcon /><span>Her sky</span></button>
+              <button type="button" className="nav-btn" onClick={() => setDark(true)}><span>Turn off the screen</span></button>
             </div>
           )}
           {/* her first day: her nurse can open "What's on her" while explaining */}
           {first && fstage !== 'arrival' && walk == null && (
             <div className="cv-actions-left">
-              <button type="button" className="cv-btn is-quiet" onClick={() => setWalk(0)}>What&apos;s on her</button>
+              <button type="button" className="nav-btn" onClick={() => setWalk(0)}><span>What&apos;s on her</span></button>
             </div>
           )}
-          {/* back to today: always bottom left, wherever you are */}
-          {page === 'ahead' && !night && (
+          {/* back to today lives top-left with every other "back" (see NavBack) */}
+          {onC && (
             <div className="cv-actions-left">
-              <button type="button" className="cv-btn is-quiet cv-today-btn" onClick={() => setPage('home')}>
-                <span className="cv-today-icon" aria-hidden="true">‹</span>Today
-              </button>
-            </div>
-          )}
-          {page === 'galaxy' && !night && (
-            <div className="cv-actions-left">
-              <button type="button" className={`cv-btn is-quiet cv-today-btn ${skyExit ? 'is-leaving' : ''}`} onClick={() => setSkyExit((n) => n + 1)}>
-                <span className="cv-today-icon" aria-hidden="true">‹</span>Today
+              <button type="button" className="nav-btn cv-lookup-btn" onClick={zoomOut}>
+                <LookUpIcon /><span>Mila&apos;s stars</span>
               </button>
             </div>
           )}
           {onC && (
-            <div className="cv-actions-left">
-              <button type="button" className="cv-btn is-tertiary cv-lookup-btn" onClick={zoomOut}>
-                <LookUpIcon />Mila&apos;s stars
-              </button>
-            </div>
-          )}
-          {onC && (
-            <button type="button" className="cv-btn is-primary cv-ahead-btn" onClick={() => setPage('ahead')}>
-              What&apos;s ahead<span aria-hidden="true">›</span>
+            <button type="button" className="nav-btn is-primary is-trailing cv-ahead-btn" onClick={() => setPage('ahead')}>
+              <span>What&apos;s ahead</span><ChevronRight />
             </button>
           )}
           {/* with the screen almost gone, her care team stays down here, the one thing on it */}
           {comfort && !dark && (
-            <button type="button" className="cv-btn is-call" onClick={() => setTeam(true)}>
-              <span className="cv-btn-icon" aria-hidden="true">☎</span>Care team
+            <button type="button" className="nav-btn is-call" onClick={() => setTeam(true)}>
+              <PhoneIcon /><span>Care team</span>
             </button>
           )}
         </footer>
