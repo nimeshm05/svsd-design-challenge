@@ -269,7 +269,21 @@ function layerBox(bx, k) {
 }
 
 /* ---------- The day ring ---------- */
-const LANE = { parent: 0.72, first: 0.72, care: 1, change: 1.26 }
+// Every moment sits on the one 24-hour ring, at its time. Moments that land within ~half an hour of
+// each other ease apart along the ring (keeping their order) so neither hides the other.
+const MIN_GAP = 0.17 // radians between neighbours on the ring
+function ringAngles(moments) {
+  const order = moments.map((m, i) => ({ i, a: ang(m.h) })).sort((p, q) => moments[p.i].h - moments[q.i].h)
+  const out = new Array(moments.length)
+  for (let k = 0; k < order.length; ) {
+    let j = k
+    while (j + 1 < order.length && order[j + 1].a - order[j].a < MIN_GAP) j++
+    const n = j - k + 1, mid = (order[k].a + order[j].a) / 2
+    for (let t = k; t <= j; t++) out[order[t].i] = mid + (t - k - (n - 1) / 2) * MIN_GAP
+    k = j + 1
+  }
+  return out
+}
 const ang = (h) => -Math.PI / 2 + (h / 24) * Math.PI * 2 // midnight at the top, clockwise
 function momentMark(theme, m, x, y) {
   const c = theme === 'confetti'
@@ -301,12 +315,13 @@ function DayScene({ theme, day, sel, onPick }) {
     b += dayStar(theme, day, ox, oy, 2.2)
     return b
   }, [theme, day, c])
+  const angles = useMemo(() => ringAngles(day.moments), [day])
   return (
     <svg className="cv-day-scene" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" role="img" aria-label={`Day ${day.d}: ${day.story}`}>
       <rect x="-2000" y="-2000" width="5000" height="5000" fill="#000" />
       <g dangerouslySetInnerHTML={{ __html: back }} />
       {/* the 24-hour ring: lit up to now on today, whole on past days */}
-      {[0.72, 1, 1.26].map((k) => <circle key={k} cx={ox} cy={oy} r={R * k} fill="none" stroke={ringCol} strokeOpacity={k === 1 ? 0.22 : 0.1} strokeWidth={c && k === 1 ? 3 : 1} />)}
+      <circle cx={ox} cy={oy} r={R} fill="none" stroke={ringCol} strokeOpacity={0.22} strokeWidth={c ? 3 : 1} />
       <polyline points={arc(0, day.nowH, R)} fill="none" stroke={ringCol} strokeOpacity={c ? 0.8 : 0.5} strokeWidth={c ? 4.5 : 1.6} strokeLinecap="round" />
       {[[0, '12 a.m.'], [6, '6 a.m.'], [12, '12 p.m.'], [18, '6 p.m.']].map(([h, l]) => {
         const a = ang(h), x = ox + Math.cos(a) * (R * 1.5), y = oy + Math.sin(a) * (R * 1.5)
@@ -316,13 +331,13 @@ function DayScene({ theme, day, sel, onPick }) {
         const a = ang(day.nowH)
         return (
           <g className="cv-ring-now">
-            <line x1={ox + Math.cos(a) * 40} y1={oy + Math.sin(a) * 40} x2={ox + Math.cos(a) * R * 1.36} y2={oy + Math.sin(a) * R * 1.36} stroke={c ? '#ffd23f' : '#ffb38a'} strokeWidth="2" strokeLinecap="round" />
-            <text x={ox + Math.cos(a) * R * 1.36 + 8} y={oy + Math.sin(a) * R * 1.36 + 4} fill={c ? '#ffd23f' : '#ffb38a'} className="cv-ring-now-label">Now</text>
+            <line x1={ox + Math.cos(a) * 40} y1={oy + Math.sin(a) * 40} x2={ox + Math.cos(a) * R * 1.18} y2={oy + Math.sin(a) * R * 1.18} stroke={c ? '#ffd23f' : '#ffb38a'} strokeWidth="2" strokeLinecap="round" />
+            <text x={ox + Math.cos(a) * R * 1.18 + 8} y={oy + Math.sin(a) * R * 1.18 + 4} fill={c ? '#ffd23f' : '#ffb38a'} className="cv-ring-now-label">Now</text>
           </g>
         )
       })()}
       {day.moments.map((m, i) => {
-        const a = ang(m.h), r = R * LANE[m.kind], x = ox + Math.cos(a) * r, y = oy + Math.sin(a) * r
+        const a = angles[i], x = ox + Math.cos(a) * R, y = oy + Math.sin(a) * R
         const on = sel === i
         return (
           <g key={i} className={`cv-moment ${on ? 'is-on' : ''}`} onClick={() => onPick(i)} role="button" tabIndex={0}
