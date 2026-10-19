@@ -188,9 +188,9 @@ export const today = {
   },
   // Who's caring for her right now. Parents see the team, and ask for help in one place.
   team: [
-    { initials: 'P', name: 'Priya', role: 'Her nurse today', primary: true },
-    { initials: 'CN', name: '[Charge nurse]', role: 'Charge nurse · covers when Priya is with another baby' },
-    { initials: 'Dr', name: 'Dr. [Name]', role: 'Baby doctor on call' },
+    { initials: 'P', name: 'Priya', role: 'Her nurse today, until 7 p.m.', primary: true },
+    { initials: 'L', name: 'Lena', role: 'Charge nurse · comes when Priya is with another baby' },
+    { initials: 'O', name: 'Dr. Osei', role: 'Baby doctor on call' },
     { initials: 'M', name: 'Marcus', role: 'Her nurse tonight, from 7 p.m.' },
   ],
   calm: {

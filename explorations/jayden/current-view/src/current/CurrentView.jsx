@@ -599,65 +599,97 @@ const helpPrompts = [
 // nurse call button by her bed. Steps: team → note → sent.
 function TeamSheet({ onClose }) {
   const nurse = today.team.find((p) => p.primary) ?? today.team[0]
-  const [step, setStep] = useState('team')
+  const others = today.team.filter((p) => p !== nurse)
+  const backup = others.find((p) => /charge/i.test(p.role))
+  const [step, setStep] = useState('team') // 'team' | 'ask' | 'sent'
+  const [reason, setReason] = useState(helpPrompts[0])
   const [note, setNote] = useState('')
-  const title = step === 'team' ? 'Her team right now' : step === 'note' ? `Contact ${nurse.name}` : 'Sent'
+  const titleId = 'ts-title'
   return (
-    <div className="cv-scrim" onClick={onClose}>
-      <div className="cv-sheet" role="dialog" aria-label={title} onClick={(e) => e.stopPropagation()}>
-        <div className="cv-sheet-head">
-          <h3>{title}</h3>
-          {step === 'sent'
-            ? <button type="button" className="nav-btn" onClick={onClose}><span>Done</span></button>
-            : <CloseButton onClick={onClose} />}
-        </div>
-
-        {step === 'team' && (
-          <>
-            <ul className="cv-team">
-              {today.team.map((p) => (
-                <li key={p.name} className={p.primary ? 'is-primary' : ''}>
-                  <span className="cv-avatar">{p.initials}</span>
-                  <span className="cv-who"><b>{p.name}</b><span>{p.role}</span></span>
-                </li>
-              ))}
-            </ul>
-            <button type="button" className="cv-help-btn" onClick={() => setStep('note')}>Contact {nurse.name}</button>
-            <p className="cv-muted">If it feels urgent, press the nurse call button by her bed.</p>
-          </>
+    <div className="cv-scrim ts-scrim" onClick={onClose}>
+      <div className={`ts is-${step}`} role="dialog" aria-modal="true" aria-labelledby={titleId} onClick={(e) => e.stopPropagation()}>
+        {step !== 'sent' && (
+          <header className="ts-head">
+            {step === 'ask' ? <NavBack label="Her team" onClick={() => setStep('team')} /> : <span />}
+            <CloseButton onClick={onClose} />
+          </header>
         )}
 
-        {step === 'note' && (
-          <div className="cv-compose">
-            <div className="cv-compose-to">
-              <span className="cv-avatar">{nurse.initials}</span>
-              <span className="cv-who"><b>{nurse.name}</b><span>{nurse.role}</span></span>
+        {step === 'team' && (
+          <div className="ts-body" key="team">
+            <div className="ts-title-block">
+              <h2 id={titleId} className="ts-title">Her care team</h2>
+              <p className="ts-sub">Right now · {today.clock.label}</p>
             </div>
-            <label className="cv-k" htmlFor="cv-note">Add a note, if you&apos;d like</label>
-            <textarea id="cv-note" className="cv-note" rows={3} value={note} onChange={(e) => setNote(e.target.value)}
-              placeholder={`Write to ${nurse.name}…`} />
-            <div className="cv-prompts">
-              {helpPrompts.map((p, i) => (
-                <button key={p} type="button" className="cv-pill cv-prompt" style={{ '--i': i }}
-                  aria-pressed={note === p} onClick={() => setNote(p)}>{p}</button>
+
+            <section className="ts-lead" aria-label="Her nurse">
+              <span className="ts-avatar is-lead" aria-hidden="true">{nurse.initials}</span>
+              <div className="ts-who">
+                <b>{nurse.name}</b>
+                <span>{nurse.role}</span>
+              </div>
+            </section>
+            <button type="button" className="nav-btn is-primary ts-cta" onClick={() => setStep('ask')}>
+              <span>Ask {nurse.name} to come by</span>
+            </button>
+
+            <section className="ts-sec">
+              <h3 className="cv-gsec-k">Also caring for her</h3>
+              <ul className="ts-list">
+                {others.map((p) => (
+                  <li key={p.name}>
+                    <span className="ts-avatar" aria-hidden="true">{p.initials}</span>
+                    <div className="ts-who"><b>{p.name}</b><span>{p.role}</span></div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <p className="ts-urgent"><PhoneIcon /><span>Urgent? Press the nurse call button by her bed.</span></p>
+          </div>
+        )}
+
+        {step === 'ask' && (
+          <div className="ts-body" key="ask">
+            <div className="ts-title-block">
+              <h2 id={titleId} className="ts-title">Ask {nurse.name}</h2>
+              <p className="ts-sub">She&apos;ll come by as soon as she can.</p>
+            </div>
+            <fieldset className="ts-sec ts-reasons">
+              <legend className="cv-gsec-k">What would help?</legend>
+              {helpPrompts.map((p) => (
+                <label key={p} className={`ts-reason ${reason === p ? 'is-on' : ''}`}>
+                  <input type="radio" name="ts-reason" value={p} checked={reason === p} onChange={() => setReason(p)} />
+                  <span className="ts-radio" aria-hidden="true" />
+                  <span>{p}</span>
+                </label>
               ))}
+            </fieldset>
+            <section className="ts-sec">
+              <label className="cv-gsec-k" htmlFor="ts-note">A note, if you&apos;d like</label>
+              <textarea id="ts-note" className="ts-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder={`Anything ${nurse.name} should know…`} />
+            </section>
+            <div className="ts-actions">
+              <button type="button" className="nav-btn is-primary ts-cta" onClick={() => setStep('sent')}><span>Send to {nurse.name}</span></button>
             </div>
-            <button type="button" className="cv-help-btn" onClick={() => setStep('sent')}>Ask for help</button>
-            <button type="button" className="cv-compose-back" onClick={() => setStep('team')}>‹ Back to her team</button>
           </div>
         )}
 
         {step === 'sent' && (
-          <div className="cv-sent">
-            <div className="cv-asked">
-              <p className="cv-sheet-lead">{nurse.name} has been contacted.</p>
-              <p>She&apos;ll come by as soon as she can. If she&apos;s with another baby, the charge nurse will come instead.</p>
-              {note.trim() && <p className="cv-sent-note">“{note.trim()}”</p>}
+          <div className="ts-body ts-done" key="sent">
+            <span className="ts-check" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" /></svg>
+            </span>
+            <div className="ts-title-block is-center">
+              <h2 id={titleId} className="ts-title">{nurse.name} knows</h2>
+              <p className="ts-sub">She&apos;ll come by as soon as she can.{backup && <> If she&apos;s with another baby, {backup.name} will come instead.</>}</p>
             </div>
-            <div className="cv-urgent" role="note">
-              <span className="cv-urgent-icon" aria-hidden="true">!</span>
-              <p>If this is an emergency, press the nurse call button by her bed.</p>
+            <div className="ts-sent-what">
+              <span>{reason}</span>
+              {note.trim() && <span className="ts-sent-note">“{note.trim()}”</span>}
             </div>
+            <button type="button" className="nav-btn is-primary ts-cta" onClick={onClose}><span>Done</span></button>
+            <p className="ts-urgent is-center"><PhoneIcon /><span>Urgent? Press the nurse call button by her bed.</span></p>
           </div>
         )}
       </div>
