@@ -1923,3 +1923,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .fd-walk-nav { position: static; left: auto; right: auto; bottom: auto; height: auto;
   display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 18px; }
 .cv-page .fd-walk-nav .fd-next { position: static; transform: none; }
+
+/* morphing button (What's on her → Next → Done), same motion as "Mila's stars" → "Close" */
+.cv-page .mb { gap: 0; padding: 0 var(--nav-px); }
+.cv-page .mb-label { position: relative; display: block; height: 1em; overflow: hidden; transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-page .mb-label > span { position: absolute; left: 0; top: 0; line-height: 1; white-space: nowrap; }
+.cv-page .mb-measure { visibility: hidden; position: absolute; }
+.cv-page .mb-in { animation: mb-in .5s cubic-bezier(.22, 1, .36, 1) both; }
+.cv-page .mb-out { animation: mb-out .35s ease both; }
+@keyframes mb-in { from { opacity: 0; transform: translateY(40%); } }
+@keyframes mb-out { to { opacity: 0; transform: translateY(-40%); } }
+.cv-page .mb-chev { display: flex; align-items: center; overflow: hidden; width: 0; margin-left: 0; opacity: 0;
+  transition: width .5s cubic-bezier(.22, 1, .36, 1), margin-left .5s cubic-bezier(.22, 1, .36, 1), opacity .35s ease; }
+.cv-page .mb.has-chev .mb-chev { width: calc(var(--ic) * .86 * 8 / 14 + 2px); margin-left: calc(var(--ic) * .58); opacity: 1; }
+.cv-page .mb.has-chev { padding-right: calc(var(--nav-px) - 2px); }
+/* dots above the button, only during the walkthrough */
+.cv-page .fd-walk-nav { flex-direction: column; gap: 14px; }
+.cv-page .fd-dots.is-hidden { display: none; }
+@media (prefers-reduced-motion: reduce) { .cv-page .mb-in, .cv-page .mb-out { animation: none; } .cv-page .mb-label, .cv-page .mb-chev { transition: none; } }
