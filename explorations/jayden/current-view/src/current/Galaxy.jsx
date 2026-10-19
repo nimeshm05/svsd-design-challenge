@@ -271,6 +271,7 @@ function layerBox(bx, k) {
 /* ---------- The day ring ---------- */
 // Every moment sits on the one 24-hour ring, at its time. Moments that land within ~half an hour of
 // each other ease apart along the ring (keeping their order) so neither hides the other.
+const RING_X = 300 // the day ring's centre in the sky's drawing units (dots line up under it)
 const MIN_GAP = 0.17 // radians between neighbours on the ring
 function ringAngles(moments) {
   const order = moments.map((m, i) => ({ i, a: ang(m.h) })).sort((p, q) => moments[p.i].h - moments[q.i].h)
@@ -303,7 +304,7 @@ function momentMark(theme, m, x, y) {
 
 function DayScene({ theme, day, sel, onPick }) {
   const c = theme === 'confetti'
-  const ox = 300, oy = 322, R = 150
+  const ox = RING_X, oy = 322, R = 150
   const ringCol = c ? '#7cc0ff' : '#f3e3b5'
   const arc = (h0, h1, r) => {
     const pts = Array.from({ length: 49 }, (_, k) => { const a = ang(h0 + ((h1 - h0) * k) / 48); return [ox + Math.cos(a) * r, oy + Math.sin(a) * r] })
@@ -847,38 +848,22 @@ export function Galaxy({ theme, onBack, exit = 0 }) {
       ? daysOf(wOf(view.d)).filter((d) => d.d < stay.today).map((d) => ({ key: `d${d.d}`, label: `Day ${d.d}`, on: view.d === d.d, go: () => goDay(d.d) }))
       : []
 
-  // The dots sit centred under what's drawn: the day's ring, or this week's constellation. Measured
-  // from the page (not guessed), then kept clear of Close on the left and the panel on the right.
+  // The dots have one fixed anchor: the centre of the day's ring (computed from the layout, not measured),
+  // so paging weeks or days, or moving between a week and a day, never moves them. The row is centred on
+  // that point, so it grows and shrinks evenly as the active dot changes. Only a resize (or Close being in
+  // the way on a narrow screen) moves the anchor.
   const dotsRef = useRef(null)
   const [dotsX, setDotsX] = useState(null)
   useLayoutEffect(() => {
-    const place = () => {
-    const el = host.current, dots = dotsRef.current
-    if (!el || !dots) return
-    const r = el.getBoundingClientRect()
-    let cx = null
-    if (view.level === 'day') {
-      const ring = el.querySelector('.cv-day-scene .cv-ring-main')
-      if (ring) { const b = ring.getBoundingClientRect(); cx = b.left + b.width / 2 }
-    } else if (view.level === 'week') {
-      const stars = daysOf(view.w).map((d) => el.querySelector(`.cv-gstar[data-d="${d.d}"]`)).filter(Boolean).map((g) => g.getBoundingClientRect())
-      if (stars.length) cx = (Math.min(...stars.map((b) => b.left)) + Math.max(...stars.map((b) => b.right))) / 2
-    }
-    if (cx == null) return
-    const w = dots.offsetWidth
-    const close = document.querySelector('.cv-skyt')?.getBoundingClientRect()
-    const panel = el.querySelector('.cv-gpanel')?.getBoundingClientRect()
-    let left = cx - w / 2
-    if (close) left = Math.max(left, close.right + 16)
-    if (panel) left = Math.min(left, panel.left - 16 - w)
-    setDotsX(Math.round(left - r.left))
-    }
-    if (!landed) return
-    place()
-    // measure again once the scene's entrance animation and the active dot's widening have settled
-    const t1 = setTimeout(place, 450), t2 = setTimeout(place, 1100)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [view.level, view.w, view.d, landed, size, dots.length])
+    const el = host.current
+    if (!el) return
+    const [cw, ch] = size, s = Math.max(cw / W, ch / H)
+    let x = (cw - W * s) / 2 + RING_X * s
+    const r = el.getBoundingClientRect(), close = document.querySelector('.cv-skyt')?.getBoundingClientRect()
+    const half = (dotsRef.current?.offsetWidth ?? 160) / 2
+    if (close) x = Math.max(x, close.right - r.left + 16 + half)
+    setDotsX(Math.round(x))
+  }, [size, view.level === 'week' || view.level === 'day'])
   const faded = view.level === 'day' ? 'is-faded' : ''
   const layer = (l) => <div key={l.name} className={`cv-glayer is-${l.name} ${faded}`} data-k={l.k} dangerouslySetInnerHTML={{ __html: l.html }} />
 
@@ -996,7 +981,7 @@ export function Galaxy({ theme, onBack, exit = 0 }) {
       {/* Moving sideways, bottom centre of the sky: dots, one per week (in a week) or per day of
           this week (in a day). Swipe sideways on the trackpad, use ← →, or tap a dot. */}
       {(view.level === 'week' || view.level === 'day') && !story && dots.length > 1 && (
-        <nav ref={dotsRef} className="nav-dots" aria-label={view.level === 'week' ? 'Weeks' : 'Days'} style={dotsX != null ? { left: dotsX } : undefined}>
+        <nav ref={dotsRef} className="nav-dots" aria-label={view.level === 'week' ? 'Weeks' : 'Days'} style={dotsX != null ? { left: dotsX } : { visibility: 'hidden' }}>
           {dots.map((x) => (
             <button key={x.key} type="button" className={`nav-dot ${x.on ? 'is-on' : ''}`} aria-label={x.label}
               aria-current={x.on ? 'page' : undefined} onClick={x.go}><i /></button>
