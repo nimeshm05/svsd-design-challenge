@@ -150,16 +150,6 @@ h1, h2, p, figure, blockquote, dl, dd, ol { margin: 0; padding: 0; }
 
 /* Finding: a game of telephone */
 .finding-h { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 96; font-weight: 400; font-size: clamp(36px, 4.6vw, 68px); line-height: 1.1; letter-spacing: -.015em; color: var(--cream); }
-.phone { position: relative; width: min(600px, 80vw); margin-top: 34px; }
-.phone svg { width: 100%; height: 60px; display: block; overflow: visible; }
-.phone-line { fill: none; stroke: var(--cream); stroke-width: 1.3; stroke-opacity: .55; stroke-dasharray: 800; stroke-dashoffset: 800; }
-.is-on .phone-line { animation: draw 2.6s .9s ease-in-out forwards; }
-@keyframes draw { to { stroke-dashoffset: 0; } }
-.phone-dot { fill: #000; stroke: var(--cream); stroke-width: 1.3; }
-.phone-dot.is-from { fill: var(--comprehension); stroke: none; }
-.phone-dot.is-to { fill: var(--cream); stroke: none; }
-.phone-from, .phone-to { position: absolute; top: 58px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; color: var(--muted); }
-.phone-from { left: 0; } .phone-to { right: 0; }
 
 /* Three pillars */
 .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.4vw, 36px); margin-top: 40px; }
@@ -426,6 +416,51 @@ p.hmw-part { display: block; }
 .slide-problem.is-on mark.is-comprehension { transition-delay: 1.58s; }
 .slide-problem.is-on mark.is-awareness { transition-delay: 1.86s; }
 .slide-both.is-on mark + mark { transition-delay: 1.5s; }
+.slide-heard.is-on mark ~ mark { transition-delay: 1.5s; }
+
+/* what we found: the pieces, and the picture left to assemble */
+.finding { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: center; gap: clamp(28px, 4vw, 64px); }
+.finding .statement-p.is-big { max-width: 13ch; font-size: clamp(38px, 4.4vw, 64px); }
+.finding-art { min-width: 0; }
+.puzzle { display: block; width: 100%; height: auto; max-height: calc(100vh - 220px); overflow: visible; }
+.pz-frame { fill: none; stroke: var(--cream); stroke-opacity: .1; stroke-width: 1; stroke-dasharray: 2 7; }
+.pz-slot { fill: none; stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 4 6; stroke-linecap: round; opacity: .55; }
+.pz-piece { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.pz-have { filter: drop-shadow(0 0 14px rgba(243, 227, 181, .16)); }
+.pz-have .pz-piece, .pz-loose.is-snap .pz-piece { stroke: #EDE3CC; stroke-width: 1.8; fill: rgba(243, 227, 181, .05); }
+.pz-loose { transform: translate(var(--x), var(--y)) rotate(var(--r)); }
+.pz-loose .pz-piece { stroke: var(--text-2); stroke-opacity: .7; stroke-width: 1.5; }
+
+/* 1. the loose pieces drift in, one after another */
+.is-on .pz-loose { animation: pz-drift .9s calc(.6s + var(--k) * 80ms) cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes pz-drift { from { transform: translate(var(--sx), var(--sy)) rotate(var(--sr)); opacity: 0; } }
+/* 2. two of them find their place and settle */
+.is-on .pz-loose.is-snap { animation: pz-snap 3.2s calc(.6s + var(--k) * 80ms) both; }
+.is-on .pz-loose.is-snap.is-late { animation-duration: 3.9s; }
+@keyframes pz-snap {
+  0% { transform: translate(var(--sx), var(--sy)) rotate(var(--sr)); opacity: 0; animation-timing-function: cubic-bezier(.2, .7, .2, 1); }
+  28%, 62% { transform: translate(var(--lx), var(--ly)) rotate(var(--lr)); opacity: 1; animation-timing-function: cubic-bezier(.3, .6, .25, 1); }
+  88% { transform: translate(var(--x), var(--y)) rotate(.8deg); animation-timing-function: ease-out; }
+  100% { transform: translate(var(--x), var(--y)) rotate(0deg); }
+}
+.is-on .pz-loose.is-snap .pz-piece { animation: pz-join .8s calc(.6s + var(--k) * 80ms + 2.7s) ease both; }
+.is-on .pz-loose.is-snap.is-late .pz-piece { animation-delay: calc(.6s + var(--k) * 80ms + 3.3s); }
+@keyframes pz-join { from { stroke: var(--text-2); stroke-opacity: .7; stroke-width: 1.5; fill: rgba(243, 227, 181, 0); } }
+/* 3. one tries a slot, hesitates, and drifts back out: it doesn't fit */
+.is-on .pz-loose.is-try { animation: pz-try 6.6s calc(.6s + var(--k) * 80ms) both; }
+@keyframes pz-try {
+  0% { transform: translate(var(--sx), var(--sy)) rotate(var(--sr)); opacity: 0; animation-timing-function: cubic-bezier(.2, .7, .2, 1); }
+  14%, 54% { transform: translate(var(--lx), var(--ly)) rotate(var(--lr)); opacity: 1; animation-timing-function: ease-in-out; }
+  67% { transform: translate(var(--nx), var(--ny)) rotate(var(--nr)); animation-timing-function: ease-in-out; }
+  75% { transform: translate(var(--nx), var(--ny)) rotate(calc(var(--nr) + 2deg)); animation-timing-function: ease-in-out; }
+  100% { transform: translate(var(--lx), var(--ly)) rotate(var(--lr)); }
+}
+/* 4. the rest never settle; the empty slots glow once, at the end */
+.is-on .pz-loose:not(.is-snap) .pz-float { animation: pz-float var(--fd) calc(1.6s + var(--k) * 80ms) ease-in-out infinite alternate; }
+@keyframes pz-float { to { transform: translate(var(--fx), var(--fy)) rotate(var(--fr)); } }
+.is-on .pz-slot { animation: pz-pulse 2s 7.4s ease-in-out both; }
+@keyframes pz-pulse { 50% { opacity: .95; stroke: var(--cream); } }
+@media (prefers-reduced-motion: reduce) { .puzzle, .puzzle * { animation: none !important; } }
 .slide-nicu.is-on mark { transition-delay: 1.5s; }
 @media (prefers-reduced-motion: reduce) { .flystar { display: none; } }
 
@@ -502,7 +537,7 @@ body:has(.panel) { overflow: auto; }
 .is-static mark { background-size: 100% 82%; }
 .is-static .hmw-part { opacity: 1; filter: none; }
 .is-static .hmw-part mark { background-size: 100% 82%; }
-.is-static .sk, .is-static .phone-line, .is-static .sys-const polyline { stroke-dashoffset: 0 !important; }
+.is-static .sk, .is-static .sys-const polyline { stroke-dashoffset: 0 !important; }
 .is-static .sk.is-ray, .is-static .sk.is-wave { opacity: .8; }
 .is-static .sk.is-star { fill: rgba(243, 227, 181, .9); }
 .is-static .sys-const path, .is-static .idea-star .glyph { opacity: 1 !important; }

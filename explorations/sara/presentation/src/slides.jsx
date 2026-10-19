@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Icon, StarGlyph } from './glyphs.jsx'
+import { Puzzle } from './puzzle.jsx'
 import { FEATURES, Feature, Storyboard } from './demo.jsx'
 
 // The case study as one story. Its spine: NICU parents live two things at once (the fight and the
@@ -203,16 +204,12 @@ function Asked({ step, active, thumb }) {
 
 function Heard() {
   return (
-    <div className="center finding">
-      <R d={0} className="k">What we found</R>
-      <R d={1} as="p" className="statement-p is-big"><L>What&apos;s said</L> isn&apos;t <L>what&apos;s heard</L>.</R>
-      <R d={2} className="phone" aria-hidden="true">
-        <svg viewBox="0 0 600 60" preserveAspectRatio="none">
-          <path className="phone-line" d="M10 30 C 60 30, 90 30, 140 30 S 200 22, 240 32 S 300 18, 340 36 S 400 12, 440 40 S 500 8, 540 44 S 580 14, 590 30" />
-          {[10, 150, 300, 450, 590].map((x, k) => <circle key={x} cx={x} cy={30} r={k === 0 ? 5 : 4} className={`phone-dot ${k === 0 ? 'is-from' : k === 4 ? 'is-to' : ''}`} />)}
-        </svg>
-        <span className="phone-from">Care team</span><span className="phone-to">Parent</span>
-      </R>
+    <div className="finding">
+      <div className="finding-words">
+        <R d={0} className="k">What we found</R>
+        <R d={1} as="p" className="statement-p is-big">Parents get the <L>pieces</L>, and are left to <L>put them together</L>.</R>
+      </div>
+      <R d={2} className="finding-art"><Puzzle /></R>
     </div>
   )
 }
@@ -340,7 +337,7 @@ function HMW({ step }) {
     <div className="center statement hmw">
       <R d={0} className="k">Opportunity</R>
       <R d={1} as="p" className="statement-p">
-        …turn a baby&apos;s care into a story that helps parents{' '}
+        How might we turn a baby&apos;s care into a story that helps parents{' '}
         <span className={`hmw-part ${on(1)}`}><L p="connection">feel connected</L>,</span>{' '}
         <span className={`hmw-part ${on(2)}`}><L p="comprehension">understand what&apos;s happening</L>,</span>{' '}
         <span className={`hmw-part ${on(3)}`}>and <L p="awareness">stay aware of what&apos;s ahead</L>,</span>
@@ -793,7 +790,7 @@ export const SLIDES = [
   { id: 'heard', section: '01 · Research', View: Heard },
   { id: 'telephone', section: '01 · Research', View: Telephone },
 
-  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Everything we heard came down to <L>three things</L>.</> }) },
+  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Our research pointed to <L>three needs</L>.</> }) },
   { id: 'pillars', section: '02 · The problem', tint: 'all', steps: 3, View: Pillars },
   { id: 'problem', section: '02 · The problem', tint: 'all', View: Problem },
   { id: 'compete', section: '02 · The problem', tint: 'all', View: Compete },
