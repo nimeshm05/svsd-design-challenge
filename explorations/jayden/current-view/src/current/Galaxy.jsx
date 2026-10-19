@@ -719,38 +719,51 @@ export function Galaxy({ theme, onBack, exit = 0 }) {
 
   // Two-finger scroll looks around (sideways swipes page in a week or day); pinch zooms toward your fingers
   const swipe = useRef({ x: 0, done: false, t: 0 })
+  const pinch = useRef({ x: 0, done: false, t: 0 })
   useEffect(() => {
     const el = host.current
+    // One move per gesture: the trackpad keeps sending events (momentum, a long pinch), so a gesture
+    // counts once and the next one starts after a short quiet gap.
+    const once = (ref, e, amount, threshold, act) => {
+      const g = ref.current
+      clearTimeout(g.t)
+      g.t = setTimeout(() => { g.x = 0; g.done = false }, 220)
+      if (g.done) return
+      g.x += amount
+      if (Math.abs(g.x) > threshold) { g.done = true; act(Math.sign(g.x)) }
+    }
     const onWheel = (e) => {
-      if (!landed || e.target.closest('.cv-gpanel')) return
-      // In a week or a day, a sideways swipe moves to the one before or after. One move per gesture:
-      // the trackpad's momentum keeps sending events, so wait for a short quiet gap before the next.
-      if (!e.ctrlKey && (view.level === 'week' || view.level === 'day')) {
-        const sw = swipe.current
-        clearTimeout(sw.t)
-        sw.t = setTimeout(() => { sw.x = 0; sw.done = false }, 220)
+      if (e.ctrlKey) e.preventDefault() // a trackpad pinch: never let the browser zoom the page
+      if (e.target.closest('.cv-gpanel') && !e.ctrlKey) return
+      const level = view.level
+      // Pinch fingers together = zoom out = up one level: a day → its week → Mila's stars
+      if (e.ctrlKey && e.deltaY > 0 && (level === 'day' || level === 'week')) {
+        if (!landed) { once(pinch, e, 0, 1, () => {}); return } // mid-flight: absorb, don't double-step
+        once(pinch, e, e.deltaY, 12, () => (level === 'day' ? goWeek(wOf(view.d)) : goGalaxy()))
+        return
+      }
+      if (!landed) return
+      // In a week or a day, a sideways swipe moves to the one before or after
+      if (!e.ctrlKey && (level === 'week' || level === 'day')) {
         const sideways = Math.abs(e.deltaX) > Math.abs(e.deltaY)
-        if (sideways || view.level === 'day') {
+        if (sideways || level === 'day') {
           e.preventDefault()
-          if (sw.done || !sideways) return
-          sw.x += e.deltaX
-          if (Math.abs(sw.x) > 40) {
-            sw.done = true
-            const k = sw.x > 0 ? 1 : -1 // fingers move left → content moves left → the next one
-            if (view.level === 'week') goWeek(view.w + k)
+          if (!sideways) return
+          once(swipe, e, e.deltaX, 40, (k) => { // fingers move left → content moves left → the next one
+            if (level === 'week') goWeek(view.w + k)
             else if (view.d + k >= 1 && view.d + k < stay.today) goDay(view.d + k) // never swipe out of her sky by accident
-          }
+          })
           return
         }
       }
-      if (view.level === 'day') return
+      if (level === 'day') return
       e.preventDefault()
       const b = box.current, s = scaleOf(b), [cw, ch] = sizeRef.current
       if (e.ctrlKey) {
+        // spreading (and pinching together at the top level) zooms the view toward your fingers
         const r = el.getBoundingClientRect()
         const wx = b[0] + (e.clientX - r.left - (cw - b[2] * s) / 2) / s, wy = b[1] + (e.clientY - r.top - (ch - b[3] * s) / 2) / s
         const vw = Math.min(Math.max(1300, skyBox(cw, ch)[2] * 1.3), Math.max(220, b[2] * Math.exp(e.deltaY * 0.01))), k = vw / b[2]
-        if (e.deltaY > 0 && view.level === 'week' && vw > target[2] * 1.3) { goGalaxy(); return }
         applyBox(clampBox([wx - (wx - b[0]) * k, wy - (wy - b[1]) * k, vw, vw * (H / W)]))
       } else applyBox(clampBox([b[0] + e.deltaX / s, b[1] + e.deltaY / s, b[2], b[3]]))
       setTick((t) => t + 1)

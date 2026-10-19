@@ -109,6 +109,35 @@ export function CurrentView({ onSky }) {
     ov.style.setProperty('--my', `${(ny - ty) / s}px`)
   }, [zoom])
 
+  // Pinch fingers together = zoom out = up one level, everywhere (a trackpad pinch arrives as ctrl + wheel):
+  // Today → Mila's stars; What's ahead or Today so far → Today; the discharge mobile → Mila's stars.
+  // Her sky handles its own levels (a day → its week → Mila's stars). Once per gesture.
+  const pinchUp = useRef({ x: 0, done: false, t: 0 })
+  const upRef = useRef(null)
+  upRef.current = () => {
+    if (zoom || night) return
+    if (page === 'home' && onC) zoomOut()
+    else if (page === 'ahead' || page === 'progress') setPage('home')
+    else if (page === 'discharge') setPage('galaxy')
+  }
+  useEffect(() => {
+    const el = document.querySelector('.cv-screen')
+    if (!el) return
+    const onWheel = (e) => {
+      if (!e.ctrlKey) return
+      e.preventDefault() // never let the browser zoom the page
+      if (e.target.closest('.cv-galaxy')) return
+      const g = pinchUp.current
+      clearTimeout(g.t)
+      g.t = setTimeout(() => { g.x = 0; g.done = false }, 220)
+      if (g.done || e.deltaY <= 0) return
+      g.x += e.deltaY
+      if (g.x > 12) { g.done = true; upRef.current() }
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [])
+
   return (
     <div className={`cv-page theme-${theme}`}>
       {/* Prototype controls: not part of the bedside screen */}
@@ -162,7 +191,7 @@ export function CurrentView({ onSky }) {
           ? <DayView key={`${kind}-p`} d={d} startH={cH} theme={theme} />
           : night
           ? <NightView theme={theme} />
-          : <HomeC key={kind} d={d} h={cH} setH={setCH} zoom={zoom} theme={theme} onAhead={() => setPage('ahead')} onZoomOut={zoomOut} />}
+          : <HomeC key={kind} d={d} h={cH} setH={setCH} zoom={zoom} theme={theme} onAhead={() => setPage('ahead')} />}
 
         <footer className="cv-actions">
           {/* comfort care: the family decides whether the screen is on at all */}
@@ -320,7 +349,7 @@ const hourLabel = (h) => {
 // the day. Below: a few soft words. (A 3D body was tried here and dropped: it felt clinical.)
 // Marks on the arc: care times, changes to her wires, team decisions, firsts, and family moments
 // as her nurse notes them. Everything comes from what's recorded at the bedside (no phone app).
-function HomeC({ d, h, setH, zoom, theme, onAhead, onZoomOut }) {
+function HomeC({ d, h, setH, zoom, theme, onAhead }) {
   const nowH = today.clock.h
   const atNow = Math.abs(h - nowH) < 0.01
   // Her day so far: feeds and naps, what changed for her, her team's plans, her firsts, and her family's moments
@@ -343,8 +372,7 @@ function HomeC({ d, h, setH, zoom, theme, onAhead, onZoomOut }) {
     : current.t
 
   return (
-    // Pinching out over the sky (a trackpad pinch arrives as ctrl + wheel) opens her stars.
-    <div className={`cv-homec ${zoom ? `is-zoom-${zoom}` : ''}`} onWheel={(e) => { if (e.ctrlKey && e.deltaY > 4) onZoomOut() }}>
+    <div className={`cv-homec ${zoom ? `is-zoom-${zoom}` : ''}`}>
       <SkyArc h={h} nowH={nowH} marks={marks} later={later} glow={glow} onChange={setH} onFuture={onAhead} theme={theme} gather={zoom} />
       {/* One layout for every moment, always the same size: when, what she did, one line. Nothing jumps. */}
       {/* on a moment that changed what's on her, one tap shows her too, in the same space as the words */}

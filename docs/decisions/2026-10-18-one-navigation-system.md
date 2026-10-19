@@ -48,3 +48,9 @@
 - In a week, a mostly vertical two-finger scroll still pans, and pinch still zooms.
 - You can't swipe out of her sky by accident: past the last day before today (or before day 1), a swipe does nothing. Closing is always the Close button.
 - No dots when there's only one item to show.
+
+## Update: pinch together = up one level, everywhere
+
+**Chose:** On a trackpad (or a touch screen), pinching fingers together zooms out, and zooming out always means going up one level: a day → its week → Mila's stars; Today → Mila's stars (today becomes a star in her sky); What's ahead or Today so far → Today; the discharge mobile → Mila's stars. Spreading fingers still zooms in to look closer.
+
+**Details:** one level per gesture, even for a long slow pinch that continues while the camera is flying (momentum is absorbed until the fingers stop). The browser's own page zoom is blocked over the screen, so a pinch never resizes the whole page instead.
