@@ -205,6 +205,53 @@ function Problem({ active }) {
   )
 }
 
+// How others tackle the three pillars, as a matrix (after the COLORFUL project's competitive analysis):
+// one band per pillar, one column per kind of product; what it does, and our take on it, or ✕ if it doesn't.
+const RIVALS = [
+  { name: 'Patient portals', eg: 'e.g. MyChart' },
+  { name: 'NICU webcams', eg: 'e.g. NICVIEW, AngelEye' },
+  { name: 'Baby journals', eg: 'milestone and memory apps' },
+]
+const MATRIX = {
+  connection: [
+    null,
+    { does: 'Watch the baby live, from anywhere', take: 'Seeing her isn’t the same as being part of her day: nothing is kept.' },
+    { does: 'Parents record milestones and photos', take: 'Parents have to do the recording, on top of everything else.' },
+  ],
+  comprehension: [
+    { does: 'Full medical records and test results', take: 'Complete, but clinical. Parents “get obsessive over MyChart.”' },
+    null,
+    null,
+  ],
+  awareness: [
+    { does: 'Results and visits as they post', take: 'Built for clinic visits, not a NICU day, hour by hour.' },
+    null,
+    { does: 'A timeline of past entries', take: 'It looks back, never ahead.' },
+  ],
+}
+function Compete() {
+  return (
+    <div className="compete">
+      <R d={0} className="k">Competitive analysis</R>
+      <R d={1} as="h2" className="h">How are others tackling the pain points?</R>
+      <div className="mx">
+        <R d={2} className="mx-row is-head">
+          <span />
+          {RIVALS.map((r) => <span key={r.name} className="mx-rival"><b>{r.name}</b><em>{r.eg}</em></span>)}
+        </R>
+        {PS.map((p, k) => (
+          <R key={p} d={3 + k * 0.7} className={`mx-row is-${p}`}>
+            <span className={`pill is-${p}`}>{PILLARS[p].name}</span>
+            {MATRIX[p].map((c, j) => c
+              ? <span key={j} className="mx-cell"><b>{c.does}</b><span className="mx-take">{c.take}</span></span>
+              : <span key={j} className="mx-cell is-none" aria-label="Not addressed">✕</span>)}
+          </R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // the question builds one pillar at a time
 function HMW({ step }) {
   const on = (n) => (step >= n ? 'is-in' : '')
@@ -485,7 +532,7 @@ const CHAPTERS = [
   { id: 'home', name: 'Going home', note: 'Her sky becomes a mobile for home.', p: ['connection'] },
   { id: 'not', name: 'If she doesn’t go home', note: 'Her story, kept, at the family’s pace.', p: ['connection'] },
 ]
-function Product() {
+function Product({ thumb }) {
   const frame = useRef(null)
   const [ch, setCh] = useState('day')
   const pick = (id) => { setCh(id); frame.current?.contentWindow?.postMessage({ type: 'mila:chapter', chapter: id }, '*') }
@@ -508,7 +555,9 @@ function Product() {
       </div>
       <R d={1} className="ipad">
         <div className="ipad-screen">
-          <iframe ref={frame} title="Mila's Sky bedside display" src="./prototype/index.html?embed=1&chapter=day" />
+          {thumb
+            ? <div className="ipad-thumb"><StarGlyph size={40} color="#F3E3B5" /><span>Live prototype</span></div>
+            : <iframe ref={frame} title="Mila's Sky bedside display" src="./prototype/index.html?embed=1&chapter=day" />}
         </div>
         <i className="ipad-cam" aria-hidden="true" />
       </R>
@@ -553,6 +602,7 @@ export const SLIDES = [
   { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Everything we heard came down to <L>three things</L>.</> }) },
   { id: 'pillars', section: '02 · The problem', tint: 'all', steps: 3, View: Pillars },
   { id: 'problem', section: '02 · The problem', tint: 'all', View: Problem },
+  { id: 'compete', section: '02 · The problem', tint: 'all', View: Compete },
   { id: 'hmw', section: '02 · The problem', tint: 'all', steps: 5, View: HMW },
 
   { id: 'principles', section: '03 · Design principles', planet: true, tint: 'all', View: Principles },

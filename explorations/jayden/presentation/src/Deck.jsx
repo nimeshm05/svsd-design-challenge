@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { SLIDES } from './slides.jsx'
 import { StarGlyph } from './glyphs.jsx'
 
@@ -22,6 +22,20 @@ export function Deck() {
   const next = useCallback(() => setAt(({ i, step }) => (step < STEPS(i) - 1 ? { i, step: step + 1 } : i < N - 1 ? { i: i + 1, step: 0 } : { i, step })), [])
   const prev = useCallback(() => setAt(({ i, step }) => (step > 0 ? { i, step: step - 1 } : i > 0 ? { i: i - 1, step: STEPS(i - 1) - 1 } : { i, step })), [])
   useEffect(() => { window.history.replaceState(null, '', `#${i + 1}`) }, [i])
+  // the story overview (?panel=1, its own window) follows the deck and can move it
+  const bc = useRef(null)
+  useEffect(() => {
+    const ch = new BroadcastChannel('mila-deck')
+    bc.current = ch
+    ch.onmessage = (e) => {
+      if (e.data?.type === 'go') go(e.data.i)
+      if (e.data?.type === 'hello') ch.postMessage({ type: 'at', i: iRef.current })
+    }
+    return () => ch.close()
+  }, [go])
+  const iRef = useRef(i)
+  useEffect(() => { iRef.current = i; bc.current?.postMessage({ type: 'at', i }) }, [i])
+  const openPanel = () => window.open(`${window.location.pathname}?panel=1`, 'mila-panel', 'width=1280,height=860')
   useEffect(() => {
     const key = (e) => {
       if (e.target.closest?.('input, textarea')) return
@@ -29,6 +43,7 @@ export function Deck() {
       if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); prev() }
       if (e.key === 'Home') go(0)
       if (e.key === 'End') go(N - 1)
+      if (e.key === 'o' || e.key === 'O') openPanel()
     }
     const hash = () => { const n = fromHash(); setAt((a) => (a.i === n ? a : { i: n, step: 0 })) }
     window.addEventListener('keydown', key)
@@ -42,7 +57,7 @@ export function Deck() {
       <Sky />
       <header className="deck-top">
         <span className="deck-mark"><StarGlyph size={14} />Mila&apos;s Sky</span>
-        <span className="deck-where"><span key={s.section} className="deck-section">{s.section}</span><span className="deck-count">{String(i + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}</span></span>
+        <span className="deck-where"><span key={s.section} className="deck-section">{s.section}</span><button type="button" className="deck-panel-btn" onClick={openPanel} title="Story overview (O)">Overview ↗</button><span className="deck-count">{String(i + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}</span></span>
       </header>
 
       <main className="deck-stage">
