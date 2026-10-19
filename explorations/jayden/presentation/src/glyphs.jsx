@@ -55,6 +55,14 @@ const ICONS = {
     <path d={star(37.5, 11, 4.4)} fill={a} stroke="none" />
   </>,
 }
+// feature illustrations: small things that sit inside a title
+Object.assign(ICONS, {
+  star: (a) => <><path d={star(24, 24, 15)} fill={a} stroke="none" /><circle cx="24" cy="24" r="20" strokeOpacity=".35" /></>,
+  moon: (a) => <><path d="M30 8 C20 10 14 19 16 28 C18 37 27 42 36 39 C27 44 13 39 10 28 C7 17 16 7 30 8 Z" /><path d={star(36, 16, 3.6)} fill={a} stroke="none" /></>,
+  constellation: (a) => <><path d="M7 34 L17 24 L27 29 L40 13" strokeOpacity=".6" />{[[7, 34], [17, 24], [27, 29]].map(([x, y]) => <path key={x} d={star(x, y, 3.4)} fill="currentColor" stroke="none" />)}<path d={star(40, 13, 5.5)} fill={a} stroke="none" /></>,
+  mobile: (a) => <><path d="M8 10 H40 M24 4 V10 M13 10 V24 M24 10 V30 M35 10 V20" /><path d={star(13, 28, 4)} fill={a} stroke="none" /><path d={star(24, 34, 4.4)} fill={a} stroke="none" /><path d={star(35, 24, 4)} fill={a} stroke="none" /></>,
+  arc: (a) => <><path d="M6 36 C14 16 34 16 42 36" strokeOpacity=".6" /><circle cx="12" cy="27" r="2" fill="currentColor" stroke="none" /><circle cx="19" cy="21" r="2" fill="currentColor" stroke="none" /><path d={star(29, 20, 4.8)} fill={a} stroke="none" /></>,
+})
 export function Icon({ name, size = 32, color = 'var(--cream)', accent, className = '' }) {
   return (
     <svg className={`icon icon-${name} ${className}`} viewBox="0 0 48 48" width={size} height={size} aria-hidden="true"

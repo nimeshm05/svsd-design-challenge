@@ -683,3 +683,46 @@ body:has(.panel) { overflow: auto; }
 .idea2-name { position: absolute; left: 50%; top: 4%; transform: translateX(-50%); font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(54px, 7vw, 104px); color: var(--cream); text-shadow: 0 0 60px rgba(243, 227, 181, .35); opacity: 0; filter: blur(10px); transition: opacity 1.6s ease, filter 1.6s ease; white-space: nowrap; }
 .is-on .is-b5 .idea2-name, .is-static .is-b5 .idea2-name { opacity: 1; filter: none; }
 .is-b5 .idea2-sky { transition: opacity 1.6s ease; opacity: .55; }
+
+/* ===== Feature highlights: one per slide, like COLORFUL's ===== */
+.feat { align-self: stretch; height: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 10px; }
+.feat-k { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.feat-k span { color: var(--cream); }
+.feat-k i { width: 7px; height: 7px; border-radius: 50%; }
+.feat-k i.is-connection { background: var(--connection); } .feat-k i.is-comprehension { background: var(--comprehension); } .feat-k i.is-awareness { background: var(--awareness); } .feat-k i.is-baby { background: var(--warm); }
+.feat-h { margin-top: 14px; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; font-size: clamp(30px, 3.2vw, 46px); line-height: 1.15; letter-spacing: -.01em; color: var(--text); }
+.feat-h .icon { display: inline-block; vertical-align: -0.22em; margin: 0 .08em; filter: drop-shadow(0 0 12px rgba(243, 227, 181, .35)); }
+.feat-p { margin-top: 12px; max-width: 56ch; font-size: clamp(15px, 1.35vw, 18px); line-height: 1.5; color: var(--text-2); }
+.feat-pad-spot { flex: 1; width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-top: 24px; min-height: 0; }
+.feat-pad-spot .demo-pad.is-thumb { height: 100%; }
+
+/* the shared bedside screen: stays put while the feature slides change around it */
+.demo-pad-layer { position: absolute; left: 0; right: 0; top: calc(74px + 214px); bottom: 106px; z-index: 2; display: flex; justify-content: center; pointer-events: none;
+  opacity: 0; transform: translateY(40px) scale(.97); transition: opacity .8s ease, transform 1s var(--ease); }
+.demo-pad-layer.is-on { opacity: 1; transform: none; pointer-events: auto; transition-delay: .2s; }
+.ipad.demo-pad { width: auto; height: 100%; max-width: 86vw; max-height: none; aspect-ratio: 1.43; }
+
+/* ===== The concept film breaks out of the slide frame ===== */
+.deck .deck-top, .deck .prog { transition: opacity .8s ease; }
+.deck.is-bare .deck-top, .deck.is-bare .prog { opacity: 0; pointer-events: none; }
+.slide.slide-film { inset: -74px 0 -92px; }
+.film .idea2-field { inset: 7% 5% 9%; animation: none; }
+.is-on .film .idea2-field { animation: drift 42s linear both; }
+@keyframes drift { from { transform: scale(1.14) translate(1.5%, 1%); } to { transform: none; } }
+/* captions find their own place, near what they talk about */
+.film .idea2-words { inset: 0; bottom: auto; top: 0; height: 100%; pointer-events: none; }
+.film .idea2-words p { bottom: auto; }
+.film .idea2-k { position: absolute; top: 34px; left: 44px; bottom: auto; transform: none; opacity: .7; }
+.film .idea2-line-0 { top: 47%; }
+.film .idea2-line-1 { top: 60%; }
+.film .idea2-line-2 { top: auto; bottom: 10%; }
+.film .idea2-line-3 { top: auto; bottom: 9%; left: 7%; transform: none; text-align: left; max-width: 40ch; }
+.film .idea2-line-4 { top: 7%; }
+.film .idea2-line-5 { top: 58%; }
+.film .idea2-name { top: 34%; font-size: clamp(64px, 9vw, 140px); }
+.film .idea2-words p.statement-p { font-size: clamp(30px, 3.6vw, 54px); }
+.film .idea2-words p.statement-p.is-big { font-size: clamp(40px, 5vw, 76px); }
+.film-bar { bottom: 22px; }
+.film-replay { right: 44px; bottom: 34px; }
+.film .idea2-words p.idea2-line-2 { top: auto; bottom: 10%; }
+.film .idea2-words p.idea2-line-3 { top: auto; bottom: 9%; }

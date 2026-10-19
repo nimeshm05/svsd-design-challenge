@@ -53,7 +53,7 @@ export function Deck() {
 
   const s = SLIDES[i]
   return (
-    <div className={`deck tint-${s.tint ?? 'night'}`} style={{ '--i': i }}>
+    <div className={`deck tint-${s.tint ?? 'night'} ${s.bare ? 'is-bare' : ''}`} style={{ '--i': i }}>
       <Sky />
       <header className="deck-top">
         <span className="deck-mark"><StarGlyph size={14} />Mila&apos;s Sky</span>
@@ -67,6 +67,8 @@ export function Deck() {
           </section>
         ))}
       </main>
+
+      <DemoPad show={s.feature} />
 
       <footer className="deck-foot">
         <Progress i={i} go={go} />
@@ -124,5 +126,27 @@ function Progress({ i, go }) {
         })}
       </svg>
     </nav>
+  )
+}
+
+// The bedside screen for the product slides: one live prototype that stays in place while the feature
+// slides change around it. It loads the first time a feature slide is reached, then each slide only asks
+// it to show its feature. Click inside it to use the real thing.
+function DemoPad({ show }) {
+  const frame = useRef(null)
+  const [live, setLive] = useState(false)
+  useEffect(() => { if (show) setLive(true) }, [show])
+  useEffect(() => { if (show) frame.current?.contentWindow?.postMessage({ type: 'mila:show', what: show }, '*') }, [show])
+  if (!live) return null
+  return (
+    <div className={`demo-pad-layer ${show ? 'is-on' : ''}`} aria-hidden={!show}>
+      <div className="ipad demo-pad">
+        <div className="ipad-screen">
+          <iframe ref={frame} title="Mila's Sky bedside display" src="./prototype/index.html?embed=1&chapter=born"
+            onLoad={() => setTimeout(() => show && frame.current?.contentWindow?.postMessage({ type: 'mila:show', what: show }, '*'), 300)} />
+        </div>
+        <i className="ipad-cam" aria-hidden="true" />
+      </div>
+    </div>
   )
 }

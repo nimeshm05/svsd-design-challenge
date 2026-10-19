@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { SLIDES } from './slides.jsx'
+import { FEATURES } from './demo.jsx'
 import { StarGlyph } from './glyphs.jsx'
 
 // The control panel: the whole story at a glance, in its own window (open it from the deck, or ?panel=1).
@@ -14,8 +15,10 @@ const LABELS = {
   principles: 'Each pain point became a principle', brainstorm: 'Brainstorm: ideas over our affinity map', sort: 'Ideas float to their principles', thread: 'What the ideas had in common',
   film: 'Concept film: day → star → sky → planets → her name', 's-open': 'Stars never disappear', system: 'The story layer: design system',
   'k-open': 'Three people to protect', constraints: 'Constraints table', mom: 'A tired mom in a hospital bed', modality: 'Touch, remote or gesture',
-  board: 'Storyboard: her stay, six moments', 'd-day1': 'Day 1: first star, what’s on her (2)', 'd-day23': 'Day 23: arc, terms, family moments, what’s ahead (4)', 'd-sky': 'Night view, today becomes a star (2)', 'd-end': 'Going home / if she doesn’t (2)', 'both-close': 'Mila’s Sky holds both (builds)', close: 'Every star is hers to keep',
+  board: 'Storyboard: her stay, six moments',  'both-close': 'Mila’s Sky holds both (builds)', close: 'Every star is hers to keep',
 }
+const FEAT_NAMES = { first: 'Her first star', walk: 'What’s on her', today: 'Her day, as an arc', term: 'Medical words in a tap', family: 'Moments you were there for', ahead: 'What’s ahead', night: 'Night view', sky: 'Every day becomes a star', home: 'Going home', not: 'If she doesn’t go home' }
+FEATURES.forEach((f) => { LABELS[f.id] = `${f.k}: ${FEAT_NAMES[f.show]}` })
 const W = 1440, H = 900, TW = 248
 
 export function Panel() {

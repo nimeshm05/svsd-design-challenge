@@ -181,3 +181,31 @@ export const Stretch = (id) => function StretchView({ active, step = 0, thumb })
     </div>
   )
 }
+
+/* ---------- The product, one feature per slide (after COLORFUL's feature highlights) ---------- */
+// A centered title with small illustrations inside it, one short paragraph, and the bedside screen below.
+// The screen is one live prototype that stays in place across these slides (see DemoPad in Deck.jsx);
+// each slide only asks it to show its feature, so clicking through feels like using one product.
+export const FEATURES = [
+  { id: 'f-first', show: 'first', k: 'Day 1', p: 'connection', title: <>Her first <Icon name="star" size={40} color="#FFF3D6" accent="#FFF3D6" /> star</>, text: 'Parents arrive in shock. The screen asks nothing of them: her name, how small she is in words they can feel, and who is with her.' },
+  { id: 'f-walk', show: 'walk', k: 'Day 1', p: 'comprehension', title: <>What&apos;s on her <Icon name="nurse" size={40} color="var(--comprehension)" />, one thing at a time</>, text: 'Her nurse walks through each wire and tube on her outline, one plain sentence each.' },
+  { id: 'f-today', show: 'today', k: 'Day 23', p: 'awareness', title: <>Her day, as an arc <Icon name="arc" size={44} color="var(--awareness)" accent="#FFF3D6" /></>, text: 'Every moment of her day so far, hour by hour, with the time always on screen.' },
+  { id: 'f-term', show: 'term', k: 'Day 23', p: 'comprehension', title: <>Medical words <Icon name="comprehension" size={40} color="var(--comprehension)" />, explained in a tap</>, text: 'Warm words first. The clinical term is one tap away, with her 3D model when it’s something on her.' },
+  { id: 'f-family', show: 'family', k: 'Day 23', p: 'connection', title: <>Moments you were there for <Icon name="parent" size={40} /></>, text: 'Kept from what her nurse already charts, so it adds no new tasks.' },
+  { id: 'f-ahead', show: 'ahead', k: 'Day 23', p: 'awareness', title: <>What&apos;s ahead <Icon name="awareness" size={40} color="var(--awareness)" /></>, text: 'Tomorrow and this week at a glance, so the next moment isn’t a surprise.' },
+  { id: 'f-night', show: 'night', k: 'Night', p: 'baby', title: <>Night view <Icon name="moon" size={40} color="#C9C2B3" accent="#FFF3D6" /></>, text: 'Dim and still for her, since babies are sensitive to light: just the time and one quiet line.' },
+  { id: 'f-sky', show: 'sky', k: 'Looking back', p: 'connection', title: <>Every day becomes a star <Icon name="constellation" size={46} color="#F3E3B5" accent="#FFF3D6" /></>, text: 'Each day’s moments gather into a star; her weeks become constellations. The sky only grows.' },
+  { id: 'f-home', show: 'home', k: 'The end of her stay', p: 'connection', title: <>Going home <Icon name="mobile" size={44} color="#F3E3B5" accent="#FFF3D6" /></>, text: 'Her sky becomes a mobile to take home.' },
+  { id: 'f-not', show: 'not', k: 'The end of her stay', p: 'connection', title: <>If she doesn&apos;t go home <Icon name="connection" size={40} color="var(--connection)" /></>, text: 'Her story, kept, at the family’s pace. Nothing assumes an outcome.' },
+]
+const TAG = { connection: 'Connection', comprehension: 'Comprehension', awareness: 'Awareness', baby: 'For the baby' }
+export const Feature = (f) => function FeatureView({ thumb }) {
+  return (
+    <div className="feat">
+      <div className="rv feat-k" style={{ '--d': 0 }}><span>{f.k}</span><i className={`is-${f.p}`} />{TAG[f.p]}</div>
+      <h2 className="rv feat-h" style={{ '--d': 1 }}>{f.title}</h2>
+      <p className="rv feat-p" style={{ '--d': 2 }}>{f.text}</p>
+      <div className="feat-pad-spot">{thumb && <div className="ipad demo-pad is-thumb"><div className="ipad-screen"><div className="ipad-thumb"><Icon name={f.p === 'baby' ? 'moon' : f.p} size={44} /></div></div></div>}</div>
+    </div>
+  )
+}

@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Icon, StarGlyph } from './glyphs.jsx'
-import { Storyboard, Stretch } from './demo.jsx'
+import { FEATURES, Feature, Storyboard } from './demo.jsx'
 
 // The case study as one story. Its spine: NICU parents live two things at once (the fight and the
 // celebration), and Mila's Sky is a place that holds both. Each chapter opens on a realization, said
@@ -725,7 +725,7 @@ export const SLIDES = [
   { id: 'sort', section: '04 · Ideation', tint: 'all', View: Sort },
   { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>The ideas we kept coming back to all did one thing: <L>turn her care into a story</L>.</> }) },
 
-  { id: 'film', section: '05 · The idea and the story layer', planet: true, View: Film },
+  { id: 'film', section: '05 · The idea and the story layer', planet: true, bare: true, View: Film },
 
   { id: 'k-open', section: '06 · Constraints', planet: true, View: KOpen },
   { id: 'constraints', section: '06 · Constraints', View: Constraints },
@@ -733,10 +733,7 @@ export const SLIDES = [
   { id: 'modality', section: '06 · Constraints', View: Modality },
 
   { id: 'board', section: '07 · The product', planet: true, View: Storyboard },
-  { id: 'd-day1', section: '07 · The product', steps: 2, View: Stretch('day1') },
-  { id: 'd-day23', section: '07 · The product', steps: 4, View: Stretch('day23') },
-  { id: 'd-sky', section: '07 · The product', steps: 2, View: Stretch('sky') },
-  { id: 'd-end', section: '07 · The product', steps: 2, View: Stretch('end') },
+  ...FEATURES.map((f) => ({ id: f.id, section: '07 · The product', feature: f.show, View: Feature(f) })),
   { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
   { id: 'close', section: 'Mila’s Sky', View: Close },
 ]
