@@ -186,12 +186,12 @@ export const today = {
       'Gentle, still touch is easier for her than stroking.',
     ],
   },
-  // Who's caring for her right now. Parents see the team, and ask for help in one place.
+  // Who's caring for her right now. img: illustrated sample portraits (not real people).
   team: [
-    { name: 'Priya', role: 'Her nurse', until: '7 p.m.', primary: true },
-    { name: 'Lena', role: 'Charge nurse', until: '7 p.m.', backup: true },
-    { name: 'Dr. Osei', role: 'Baby doctor on call', until: '8 a.m.', doctor: true },
-    { name: 'Marcus', role: 'Her night nurse', from: '7 p.m.' },
+    { name: 'Priya', role: 'Her nurse', until: '7 p.m.', primary: true, img: '/images/team/priya.svg' },
+    { name: 'Lena', role: 'Charge nurse', until: '7 p.m.', backup: true, img: '/images/team/lena.svg' },
+    { name: 'Dr. Osei', role: 'Baby doctor on call', until: '8 a.m.', doctor: true, img: '/images/team/osei.svg' },
+    { name: 'Marcus', role: 'Her night nurse', from: '7 p.m.', img: '/images/team/marcus.svg' },
   ],
   calm: {
     status: 'Sleeping after her noon feed.', // how she is right now: observational, never medical

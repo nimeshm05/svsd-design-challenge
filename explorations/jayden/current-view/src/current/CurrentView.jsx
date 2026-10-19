@@ -591,26 +591,23 @@ function routineSoFar() {
 // Parents see who's caring for her, and reach out in one place. The request goes to her nurse
 // (the charge nurse covers if she's busy), with an optional note. Urgent help stays with the
 // nurse call button by her bed. Steps: team → note → sent.
-// Who's caring for her: the people, her nurse today first, each with a Call button.
+// Who's caring for her: the people, her nurse today first, and one way to call her nurse.
 // "Role, available until 7 p.m." (or "from 7 p.m." for someone whose shift hasn't started)
 const availability = (p) => `${p.role}, available ${p.from ? `from ${p.from}` : `until ${p.until}`}`
 
 function TeamSheet({ onClose }) {
   const nurse = today.team.find((p) => p.primary) ?? today.team[0]
   const people = [nurse, ...today.team.filter((p) => p !== nurse)]
-  const [calls, setCalls] = useState({}) // name → 'calling' | 'called'
-  const timers = useRef([])
-  useEffect(() => () => timers.current.forEach(clearTimeout), [])
+  const [call, setCall] = useState(null) // null | 'calling' | 'called'
+  const timer = useRef(0)
+  useEffect(() => () => clearTimeout(timer.current), [])
   // no Close button: tap outside the sheet, or press Esc
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
-  const call = (p) => {
-    setCalls((c) => ({ ...c, [p.name]: 'calling' }))
-    timers.current.push(setTimeout(() => setCalls((c) => ({ ...c, [p.name]: 'called' })), 1400))
-  }
+  const ring = () => { setCall('calling'); timer.current = setTimeout(() => setCall('called'), 1400) }
   return (
     <div className="cv-scrim ts-scrim" onClick={onClose}>
       <div className="ts" role="dialog" aria-modal="true" aria-labelledby="ts-title" onClick={(e) => e.stopPropagation()}>
@@ -618,20 +615,17 @@ function TeamSheet({ onClose }) {
           <h2 id="ts-title" className="ts-title">Her care team</h2>
         </header>
         <ul className="ts-list">
-          {people.map((p) => {
-            const state = calls[p.name]
-            return (
-              <li key={p.name}>
-                <span className="ts-person"><b>{p.name}</b><span>{availability(p)}</span></span>
-                <button type="button" className={`nav-btn ts-call ${state ? `is-${state}` : ''}`} disabled={!!p.from || !!state}
-                  onClick={() => call(p)} aria-label={p.from ? `${p.name} is available from ${p.from}` : `Call ${p.name}`}>
-                  {state === 'called' ? <CheckIcon /> : <PhoneIcon />}
-                  <span aria-live="polite">{state === 'calling' ? 'Calling…' : state === 'called' ? 'Called' : 'Call'}</span>
-                </button>
-              </li>
-            )
-          })}
+          {people.map((p) => (
+            <li key={p.name} className={p.from ? 'is-later' : ''}>
+              <img className="ts-photo" src={p.img} alt="" />
+              <span className="ts-person"><b>{p.name}</b><span>{availability(p)}</span></span>
+            </li>
+          ))}
         </ul>
+        <button type="button" className={`nav-btn is-primary ts-cta ts-call ${call ? `is-${call}` : ''}`} disabled={!!call} onClick={ring}>
+          {call === 'called' ? <CheckIcon /> : <PhoneIcon />}
+          <span aria-live="polite">{call === 'calling' ? `Calling ${nurse.name}…` : call === 'called' ? `${nurse.name} has been called` : 'Call her nurse'}</span>
+        </button>
       </div>
     </div>
   )
