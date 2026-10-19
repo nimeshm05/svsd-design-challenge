@@ -500,7 +500,6 @@ function dayParagraphs(day) {
 
 function DayPanel({ day, sel, onPick }) {
   const [open, setOpen] = useState(null) // a "thing" opened from its time
-  const [noImg, setNoImg] = useState(false)
   const paras = dayParagraphs(day)
   const moments = day.moments.filter((x) => x.kind !== 'care')
   return (
@@ -517,10 +516,6 @@ function DayPanel({ day, sel, onPick }) {
               <div className="cv-gmoment">
                 <b>{p.thing.detail.title}</b>
                 <p>{p.thing.detail.text}</p>
-                <figure className="cv-gthings-img">
-                  {noImg ? <figcaption>{p.thing.detail.alt}</figcaption>
-                    : <img src={p.thing.detail.img} alt={p.thing.detail.alt} onError={() => setNoImg(true)} />}
-                </figure>
                 <CloseButton className="cv-gmoment-close" onClick={() => setOpen(null)} />
               </div>
             )}
