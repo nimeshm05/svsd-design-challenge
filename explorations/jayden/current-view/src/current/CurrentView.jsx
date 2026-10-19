@@ -130,7 +130,7 @@ export function CurrentView({ onSky }) {
         }}>
         {page === 'home' && !night && <SkyDepth theme={theme} />}
         {zoom && page === 'home' && !night && <FormingOverlay theme={theme} mode={zoom} {...(zoom === 'out' ? form : {})} onSkip={zoom === 'out' ? toSky : undefined} />}
-        {page === 'galaxy' && !night && <Galaxy theme={theme} onBack={() => { setSkyExit(0); setChapter('day'); zoomIn() }} onDischarge={() => setPage('discharge')} exit={skyExit} />}
+        {page === 'galaxy' && !night && <Galaxy theme={theme} onBack={() => { setSkyExit(0); setChapter('day'); zoomIn() }} exit={skyExit} />}
         {page === 'discharge' && !night && <Discharge theme={theme} onBack={() => setPage('galaxy')} />}
         <header className="cv-top" hidden={comfort}>
           <span className="cv-top-left">

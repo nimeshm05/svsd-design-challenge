@@ -568,7 +568,7 @@ function placeLabels() {
 const LABEL_AT = placeLabels()
 
 /* ---------- The galaxy ---------- */
-export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
+export function Galaxy({ theme, onBack, exit = 0 }) {
   // it opens close on today's star (where the home screen left it) and pulls back to show its week
   // review links: ?gweek=3 or ?gday=12 open straight into a week or a day
   const [view, setView] = useState(() => {
@@ -904,9 +904,6 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
             </ul>
           </div>
         </>
-      )}
-      {view.level === 'galaxy' && !story && onDischarge && (
-        <button type="button" className="nav-btn nav-corner cv-discharge-btn" onClick={onDischarge}><span>Time to discharge!</span></button>
       )}
       {view.level === 'week' && landed && <WeekPanel w={view.w} onDay={goDay} />}
       {view.level === 'day' && landed && <DayPanel day={day} sel={sel} onPick={setSel} />}
