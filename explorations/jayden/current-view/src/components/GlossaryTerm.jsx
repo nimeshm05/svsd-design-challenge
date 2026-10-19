@@ -1,3 +1,4 @@
+import { CloseButton } from '../current/NavIcons.jsx'
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { glossary, GLOSSARY_PLACEHOLDER } from '../data/glossary.js'
@@ -52,7 +53,7 @@ function GlossarySheet({ term, entry, onClose }) {
         onClick={(e) => e.stopPropagation()}>
         <div className="cv-sheet-head">
           <h3>What this means</h3>
-          <button ref={closeBtn} type="button" className="cv-close" onClick={onClose}>Close</button>
+          <CloseButton btnRef={closeBtn} onClick={onClose} />
         </div>
         <p id={`${id}-t`} className="gl-title">{term}</p>
         {entry.stands && <p className="gl-stands">{entry.stands}</p>}

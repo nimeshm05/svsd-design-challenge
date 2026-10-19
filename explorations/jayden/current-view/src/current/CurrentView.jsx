@@ -10,7 +10,7 @@ import { Remembering } from './Remembering.jsx'
 import { Ahead } from './Ahead.jsx'
 import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen, todayFormsAt } from './Galaxy.jsx'
 import { Discharge } from './Discharge.jsx'
-import { ChevronRight, CloseIcon, NavBack, PhoneIcon, SparkleIcon } from './NavIcons.jsx'
+import { ChevronRight, CloseButton, CloseIcon, NavBack, PhoneIcon, SparkleIcon } from './NavIcons.jsx'
 import './current.css'
 
 // Bedside current view: Home C, minimal and low-light, read from the parent chair, in either of
@@ -579,7 +579,9 @@ function TeamSheet({ onClose }) {
       <div className="cv-sheet" role="dialog" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <div className="cv-sheet-head">
           <h3>{title}</h3>
-          <button type="button" className="cv-close" onClick={onClose}>{step === 'sent' ? 'Done' : 'Close'}</button>
+          {step === 'sent'
+            ? <button type="button" className="nav-btn" onClick={onClose}><span>Done</span></button>
+            : <CloseButton onClick={onClose} />}
         </div>
 
         {step === 'team' && (

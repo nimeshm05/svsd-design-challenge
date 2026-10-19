@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { CenterIcon, ChevronLeft, ChevronRight, InfoIcon } from './NavIcons.jsx'
+import { CenterIcon, ChevronLeft, ChevronRight, CloseButton, InfoIcon } from './NavIcons.jsx'
 import { stay, weekInfo, dayDetail } from '../data/days.js'
 
 // Her whole stay, after Nimesh's galaxy (explorations/nimesh/galaxy): one space and one camera.
@@ -503,7 +503,7 @@ function DayPanel({ day, sel, onPick }) {
                   {noImg ? <figcaption>{p.thing.detail.alt}</figcaption>
                     : <img src={p.thing.detail.img} alt={p.thing.detail.alt} onError={() => setNoImg(true)} />}
                 </figure>
-                <button type="button" className="cv-gmoment-close" onClick={() => setOpen(null)}>Close</button>
+                <CloseButton className="cv-gmoment-close" onClick={() => setOpen(null)} />
               </div>
             )}
           </Fragment>
@@ -523,7 +523,7 @@ function DayPanel({ day, sel, onPick }) {
               <b>{m.title}</b>
               <p>{m.plain}</p>
               {m.by && <span className="cv-gmoment-by">{m.by}</span>}
-              <button type="button" className="cv-gmoment-close" onClick={() => onPick(null)}>All moments</button>
+              <CloseButton className="cv-gmoment-close" onClick={() => onPick(null)} />
             </div>
           ) : (
             <ol className="cv-grows">
@@ -872,7 +872,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
           <div className="cv-sheet cv-ginfo" id="cv-ginfo" role="dialog" aria-label="How to navigate" ref={infoBox} tabIndex={-1}>
             <div className="cv-sheet-head">
               <h3>How to look around</h3>
-              <button type="button" className="cv-close" onClick={closeInfo}>Close</button>
+              <CloseButton onClick={closeInfo} />
             </div>
             <ul className="cv-help">
               <li><b>Each day is a star.</b> Each week of her stay makes its own constellation.</li>

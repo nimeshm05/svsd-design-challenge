@@ -1746,3 +1746,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .cv-galaxy.is-galaxy .cv-galaxy-title { top: var(--edge-y); }
 /* pager: bottom centre of the sky area (left of the side panel), clear of Close */
 .cv-page .nav-pager { left: calc((100% - min(380px, 36%) - var(--edge-x)) / 2); transform: translateX(-50%); }
+
+/* close buttons inside sheets and cards: same button, aligned to the end of their row / card */
+.cv-page .cv-sheet-head .nav-btn { flex: none; }
+.cv-page .cv-gmoment .nav-btn.is-close { align-self: flex-start; margin-top: 4px; }
+.cv-page .nav-ic.is-x { height: calc(var(--ic) * .82); }

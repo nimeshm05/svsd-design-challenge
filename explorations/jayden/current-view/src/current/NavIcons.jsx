@@ -55,3 +55,13 @@ export function NavBack({ label, onClick, btnRef, className = '' }) {
     </button>
   )
 }
+
+/** Every "close" in the app: the same ✕ and the same word, in the same button style. */
+export function CloseButton({ onClick, btnRef, label = 'Close', className = '' }) {
+  return (
+    <button ref={btnRef} type="button" className={`nav-btn is-close ${className}`} onClick={onClick}>
+      <CloseIcon />
+      <span>{label}</span>
+    </button>
+  )
+}
