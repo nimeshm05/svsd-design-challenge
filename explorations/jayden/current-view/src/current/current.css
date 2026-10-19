@@ -1788,3 +1788,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .nav-dots { transform: none; }
 /* dots: centred on a fixed anchor (Galaxy.jsx), so the row never slides; only the active dot animates */
 .cv-page .nav-dots { transform: translateX(-50%); transition: none; }
+
+/* sections breathe more, and their headings read brighter */
+.cv-page .cv-gpanel { gap: 40px; }
+.cv-page .cv-gpanel-title { margin-bottom: -26px; }   /* keep the title 14px above its description */
+.cv-page .cv-gsec { gap: 12px; }
+.cv-page .cv-gsec-k { color: #ECE6DA; }
