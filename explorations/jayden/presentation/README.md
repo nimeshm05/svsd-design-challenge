@@ -13,7 +13,7 @@ npm run dev
 
 Open http://127.0.0.1:5180. `npm run dev` first builds `../current-view` into `public/prototype/` (the iPad's screen), so `../current-view` needs its own `npm install` once.
 
-**Present:** → or space to go on, ← to go back, Home / End. Some slides build inside themselves (the three pillars arrive one at a time; the "How might we" question adds one pillar per press). Each slide has its own address (`#1` … `#33`). After clicking inside the iPad, click outside it again before using the arrow keys.
+**Present:** → or space to go on, ← to go back, Home / End. Some slides build inside themselves (the three pillars arrive one at a time; the "How might we" question adds one pillar per press). Each slide has its own address (`#1` … `#34`). After clicking inside the iPad, click outside it again before using the arrow keys.
 
 **The story:** NICU parents live two things at once, the fight and the celebration, and Mila's Sky is a place that holds both. The deck opens on that tension and closes on it. In between, each chapter opens on a realization said big, with one phrase lit, followed by its evidence or what we did about it (after the storytelling in Jayden's portfolio deck):
 0. **The NICU:** what it is → inside it, in four senses (sound, light, touch, space), from our secondary research (8 studies and standards).
@@ -23,5 +23,7 @@ Open http://127.0.0.1:5180. `npm run dev` first builds `../current-view` into `p
 4. **Constraints:** three people to protect at every bedside → the table → a tired mom in a hospital bed (from the team's modality brainstorm) → touch, remote or gesture, and why touch came first.
 5. **The story layer:** stars never disappear → constellation, stars and planets, naming.
 6. **At her bedside:** the live prototype, each chapter tagged with the pillars it shows → "Mila's Sky holds both" → thank you.
+
+**Real work:** `public/shots/` holds screenshots of our research board, our affinity map and the team chat message that started the modality question; the deck shows them as they were. The modality slide sketches touch, remote control and gesture by hand-drawn SVG.
 
 **To fill in:** the Privacy row in Constraints. The overview copy was written from the rest of the outline; check it with the team.

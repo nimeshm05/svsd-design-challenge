@@ -371,3 +371,28 @@ p.hmw-part { display: block; }
 .slide-problem.is-on mark.is-comprehension { transition-delay: 1.58s; }
 .slide-problem.is-on mark.is-awareness { transition-delay: 1.86s; }
 @media (prefers-reduced-motion: reduce) { .flystar { display: none; } }
+
+/* real work: screenshots in a soft frame, slowly drifting */
+.shot { margin-top: 28px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #f4f4f2; box-shadow: 0 30px 70px rgba(0, 0, 0, .6); max-height: calc(100vh - 360px); }
+.shot img { display: block; width: 100%; height: auto; }
+.shot.is-pan img { width: 135%; max-width: none; transform-origin: 0 50%; }
+.is-on .shot.is-pan img { animation: pan 26s 1s ease-in-out infinite alternate; }
+@keyframes pan { from { transform: translateX(0); } to { transform: translateX(-25.9%); } }
+.shot.is-chat { background: transparent; border: 0; box-shadow: none; max-width: 640px; margin: 34px auto 0; border-radius: 22px; }
+.shot.is-chat img { border-radius: 22px; }
+.brain-themes { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 20px; }
+.brain-themes span { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); font-size: 13.5px; color: var(--text-2); }
+
+/* modality sketches, drawn in line by line */
+.sketch { display: block; width: 100%; height: auto; margin-bottom: 14px; overflow: visible; }
+.sk { fill: none; stroke: #EDE3CC; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 600; stroke-dashoffset: 600; }
+.is-on .sk { animation: draw 2.2s calc(.9s + var(--d, 0) * .1s) ease-out forwards; }
+.sk.is-star { fill: rgba(243, 227, 181, .0); stroke: var(--cream); }
+.is-on .sk.is-star { animation: draw 1.6s 1.6s ease-out forwards, star-fill .8s 2.8s ease forwards; }
+@keyframes star-fill { to { fill: rgba(243, 227, 181, .9); } }
+.sk.is-hand { stroke: var(--warm); }
+.sk.is-ping { stroke: var(--cream); stroke-width: 1.4; opacity: .7; }
+.sk.is-ray, .sk.is-wave { stroke: var(--cream); stroke-dasharray: 4 7; stroke-dashoffset: 0; opacity: 0; }
+.is-on .sk.is-ray, .is-on .sk.is-wave { animation: fade-in-op .8s 2.4s ease forwards; }
+@keyframes fade-in-op { to { opacity: .8; } }
+.mode.is-chosen .sketch .sk { stroke-width: 2.2; }

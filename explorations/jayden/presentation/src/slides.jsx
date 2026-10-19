@@ -26,6 +26,15 @@ const Planet = ({ size = 28, body = '#EFDCAA', ring = '#FFB38A' }) => (
   </svg>
 )
 
+// Real work, as it was: a screenshot in a soft frame, drifting slowly so it reads as a wall to look across
+function Shot({ src, alt, pan = true, className = '' }) {
+  return (
+    <figure className={`shot ${pan ? 'is-pan' : ''} ${className}`}>
+      <img src={src} alt={alt} />
+    </figure>
+  )
+}
+
 // A realization, said big: a small eyebrow, one sentence, one lit phrase.
 function Statement({ k, children, sub, big = false }) {
   return (
@@ -82,6 +91,16 @@ function Environment() {
         ))}
       </div>
       <R d={5} className="env-src">From our secondary research: 8 studies and standards on NICU noise, light, sensory care, nurses&apos; alarms and room design.</R>
+    </div>
+  )
+}
+
+function Wall() {
+  return (
+    <div className="wall">
+      <R d={0} className="k">Secondary research</R>
+      <R d={1} as="h2" className="h">Eight studies and standards, one wall.</R>
+      <R d={2}><Shot src="./shots/research-wall.webp" alt="Our secondary research board: eight papers and standards on hospital exposures, noise and light, nurses' alarm challenges, incubator acoustics, sensory stimulation, NICU sound levels, NICU design standards and single-family rooms, each summarized in a table with sticky notes." /></R>
     </div>
   )
 }
@@ -217,23 +236,65 @@ function Brainstorm() {
   return (
     <div className="brain">
       <R d={0} className="k">Brainstorm</R>
-      <R d={1} as="h2" className="h">Six themes from our affinity map.</R>
-      <div className="brain-grid">
-        {THEMES.map((x, k) => (
-          <R key={x.t} d={2 + k * 0.45} className="brain-card">
-            <span className="brain-t">{x.t}</span>
-            {x.ideas.map((i) => <span key={i} className="sticky">{i}</span>)}
-          </R>
-        ))}
-      </div>
+      <R d={1} as="h2" className="h">Every idea we had, grouped into six themes.</R>
+      <R d={2}><Shot src="./shots/affinity-map.webp" alt="Our affinity map: sticky notes from Jayden, Sara and Nimesh grouped into six themes: baby health status and progress tracking; a visual and interactive baby avatar; charting and medical information access; storytelling and narrative content for parents; emotional support and celebrating milestones; sharing and communication between stakeholders." /></R>
+      <R d={3} className="brain-themes">
+        {THEMES.map((x) => <span key={x.t}>{x.t}</span>)}
+      </R>
     </div>
   )
 }
 
-// how would she reach it?
+// the moment the question came up, as it was said in our team chat
+function Mom() {
+  return (
+    <div className="center statement mom">
+      <R d={0} className="k">Modality</R>
+      <R d={1} as="p" className="statement-p">Picture a tired mom in a hospital bed, <L>anxious about her baby</L>.</R>
+      <R d={3}><Shot src="./shots/modality-chat.png" pan={false} className="is-chat" alt="A teammate's message in our chat: imagining how a parent might interact with this from a hospital bed, by touch, remote control or gesture; imagining a tired mom on a bed who's anxious about her baby." /></R>
+    </div>
+  )
+}
+
+// how would she reach it? Three sketches, drawn in as if by hand
+const Sketch = ({ kind }) => (
+  <svg className={`sketch is-${kind}`} viewBox="0 0 240 170" aria-hidden="true">
+    <defs>
+      <filter id={`rough-${kind}`}><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed={kind.length} /><feDisplacementMap in="SourceGraphic" scale="2.6" /></filter>
+    </defs>
+    <g filter={`url(#rough-${kind})`}>
+      {kind === 'touch' && <>
+        {/* her bedside screen, and a finger on it */}
+        <rect className="sk" x="92" y="18" width="128" height="86" rx="8" />
+        <path className="sk" d="M156 104 L156 124 M136 126 L176 126" />
+        <path className="sk is-star" d="M156 46 Q158 59 171 61 Q158 63 156 76 Q154 63 141 61 Q154 59 156 46 Z" />
+        <path className="sk is-hand" d="M18 168 C30 150 44 138 62 130 L116 92 C121 88 127 92 123 98 L90 126 L100 124 C108 123 110 131 103 134 L80 146 C70 156 60 162 52 168" />
+        <circle className="sk is-ping" cx="118" cy="93" r="9" /><circle className="sk is-ping is-2" cx="118" cy="93" r="17" />
+      </>}
+      {kind === 'remote' && <>
+        {/* mom in her bed, a remote in her hand, her baby's screen across the room */}
+        <path className="sk" d="M8 150 L8 96 M8 122 L120 122 L120 150 M8 132 L120 132" />
+        <circle className="sk" cx="30" cy="104" r="11" />
+        <path className="sk" d="M42 114 C60 106 84 108 104 116 L118 122" />
+        <path className="sk is-hand" d="M60 110 L78 96 L86 102 L68 116" />
+        <path className="sk is-ray" d="M86 96 L170 52" />
+        <rect className="sk" x="160" y="22" width="70" height="48" rx="6" />
+        <path className="sk is-star" d="M195 36 Q196 44 204 46 Q196 48 195 56 Q194 48 186 46 Q194 44 195 36 Z" />
+      </>}
+      {kind === 'gesture' && <>
+        {/* an open hand in the air, the screen answering without a touch */}
+        <rect className="sk" x="120" y="26" width="104" height="72" rx="8" />
+        <path className="sk is-star" d="M172 46 Q174 58 186 60 Q174 62 172 74 Q170 62 158 60 Q170 58 172 46 Z" />
+        <path className="sk is-hand" d="M44 150 L44 104 C44 98 52 98 52 104 L52 84 C52 78 60 78 60 84 L60 80 C60 74 68 74 68 80 L68 86 C68 80 76 80 76 86 L76 120 C76 138 66 150 56 158" />
+        <path className="sk is-hand" d="M44 112 C38 106 30 110 34 118 L44 132" />
+        <path className="sk is-wave" d="M90 72 C98 80 98 92 90 100 M100 64 C112 76 112 96 100 108" />
+      </>}
+    </g>
+  </svg>
+)
 const MODES = [
   { k: 'Touch', t: 'One tap, big targets, nothing hidden behind hover.', chosen: true },
-  { k: 'Remote control', t: 'For a parent who can’t reach the screen.' },
+  { k: 'Remote control', t: 'For a parent who can’t reach the screen from bed.' },
   { k: 'Gesture', t: 'No touching at all, near an incubator.' },
 ]
 function Modality() {
@@ -244,6 +305,7 @@ function Modality() {
       <div className="cols">
         {MODES.map((x, k) => (
           <R key={x.k} d={2 + k * 0.6} className={`col mode ${x.chosen ? 'is-chosen' : ''}`}>
+            <Sketch kind={x.k === 'Touch' ? 'touch' : x.k === 'Gesture' ? 'gesture' : 'remote'} />
             <span className="col-head">{x.k}{x.chosen && <em>Designed first</em>}</span>
             <p>{x.t}</p>
           </R>
@@ -452,6 +514,7 @@ export const SLIDES = [
   { id: 'both', section: 'Hook', View: statement({ k: 'The tension', big: true, children: <>NICU parents live <L>both things at once</L>, every day.</> }) },
   { id: 'nicu', section: 'The NICU', planet: true, View: statement({ k: 'The NICU', children: <>The neonatal intensive care unit is where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
   { id: 'environment', section: 'The NICU', View: Environment },
+  { id: 'wall', section: '01 · Research', View: Wall },
 
   { id: 'secondary', section: '01 · Research', planet: true, View: statement({ k: '01 · Secondary research', children: <>The NICU environment <L>shapes how babies develop</L>, how nurses work, and how parents cope.</> }) },
   { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn&apos;t tell us <L>how parents make sense of it</L>.</> }) },
@@ -477,7 +540,7 @@ export const SLIDES = [
 
   { id: 'k-open', section: '04 · Constraints', planet: true, View: statement({ k: '04 · Constraints', children: <>Every bedside has <L>three people to protect</L>: the baby, the nurse, and the family.</> }) },
   { id: 'constraints', section: '04 · Constraints', View: Constraints },
-  { id: 'mom', section: '04 · Constraints', View: statement({ k: 'Modality', children: <>Picture a tired mom in a hospital bed, <L>anxious about her baby</L>.</>, sub: 'From our team’s brainstorm: how would she interact with it at all?' }) },
+  { id: 'mom', section: '04 · Constraints', View: Mom },
   { id: 'modality', section: '04 · Constraints', View: Modality },
 
   { id: 's-open', section: '05 · The story layer', planet: true, View: statement({ k: '05 · The story layer', children: <>Stars <L>never disappear</L>, because &ldquo;you are still moving forward even if you feel stuck.&rdquo;</> }) },
