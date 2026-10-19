@@ -312,6 +312,21 @@ export const ahead = {
       {
         area: 'Staying warm', steps: ['Incubator', 'Open crib'], at: 0, status: 'waiting',
         plan: 'In her incubator until she can keep herself warm.',
+      {
+        area: 'Pulse oximetry', steps: ['Pulse oximeter', 'Spot checks', 'Off the oxygen monitor'], at: 0, status: 'waiting',
+        plan: 'The soft wrap on her foot stays on while she needs breathing help.',
+        who: 'Her nurses and breathing team', review: 'Checked every day',
+      },
+      {
+        area: 'IV lines', steps: ['Central line', 'IV line', 'No IV needed'], at: 2, status: 'decided',
+        plan: 'Her IV came out today. All her milk now goes through her feeding tube.',
+        who: 'Her nurses and baby doctors', review: 'Agreed at rounds',
+      },
+      {
+        area: 'Mechanical ventilator', steps: ['Ventilator', 'Coming off the ventilator', 'Off the ventilator'], at: 2, status: 'decided',
+        plan: 'She no longer needs the ventilator. Her breathing help now comes through her nose.',
+        who: 'Breathing team', review: 'Agreed at rounds',
+      },
         who: 'Her nurses and baby doctors', review: 'Checked every day',
       },
     ],
@@ -335,6 +350,21 @@ export const tomorrow = {
     { h: 6, t: '6 a.m.', what: 'Care time', note: 'Diaper change and temperature check. You’re welcome to be there.' },
     { h: 7, t: '7 a.m.', what: 'Morning rounds', note: 'Her team talks through her day. You can join and ask anything.' },
     { h: 10, t: '10 a.m.', what: 'Heart surgery', note: 'Her team will show you where to wait and keep you updated.' },
+      {
+        area: 'Pulse oximetry', steps: ['Pulse oximeter', 'Spot checks', 'Off the oxygen monitor'], at: 0, status: 'waiting',
+        plan: 'The soft wrap on her foot stays on while she needs breathing help.',
+        who: 'Her nurses and breathing team', review: 'Checked every day',
+      },
+      {
+        area: 'IV lines', steps: ['Central line', 'IV line', 'No IV needed'], at: 2, status: 'decided',
+        plan: 'She doesn’t have an IV right now. All her milk goes through her feeding tube.',
+        who: 'Her nurses and baby doctors', review: 'Agreed at rounds',
+      },
+      {
+        area: 'Mechanical ventilator', steps: ['Ventilator', 'Coming off the ventilator', 'Off the ventilator'], at: 2, status: 'decided',
+        plan: 'She doesn’t need the ventilator. Her breathing help comes through her CPAP mask.',
+        who: 'Breathing team', review: 'Agreed at rounds',
+      },
     { h: 14, t: '2 p.m.', what: 'Her surgeon talks with you', note: 'They’ll come find you to share how it went.' },
     { h: 17, t: '5 p.m.', what: 'Time to sit with her', note: 'Her nurse will help you settle in by her bed.' },
   ],

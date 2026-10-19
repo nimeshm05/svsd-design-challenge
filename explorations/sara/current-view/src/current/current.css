@@ -947,17 +947,19 @@
 .ah-agenda div { display: flex; flex-direction: column; gap: 2px; }
 .ah-agenda b { font-size: clamp(18px, 2vw, 22px); font-weight: 500; color: #F6EEDB; }
 .ah-agenda div span { font-size: 15px; color: var(--text-2); }
-.ah-cols { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+.ah-cols { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 56px; }
 .ah-col { display: flex; flex-direction: column; gap: 6px; padding: 0 28px; border-left: 1px solid rgba(255, 255, 255, .08); }
-.ah-col:first-child { padding-left: 0; border-left: 0; }
-.ah-col:last-child { padding-right: 0; }
+.ah-col:nth-child(3n + 1) { padding-left: 0; border-left: 0; }
+.ah-col:nth-child(3n), .ah-col:last-child { padding-right: 0; }
 .ah-col-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ah-col-area { font-size: 15px; color: var(--text-2); }
 .ah-col .ah-stars { margin: 6px 0 4px; }
 .ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
 .ah-next { font-size: 15px; color: var(--text-2); }
+.ah-current { display: inline-flex; align-items: center; gap: 8px; }
+.ah-current i { width: 7px; height: 7px; border-radius: 50%; background: var(--cream); flex: none; }
 .ah-col .ah-plan { margin-top: 6px; font-size: 14px; color: var(--muted); line-height: 1.45; }
-@media (max-width: 760px) { .ah-cols { grid-template-columns: 1fr; gap: 20px; } .ah-col { padding: 0; border: 0; } .ah-agenda li { grid-template-columns: 1fr; gap: 2px; } }
+@media (max-width: 760px) { .ah-cols { grid-template-columns: 1fr; gap: 36px; } .ah-col { padding: 0; border: 0; } .ah-agenda li { grid-template-columns: 1fr; gap: 2px; } }
 .ah { justify-content: flex-start; gap: 22px; padding: 2px 0 0; }
 .ah-k { margin-bottom: 8px; }
 .ah-agenda li { padding: 9px 0; }
@@ -1274,6 +1276,8 @@
 .gl-term:hover { color: #FFF8E6; text-decoration-color: var(--cream); }
 .gl-term:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 4px; }
 .gl-sheet { width: min(460px, 100%); animation: cv-step-in .25s ease-out both; }
+/* sideways swipes change the week (Ahead.jsx), so the browser keeps only vertical scrolling and doesn't treat them as back / forward */
+.ah-wk { touch-action: pan-y; overscroll-behavior-x: contain; }
 .gl-title { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
 .gl-stands { font-size: 13px; color: var(--cream); }
 .gl-body { font-size: 15px; line-height: 1.5; color: var(--text-2); }

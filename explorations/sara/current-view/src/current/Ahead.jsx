@@ -46,7 +46,8 @@ export function Ahead({ kind }) {
 // and lists every entry in full, recurring care itemized: time, what it is, a small tag, rows split by thin
 // lines, scrolled to now. The other days list their events one line each, with the full name on hover.
 // Days before today are quieter; days with nothing planned stay, just emptier.
-// Prev / next step a week at a time; "Today" comes back.
+// Prev / next step a week at a time, as does a sideways swipe (touch, or two fingers on a trackpad);
+// "Today" comes back.
 // Major events are the items with an `event` key (they have a page in `events`): a filled warm block with
 // a heavier left edge, bold, with a star marker, time and length, so they don't rely on color alone. They open their own page in place of the calendar (not a modal).
 // Back to timeline, the browser's back, or Esc returns to the calendar, with focus on the event opened.
@@ -80,6 +81,37 @@ function Timeline() {
   const last = useRef(null)
   const list = useRef(null)
   const nowRef = useRef(null)
+  const wk = useRef(null)
+  const swipe = useRef(null)
+
+  // A sideways swipe changes the week: left for the next, right for the one before. Mostly-vertical
+  // moves are left alone, so today's list still scrolls.
+  const onSwipeStart = (e) => { if (e.pointerType !== 'mouse') swipe.current = { x: e.clientX, y: e.clientY } }
+  const onSwipeEnd = (e) => {
+    const s = swipe.current
+    swipe.current = null
+    if (!s) return
+    const dx = e.clientX - s.x, dy = e.clientY - s.y
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) setOffset((o) => o + (dx < 0 ? 1 : -1))
+  }
+
+  // Trackpads swipe as a sideways wheel: one week per gesture, waiting for its momentum to settle.
+  useEffect(() => {
+    const el = wk.current
+    if (!el) return
+    let acc = 0, locked = false, quiet
+    const onWheel = (e) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
+      e.preventDefault()
+      clearTimeout(quiet)
+      quiet = setTimeout(() => { acc = 0; locked = false }, 250)
+      if (locked) return
+      acc += e.deltaX
+      if (Math.abs(acc) > 60) { setOffset((o) => o + (acc > 0 ? 1 : -1)); locked = true }
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => { el.removeEventListener('wheel', onWheel); clearTimeout(quiet) }
+  }, [open])
 
   const show = (id) => { last.current = id; window.history.pushState({ ...window.history.state, ahEvent: id }, ''); setOpen(id) }
   const close = () => { if (window.history.state?.ahEvent) window.history.back(); else setOpen(null) }
@@ -137,7 +169,8 @@ function Timeline() {
           <button type="button" className="ah-wk-btn is-arrow" onClick={() => setOffset(offset + 1)} aria-label="Next week">›</button>
         </div>
       </div>
-      <div className="ah-wk">
+      <div className="ah-wk" ref={wk} onPointerDown={onSwipeStart} onPointerUp={onSwipeEnd}
+        onPointerCancel={() => { swipe.current = null }}>
         {day0 && (
           <section className="ah-cal-day is-today ah-wk-today" style={{ '--col': day0.i + 1 }}
             aria-label={`Today, ${fmtDate(day0.date, { weekday: 'long', month: 'long', day: 'numeric' })}, day ${day0.n} of her stay`}>
@@ -222,38 +255,26 @@ function WeekDay({ d, onOpen, blocks }) {
   )
 }
 
-// Next Steps: one column per path, all the same shape (area, star path, step + status, its meaning, next),
-// then "Waiting on a date" as a row of small cards that scrolls sideways when there are more than fit.
+// Next Steps: one column per path, three to a row, all the same shape (area, star path, step + status,
+// its meaning, where she is now).
 function NextSteps({ kind }) {
-  const a = ahead[kind]
   return (
-    <>
-      <section className="ah-sec" aria-label="Where she is on each path">
-        <ul className="ah-cols">
-          {a.tracks.map((t) => <Path key={t.area} t={t} />)}
-        </ul>
-      </section>
-      <section className="ah-wait" aria-labelledby="ah-wait-k">
-        <h3 id="ah-wait-k" className="ah-k">Waiting on a date</h3>
-        <ul className="ah-wait-row">
-          {a.checks.map((c) => (
-            <li key={c.what} className="ah-wait-card">
-              <b className="ah-wait-title"><GlossaryTerm term={c.what} /></b>
-              <span className="ah-wait-note">{c.note}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </>
+    <section className="ah-sec" aria-label="Where she is on each path">
+      <ul className="ah-cols">
+        {ahead[kind].tracks.map((t) => <Path key={t.area} t={t} />)}
+      </ul>
+    </section>
   )
 }
 
-// One path. Tapping an empty (future) star peeks at that step, with a "Future" pill; tapping her current
-// star comes back. Steps she's already passed stay as they are. The current star always keeps its pulse.
+// One path. It opens on the step after hers (or hers, if it's the last), with where she is now as a quiet
+// status line below. Tapping an empty (future) star peeks at that step, with a "Future" pill; tapping her
+// current star shows it. Steps she's already passed stay as they are. The current star always keeps its pulse.
 function Path({ t }) {
-  const [sel, setSel] = useState(t.at)
-  const step = t.steps[sel], next = t.steps[sel + 1], future = sel > t.at
-  const btnLabel = (s, i) => i === t.at ? `Back to her current step: ${s}`
+  const last = t.at >= t.steps.length - 1
+  const [sel, setSel] = useState(last ? t.at : t.at + 1)
+  const step = t.steps[sel], future = sel > t.at
+  const btnLabel = (s, i) => i === t.at ? `Show her current step: ${s}`
     : `Show ${i === t.at + 1 ? 'next' : 'later'} step: ${s}`
   return (
     <li className="ah-col">
@@ -282,7 +303,9 @@ function Path({ t }) {
             : <span className={`ah-status is-${t.status}`}>{STATUS[t.status]}</span>}
         </div>
         {glossary[step]?.short && <span className="ah-means">{glossary[step].short}</span>}
-        {next && <span className="ah-next">Next: <GlossaryTerm term={next} /></span>}
+        <span className="ah-next ah-current"><i aria-hidden="true" />
+          {last ? 'Final step reached' : <>Current: <GlossaryTerm term={t.steps[t.at]} /></>}
+        </span>
       </div>
       </div>
     </li>
