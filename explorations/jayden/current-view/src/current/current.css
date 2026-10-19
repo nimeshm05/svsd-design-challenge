@@ -1824,12 +1824,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .ts-head.is-nav .nav-btn { margin: 0; }
 .cv-page .ts-list { margin-top: -4px; }
 .cv-page .ts-list li { padding: 0; }
-.cv-page .ts-list button { width: 100%; display: flex; align-items: center; gap: 16px; padding: 14px 0; margin: 0; border: 0; background: none;
-  text-align: left; color: inherit; font: inherit; cursor: pointer; }
-.cv-page .ts-list button .nav-ic { color: var(--muted); transition: transform .2s ease, color .2s; }
-.cv-page .ts-list button:hover b { color: var(--cream); }
-.cv-page .ts-list button:hover .nav-ic { color: var(--cream); transform: translateX(2px); }
-.cv-page .ts-list button:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 6px; }
 .cv-page .ts-person { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .cv-page .ts-list .ts-person span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
 
@@ -1863,3 +1857,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
   border: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); font-size: 14px; color: var(--text); }
 .cv-page .ts-sent-note { font-style: italic; color: var(--text-2); }
 @media (prefers-reduced-motion: reduce) { .cv-page .ts-body { animation: none; } .cv-page .ts-check svg { animation: none; stroke-dashoffset: 0; } }
+
+/* care team rows: who + availability on the left, Call on the right */
+.cv-page .ts-list li { display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 14px 0; }
+.cv-page .ts-person { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cv-page .ts-person b { font-size: 16px; font-weight: 600; color: #fff; }
+.cv-page .ts-person span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
+.cv-page .ts-call { flex: none; }
+.cv-page .ts-call.is-calling { opacity: 1; border-color: var(--nav-border-hi); }
+.cv-page .ts-call.is-calling .nav-ic { animation: ts-ring 1s ease-in-out infinite; }
+.cv-page .ts-call.is-called { opacity: 1; color: var(--cream); border-color: color-mix(in srgb, var(--cream) 45%, transparent); }
+@keyframes ts-ring { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+@media (prefers-reduced-motion: reduce) { .cv-page .ts-call.is-calling .nav-ic { animation: none; } }
+.cv-page .ts > .ts-head { margin-bottom: 14px; }
+.cv-page .ts-list { margin-top: 0; }

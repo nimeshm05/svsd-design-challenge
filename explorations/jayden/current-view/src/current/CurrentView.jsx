@@ -591,96 +591,49 @@ function routineSoFar() {
 // Parents see who's caring for her, and reach out in one place. The request goes to her nurse
 // (the charge nurse covers if she's busy), with an optional note. Urgent help stays with the
 // nurse call button by her bed. Steps: team → note → sent.
-// Who's caring for her: the people, her nurse today first. Tap one to ask them for something.
-const REASONS = {
-  nurse: ['Could you come by when you have a moment?', 'I’d like help holding her.', 'I have a question about today.'],
-  doctor: ['Could you come by when you have a moment?', 'I have a question about her care.', 'Could we talk about her plan?'],
-}
-const kindOf = (p) => (p.doctor ? 'doctor' : 'nurse')
-const laterShift = (p) => !!p.from // not on shift yet
+// Who's caring for her: the people, her nurse today first, each with a Call button.
 // "Role, available until 7 p.m." (or "from 7 p.m." for someone whose shift hasn't started)
 const availability = (p) => `${p.role}, available ${p.from ? `from ${p.from}` : `until ${p.until}`}`
 
 function TeamSheet({ onClose }) {
   const nurse = today.team.find((p) => p.primary) ?? today.team[0]
   const people = [nurse, ...today.team.filter((p) => p !== nurse)]
-  const backup = today.team.find((p) => p.backup)
-  const [who, setWho] = useState(null) // the person being asked
-  const [step, setStep] = useState('team') // 'team' | 'ask' | 'sent'
-  const [reason, setReason] = useState('')
-  const [note, setNote] = useState('')
-  const open = (p) => { setWho(p); setReason(REASONS[kindOf(p)][0]); setNote(''); setStep('ask') }
-  const later = who && laterShift(who)
+  const [calls, setCalls] = useState({}) // name → 'calling' | 'called'
+  const timers = useRef([])
+  useEffect(() => () => timers.current.forEach(clearTimeout), [])
+  const call = (p) => {
+    setCalls((c) => ({ ...c, [p.name]: 'calling' }))
+    timers.current.push(setTimeout(() => setCalls((c) => ({ ...c, [p.name]: 'called' })), 1400))
+  }
   return (
     <div className="cv-scrim ts-scrim" onClick={onClose}>
-      <div className={`ts is-${step}`} role="dialog" aria-modal="true" aria-labelledby="ts-title" onClick={(e) => e.stopPropagation()}>
-        {step === 'team' && (
-          <div className="ts-body" key="team">
-            <header className="ts-head">
-              <h2 id="ts-title" className="ts-title">Her care team</h2>
-              <CloseButton onClick={onClose} />
-            </header>
-            <ul className="ts-list">
-              {people.map((p) => (
-                <li key={p.name}>
-                  <button type="button" onClick={() => open(p)} aria-label={`${p.name}, ${availability(p)}. Ask ${p.name} for something`}>
-                    <span className="ts-person"><b>{p.name}</b><span>{availability(p)}</span></span>
-                    <ChevronRight />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {step === 'ask' && who && (
-          <div className="ts-body" key="ask">
-            <header className="ts-head is-nav">
-              <NavBack label="Her team" onClick={() => setStep('team')} />
-              <CloseButton onClick={onClose} />
-            </header>
-            <div className="ts-title-block">
-              <h2 id="ts-title" className="ts-title">Ask {who.name}</h2>
-              <p className="ts-sub">{later ? `${who.name} starts at ${who.from}. Your message will be waiting.` : `${who.name} will come by as soon as they can.`}</p>
-            </div>
-            <fieldset className="ts-sec ts-reasons">
-              <legend className="cv-gsec-k">What would help?</legend>
-              {REASONS[kindOf(who)].map((r) => (
-                <label key={r} className={`ts-reason ${reason === r ? 'is-on' : ''}`}>
-                  <input type="radio" name="ts-reason" value={r} checked={reason === r} onChange={() => setReason(r)} />
-                  <span className="ts-radio" aria-hidden="true" />
-                  <span>{r}</span>
-                </label>
-              ))}
-            </fieldset>
-            <section className="ts-sec">
-              <label className="cv-gsec-k" htmlFor="ts-note">A note, if you&apos;d like</label>
-              <textarea id="ts-note" className="ts-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder={`Anything ${who.name} should know…`} />
-            </section>
-            <button type="button" className="nav-btn is-primary ts-cta" onClick={() => setStep('sent')}><span>Send to {who.name}</span></button>
-          </div>
-        )}
-
-        {step === 'sent' && who && (
-          <div className="ts-body ts-done" key="sent">
-            <span className="ts-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" /></svg></span>
-            <div className="ts-title-block is-center">
-              <h2 id="ts-title" className="ts-title">{who.name} knows</h2>
-              <p className="ts-sub">
-                {later ? `It will be waiting for ${who.name} at ${who.from}.` : `${who.name} will come by as soon as they can.`}
-                {who === nurse && backup && !later && <> If {who.name} is with another baby, {backup.name} will come instead.</>}
-              </p>
-            </div>
-            <div className="ts-sent-what">
-              <span>{reason}</span>
-              {note.trim() && <span className="ts-sent-note">“{note.trim()}”</span>}
-            </div>
-            <button type="button" className="nav-btn is-primary ts-cta" onClick={onClose}><span>Done</span></button>
-          </div>
-        )}
+      <div className="ts" role="dialog" aria-modal="true" aria-labelledby="ts-title" onClick={(e) => e.stopPropagation()}>
+        <header className="ts-head">
+          <h2 id="ts-title" className="ts-title">Her care team</h2>
+          <CloseButton onClick={onClose} />
+        </header>
+        <ul className="ts-list">
+          {people.map((p) => {
+            const state = calls[p.name]
+            return (
+              <li key={p.name}>
+                <span className="ts-person"><b>{p.name}</b><span>{availability(p)}</span></span>
+                <button type="button" className={`nav-btn ts-call ${state ? `is-${state}` : ''}`} disabled={!!p.from || !!state}
+                  onClick={() => call(p)} aria-label={p.from ? `${p.name} is available from ${p.from}` : `Call ${p.name}`}>
+                  {state === 'called' ? <CheckIcon /> : <PhoneIcon />}
+                  <span aria-live="polite">{state === 'calling' ? 'Calling…' : state === 'called' ? 'Called' : 'Call'}</span>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </div>
   )
+}
+
+function CheckIcon() {
+  return <svg className="nav-ic" viewBox="4 5 16 14" aria-hidden="true"><path d="M6 12.5l4 4 8-9" /></svg>
 }
 
 // Keep "12 p.m." on one line
