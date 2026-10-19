@@ -334,3 +334,40 @@ p.hmw-part { display: block; }
 /* the close returns to the hook */
 .both-close .statement-p:first-child { color: var(--text-2); }
 .both-close .is-big { margin-top: 24px; }
+
+/* the NICU, in four senses */
+.env .h { max-width: 26ch; }
+.env-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 36px; }
+.env-card { padding: 22px 22px 24px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255, 255, 255, .02); }
+.env-k { display: block; font-family: var(--display); font-size: 22px; color: var(--cream); margin-bottom: 10px; }
+.env-card p { font-size: 15.5px; line-height: 1.5; color: var(--text-2); }
+.env-src { margin-top: 26px; font-size: 13px; color: var(--muted); }
+
+/* brainstorm: the affinity map, as sticky notes in starlight */
+.brain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 20px; margin-top: 34px; }
+.brain-card { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255, 255, 255, .02); }
+.brain-t { font-family: var(--display); font-size: 19px; color: var(--text); margin-bottom: 4px; }
+.sticky { padding: 9px 12px; border-radius: 6px; font-size: 14px; line-height: 1.4; color: #1a1712; background: #F3E3B5; transform: rotate(var(--r, -.6deg)); box-shadow: 0 6px 16px rgba(0, 0, 0, .35); }
+.sticky + .sticky { --r: .8deg; background: #E8D7A6; }
+
+/* modality */
+.mode p { font-size: 17px; line-height: 1.5; color: var(--text-2); }
+.mode .col-head em { margin-left: auto; font-style: normal; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--cream); }
+.mode:not(.is-chosen) { opacity: .65; }
+.mode.is-chosen { border-color: rgba(243, 227, 181, .45); }
+.modes-note { margin-top: 30px; font-size: 18px; color: var(--text); max-width: 60ch; }
+
+/* the pillar stars fly into the problem statement; each phrase lights from where its star lands */
+.slide-problem.is-on, .slide-problem.is-next { transform: none; filter: none; }
+.flystar { position: fixed; z-index: 5; pointer-events: none; transform: translate(-50%, -50%); line-height: 0;
+  animation: fly 1.2s calc(.25s + var(--k) * .28s) cubic-bezier(.55, 0, .25, 1) both; }
+.flystar .glyph { filter: drop-shadow(0 0 10px currentColor); }
+@keyframes fly {
+  0% { translate: 0 0; opacity: 1; scale: 1; }
+  80% { translate: var(--dx) var(--dy); opacity: 1; scale: 1.15; }
+  100% { translate: var(--dx) var(--dy); opacity: 0; scale: .3; }
+}
+.slide-problem.is-on mark.is-connection { transition-delay: 1.3s; }
+.slide-problem.is-on mark.is-comprehension { transition-delay: 1.58s; }
+.slide-problem.is-on mark.is-awareness { transition-delay: 1.86s; }
+@media (prefers-reduced-motion: reduce) { .flystar { display: none; } }

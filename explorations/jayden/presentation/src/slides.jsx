@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { StarGlyph } from './glyphs.jsx'
 
 // The case study as one story. Its spine: NICU parents live two things at once (the fight and the
@@ -63,17 +63,25 @@ function Hook() {
   )
 }
 
-function Overview() {
+/* ---------- The NICU ---------- */
+// what our secondary research said about the room itself (8 papers and standards; see README)
+const SENSES = [
+  { k: 'Sound', t: 'Noise is linked to heart rate changes, apnea, lower oxygen and sleep disturbance. Monitor alarms are often the loudest sound in the room.' },
+  { k: 'Light', t: 'Cycling light between day and night is linked to better weight gain and shorter stays than constant light.' },
+  { k: 'Touch', t: 'Too little touch and voice. Holding, and especially skin-to-skin, are linked to better development.' },
+  { k: 'Space', t: 'The incubator isn’t a protective bubble: the room’s materials and shape change what the baby hears.' },
+]
+function Environment() {
   return (
-    <div className="center overview">
-      <R d={0} className="k">What we made</R>
-      <R d={1} as="p" className="statement-p">A bedside display that turns a baby&apos;s NICU stay into <L>a story her parents can follow</L>.</R>
-      <R d={3} className="ov-facts">
-        <span><StarGlyph size={14} color="#F3E3B5" />Every day becomes a star</span>
-        <span><Planet size={20} />Her firsts become planets</span>
-        <span><i className="ov-line" />Her weeks become constellations</span>
-      </R>
-      <R d={5} className="title-team">For parents of very preterm babies on a long NICU stay · Jayden, Nimesh and Sara</R>
+    <div className="env">
+      <R d={0} className="k">Inside the NICU</R>
+      <R d={1} as="h2" className="h">Loud, bright, and never still, for the smallest people in the hospital.</R>
+      <div className="env-grid">
+        {SENSES.map((x, k) => (
+          <R key={x.k} d={2 + k * 0.6} className="env-card"><span className="env-k">{x.k}</span><p>{x.t}</p></R>
+        ))}
+      </div>
+      <R d={5} className="env-src">From our secondary research: 8 studies and standards on NICU noise, light, sensory care, nurses&apos; alarms and room design.</R>
     </div>
   )
 }
@@ -150,11 +158,31 @@ function Pillars({ step }) {
   )
 }
 
-function Problem() {
+// Arriving from the pillars, each pillar's star flies from its column into its phrase, and the phrase lights
+// up in that color from where the star lands.
+const PS = ['connection', 'comprehension', 'awareness']
+function Problem({ active }) {
+  const host = useRef(null)
+  const [fly, setFly] = useState(null)
+  useLayoutEffect(() => {
+    if (!active) { setFly(null); return }
+    const from = PS.map((p) => document.querySelector(`.slide-pillars .col.is-${p} .col-head .glyph`)?.getBoundingClientRect())
+    const to = PS.map((p) => host.current?.querySelector(`mark.is-${p}`)?.getClientRects()[0])
+    if (from.some((r) => !r) || to.some((r) => !r)) return
+    setFly(PS.map((p, k) => ({ p, x: from[k].left + from[k].width / 2, y: from[k].top + from[k].height / 2, dx: to[k].left - (from[k].left + from[k].width / 2), dy: to[k].top + to[k].height / 2 - (from[k].top + from[k].height / 2) })))
+  }, [active])
   return (
-    <Statement k="Problem statement">
-      Parents of long-stay NICU babies struggle to <L p="connection">bond with their baby</L>, <L p="comprehension">make sense of fragmented medical information</L>, and <L p="awareness">keep track of time and what&apos;s ahead</L>.
-    </Statement>
+    <div className="center statement problem" ref={host}>
+      <R d={0} className="k">Problem statement</R>
+      <p className="statement-p problem-p">
+        Parents of long-stay NICU babies struggle to <L p="connection">bond with their baby</L>, <L p="comprehension">make sense of fragmented medical information</L>, and <L p="awareness">keep track of time and what&apos;s ahead</L>.
+      </p>
+      {fly?.map((f, k) => (
+        <span key={f.p} className="flystar" style={{ left: f.x, top: f.y, '--dx': `${f.dx}px`, '--dy': `${f.dy}px`, '--k': k }}>
+          <StarGlyph size={18} color={PILLARS[f.p].color} />
+        </span>
+      ))}
+    </div>
   )
 }
 
@@ -171,6 +199,57 @@ function HMW({ step }) {
         <span className={`hmw-part ${on(3)}`}>and <L p="awareness">stay aware of what&apos;s ahead</L>,</span>
       </R>
       <p className={`hmw-and hmw-part ${on(4)}`}>without adding to nurses&apos; workload?</p>
+    </div>
+  )
+}
+
+/* ---------- Brainstorm ---------- */
+// our affinity map: six themes, two of our sticky notes from each
+const THEMES = [
+  { t: 'Health status and progress', ideas: ['Health status updates', 'Upcoming plans from different doctors in one place'] },
+  { t: 'A visual baby avatar', ideas: ['IV drip lines that become a shape', 'Her setup in 3D'] },
+  { t: 'Charts and medical information', ideas: ['Make my charts feel less clinical, more like a story', 'Night mode for bedside monitors'] },
+  { t: 'Storytelling for parents', ideas: ['A weekly or daily chapter to read', 'Voice notes to the baby'] },
+  { t: 'Celebrating milestones', ideas: ['Milestones like a first poop, first skin-to-skin', 'Reminders of her bravery and strength'] },
+  { t: 'Sharing with others', ideas: ['Updates parents can share with family', 'Channels between parents and the care team'] },
+]
+function Brainstorm() {
+  return (
+    <div className="brain">
+      <R d={0} className="k">Brainstorm</R>
+      <R d={1} as="h2" className="h">Six themes from our affinity map.</R>
+      <div className="brain-grid">
+        {THEMES.map((x, k) => (
+          <R key={x.t} d={2 + k * 0.45} className="brain-card">
+            <span className="brain-t">{x.t}</span>
+            {x.ideas.map((i) => <span key={i} className="sticky">{i}</span>)}
+          </R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// how would she reach it?
+const MODES = [
+  { k: 'Touch', t: 'One tap, big targets, nothing hidden behind hover.', chosen: true },
+  { k: 'Remote control', t: 'For a parent who can’t reach the screen.' },
+  { k: 'Gesture', t: 'No touching at all, near an incubator.' },
+]
+function Modality() {
+  return (
+    <div className="modes">
+      <R d={0} className="k">Modality</R>
+      <R d={1} as="h2" className="h">How would she reach it?</R>
+      <div className="cols">
+        {MODES.map((x, k) => (
+          <R key={x.k} d={2 + k * 0.6} className={`col mode ${x.chosen ? 'is-chosen' : ''}`}>
+            <span className="col-head">{x.k}{x.chosen && <em>Designed first</em>}</span>
+            <p>{x.t}</p>
+          </R>
+        ))}
+      </div>
+      <R d={4.5} as="p" className="modes-note">We designed for touch first, dim by default, with night mode for the hours she&apos;s there in the dark.</R>
     </div>
   )
 }
@@ -371,9 +450,11 @@ export const SLIDES = [
   { id: 'title', section: 'Mila’s Sky', planet: true, View: Title },
   { id: 'hook', section: 'Hook', View: Hook },
   { id: 'both', section: 'Hook', View: statement({ k: 'The tension', big: true, children: <>NICU parents live <L>both things at once</L>, every day.</> }) },
-  { id: 'overview', section: 'Overview', View: Overview },
+  { id: 'nicu', section: 'The NICU', planet: true, View: statement({ k: 'The NICU', children: <>The neonatal intensive care unit is where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
+  { id: 'environment', section: 'The NICU', View: Environment },
 
-  { id: 'r-open', section: '01 · Research', planet: true, View: statement({ k: '01 · Research', children: <>Research showed how the NICU affects babies, parents and nurses, <L>but not how parents make sense of it</L>.</> }) },
+  { id: 'secondary', section: '01 · Research', planet: true, View: statement({ k: '01 · Secondary research', children: <>The NICU environment <L>shapes how babies develop</L>, how nurses work, and how parents cope.</> }) },
+  { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn&apos;t tell us <L>how parents make sense of it</L>.</> }) },
   { id: 'asked', section: '01 · Research', View: Asked },
   { id: 'heard', section: '01 · Research', View: Heard },
   { id: 'telephone', section: '01 · Research', View: Telephone },
@@ -383,7 +464,9 @@ export const SLIDES = [
   { id: 'problem', section: '02 · The problem', tint: 'all', View: Problem },
   { id: 'hmw', section: '02 · The problem', tint: 'all', steps: 5, View: HMW },
 
-  { id: 'idea', section: '03 · The idea', planet: true, View: Idea },
+  { id: 'brainstorm', section: '03 · The idea', planet: true, View: Brainstorm },
+  { id: 'thread', section: '03 · The idea', View: statement({ k: 'What the ideas had in common', children: <>Across all six themes, the ideas we kept coming back to did one thing: <L>turn her care into a story</L>.</> }) },
+  { id: 'idea', section: '03 · The idea', View: Idea },
   { id: 'flow', section: '03 · The idea', tint: 'all', View: Flow },
   { id: 'c-learn', section: 'Connection', tint: 'connection', View: statement({ k: 'Connection · what we learned', children: <>Our first idea was &ldquo;take your star home.&rdquo; But <L p="connection">not every baby goes home</L>.</>, sub: <>&ldquo;Sometimes they don&apos;t.&rdquo;</> }) },
   { id: 'connection', section: 'Connection', tint: 'connection', View: Deep('connection') },
@@ -394,6 +477,8 @@ export const SLIDES = [
 
   { id: 'k-open', section: '04 · Constraints', planet: true, View: statement({ k: '04 · Constraints', children: <>Every bedside has <L>three people to protect</L>: the baby, the nurse, and the family.</> }) },
   { id: 'constraints', section: '04 · Constraints', View: Constraints },
+  { id: 'mom', section: '04 · Constraints', View: statement({ k: 'Modality', children: <>Picture a tired mom in a hospital bed, <L>anxious about her baby</L>.</>, sub: 'From our team’s brainstorm: how would she interact with it at all?' }) },
+  { id: 'modality', section: '04 · Constraints', View: Modality },
 
   { id: 's-open', section: '05 · The story layer', planet: true, View: statement({ k: '05 · The story layer', children: <>Stars <L>never disappear</L>, because &ldquo;you are still moving forward even if you feel stuck.&rdquo;</> }) },
   { id: 'system', section: '05 · The story layer', View: System },
