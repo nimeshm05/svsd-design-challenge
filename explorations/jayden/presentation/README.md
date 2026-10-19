@@ -13,16 +13,19 @@ npm run dev
 
 Open http://127.0.0.1:5180. `npm run dev` first builds `../current-view` into `public/prototype/` (the iPad's screen), so `../current-view` needs its own `npm install` once.
 
-**Present:** → or space to go on, ← to go back, Home / End. Some slides build inside themselves (the three pillars arrive one at a time; the "How might we" question adds one pillar per press). Each slide has its own address (`#1` … `#34`). After clicking inside the iPad, click outside it again before using the arrow keys.
+**Present:** → or space to go on, ← to go back, Home / End. Some slides build inside themselves (the three pillars arrive one at a time; the "How might we" question adds one pillar per press). Each slide has its own address (`#1` … `#29`). After clicking inside the iPad, click outside it again before using the arrow keys.
 
 **The story:** NICU parents live two things at once, the fight and the celebration, and Mila's Sky is a place that holds both. The deck opens on that tension and closes on it. In between, each chapter opens on a realization said big, with one phrase lit, followed by its evidence or what we did about it (after the storytelling in Jayden's portfolio deck):
 0. **The NICU:** what it is → inside it, in four senses (sound, light, touch, space), from our secondary research (8 studies and standards).
 1. **Research:** the NICU environment shapes how babies develop, how nurses work and how parents cope → but it didn't tell us how parents make sense of it → we asked 4 people → what's said isn't what's heard → both sides of that conversation.
-2. **The problem:** it came down to three things → the pillars, one at a time → the problem statement (each pillar's star flies from its column into its phrase, which lights in that color) → the question, built pillar by pillar.
-3. **The idea:** our affinity map's six themes → what they had in common: turning her care into a story → every day becomes a star → pain point, principle, feature → for each pillar, what we learned and then what we did.
-4. **Constraints:** three people to protect at every bedside → the table → a tired mom in a hospital bed (from the team's modality brainstorm) → touch, remote or gesture, and why touch came first.
-5. **The story layer:** stars never disappear → constellation, stars and planets, naming.
-6. **At her bedside:** the live prototype, each chapter tagged with the pillars it shows → "Mila's Sky holds both" → thank you.
+2. **The problem:** it came down to three things → the pillars, one at a time → the problem statement (each pillar's star flies into its phrase) → the question, built pillar by pillar.
+3. **Design principles:** each pain point became a principle.
+4. **Ideation:** our real affinity map → its ideas float to the principle each one serves → what they had in common: turning her care into a story.
+5. **The idea and the story layer:** every day becomes a star → stars never disappear → constellation, stars and planets, naming.
+6. **Constraints:** three people to protect at every bedside → the table → a tired mom in a hospital bed (the team chat message) → touch, remote or gesture, sketched.
+7. **At her bedside:** the live prototype, each chapter tagged with the pillars it shows → "Mila's Sky holds both" → thank you.
+
+The per-pillar "what we learned / what we did" slides are out for now; their content is still in `slides.jsx` (`DEEP`).
 
 **Real work:** `public/shots/` holds screenshots of our research board, our affinity map and the team chat message that started the modality question; the deck shows them as they were. The modality slide sketches touch, remote control and gesture by hand-drawn SVG.
 

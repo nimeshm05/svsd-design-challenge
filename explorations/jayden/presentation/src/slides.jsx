@@ -320,7 +320,7 @@ function Modality() {
 function Idea() {
   return (
     <div className="center idea">
-      <R d={0} className="k">03 · The idea</R>
+      <R d={0} className="k">05 · The idea</R>
       <div className="idea-star" aria-hidden="true">
         {[0, 1, 2, 3, 4, 5].map((k) => <i key={k} style={{ '--k': k }} />)}
         <StarGlyph size={58} color="#FFF8E6" />
@@ -336,24 +336,52 @@ const FLOW = [
   { p: 'comprehension', principle: 'Turn care into a story parents can follow', feature: 'Today screen and scheduled summary' },
   { p: 'awareness', principle: 'Show what’s happening now and what’s ahead', feature: 'Timeline and What’s Next' },
 ]
-function Flow() {
+function Principles() {
   return (
     <div className="flow">
-      <R d={0} className="k">Designing for each pillar</R>
-      <R d={1} as="h2" className="h">Each pain point became a principle, and each principle shaped a feature.</R>
-      <div className="flow-grid">
-        <R d={2} className="flow-hd">Pain point</R><R d={2} className="flow-hd">Principle</R><R d={2} className="flow-hd">Feature</R>
+      <R d={0} className="k">03 · Design principles</R>
+      <R d={1} as="h2" className="h">Each pain point became a principle.</R>
+      <div className="flow-grid is-two">
+        <R d={2} className="flow-hd">Pain point</R><R d={2} className="flow-hd">Principle</R>
         {FLOW.map((x, k) => [
           <R key={`${x.p}a`} d={3 + k} className={`flow-cell is-${x.p}`}><StarGlyph size={14} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</R>,
           <R key={`${x.p}b`} d={3.4 + k} className="flow-cell is-principle">{x.principle}</R>,
-          <R key={`${x.p}c`} d={3.8 + k} className={`flow-cell is-feature is-${x.p}`}>{x.feature}</R>,
         ])}
       </div>
     </div>
   )
 }
 
-// each pillar: first what we learned (a statement slide), then what we did about it
+// Ideas from our affinity map, each floating from the brainstorm to the principle it serves
+const SORTED = {
+  connection: ['Constellations', 'Milestones like a first poop, first skin-to-skin', 'Voice notes to the baby', 'Reminders of her bravery and strength', 'Updates parents can share with family'],
+  comprehension: ['Make my charts feel less clinical, more like a story', 'Search medical terms in charting', 'IV drip lines that become a shape', 'Her setup in 3D', 'A weekly or daily chapter to read'],
+  awareness: ['A clock that shows progress hour by hour', 'Journey timeline', 'Upcoming plans from different doctors in one place', 'Notifications for new updates', 'Standup information'],
+}
+const scatter = (n) => { const a = Math.sin(n * 91.7) * 43758.5; const b = Math.sin(n * 37.3) * 15731.7; return [(a - Math.floor(a) - 0.5) * 700, (b - Math.floor(b) - 0.5) * 340 + 120] }
+function Sort() {
+  return (
+    <div className="sort">
+      <R d={0} className="k">Ideas, sorted by principle</R>
+      <div className="sort-cols">
+        {FLOW.map((x, c) => (
+          <div key={x.p} className={`sort-col is-${x.p}`}>
+            <R d={1 + c * 0.3} className="sort-head">
+              <span><StarGlyph size={14} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</span>
+              <b>{x.principle}</b>
+            </R>
+            {SORTED[x.p].map((t, k) => {
+              const n = c * 7 + k, [fx, fy] = scatter(n + 1)
+              return <span key={t} className="sticky floater" style={{ '--fx': `${(1 - c) * 360 + fx}px`, '--fy': `${fy}px`, '--n': n, '--r': `${((n * 37) % 5) - 2}deg` }}>{t}</span>
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// each pillar: what we learned, then what we did about it (out of the deck for now; kept to bring back)
 const DEEP = {
   connection: {
     principle: 'Keep parents in their baby’s story, even when apart.',
@@ -527,26 +555,22 @@ export const SLIDES = [
   { id: 'problem', section: '02 · The problem', tint: 'all', View: Problem },
   { id: 'hmw', section: '02 · The problem', tint: 'all', steps: 5, View: HMW },
 
-  { id: 'brainstorm', section: '03 · The idea', planet: true, View: Brainstorm },
-  { id: 'thread', section: '03 · The idea', View: statement({ k: 'What the ideas had in common', children: <>Across all six themes, the ideas we kept coming back to did one thing: <L>turn her care into a story</L>.</> }) },
-  { id: 'idea', section: '03 · The idea', View: Idea },
-  { id: 'flow', section: '03 · The idea', tint: 'all', View: Flow },
-  { id: 'c-learn', section: 'Connection', tint: 'connection', View: statement({ k: 'Connection · what we learned', children: <>Our first idea was &ldquo;take your star home.&rdquo; But <L p="connection">not every baby goes home</L>.</>, sub: <>&ldquo;Sometimes they don&apos;t.&rdquo;</> }) },
-  { id: 'connection', section: 'Connection', tint: 'connection', View: Deep('connection') },
-  { id: 'u-learn', section: 'Comprehension', tint: 'comprehension', View: statement({ k: 'Comprehension · what we learned', children: <>More records didn&apos;t mean more understanding. Parents <L p="comprehension">&ldquo;get obsessive over MyChart.&rdquo;</L></> }) },
-  { id: 'comprehension', section: 'Comprehension', tint: 'comprehension', View: Deep('comprehension') },
-  { id: 'a-learn', section: 'Awareness', tint: 'awareness', View: statement({ k: 'Awareness · what we learned', children: <>Parents told us they only notice time <L p="awareness">at shift change</L>.</> }) },
-  { id: 'awareness', section: 'Awareness', tint: 'awareness', View: Deep('awareness') },
+  { id: 'principles', section: '03 · Design principles', planet: true, tint: 'all', View: Principles },
 
-  { id: 'k-open', section: '04 · Constraints', planet: true, View: statement({ k: '04 · Constraints', children: <>Every bedside has <L>three people to protect</L>: the baby, the nurse, and the family.</> }) },
-  { id: 'constraints', section: '04 · Constraints', View: Constraints },
-  { id: 'mom', section: '04 · Constraints', View: Mom },
-  { id: 'modality', section: '04 · Constraints', View: Modality },
+  { id: 'brainstorm', section: '04 · Ideation', planet: true, View: Brainstorm },
+  { id: 'sort', section: '04 · Ideation', tint: 'all', View: Sort },
+  { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>The ideas we kept coming back to all did one thing: <L>turn her care into a story</L>.</> }) },
 
-  { id: 's-open', section: '05 · The story layer', planet: true, View: statement({ k: '05 · The story layer', children: <>Stars <L>never disappear</L>, because &ldquo;you are still moving forward even if you feel stuck.&rdquo;</> }) },
+  { id: 'idea', section: '05 · The idea', planet: true, View: Idea },
+  { id: 's-open', section: '05 · The story layer', View: statement({ k: 'The story layer', children: <>Stars <L>never disappear</L>, because &ldquo;you are still moving forward even if you feel stuck.&rdquo;</> }) },
   { id: 'system', section: '05 · The story layer', View: System },
 
-  { id: 'product', section: '06 · At her bedside', planet: true, View: Product },
+  { id: 'k-open', section: '06 · Constraints', planet: true, View: statement({ k: '06 · Constraints', children: <>Every bedside has <L>three people to protect</L>: the baby, the nurse, and the family.</> }) },
+  { id: 'constraints', section: '06 · Constraints', View: Constraints },
+  { id: 'mom', section: '06 · Constraints', View: Mom },
+  { id: 'modality', section: '06 · Constraints', View: Modality },
+
+  { id: 'product', section: '07 · At her bedside', planet: true, View: Product },
   { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
   { id: 'close', section: 'Mila’s Sky', View: Close },
 ]
