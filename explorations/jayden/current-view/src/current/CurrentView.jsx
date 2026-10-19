@@ -201,12 +201,7 @@ export function CurrentView({ onSky }) {
               <button type="button" className="nav-btn" onClick={() => setDark(true)}><span>Turn off the screen</span></button>
             </div>
           )}
-          {/* her first day: her nurse can open "What's on her" while explaining */}
-          {first && fstage !== 'arrival' && walk == null && (
-            <div className="cv-actions-left">
-              <button type="button" className="nav-btn" onClick={() => setWalk(0)}><span>What&apos;s on her</span></button>
-            </div>
-          )}
+          {/* "What's on her" lives in the content now, centred under her words (FirstDay) */}
           {/* back to today lives top-left with every other "back" (see NavBack) */}
           {/* "Mila's stars" opens her sky; in the same place it becomes "Close", which brings you back.
               One element on both pages, so it morphs instead of disappearing and reappearing. */}

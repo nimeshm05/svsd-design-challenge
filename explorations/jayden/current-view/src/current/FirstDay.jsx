@@ -57,13 +57,14 @@ export function FirstDay({ stage, theme, walk, setWalk }) {
             <p className="fd-line">{item.means}</p>
           </div>
         )}
+        {/* the same centred button that started the walkthrough, now "Next"; the dots sit under it */}
         <div className="fd-walk-nav">
-          <span className="fd-dots" aria-label={done ? 'Done' : `${walk + 1} of ${FIRST.on.length}`}>
-            {FIRST.on.map((o, i) => <i key={o.id} className={i === walk || (done && i === FIRST.on.length - 1) ? 'is-on' : i < walk ? 'is-past' : ''} />)}
-          </span>
           {done
             ? <button type="button" className="nav-btn is-primary fd-next is-done" onClick={() => setWalk(null)}><span>Done</span></button>
             : <button type="button" className="nav-btn is-primary is-trailing fd-next" onClick={() => setWalk(walk + 1)}><span>Next</span><ChevronRight /></button>}
+          <span className="fd-dots" aria-label={done ? 'Done' : `${walk + 1} of ${FIRST.on.length}`}>
+            {FIRST.on.map((o, i) => <i key={o.id} className={i === walk || (done && i === FIRST.on.length - 1) ? 'is-on' : i < walk ? 'is-past' : ''} />)}
+          </span>
         </div>
       </div>
     )
@@ -84,6 +85,10 @@ export function FirstDay({ stage, theme, walk, setWalk }) {
           <p className="fd-title is-serif">Every day becomes a star.</p>
           <p className="fd-line">Tonight, her first one.</p>
           <p className="fd-who">{FIRST.nurse} is with her · {FIRST.night} tonight</p>
+          {/* her nurse opens "What's on her" while explaining; it becomes "Next" in the same place */}
+          <div className="fd-walk-nav">
+            <button type="button" className="nav-btn is-primary fd-next" onClick={() => setWalk(0)}><span>What&apos;s on her</span></button>
+          </div>
         </>
       )}
     </div>

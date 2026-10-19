@@ -1917,3 +1917,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .nav-btn.fd-next.is-trailing { padding-right: calc(var(--nav-px) - 2px); }
 .cv-page .nav-btn.fd-next.is-done { background: var(--cream); border-color: var(--cream); color: #0a0a0a; }
 .cv-page .fd.fd-walk { position: static; } /* so the bottom bar anchors to the screen, like every other bottom bar */
+
+/* "What's on her" → "Next": one centred button under the words, the dots under it (not a bottom bar) */
+.cv-page .fd.fd-walk { position: relative; }
+.cv-page .fd-walk-nav { position: static; left: auto; right: auto; bottom: auto; height: auto;
+  display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 18px; }
+.cv-page .fd-walk-nav .fd-next { position: static; transform: none; }
