@@ -1524,3 +1524,8 @@
 .rem-halo { animation: cv-fade-in .8s ease both, cv-breathe 4s ease-in-out .8s infinite; }
 .rem-again { position: absolute; z-index: 2; top: 18px; right: 20px; animation: cv-fade-in .6s .6s ease both; }
 .rem.is-end .rem-words { gap: 18px; }
+
+/* Embedded (the presentation's iPad frame): just the screen, filling the window */
+.cv-page.is-embed { padding: 0; gap: 0; height: 100vh; min-height: 0; overflow: hidden; }
+.cv-page.is-embed .cv-proto { display: none; }
+.cv-page.is-embed .cv-screen { width: 100vw; height: 100vh; aspect-ratio: auto; border: 0; border-radius: 0; }

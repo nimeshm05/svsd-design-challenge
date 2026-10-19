@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 // her at each height, like a topographic drawing. The contours sit at their heights in one 3D stage, so
 // turning her shows her shape. What's on her sits on her body at the right height, with a thin line down
 // to the mattress and the wire running along it. New things glow blue; what came off is a faint ghost.
-const SRC = '/her.webp'
+const SRC = `${import.meta.env.BASE_URL}her.webp`
 const LEVELS = [0, 0.32, 0.58, 0.8] // her outline, then three soft contours toward the middle of her
 const DEPTH = 30 // px from her back to the top of her tummy
 const AW = 100, AH = 81.4 // overlay units (the image's aspect)

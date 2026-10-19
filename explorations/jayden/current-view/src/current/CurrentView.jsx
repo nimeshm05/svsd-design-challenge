@@ -20,6 +20,11 @@ import './current.css'
 //   What's ahead: her care plans, from the end of the arc
 const CHAPTERS = [['born', '1 · Mila is born'], ['story', '2 · Her story begins'], ['day', '3 · A day'], ['sky', '4 · Her sky'], ['home', '5 · Going home'], ['not', "6 · If she doesn't go home"]]
 
+// ?embed=1 shows only the bedside screen, filling the window (for the presentation's iPad frame);
+// ?chapter=<id> opens on that chapter, and a parent page can switch chapters with postMessage.
+const Q = new URLSearchParams(window.location.search)
+const EMBED = Q.get('embed') === '1'
+
 export function CurrentView({ onSky }) {
   const kind = 'harder' // Mila is a complex baby: her day is shown as it really goes, setbacks included
   const [night, setNight] = useState(false)
@@ -75,6 +80,12 @@ export function CurrentView({ onSky }) {
     setWalk(null); setTeam(false); setNight(false); setDark(false); setMemory(false); setPage(c === 'home' ? 'discharge' : 'home'); setChapter(c)
     if (c === 'sky') setTimeout(() => document.querySelector('.cv-lookup-btn')?.click(), 400) // today becomes a star
   }
+  useEffect(() => {
+    if (Q.get('chapter')) goChapter(Q.get('chapter'))
+    const on = (e) => { if (e.data?.type === 'mila:chapter') goChapter(e.data.chapter) }
+    window.addEventListener('message', on)
+    return () => window.removeEventListener('message', on)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const zoomIn = () => {
     setPage('home'); setZoom('in')
     setTimeout(() => setZoom(null), 3000)
@@ -105,7 +116,7 @@ export function CurrentView({ onSky }) {
   }, [zoom])
 
   return (
-    <div className={`cv-page theme-${theme}`}>
+    <div className={`cv-page theme-${theme} ${EMBED ? 'is-embed' : ''}`}>
       {/* Prototype controls: not part of the bedside screen */}
       <div className="cv-proto" role="toolbar" aria-label="Prototype controls">
         <span className="cv-proto-k">Prototype</span>

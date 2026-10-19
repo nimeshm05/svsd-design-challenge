@@ -48,4 +48,4 @@ export const glossary = {
   },
 }
 
-export const GLOSSARY_PLACEHOLDER = '/images/glossary/placeholder.svg'
+export const GLOSSARY_PLACEHOLDER = `${import.meta.env.BASE_URL}images/glossary/placeholder.svg`
