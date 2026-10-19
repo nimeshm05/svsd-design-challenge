@@ -1540,3 +1540,12 @@
 /* her name is the one big thing; her weight reads as a fact beneath it, in the plain type */
 .fd-size b { font-family: var(--font-ui); font-style: normal; font-weight: 500; font-size: clamp(17px, 1.8vw, 21px); letter-spacing: .01em; color: #F6EEDB; }
 .fd-group + .fd-group { margin-top: 26px; }
+/* Day 1, wide rather than stacked */
+.fd-star-row { position: relative; display: flex; justify-content: center; }
+.fd-star-note { position: absolute; left: calc(100% + 4px); top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 10px; white-space: nowrap; font-size: clamp(12.5px, 1.3vw, 14px); color: var(--muted); }
+.fd-star-note::before { content: ''; width: 28px; height: 1px; background: color-mix(in srgb, var(--cream) 35%, transparent); }
+.fd-facts { margin-top: 22px; display: flex; align-items: stretch; gap: 28px; }
+.fd-facts > div { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.fd-facts > i { width: 1px; background: color-mix(in srgb, var(--cream) 18%, transparent); }
+.fd-facts b { font-weight: 500; font-size: clamp(17px, 1.8vw, 21px); color: #F6EEDB; }
+.fd-facts span { font-size: clamp(13px, 1.4vw, 15px); color: var(--muted); }
