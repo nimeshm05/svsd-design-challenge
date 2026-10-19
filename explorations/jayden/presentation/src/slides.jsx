@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Icon, StarGlyph } from './glyphs.jsx'
+import { Storyboard, Stretch } from './demo.jsx'
 
 // The case study as one story. Its spine: NICU parents live two things at once (the fight and the
 // celebration), and Mila's Sky is a place that holds both. Each chapter opens on a realization, said
@@ -280,19 +281,21 @@ const THEMES = [
   { t: 'Sharing with others', ideas: ['Updates parents can share with family', 'Channels between parents and the care team'] },
 ]
 // the ideas we pulled from the map, mixed (not grouped by principle yet), lifted over it as chips
+// each chip keeps its own tilt on both slides, so it reads as the same note
+const tilt = (t) => `${(t.length % 5) - 2}deg`
 const ideas = () => [0, 1, 2, 3, 4].flatMap((k) => PS.map((p) => SORTED[p][k]))
 const CHIP_AT = (k) => [3 + (k % 5) * 19.2 + ((k * 7) % 5) - 2, 19 + Math.floor(k / 5) * 27 + ((k * 11) % 7) - 3]
 function Brainstorm() {
   return (
     <div className="brain">
       <R d={0} className="k">Brainstorm</R>
-      <R d={1} className="brain-stage">
-      <div className="brain-pillars">
-        {PS.map((p) => <span key={p} className={`is-${p}`}><Icon name={p} size={24} color={PILLARS[p].color} />{PILLARS[p].name}</span>)}
-      </div><Shot src="./shots/affinity-map.webp" alt="Our affinity map: sticky notes from Jayden, Sara and Nimesh grouped into six themes: baby health status and progress tracking; a visual and interactive baby avatar; charting and medical information access; storytelling and narrative content for parents; emotional support and celebrating milestones; sharing and communication between stakeholders." />
+      <R d={1} className="brain-pillars">
+        {PS.map((p) => <span key={p} className={`is-${p}`}><Icon name={p} size={26} color={PILLARS[p].color} />{PILLARS[p].name}</span>)}
+      </R>
+      <R d={2} className="brain-stage"><Shot src="./shots/affinity-map.webp" alt="Our affinity map: sticky notes from Jayden, Sara and Nimesh grouped into six themes: baby health status and progress tracking; a visual and interactive baby avatar; charting and medical information access; storytelling and narrative content for parents; emotional support and celebrating milestones; sharing and communication between stakeholders." />
       {ideas().map((t, k) => {
         const [x, y] = CHIP_AT(k)
-        return <span key={t} className="sticky brain-chip" data-idea={t} style={{ left: `${x}%`, top: `${y}%`, '--k': k, '--r': `${((k * 37) % 5) - 2}deg` }}>{t}</span>
+        return <span key={t} className="sticky brain-chip" data-idea={t} style={{ left: `${x}%`, top: `${y}%`, '--k': k, '--r': tilt(t) }}>{t}</span>
       })}
       </R>
     </div>
@@ -371,16 +374,53 @@ function Modality() {
 }
 
 /* ---------- 03 · The idea ---------- */
-function Idea() {
+// The big moment, in three beats (→ for each):
+//   1. Her day, as it really went: small moments scattered across the dark, each with its time.
+//   2. They pull together, in the order they happened, and burst into one star: every day becomes a star.
+//   3. The star settles into its place, and the rest of her stay lights up around it, week by week:
+//      her sky, which only grows.
+const MOMENTS = [
+  { t: '12 a.m.', m: 'A midnight feed', x: 14, y: 22 },
+  { t: '3 a.m.', m: 'A restless night', x: 34, y: 12, kind: 'hard' },
+  { t: '4:15 a.m.', m: 'Back on her CPAP mask', x: 70, y: 16, kind: 'change' },
+  { t: '5:10 a.m.', m: 'Mom came in', x: 86, y: 36, kind: 'family' },
+  { t: '6 a.m.', m: 'Her early feed', x: 10, y: 58 },
+  { t: '9 a.m.', m: 'Her morning feed', x: 24, y: 80 },
+  { t: '9:25 a.m.', m: 'Her own clothes, for the first time', x: 52, y: 86, kind: 'first' },
+  { t: '11 a.m.', m: 'A breathing plan, still being made', x: 80, y: 74, kind: 'change' },
+  { t: '12 p.m.', m: 'Her noon feed', x: 90, y: 56 },
+]
+// the rest of her stay, as constellations (one per week); today is the last star of week 4
+const WEEKS = [
+  [[90, 330], [140, 290], [190, 310], [230, 260], [280, 280], [320, 230], [370, 250]],
+  [[420, 380], [470, 350], [520, 370], [560, 330], [610, 345], [650, 300], [700, 320]],
+  [[460, 170], [510, 140], [560, 160], [610, 120], [655, 140], [700, 100], [745, 120]],
+  [[780, 260], [830, 230], [880, 250]],
+]
+const TODAY = WEEKS[3][2]
+function Idea({ step = 0 }) {
   return (
-    <div className="center idea">
-      <R d={0} className="k">05 · The idea</R>
-      <div className="idea-star" aria-hidden="true">
-        {[0, 1, 2, 3, 4, 5].map((k) => <i key={k} style={{ '--k': k }} />)}
-        <StarGlyph size={58} color="#FFF8E6" />
+    <div className={`idea2 is-beat-${step}`}>
+      <div className="idea2-field" aria-hidden="true">
+        <svg className="idea2-sky" viewBox="0 0 1000 480" preserveAspectRatio="xMidYMid meet">
+          {WEEKS.map((w, i) => <polyline key={i} className="idea2-line" style={{ '--w': i }} points={w.map((p) => p.join(',')).join(' ')} />)}
+          {WEEKS.flatMap((w, i) => w.map(([x, y], j) => (x === TODAY[0] && y === TODAY[1]) ? null : (
+            <path key={`${i}-${j}`} className="idea2-day" style={{ '--n': i * 7 + j }} transform={`translate(${x} ${y})`} d="M0 -7Q1 -1 7 0Q1 1 0 7Q-1 1 -7 0Q-1 -1 0 -7Z" />
+          )))}
+        </svg>
+        {MOMENTS.map((m, k) => (
+          <span key={m.m} className={`moment is-${m.kind ?? 'care'}`} style={{ left: `${m.x}%`, top: `${m.y}%`, '--k': k }}>
+            <i /><span><b>{m.t}</b>{m.m}</span>
+          </span>
+        ))}
+        <span className="idea2-star"><span className="idea2-burst" /><StarGlyph size={84} color="#FFF8E6" /></span>
       </div>
-      <R d={6} as="p" className="statement-p is-big">Every day becomes <L>a star</L>.</R>
-      <R d={8} as="p" className="statement-sub">A day&apos;s moments gather into one star. Her stay becomes a sky that only grows.</R>
+      <div className="idea2-words">
+        <div className="k idea2-k">05 · The idea</div>
+        <p className="idea2-line-0">Her day is full of small moments.</p>
+        <p className="statement-p is-big idea2-line-1">Every day becomes <L>a star</L>.</p>
+        <p className="statement-p idea2-line-2">Her stay becomes <L>a sky that only grows</L>.</p>
+      </div>
     </div>
   )
 }
@@ -441,7 +481,7 @@ function Sort({ active }) {
             </R>
             {SORTED[x.p].map((t, k) => {
               const n = c * 7 + k
-              return <span key={t} className="sticky floater" data-idea={t} style={{ '--n': n, '--r': `${((n * 37) % 5) - 2}deg` }}>{t}</span>
+              return <span key={t} className="sticky floater" data-idea={t} style={{ '--n': n, '--r': tilt(t) }}>{t}</span>
             })}
           </div>
         ))}
@@ -646,7 +686,7 @@ export const SLIDES = [
   { id: 'sort', section: '04 · Ideation', tint: 'all', View: Sort },
   { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>The ideas we kept coming back to all did one thing: <L>turn her care into a story</L>.</> }) },
 
-  { id: 'idea', section: '05 · The idea', planet: true, View: Idea },
+  { id: 'idea', section: '05 · The idea', planet: true, steps: 3, View: Idea },
   { id: 's-open', section: '05 · The story layer', View: statement({ k: 'The story layer', children: <>Stars <L>never disappear</L>, because &ldquo;you are still moving forward even if you feel stuck.&rdquo;</> }) },
   { id: 'system', section: '05 · The story layer', View: System },
 
@@ -655,7 +695,11 @@ export const SLIDES = [
   { id: 'mom', section: '06 · Constraints', View: Mom },
   { id: 'modality', section: '06 · Constraints', View: Modality },
 
-  { id: 'product', section: '07 · At her bedside', planet: true, View: Product },
+  { id: 'board', section: '07 · The product', planet: true, View: Storyboard },
+  { id: 'd-day1', section: '07 · The product', steps: 2, View: Stretch('day1') },
+  { id: 'd-day23', section: '07 · The product', steps: 4, View: Stretch('day23') },
+  { id: 'd-sky', section: '07 · The product', steps: 2, View: Stretch('sky') },
+  { id: 'd-end', section: '07 · The product', steps: 2, View: Stretch('end') },
   { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
   { id: 'close', section: 'Mila’s Sky', View: Close },
 ]

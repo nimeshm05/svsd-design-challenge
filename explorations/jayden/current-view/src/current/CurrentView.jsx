@@ -82,7 +82,24 @@ export function CurrentView({ onSky }) {
   }
   useEffect(() => {
     if (Q.get('chapter')) goChapter(Q.get('chapter'))
-    const on = (e) => { if (e.data?.type === 'mila:chapter') goChapter(e.data.chapter) }
+    // the presentation can also ask for one feature at a time (mila:show)
+    const later = (f, ms = 350) => setTimeout(f, ms)
+    const SHOW = {
+      first: () => goChapter('born'),
+      walk: () => { goChapter('story'); later(() => setWalk(1)) },
+      today: () => { goChapter('day'); setCH(today.clock.h) },
+      term: () => { goChapter('day'); setCH(today.clock.h); later(() => document.querySelector('.cv-term-btn')?.click(), 500) },
+      family: () => { goChapter('day'); later(() => setCH(d.saved[0].h)) },
+      ahead: () => { goChapter('day'); later(() => setPage('ahead')) },
+      night: () => { goChapter('day'); later(() => setNight(true)) },
+      sky: () => goChapter('sky'),
+      home: () => goChapter('home'),
+      not: () => { goChapter('not'); later(() => setMemory(true)) },
+    }
+    const on = (e) => {
+      if (e.data?.type === 'mila:chapter') goChapter(e.data.chapter)
+      if (e.data?.type === 'mila:show') SHOW[e.data.what]?.()
+    }
     window.addEventListener('message', on)
     return () => window.removeEventListener('message', on)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps

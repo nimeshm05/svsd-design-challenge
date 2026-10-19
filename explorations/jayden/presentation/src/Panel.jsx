@@ -12,9 +12,9 @@ const LABELS = {
   heard: 'What’s said isn’t what’s heard', telephone: 'Both sides of the conversation',
   'p-open': 'It came down to three things', pillars: 'The three pillars (builds)', problem: 'Problem statement', compete: 'Competitive analysis', hmw: 'Opportunity: how might we (builds)',
   principles: 'Each pain point became a principle', brainstorm: 'Brainstorm: ideas over our affinity map', sort: 'Ideas float to their principles', thread: 'What the ideas had in common',
-  idea: 'Every day becomes a star', 's-open': 'Stars never disappear', system: 'The story layer: design system',
+  idea: 'Every day becomes a star (3 beats)', 's-open': 'Stars never disappear', system: 'The story layer: design system',
   'k-open': 'Three people to protect', constraints: 'Constraints table', mom: 'A tired mom in a hospital bed', modality: 'Touch, remote or gesture',
-  product: 'The live prototype', 'both-close': 'Mila’s Sky holds both (builds)', close: 'Every star is hers to keep',
+  board: 'Storyboard: her stay, six moments', 'd-day1': 'Day 1: first star, what’s on her (2)', 'd-day23': 'Day 23: arc, terms, family moments, what’s ahead (4)', 'd-sky': 'Night view, today becomes a star (2)', 'd-end': 'Going home / if she doesn’t (2)', 'both-close': 'Mila’s Sky holds both (builds)', close: 'Every star is hers to keep',
 }
 const W = 1440, H = 900, TW = 248
 
