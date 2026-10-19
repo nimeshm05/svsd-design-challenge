@@ -316,7 +316,9 @@ function DayScene({ theme, day, sel, onPick }) {
     b += dayStar(theme, day, ox, oy, 2.2)
     return b
   }, [theme, day, c])
-  const angles = useMemo(() => ringAngles(day.moments), [day])
+  // care times aren't drawn on the ring (the panel says how many there were); only the day's moments are
+  const shown = useMemo(() => day.moments.map((m, i) => ({ m, i })).filter(({ m }) => m.kind !== 'care'), [day])
+  const angles = useMemo(() => ringAngles(shown.map(({ m }) => m)), [shown])
   return (
     <svg className="cv-day-scene" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" role="img" aria-label={`Day ${day.d}: ${day.story}`}>
       <rect x="-2000" y="-2000" width="5000" height="5000" fill="#000" />
@@ -337,8 +339,8 @@ function DayScene({ theme, day, sel, onPick }) {
           </g>
         )
       })()}
-      {day.moments.map((m, i) => {
-        const a = angles[i], x = ox + Math.cos(a) * R, y = oy + Math.sin(a) * R
+      {shown.map(({ m, i }, k) => {
+        const a = angles[k], x = ox + Math.cos(a) * R, y = oy + Math.sin(a) * R
         const on = sel === i
         return (
           <g key={i} className={`cv-moment ${on ? 'is-on' : ''}`} onClick={() => onPick(i)} role="button" tabIndex={0}
