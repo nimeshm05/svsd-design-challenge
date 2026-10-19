@@ -1784,3 +1784,5 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .nav-dot.is-on { width: clamp(24px, 2.7vw, 34px); }
 .cv-page .nav-dot.is-on i { width: clamp(14px, 1.6vw, 20px); }
 .cv-page .nav-dots { padding: 0 clamp(4px, .65vw, 8px); left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2 - 80px), calc(var(--edge-x) + clamp(96px, 9vw, 112px))); }
+/* dots: positioned by measurement (Galaxy.jsx); no transform, so `left` is the row's left edge */
+.cv-page .nav-dots { transform: none; }

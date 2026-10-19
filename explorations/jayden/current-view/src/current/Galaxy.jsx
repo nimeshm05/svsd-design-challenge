@@ -324,10 +324,10 @@ function DayScene({ theme, day, sel, onPick }) {
       <rect x="-2000" y="-2000" width="5000" height="5000" fill="#000" />
       <g dangerouslySetInnerHTML={{ __html: back }} />
       {/* the 24-hour ring: lit up to now on today, whole on past days */}
-      <circle cx={ox} cy={oy} r={R} fill="none" stroke={ringCol} strokeOpacity={0.22} strokeWidth={c ? 3 : 1} />
+      <circle className="cv-ring-main" cx={ox} cy={oy} r={R} fill="none" stroke={ringCol} strokeOpacity={0.22} strokeWidth={c ? 3 : 1} />
       <polyline points={arc(0, day.nowH, R)} fill="none" stroke={ringCol} strokeOpacity={c ? 0.8 : 0.5} strokeWidth={c ? 4.5 : 1.6} strokeLinecap="round" />
       {[[0, '12 a.m.'], [6, '6 a.m.'], [12, '12 p.m.'], [18, '6 p.m.']].map(([h, l]) => {
-        const a = ang(h), x = ox + Math.cos(a) * (R * 1.5), y = oy + Math.sin(a) * (R * 1.5)
+        const a = ang(h), x = ox + Math.cos(a) * (R * 1.22), y = oy + Math.sin(a) * (R * 1.22) // close to the ring, clear of its moments
         return <text key={h} x={x} y={y + 5} textAnchor="middle" className="cv-ring-hour">{l}</text>
       })}
       {day.isToday && (() => {
@@ -846,6 +846,39 @@ export function Galaxy({ theme, onBack, exit = 0 }) {
     : view.level === 'day'
       ? daysOf(wOf(view.d)).filter((d) => d.d < stay.today).map((d) => ({ key: `d${d.d}`, label: `Day ${d.d}`, on: view.d === d.d, go: () => goDay(d.d) }))
       : []
+
+  // The dots sit centred under what's drawn: the day's ring, or this week's constellation. Measured
+  // from the page (not guessed), then kept clear of Close on the left and the panel on the right.
+  const dotsRef = useRef(null)
+  const [dotsX, setDotsX] = useState(null)
+  useLayoutEffect(() => {
+    const place = () => {
+    const el = host.current, dots = dotsRef.current
+    if (!el || !dots) return
+    const r = el.getBoundingClientRect()
+    let cx = null
+    if (view.level === 'day') {
+      const ring = el.querySelector('.cv-day-scene .cv-ring-main')
+      if (ring) { const b = ring.getBoundingClientRect(); cx = b.left + b.width / 2 }
+    } else if (view.level === 'week') {
+      const stars = daysOf(view.w).map((d) => el.querySelector(`.cv-gstar[data-d="${d.d}"]`)).filter(Boolean).map((g) => g.getBoundingClientRect())
+      if (stars.length) cx = (Math.min(...stars.map((b) => b.left)) + Math.max(...stars.map((b) => b.right))) / 2
+    }
+    if (cx == null) return
+    const w = dots.offsetWidth
+    const close = document.querySelector('.cv-skyt')?.getBoundingClientRect()
+    const panel = el.querySelector('.cv-gpanel')?.getBoundingClientRect()
+    let left = cx - w / 2
+    if (close) left = Math.max(left, close.right + 16)
+    if (panel) left = Math.min(left, panel.left - 16 - w)
+    setDotsX(Math.round(left - r.left))
+    }
+    if (!landed) return
+    place()
+    // measure again once the scene's entrance animation and the active dot's widening have settled
+    const t1 = setTimeout(place, 450), t2 = setTimeout(place, 1100)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [view.level, view.w, view.d, landed, size, dots.length])
   const faded = view.level === 'day' ? 'is-faded' : ''
   const layer = (l) => <div key={l.name} className={`cv-glayer is-${l.name} ${faded}`} data-k={l.k} dangerouslySetInnerHTML={{ __html: l.html }} />
 
@@ -963,7 +996,7 @@ export function Galaxy({ theme, onBack, exit = 0 }) {
       {/* Moving sideways, bottom centre of the sky: dots, one per week (in a week) or per day of
           this week (in a day). Swipe sideways on the trackpad, use ← →, or tap a dot. */}
       {(view.level === 'week' || view.level === 'day') && !story && dots.length > 1 && (
-        <nav className="nav-dots" aria-label={view.level === 'week' ? 'Weeks' : 'Days'}>
+        <nav ref={dotsRef} className="nav-dots" aria-label={view.level === 'week' ? 'Weeks' : 'Days'} style={dotsX != null ? { left: dotsX } : undefined}>
           {dots.map((x) => (
             <button key={x.key} type="button" className={`nav-dot ${x.on ? 'is-on' : ''}`} aria-label={x.label}
               aria-current={x.on ? 'page' : undefined} onClick={x.go}><i /></button>
