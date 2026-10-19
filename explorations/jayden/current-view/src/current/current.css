@@ -1529,3 +1529,11 @@
 .cv-page.is-embed { padding: 0; gap: 0; height: 100vh; min-height: 0; overflow: hidden; }
 .cv-page.is-embed .cv-proto { display: none; }
 .cv-page.is-embed .cv-screen { width: 100vw; height: 100vh; aspect-ratio: auto; border: 0; border-radius: 0; }
+/* Her first day: fewer things at once. Her name and when, then, after a breath, how small she is */
+.fd-group { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.fd-group + .fd-group { margin-top: 30px; }
+.fd-born { margin: 0; font-size: clamp(14px, 1.5vw, 17px); color: var(--muted); }
+.fd-size { margin: 0; max-width: none; }
+.fd-size b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
+.fd-size span { display: block; margin-top: 0; font-size: clamp(15px, 1.6vw, 18px); color: var(--text-2); }
+.fd-size em { font-style: normal; font-size: clamp(13px, 1.35vw, 15px); color: var(--muted); }
