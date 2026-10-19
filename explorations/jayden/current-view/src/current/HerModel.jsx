@@ -105,7 +105,7 @@ const DEVICES = {
   iv: { at: [[43, 29]], mark: (x, y) => <circle cx={x} cy={y} r="1.4" />, wire: 'M43 29 C 64 12, 88 6, 104 6' },
 }
 
-export function HerModel({ present = [], changed = [], label }) {
+export function HerModel({ present = [], changed = [], label, still = false }) {
   const [model, setModel] = useState(null)
   const [rot, setRot] = useState([48, 34]) // tilt, turn: lying across, leaning toward you
   const drag = useRef(null)
@@ -113,8 +113,8 @@ export function HerModel({ present = [], changed = [], label }) {
   const shown = Object.keys(DEVICES).filter((id) => present.includes(id) || changed.includes(id))
   const cls = (id) => `her3d-dev ${changed.includes(id) && present.includes(id) ? 'is-new' : ''} ${!present.includes(id) ? 'is-gone' : ''}`
   return (
-    <div className="her3d" role="img" aria-label={label}
-      onPointerDown={(e) => { drag.current = { x: e.clientX, y: e.clientY, rot }; e.currentTarget.setPointerCapture(e.pointerId) }}
+    <div className={`her3d ${still ? 'is-still' : ''}`} role="img" aria-label={label}
+      onPointerDown={(e) => { if (still) return; drag.current = { x: e.clientX, y: e.clientY, rot }; e.currentTarget.setPointerCapture(e.pointerId) }}
       onPointerMove={(e) => {
         const g = drag.current
         if (!g) return

@@ -42,7 +42,7 @@ export function FirstDay({ stage, theme, walk, setWalk }) {
     return (
       <div className="fd fd-walk">
         <div className="fd-model">
-          <HerModel present={FIRST.on.map((o) => o.id)} changed={done ? [] : [item.id]}
+          <HerModel still present={FIRST.on.map((o) => o.id)} changed={done ? [] : [item.id]}
             label={done ? 'Mila, with everything on her right now.' : `Mila, with her ${item.name.toLowerCase()} lit.`} />
         </div>
         {done ? (
