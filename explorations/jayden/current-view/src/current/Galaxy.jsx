@@ -471,9 +471,6 @@ function Facts({ rows }) {
   )
 }
 
-const familyTime = (min) =>
-  min ? [Math.floor(min / 60) && `${Math.floor(min / 60)} h`, min % 60 && `${min % 60} min`].filter(Boolean).join(' ') : '—'
-
 // The day in plain paragraphs: its story, then what else a parent should know, then its care times.
 // A "thing to know" that repeats the story isn't said twice, but its time (and what it opens) joins the story.
 function dayParagraphs(day) {
@@ -517,11 +514,10 @@ function DayPanel({ day, sel, onPick }) {
           </Fragment>
         ))}
       </div>
-      <Sec title="Her day at a glance">
+      <Sec title="Life support">
         <Facts rows={[
           ['Breathing help', day.supportLabel],
           ['Weight', `${day.weight.toLocaleString()} g`],
-          ['Family time', familyTime(day.parent)],
         ]} />
       </Sec>
       {moments.length > 0 && (
