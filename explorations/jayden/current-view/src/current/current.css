@@ -1531,11 +1531,11 @@
      bottom bar (secondary actions left, the one primary action right), both on the same
      inset from the screen edge, including her sky, a week, a day and the discharge mobile.
    - "Back" is always top-left and always names where it goes: ‹ Today, ‹ Mila's stars, ‹ Week 2.
-   - Buttons: 44px tall, 15px medium label, 18px SVG icon, 8px icon-label gap. The icon side
-     gets 4px less padding so the icon and label look optically centred.
+   - Buttons: 36px tall (with an invisible 44px hit area), 14px medium label, 16px SVG icon,
+     6px icon-label gap. The icon side gets 3px less padding so the pair looks optically centred.
    ====================================================================================== */
 .cv-page {
-  --edge-x: 40px; --edge-y: 32px; --nav-h: 44px; --nav-gap: 10px;
+  --edge-x: 40px; --edge-y: 32px; --nav-h: 36px; --nav-hit: 44px; --nav-gap: 8px;
   --nav-border: color-mix(in srgb, var(--cream) 32%, transparent);
   --nav-border-hi: color-mix(in srgb, var(--cream) 60%, transparent);
 }
@@ -1566,15 +1566,17 @@
 
 /* the button */
 .cv-page .nav-btn {
-  box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: none;
-  height: var(--nav-h); padding: 0 18px; margin: 0; border-radius: 999px;
+  position: relative; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none;
+  height: var(--nav-h); padding: 0 14px; margin: 0; border-radius: 999px;
   border: 1px solid var(--nav-border); background: rgba(8, 10, 14, .55); color: #F1EADB;
-  font-family: var(--font-ui); font-size: 15px; font-weight: 500; line-height: 1; letter-spacing: 0; white-space: nowrap;
+  font-family: var(--font-ui); font-size: 14px; font-weight: 500; line-height: 1; letter-spacing: .005em; white-space: nowrap;
   cursor: pointer; transition: border-color .2s, background-color .2s, color .2s, opacity .2s;
 }
 .cv-page .nav-btn > span { display: block; line-height: 1; padding-top: 1px; } /* cap-height centring */
-.cv-page .nav-btn:has(> svg:first-child) { padding-left: 14px; }
-.cv-page .nav-btn.is-trailing { padding-right: 14px; }
+.cv-page .nav-btn:has(> svg:first-child) { padding-left: 11px; }
+.cv-page .nav-btn.is-trailing { padding-right: 11px; }
+/* smaller to look at, same to tap: the hit area stays 44px */
+.cv-page .nav-btn::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: var(--nav-hit); transform: translateY(-50%); }
 .cv-page .nav-btn:hover { border-color: var(--nav-border-hi); background: rgba(243, 227, 181, .06); color: #fff; }
 .cv-page .nav-btn:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
 .cv-page .nav-btn:disabled { opacity: .32; cursor: default; pointer-events: none; }
@@ -1582,15 +1584,16 @@
 .cv-page .nav-btn.is-primary { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; }
 .cv-page .nav-btn.is-primary:hover { background: #fff3cf; border-color: #fff3cf; color: #000; }
 .cv-page .nav-btn.is-icon { width: var(--nav-h); padding: 0; }
-.cv-page .nav-step { display: inline-flex; gap: 6px; }
+.cv-page .nav-step { display: inline-flex; gap: 4px; }
 
-.nav-ic { width: 18px; height: 18px; flex: none; display: block; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.cv-page .nav-btn.is-icon .nav-ic { width: 20px; height: 20px; }
+.nav-ic { width: 16px; height: 16px; flex: none; display: block; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.cv-page .nav-btn.is-icon .nav-ic { width: 18px; height: 18px; }
+.cv-page .nav-btn.is-icon::before { left: 50%; width: var(--nav-hit); transform: translate(-50%, -50%); }
 /* the mini sky on "Mila's stars" keeps its drawing, sized to the icon row */
-.cv-page .nav-btn .cv-lookup { width: 27px; height: 19px; margin: 0; overflow: visible; }
+.cv-page .nav-btn .cv-lookup { width: 24px; height: 17px; margin: 0; overflow: visible; }
 
 /* the info button by "Mila's stars": an icon-only quiet button */
-.cv-page .cv-ginfo-btn { width: 36px; height: 36px; margin: 0; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: var(--text-2); background: transparent; }
+.cv-page .cv-ginfo-btn { width: 32px; height: 32px; margin: 0; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: var(--text-2); background: transparent; }
 .cv-page .cv-ginfo-btn:hover, .cv-page .cv-ginfo-btn[aria-expanded="true"] { color: var(--cream); background: rgba(243, 227, 181, .08); }
 
 /* theme 2 (confetti): same geometry, its own colours */
