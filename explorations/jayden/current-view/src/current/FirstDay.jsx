@@ -79,8 +79,7 @@ export function FirstDay({ stage, theme, walk, setWalk }) {
             <p className="fd-born">Born today at {FIRST.born}</p>
           </div>
           <div className="fd-group fd-size">
-            <b>{FIRST.grams} grams</b>
-            <span>{FIRST.feel[0].toUpperCase() + FIRST.feel.slice(1)}.</span>
+            <span><b>{FIRST.grams} grams</b>, {FIRST.feel}.</span>
             <em>Her star is as big as she is.</em>
           </div>
         </>
