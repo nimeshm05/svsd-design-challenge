@@ -1815,3 +1815,51 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .ts-list b { font-size: 16px; font-weight: 600; color: #fff; }
 .cv-page .ts-list span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
 @media (prefers-reduced-motion: reduce) { .cv-page .ts, .ts-scrim { animation: none; } }
+
+/* care team: people are tappable rows; asking and the confirmation share the sheet */
+.cv-page .ts { padding: 24px 28px 24px; }
+.cv-page .ts-body { display: flex; flex-direction: column; gap: 20px; animation: cv-fade-in .3s ease both; }
+.cv-page .ts-head { margin-bottom: 0; }
+.cv-page .ts-head.is-nav { margin: 0 -8px; }
+.cv-page .ts-head.is-nav .nav-btn { margin: 0; }
+.cv-page .ts-list { margin-top: -4px; }
+.cv-page .ts-list li { padding: 0; }
+.cv-page .ts-list button { width: 100%; display: flex; align-items: center; gap: 16px; padding: 14px 0; margin: 0; border: 0; background: none;
+  text-align: left; color: inherit; font: inherit; cursor: pointer; }
+.cv-page .ts-list button .nav-ic { color: var(--muted); transition: transform .2s ease, color .2s; }
+.cv-page .ts-list button:hover b { color: var(--cream); }
+.cv-page .ts-list button:hover .nav-ic { color: var(--cream); transform: translateX(2px); }
+.cv-page .ts-list button:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 6px; }
+.cv-page .ts-person { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cv-page .ts-list .ts-person span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
+
+.cv-page .ts-title-block { display: flex; flex-direction: column; gap: 6px; }
+.cv-page .ts-title-block.is-center { align-items: center; text-align: center; }
+.cv-page .ts-sub { margin: 0; font-size: 14px; line-height: 1.35; color: var(--text-2); text-wrap: pretty; }
+.cv-page .ts-sec { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.cv-page .ts-reasons { gap: 8px; }
+.cv-page .ts-reasons legend { padding: 0; margin-bottom: 10px; }
+.cv-page .ts-reason { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); font-size: 15px; line-height: 1.3; color: var(--text); transition: border-color .2s, background-color .2s; }
+.cv-page .ts-reason:hover { border-color: color-mix(in srgb, var(--cream) 30%, transparent); }
+.cv-page .ts-reason.is-on { border-color: color-mix(in srgb, var(--cream) 55%, transparent); background: color-mix(in srgb, var(--cream) 6%, transparent); }
+.cv-page .ts-reason input { position: absolute; opacity: 0; pointer-events: none; }
+.cv-page .ts-radio { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--cream) 45%, transparent); display: grid; place-items: center; }
+.cv-page .ts-reason.is-on .ts-radio { border-color: var(--cream); }
+.cv-page .ts-reason.is-on .ts-radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--cream); }
+.cv-page .ts-reason:has(input:focus-visible) { outline: 2px solid var(--cream); outline-offset: 2px; }
+.cv-page .ts-note { box-sizing: border-box; width: 100%; resize: none; padding: 12px 14px; border-radius: 12px; font: inherit; font-size: 15px; line-height: 1.35;
+  color: var(--text); background: transparent; border: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .ts-note::placeholder { color: var(--muted); }
+.cv-page .ts-note:focus { outline: none; border-color: color-mix(in srgb, var(--cream) 55%, transparent); }
+.cv-page .ts-cta { width: 100%; height: 44px; font-size: 15px; }
+.cv-page .ts-done { padding-top: 8px; }
+.cv-page .ts-check { align-self: center; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%;
+  background: color-mix(in srgb, var(--cream) 10%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--cream) 30%, transparent); }
+.cv-page .ts-check svg { width: 26px; height: 26px; fill: none; stroke: var(--cream); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 24; stroke-dashoffset: 24; animation: ts-draw .5s .15s cubic-bezier(.22, 1, .36, 1) forwards; }
+@keyframes ts-draw { to { stroke-dashoffset: 0; } }
+.cv-page .ts-sent-what { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 12px; text-align: center;
+  border: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); font-size: 14px; color: var(--text); }
+.cv-page .ts-sent-note { font-style: italic; color: var(--text-2); }
+@media (prefers-reduced-motion: reduce) { .cv-page .ts-body { animation: none; } .cv-page .ts-check svg { animation: none; stroke-dashoffset: 0; } }
