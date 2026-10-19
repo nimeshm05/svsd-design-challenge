@@ -480,19 +480,40 @@ function DayThings({ things }) {
   )
 }
 
+// Label and value in two columns; a metric with several values lists them one per line.
+function Facts({ rows }) {
+  return (
+    <dl className="cv-gfacts">
+      {rows.map(([label, values]) => (
+        <div key={label} className="cv-gfacts-row">
+          <dt>{label}</dt>
+          <dd>{[].concat(values).map((v) => <span key={v}>{v}</span>)}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
+const familyTime = (min) =>
+  min ? [Math.floor(min / 60) && `${Math.floor(min / 60)} h`, min % 60 && `${min % 60} min`].filter(Boolean).join(' ') : '—'
+
 function DayPanel({ day, sel, onPick }) {
   const m = sel != null ? day.moments[sel] : null
+  const cares = day.moments.filter((x) => x.kind === 'care').length
   return (
     <aside className="cv-gpanel" aria-label={`Day ${day.d}`}>
-      <span className="cv-gpanel-k">{day.isToday ? 'Today' : `Day ${day.d}`} · Week {day.week}</span>
-      <h3 className="cv-gpanel-title">{day.first ?? (day.isToday ? `Day ${day.d}` : `Day ${day.d}`)}</h3>
+      <h3 className="cv-gpanel-title">{day.first ?? `Day ${day.d}`}</h3>
       {day.things && <DayThings key={day.d} things={day.things} />}
-      <p className="cv-gpanel-text">{day.story}</p>
-      <dl className="cv-gpanel-facts">
-        <div><dt>Breathing help</dt><dd>{day.supportLabel}</dd></div>
-        <div><dt>Weight</dt><dd>{day.weight.toLocaleString()} g</dd></div>
-        <div><dt>Family time</dt><dd>{day.parent ? [Math.floor(day.parent / 60) && `${Math.floor(day.parent / 60)} h`, day.parent % 60 && `${day.parent % 60} min`].filter(Boolean).join(' ') : '—'}</dd></div>
-      </dl>
+      {/* the day in plain words: what it was like, then what it held */}
+      <div className="cv-gpanel-desc">
+        <p>{day.story}</p>
+        {cares > 0 && <p>{cares} care times, each with a feed and a diaper change.</p>}
+      </div>
+      <Facts rows={[
+        ['Breathing help', day.supportLabel],
+        ['Weight', `${day.weight.toLocaleString()} g`],
+        ['Family time', familyTime(day.parent)],
+      ]} />
       {m ? (
         <div className="cv-gmoment">
           <span className="cv-gpanel-k">{m.t}</span>
@@ -507,7 +528,6 @@ function DayPanel({ day, sel, onPick }) {
             const i = day.moments.indexOf(x)
             return <li key={i}><button type="button" onClick={() => onPick(i)}><span>{x.t}</span>{x.title}</button></li>
           })}
-          <li className="cv-gpanel-care">{day.moments.filter((x) => x.kind === 'care').length} care times, each with a feed and a diaper change</li>
         </ol>
       )}
     </aside>

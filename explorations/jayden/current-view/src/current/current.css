@@ -1646,3 +1646,12 @@
 .cv-page { overflow-x: hidden; }
 .theme-confetti .nav-btn.is-icon .nav-ic.is-left { translate: .5px -.6px; }
 .theme-confetti .nav-btn.is-icon .nav-ic.is-right { translate: -.5px -.6px; }
+
+/* Day panel: plain description, then label/value metrics in two columns */
+.cv-page .cv-gpanel-desc { display: flex; flex-direction: column; gap: 6px; }
+.cv-page .cv-gpanel-desc p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--text-2); }
+.cv-page .cv-gfacts { margin: 0; display: flex; flex-direction: column; border-top: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-gfacts-row { display: grid; grid-template-columns: 112px 1fr; column-gap: 16px; align-items: baseline; padding: 9px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-gfacts dt { font-size: 13px; color: var(--muted); }
+.cv-page .cv-gfacts dd { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
