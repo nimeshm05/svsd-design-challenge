@@ -347,23 +347,29 @@ export const tomorrow = {
   ],
 }
 
-// "What's ahead" → This week: today and the next six days. Routine care is a quiet line;
-// major events (surgeries, procedures) open their own page. Days are named by weekday and her day count.
+// "What's ahead" → Timeline: the two days before today, today, and the next six days. Routine care is a
+// quiet line; major events (surgeries, procedures) open their own page. Days are named by weekday and her day count.
 // `every`: a recurring task, every N hours from midnight. Today's box lists each one; other days show `what`.
 export const week = [
+  { name: 'Sunday', short: 'Sun', day: 21, items: [
+    { t: '8 a.m.', what: 'Rounds' }, { t: '9:30 a.m.', what: 'Gentler breathing help' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+  ] },
+  { name: 'Monday', short: 'Mon', day: 22, items: [
+    { t: '7 a.m.', what: 'Rounds' }, { t: '6 p.m.', what: 'Bath time' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+  ] },
   { name: 'Tuesday', short: 'Tue', day: 23, today: true, items: [
     { t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }, { t: '7 p.m.', what: 'Marcus takes over' },
   ] },
   { name: 'Wednesday', short: 'Wed', day: 24, items: [
-    { t: '3 a.m.', what: 'IV insertion' }, { t: '7 a.m.', what: 'Rounds' },
-    { t: '10 a.m.', what: 'Heart surgery', event: 'heart-surgery' },
-    { t: '2 p.m.', what: 'Surgeon talks with you' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+    { t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Thursday', short: 'Thu', day: 25, items: [
     { t: '7 a.m.', what: 'Rounds' }, { t: '1 p.m.', what: 'Family meeting' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Friday', short: 'Fri', day: 26, items: [
-    { t: '7 a.m.', what: 'Rounds' }, { what: 'Breathing check' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+    { t: '3 a.m.', what: 'IV insertion' }, { t: '7 a.m.', what: 'Rounds' },
+    { t: '10 a.m.', what: 'Heart surgery', event: 'heart-surgery' },
+    { t: '2 p.m.', what: 'Surgeon talks with you' }, { what: 'Breathing check' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Saturday', short: 'Sat', day: 27, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
   { name: 'Sunday', short: 'Sun', day: 28, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
@@ -375,7 +381,7 @@ export const week = [
 export const events = {
   'heart-surgery': {
     name: 'Heart surgery',
-    when: 'Tomorrow, Wednesday · Day 24',
+    when: 'Friday · Day 26',
     time: '10 a.m.',
     target: 'heart',
     targetLabel: 'Her heart',
@@ -443,6 +449,34 @@ const DAY_THINGS = {
     { title: 'Steady on CPAP', text: 'Her gentle breathing help stayed the same, and her monitors were quiet for most of the day.' },
   ],
 }
+// Changes in her breathing help, by day of her stay.
+const STAY_CHANGES = {
+  5: { h: 10, title: 'Off the ventilator', plain: 'She moved from the ventilator to CPAP, a gentler kind of breathing help.', by: 'Respiratory therapist' },
+  17: { h: 4.5, hard: true, title: 'More breathing help for a while', plain: 'Her breathing needed more support overnight, so her team turned up her CPAP. She settled again by evening.', by: 'Her night nurse' },
+  21: { h: 9.5, title: 'Gentler breathing help', plain: 'She moved from CPAP to soft nose prongs that give a gentle flow of air.', by: 'Respiratory therapist' },
+}
+// Planned for next week, beyond what `week` writes out. Sample data.
+const PLANNED = {
+  30: [{ t: '10 a.m.', what: 'Eye exam' }],
+  32: [{ t: '1 p.m.', what: 'Family meeting' }],
+  33: [{ what: 'Breathing check' }],
+}
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+// The Timeline's schedule for any day of her stay, in `week`'s item shape: the days `week` writes out,
+// or else her usual care (rounds, care every 3 hours) plus, for days gone by, what happened (firsts and
+// breathing changes) and, for days ahead, what's planned. Nothing before she was born or past next week.
+export function scheduleFor(n) {
+  const written = week.find((d) => d.day === n)
+  if (written) return written.items
+  const t = week.find((d) => d.today), twd = WEEKDAYS.indexOf(t.short)
+  if (n < 1 || n > t.day + 13 - twd) return []
+  const wd = (((twd + n - t.day) % 7) + 7) % 7
+  const items = [{ t: wd === 0 || wd === 6 ? '8 a.m.' : '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }]
+  if (n > t.day) return [...items, ...(PLANNED[n] ?? [])]
+  if (n === 1) items.push({ what: 'The day she arrived' })
+  for (const x of [DAY_FIRSTS[n], STAY_CHANGES[n]]) if (x) items.push({ t: fmt(x.h), what: x.title })
+  return items
+}
 const CALM_STORIES = ['A calm day. She slept well between care times.', 'She grew a little and rested well.', 'A quiet day of feeds and sleep.', 'She was settled and comfortable all day.']
 const fmt = (h) => {
   const hh = Math.floor(h), mm = Math.round((h - hh) * 60)
@@ -464,9 +498,7 @@ export function dayDetail(d) {
     const hrs = Math.floor(day.parent / 60), mins = day.parent % 60
     m.push({ h: fh, kind: 'parent', title: 'Time with family', plain: `A parent was with her for ${hrs ? `${hrs} h ` : ''}${mins} min.`, by: '' })
   }
-  if (d === 5) m.push({ h: 10, kind: 'change', title: 'Off the ventilator', plain: 'She moved from the ventilator to CPAP, a gentler kind of breathing help.', by: 'Respiratory therapist' })
-  if (d === 17) m.push({ h: 4.5, kind: 'change', hard: true, title: 'More breathing help for a while', plain: 'Her breathing needed more support overnight, so her team turned up her CPAP. She settled again by evening.', by: 'Her night nurse' })
-  if (d === 21) m.push({ h: 9.5, kind: 'change', title: 'Gentler breathing help', plain: 'She moved from CPAP to soft nose prongs that give a gentle flow of air.', by: 'Respiratory therapist' })
+  if (STAY_CHANGES[d]) m.push({ ...STAY_CHANGES[d], kind: 'change' })
   if (isToday) {
     today.calm.changes.forEach((c) => m.push({ h: c.h, kind: 'change', title: c.title, plain: c.plain, by: c.by }))
     today.calm.decisions.forEach((x) => m.push({ h: x.h, kind: 'change', title: 'Breathing plan decided', plain: x.text, by: x.source }))

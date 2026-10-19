@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ahead, events, today, week } from '../data/days.js'
+import { ahead, events, scheduleFor, today, week } from '../data/days.js'
 import { glossary } from '../data/glossary.js'
 import { GlossaryTerm } from '../components/GlossaryTerm.jsx'
 import { BodyModel3D } from './BodyModel3D.jsx'
@@ -40,14 +40,16 @@ export function Ahead({ kind }) {
   )
 }
 
-// Timeline: a week calendar, like a calendar app's week view. Today's box is wide and lists every entry
-// in full, recurring care itemized, time on the left and what it is on the right, scrolled to now; the next six days are compact boxes of chips, with
-// "+N more" when a day has more than fit. Untimed care sits first, like an all-day line.
-// Major events are the items with an `event` key (they have a page in `events`): a filled warm chip,
-// bolder, with a star marker, so they don't rely on color alone, and they're always among a day's
-// visible chips. They open their own page in place of the calendar (not a modal). Back to timeline, the
-// browser's back, or Esc returns to the calendar, with focus back on the event that was opened.
-const CHIPS = 3
+// Timeline: a week calendar, Sun → Sat, seven equal days, like a calendar app's week view. The schedule
+// counts days of her stay, not dates, so her day today (`today.day`, the `week` entry marked `today`) is
+// placed on that weekday of the real current week and every other day follows. Today has a cream stroke
+// and lists every entry in full, recurring care itemized: time, what it is, a small tag, rows split by thin
+// lines, scrolled to now. The other days list their events one line each, with the full name on hover.
+// Days before today are quieter; days with nothing planned stay, just emptier.
+// Prev / next step a week at a time; "Today" comes back.
+// Major events are the items with an `event` key (they have a page in `events`): a filled warm block with
+// a heavier left edge, bold, with a star marker, time and length, so they don't rely on color alone. They open their own page in place of the calendar (not a modal).
+// Back to timeline, the browser's back, or Esc returns to the calendar, with focus on the event opened.
 // "7 a.m." → 7, "2 p.m." → 14; untimed care sorts first
 const hourOf = (t) => {
   if (!t) return -1
@@ -62,14 +64,22 @@ const itemize = (items) => items
     ? Array.from({ length: Math.ceil(24 / it.every) }, (_, k) => ({ ...it, what: it.label ?? it.what, t: fmtH(k * it.every), h: k * it.every }))
     : [{ ...it, h: hourOf(it.t) }])
   .sort((x, y) => x.h - y.h)
+const tagOf = (it) => it.event ? 'Major event' : null
+// dates, at local midnight; Math.round keeps a daylight-saving hour from shifting the count
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
+const daysFrom = (a, b) => Math.round((b - a) / 864e5)
+const fmtDate = (d, o) => d.toLocaleDateString('en-US', o)
+// the weekday her day today falls on (0 = Sunday)
+const TODAY_WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(week.find((d) => d.today)?.short)
 
 function Timeline() {
   const [open, setOpen] = useState(null)
+  const [offset, setOffset] = useState(0) // weeks from this one
   const blocks = useRef({})
   const back = useRef(null)
   const last = useRef(null)
   const list = useRef(null)
-  const hi = useRef(null)
+  const nowRef = useRef(null)
 
   const show = (id) => { last.current = id; window.history.pushState({ ...window.history.state, ahEvent: id }, ''); setOpen(id) }
   const close = () => { if (window.history.state?.ahEvent) window.history.back(); else setOpen(null) }
@@ -94,99 +104,120 @@ function Timeline() {
       return () => window.removeEventListener('keydown', onKey)
     }
     if (last.current) blocks.current[last.current]?.focus()
-    // bring what's happening now (or next) into view in today's list, with the row before it showing
-    const l = list.current, e = hi.current
-    if (l && e) l.scrollTop += e.getBoundingClientRect().top - l.getBoundingClientRect().top - 56
   }, [open])
+
+  // bring now into view in today's list, with the row before it showing
+  useEffect(() => {
+    const l = list.current, e = nowRef.current
+    if (!open && l && e) l.scrollTop += e.getBoundingClientRect().top - l.getBoundingClientRect().top - 56
+  }, [open, offset])
 
   if (open && events[open]) return <EventDetail ev={events[open]} onBack={close} backRef={back} />
 
-  const day0 = week.find((d) => d.today), rest = week.filter((d) => !d.today)
-  // past entries are muted; the one happening now (started in the last half hour) or else the next is
-  // highlighted; the "Now" line sits before the first entry still ahead. Untimed ones (h = -1) are neither.
+  const now = new Date()
+  const t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate() + TODAY_WD - now.getDay())
+  const start = addDays(t0, offset * 7 - TODAY_WD)
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const date = addDays(start, i), off = daysFrom(t0, date), n = today.day + off
+    return { date, n, i, isToday: off === 0, isPast: off < 0, items: scheduleFor(n) }
+  })
+  const day0 = days.find((d) => d.isToday), rest = days.filter((d) => !d.isToday)
+  const range = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).formatRange(start, days[6].date)
+  // the "Now" line sits before the first entry still ahead; untimed ones (h = -1) sit above it, like all-day
   const nowH = today.clock.h
   const entries = day0 ? itemize(day0.items) : []
-  const hiIdx = entries.findIndex((e) => e.h > nowH - 0.5)
   const nowIdx = entries.findIndex((e) => e.h >= nowH)
   return (
     <section className="ah-sec ah-cal-sec" aria-labelledby="ah-cal-k">
-      <h3 id="ah-cal-k" className="ah-k">Today and the next six days</h3>
+      <div className="ah-wk-bar">
+        <h3 id="ah-cal-k" className="ah-k" aria-live="polite">{range}</h3>
+        <div className="ah-wk-nav">
+          <button type="button" className="ah-wk-btn" onClick={() => setOffset(0)} disabled={offset === 0}>Today</button>
+          <button type="button" className="ah-wk-btn is-arrow" onClick={() => setOffset(offset - 1)} aria-label="Previous week">‹</button>
+          <button type="button" className="ah-wk-btn is-arrow" onClick={() => setOffset(offset + 1)} aria-label="Next week">›</button>
+        </div>
+      </div>
       <div className="ah-wk">
         {day0 && (
-          <section className="ah-cal-day is-today ah-wk-today" aria-label={`Today, ${day0.name}, day ${day0.day}`}>
-            <div className="ah-cal-head"><b>Today · {day0.short}</b><span>Day {day0.day}</span></div>
+          <section className="ah-cal-day is-today ah-wk-today" style={{ '--col': day0.i + 1 }}
+            aria-label={`Today, ${fmtDate(day0.date, { weekday: 'long', month: 'long', day: 'numeric' })}, day ${day0.n} of her stay`}>
+            <DayHead d={day0} />
             {entries.length ? (
               <ul className="ah-sched-items" ref={list}>
-                {entries.map((it, i) => {
-                  const state = i === hiIdx ? 'is-next' : it.h >= 0 && it.h < nowH ? 'is-past' : ''
-                  return [
-                  i === nowIdx && <li key="now" className="ah-sched-now" aria-hidden="true"><span>Now</span></li>,
-                  it.event ? (
-                  <li key={`${it.what}-${it.h}`} className={state} ref={i === hiIdx ? hi : undefined} aria-current={i === hiIdx ? 'time' : undefined}>
-                    <button type="button" className="ah-sched-major" ref={(el) => { blocks.current[it.event] = el }}
-                      onClick={() => show(it.event)} aria-label={`Major event: ${it.what}, today at ${it.t}. Open details`}>
-                      <span className="ah-sched-t">{it.t}</span>
-                      <span className="ah-sched-what">
-                        <b><Star state="now" />{it.what}</b>
-                        {events[it.event]?.duration && <span>{events[it.event].duration}</span>}
-                      </span>
-                      <span className="ah-sched-more" aria-hidden="true">Details ›</span>
-                    </button>
-                  </li>
-                ) : (
-                  <li key={`${it.what}-${it.h}`} className={`ah-sched-item ${state}`} ref={i === hiIdx ? hi : undefined} aria-current={i === hiIdx ? 'time' : undefined}>
-                    <span className="ah-sched-t">{it.t || 'All day'}</span>
-                    <span className="ah-sched-what"><b>{it.what}</b>{it.note && <span>{it.note}</span>}</span>
-                  </li>
-                )]
-                })}
+                {entries.map((it, i) => [
+                  i === nowIdx && <li key="now" className="ah-sched-now" ref={nowRef} aria-hidden="true"><span>Now</span></li>,
+                  <li key={`${it.what}-${it.h}`}>
+                    {it.event ? (
+                      <button type="button" className="ah-sched-row is-major" ref={(el) => { blocks.current[it.event] = el }}
+                        onClick={() => show(it.event)} aria-label={`Major event: ${it.what}, today at ${it.t}. Open details`}>
+                        <Row it={it} note={events[it.event]?.duration} />
+                        <span className="ah-sched-more" aria-hidden="true">›</span>
+                      </button>
+                    ) : <div className="ah-sched-row"><Row it={it} note={it.note} /></div>}
+                  </li>,
+                ])}
               </ul>
             ) : <p className="ah-wk-empty">Nothing scheduled</p>}
           </section>
         )}
         <ol className="ah-wk-rest">
-          {rest.map((d, i) => <WeekDay key={d.day} d={d} i={i + 1} onOpen={show} blocks={blocks} />)}
+          {rest.map((d) => <WeekDay key={d.n} d={d} onOpen={show} blocks={blocks} />)}
         </ol>
       </div>
     </section>
   )
 }
 
-// One compact day: chips in time order, majors always kept, the rest behind "+N more".
-function WeekDay({ d, i, onOpen, blocks }) {
-  const [all, setAll] = useState(false)
-  const items = byTime(d.items)
-  const keep = new Set(items.filter((it) => it.event).slice(0, CHIPS))
-  for (const it of items) if (keep.size < CHIPS) keep.add(it)
-  const shown = all ? items : items.filter((it) => keep.has(it))
-  const more = items.length - shown.length
+// weekday and date number, right-aligned, like a calendar's week header
+function DayHead({ d }) {
   return (
-    <li className="ah-cal-day" style={{ '--i': i }} aria-label={`${d.name}, day ${d.day}`}>
-      <div className="ah-cal-head"><b>{d.short}</b><span>Day {d.day}</span></div>
-      {items.length ? (
-        <ul>
-          {shown.map((it) => it.event ? (
+    <div className="ah-cal-head">
+      {d.isToday && <span className="ah-wk-label">Today</span>}
+      <span className="ah-wk-date"><span>{fmtDate(d.date, { weekday: 'short' })}</span><b>{d.date.getDate()}</b></span>
+    </div>
+  )
+}
+
+// One of today's rows: time, then what it is, with its tag and any note underneath.
+function Row({ it, note }) {
+  const tag = tagOf(it)
+  return (
+    <>
+      <span className="ah-sched-t">{it.t || 'All day'}</span>
+      <span className="ah-sched-what">
+        <b>{it.event && <Star state="now" />}{it.what}</b>
+        {(tag || note) && <span className="ah-sched-meta">{tag && <i className="ah-tag">{tag}</i>}{note && <span>{note}</span>}</span>}
+      </span>
+    </>
+  )
+}
+
+// One compact day: every event on a single line, in time order; the full name and time show on hover.
+function WeekDay({ d, onOpen, blocks }) {
+  const items = byTime(d.items)
+  const tip = (it) => `${it.t ? `${it.t} · ` : ''}${it.what}`
+  return (
+    <li className={`ah-cal-day${items.length ? '' : ' is-empty'}${d.isPast ? ' is-past' : ''}`} style={{ '--i': d.i, '--col': d.i + 1 }}
+      aria-label={`${fmtDate(d.date, { weekday: 'long', month: 'long', day: 'numeric' })}${items.length ? '' : ', nothing scheduled'}`}>
+      <DayHead d={d} />
+      {items.length > 0 && (
+        <ul className="ah-wk-lines">
+          {items.map((it) => it.event ? (
             <li key={it.what}>
-              <button type="button" className="ah-cal-event" ref={(el) => { blocks.current[it.event] = el }}
-                onClick={() => onOpen(it.event)} aria-label={`Major event: ${it.what}, ${d.name} at ${it.t}. Open details`}>
+              <button type="button" className="ah-cal-event" title={tip(it)} ref={(el) => { blocks.current[it.event] = el }}
+                onClick={() => onOpen(it.event)} aria-label={`Major event: ${it.what}, ${fmtDate(d.date, { weekday: 'long' })} at ${it.t}. Open details`}>
                 <span className="ah-cal-event-t">{it.t}</span>
-                <b title={it.what}><Star state="now" /><span>{it.what}</span></b>
+                <b><Star state="now" /><span>{it.what}</span></b>
+                {events[it.event]?.duration && <span className="ah-cal-event-more">{events[it.event].duration}</span>}
               </button>
             </li>
           ) : (
-            <li key={it.what} className="ah-cal-routine" title={it.what}>
-              <span>{it.t || 'All day'}</span><span className="ah-wk-title">{it.what}</span>
+            <li key={it.what} className="ah-wk-line" title={tip(it)}>
+              <i className="ah-wk-dot" aria-hidden="true" /><span className="ah-wk-title">{it.what}</span>
             </li>
           ))}
-          {(more > 0 || all) && items.length > CHIPS && (
-            <li>
-              <button type="button" className="ah-wk-more" aria-expanded={all} onClick={() => setAll(!all)}>
-                {all ? 'Show less' : `+${more} more`}
-              </button>
-            </li>
-          )}
         </ul>
-      ) : <p className="ah-wk-empty">Nothing scheduled</p>}
+      )}
     </li>
   )
 }
@@ -258,13 +289,12 @@ function Path({ t }) {
   )
 }
 
-// A major event, in full, in place of the calendar. Placeholder medical content, marked for review.
+// A major event, in full, in place of the calendar. The text scrolls on its own; the body diagram stays put.
 function EventDetail({ ev, onBack, backRef }) {
   return (
     <section className="ah-ev" aria-labelledby="ah-ev-title">
       <div className="ah-ev-top">
         <button ref={backRef} type="button" className="cv-back" onClick={onBack}>‹ Back</button>
-        <span className="ah-review">Placeholder content · for care-team review</span>
       </div>
       <div className="ah-ev-grid">
         <div className="ah-ev-text">
