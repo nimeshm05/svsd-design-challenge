@@ -1883,3 +1883,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .nav-btn.is-primary.ts-call.is-calling, .cv-page .nav-btn.is-primary.ts-call.is-called { opacity: 1; }
 /* a still picture of her (no turning) */
 .her3d.is-still { cursor: default; touch-action: auto; user-select: none; }
+
+/* Her picture in the design system's colours: cream for her and her wires, the warm accent
+   (copper in DS1, pink in DS2) for the thing being explained, a faint cream frame */
+.cv-page .her3d-dev { stroke: color-mix(in srgb, var(--cream) 55%, transparent); opacity: 1; }
+.cv-page .her3d-dev circle, .cv-page .her3d-dev rect, .cv-page .her3d-dev ellipse { fill: color-mix(in srgb, var(--cream) 18%, transparent); }
+.cv-page .her3d-dev.is-new, .cv-page .her3d .her3d-dev.is-new { stroke: var(--warm); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--warm) 70%, transparent)); }
+.cv-page .her3d-dev.is-new circle, .cv-page .her3d-dev.is-new rect, .cv-page .her3d-dev.is-new ellipse { fill: color-mix(in srgb, var(--warm) 35%, transparent); }
+.cv-page .her3d-dev.is-gone { stroke: color-mix(in srgb, var(--cream) 40%, transparent); }
+.cv-page .her3d-post { color: color-mix(in srgb, var(--cream) 55%, transparent); opacity: 1; }
+.cv-page .her3d-post.is-new { color: var(--warm); }
+.cv-page .her3d-bed { background: color-mix(in srgb, var(--cream) 3%, transparent); border-color: color-mix(in srgb, var(--cream) 14%, transparent); }
+.cv-page .her3d-stage { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cream) 14%, transparent)); }
