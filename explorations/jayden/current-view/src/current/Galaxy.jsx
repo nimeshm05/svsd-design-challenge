@@ -448,11 +448,6 @@ function WeekPanel({ w, onDay }) {
           </ul>
         </Sec>
       )}
-      <Sec title="Days">
-        <div className="cv-gpanel-days">
-          {daysOf(w).map((d) => <button key={d.d} type="button" onClick={() => onDay(d.d)} className={d.d === stay.today ? 'is-today' : ''}>Day {d.d}</button>)}
-        </div>
-      </Sec>
     </aside>
   )
 }
