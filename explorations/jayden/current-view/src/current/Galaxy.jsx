@@ -297,7 +297,8 @@ function momentMark(theme, m, x, y) {
     return c ? `<path d="${starN(x, y, 12)}" fill="${col || '#ffd23f'}" stroke="${col || '#ffd23f'}" stroke-width="1.6" stroke-linejoin="round" filter="url(#g-soft)"/>`
       : `<path d="${softSparkle(x, y, 13)}" fill="${col || '#f3e3b5'}"/>`
   }
-  return c ? `<path d="${sparkle(x, y, 7, 0.32)}" fill="#ffffff"/>` : `<circle cx="${x}" cy="${y}" r="4.5" fill="#f3e3b5" opacity=".9"/>`
+  // care times: quiet, so the day's real moments stand out (their tap target stays 22px)
+  return c ? `<path d="${sparkle(x, y, 5, 0.32)}" fill="#ffffff" opacity=".5"/>` : `<circle cx="${x}" cy="${y}" r="3" fill="#f3e3b5" opacity=".45"/>`
 }
 
 function DayScene({ theme, day, sel, onPick }) {
