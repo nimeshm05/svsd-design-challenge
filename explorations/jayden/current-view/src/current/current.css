@@ -1958,3 +1958,5 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 /* while one thing is lit, everything else on her steps back */
 .bf-dev { transition: stroke .4s ease, fill .4s ease, opacity .4s ease; }
 .bf:has(.bf-dev.is-new) .bf-dev:not(.is-new) { opacity: .25; }
+.bf-img { transition: opacity .4s ease; }
+.bf:has(.bf-dev.is-new) .bf-img { opacity: .45; }
