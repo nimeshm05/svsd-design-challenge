@@ -10,7 +10,7 @@ import { Remembering } from './Remembering.jsx'
 import { Ahead } from './Ahead.jsx'
 import { Galaxy, SkyDepth, FormingOverlay, todayOnScreen, todayFormsAt } from './Galaxy.jsx'
 import { Discharge } from './Discharge.jsx'
-import { ChevronRight, NavBack, PhoneIcon, SparkleIcon } from './NavIcons.jsx'
+import { ChevronRight, CloseIcon, NavBack, PhoneIcon, SparkleIcon } from './NavIcons.jsx'
 import './current.css'
 
 // Bedside current view: Home C, minimal and low-light, read from the parent chair, in either of
@@ -47,6 +47,7 @@ export function CurrentView({ onSky }) {
   const d = today[kind]
   const onSub = page !== 'home' && page !== 'galaxy' && page !== 'discharge' && !night // a page with Back
   const onC = !night && page === 'home' && (chapter === 'day' || chapter === 'sky')
+  const skyOpen = !night && (page === 'galaxy' || zoom === 'out') // her sky is open, or opening
   // Today becomes a star: the day retells itself. Its moments lift off the arc in order, each with a few
   // words, and drift to where her sky keeps today's star; the family moment joins last. Then her sky
   // fades in around that star. Tap to skip. Coming back, the sky fades away and the day returns.
@@ -178,11 +179,11 @@ export function CurrentView({ onSky }) {
             </div>
           )}
           {/* back to today lives top-left with every other "back" (see NavBack) */}
-          {onC && (
+          {/* "Mila's stars" opens her sky; in the same place it becomes "Close", which brings you back.
+              One element on both pages, so it morphs instead of disappearing and reappearing. */}
+          {(onC || skyOpen) && (
             <div className="cv-actions-left">
-              <button type="button" className="nav-btn cv-lookup-btn" onClick={zoomOut}>
-                <LookUpIcon /><span>Mila&apos;s stars</span>
-              </button>
+              <SkyToggle open={skyOpen} busy={zoom === 'out'} onOpen={zoomOut} onClose={() => setSkyExit((n) => n + 1)} />
             </div>
           )}
           {onC && (
@@ -436,6 +437,26 @@ function LookUpIcon() {
       {[[3, 20], [10, 14], [16, 17], [23, 9]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.6" />)}
       <path className="cv-lookup-today" d="M30 0.8L31 3L33.2 4L31 5L30 7.2L29 5L26.8 4L29 3Z" />
     </svg>
+  )
+}
+
+// The button that opens her sky and, once it's open, closes it again from the same spot.
+// Icon and label cross-fade; the width animates between the two measured widths.
+function SkyToggle({ open, busy, onOpen, onClose }) {
+  const ref = useRef(null)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const [a, b] = el.querySelectorAll('.cv-skyt-label > span')
+    el.style.setProperty('--wa', `${a.scrollWidth}px`)
+    el.style.setProperty('--wb', `${b.scrollWidth}px`)
+  }, [])
+  return (
+    <button ref={ref} type="button" className={`nav-btn cv-skyt ${open ? 'is-open' : ''}`} aria-disabled={busy || undefined}
+      aria-label={open ? "Close Mila's stars" : "Mila's stars"} onClick={busy ? undefined : open ? onClose : onOpen}>
+      <span className="cv-skyt-ic" aria-hidden="true"><LookUpIcon /><CloseIcon /></span>
+      <span className="cv-skyt-label" aria-hidden="true"><span>Mila&apos;s stars</span><span>Close</span></span>
+    </button>
   )
 }
 

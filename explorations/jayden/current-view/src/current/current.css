@@ -1716,3 +1716,33 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 
 /* week: day chips */
 .cv-page .cv-gpanel-days { margin-top: 0; gap: 6px; }
+
+/* ---- "Mila's stars" ⇄ "Close": one button, same place, morphs as her sky opens and closes ---- */
+.cv-page .cv-skyt { gap: calc(var(--ic) * .58); padding-left: calc(var(--nav-px) - 2px); }
+.cv-skyt-ic { position: relative; flex: none; height: var(--ic); width: calc(var(--ic) * 1.48); transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-skyt.is-open .cv-skyt-ic { width: calc(var(--ic) * .9); }
+.cv-skyt-ic > svg { position: absolute; top: 50%; left: 50%; transition: opacity .35s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-page .cv-skyt-ic .cv-lookup { height: var(--ic); width: auto; transform: translate(-50%, -50%); }
+.cv-page .cv-skyt-ic .nav-ic.is-x { height: calc(var(--ic) * .82); transform: translate(-50%, -50%) rotate(-90deg) scale(.6); opacity: 0; }
+.cv-skyt.is-open .cv-skyt-ic .cv-lookup { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
+.cv-skyt.is-open .cv-skyt-ic .nav-ic.is-x { opacity: 1; transform: translate(-50%, -50%) rotate(0) scale(1); }
+
+.cv-skyt-label { position: relative; display: block; height: 1em; width: var(--wa, auto); overflow: hidden; transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-skyt.is-open .cv-skyt-label { width: var(--wb, auto); }
+.cv-skyt-label > span { position: absolute; left: 0; top: 0; line-height: 1; white-space: nowrap; transition: opacity .3s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-skyt-label > span:last-child { opacity: 0; transform: translateY(40%); }
+.cv-skyt.is-open .cv-skyt-label > span:first-child { opacity: 0; transform: translateY(-40%); }
+.cv-skyt.is-open .cv-skyt-label > span:last-child { opacity: 1; transform: none; }
+.cv-skyt[aria-disabled="true"] { pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .cv-skyt *, .cv-skyt-ic, .cv-skyt-label { transition-duration: .01s !important; } }
+
+/* it stays put while today turns into a star and back; the rest of the footer fades as before */
+.cv-screen.is-forming .cv-actions, .cv-screen.is-unforming .cv-actions { opacity: 1; animation: none; }
+.cv-screen.is-forming .cv-actions > :not(.cv-actions-left) { opacity: 0; transition: opacity .7s ease; }
+.cv-screen.is-unforming .cv-actions > :not(.cv-actions-left) { animation: cv-fade-in .8s ease 2s both; }
+.cv-screen.is-galaxy .cv-actions { z-index: 4; }
+
+/* her sky: the title takes the top-left corner (no breadcrumb at the top level) */
+.cv-page .cv-galaxy.is-galaxy .cv-galaxy-title { top: var(--edge-y); }
+/* pager: bottom centre of the sky area (left of the side panel), clear of Close */
+.cv-page .nav-pager { left: calc((100% - min(380px, 36%) - var(--edge-x)) / 2); transform: translateX(-50%); }

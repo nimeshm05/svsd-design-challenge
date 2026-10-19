@@ -12,6 +12,10 @@ export function ChevronRight() {
   return <svg {...svg('-1 -1 8 14', 'is-chev is-right')}><path d="M0 0l6 6-6 6" /></svg>
 }
 
+export function CloseIcon() {
+  return <svg {...svg('-1 -1 12 12', 'is-x')}><path d="M0 0l10 10M10 0 0 10" /></svg>
+}
+
 export function PhoneIcon() {
   return (
     <svg {...svg('4 3.6 16 16')}>

@@ -787,7 +787,6 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   const day = view.level === 'day' ? dayDetail(view.d) : null
   const wOf = (d) => stay.days[d - 1].week
   const crumbs = [
-    { label: 'Today', go: goToday },
     { label: "Mila's stars", go: view.level === 'galaxy' ? null : goGalaxy },
     ...(view.level === 'week' || view.level === 'day' ? [{ label: `Week ${view.level === 'week' ? view.w : wOf(view.d)}`, go: view.level === 'day' ? () => goWeek(wOf(view.d)) : null }] : []),
     ...(view.level === 'day' ? [{ label: `Day ${view.d}`, go: null }] : []),
@@ -894,10 +893,11 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
       {view.level === 'week' && landed && <WeekPanel w={view.w} onDay={goDay} />}
       {view.level === 'day' && landed && <DayPanel day={day} sel={sel} onPick={setSel} />}
 
-      {/* Where you are, top-left: a breadcrumb. Tap any earlier step to go up a level.
+      {/* Where you are, top-left (in a week or a day): a breadcrumb. Tap an earlier step to go up.
+          Leaving her sky is the Close button, bottom-left, where "Mila's stars" was.
           Slashes, not chevrons, so it never reads as "previous / next". */}
-      <div className="cv-galaxy-nav" hidden={view.level === 'today' || story}>
-        <nav className="nav-crumbs" aria-label="Where you are">
+      <div className="cv-galaxy-nav" hidden={view.level === 'today' || story || (view.level === 'galaxy' && !panned)}>
+        {view.level !== 'galaxy' && <nav className="nav-crumbs" aria-label="Where you are">
           <ol>
             {crumbs.map((c, i) => (
               <li key={c.label}>
@@ -908,11 +908,11 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
               </li>
             ))}
           </ol>
-        </nav>
+        </nav>}
         {panned && <button type="button" className="nav-btn" onClick={recenter}><CenterIcon /><span>Center</span></button>}
       </div>
 
-      {/* Moving sideways, bottom-left: the day or week before and after, each named. */}
+      {/* Moving sideways, bottom centre of the sky: the day or week before and after, each named. */}
       {(view.level === 'week' || view.level === 'day') && !story && (
         <nav className="nav-pager" aria-label={view.level === 'week' ? 'Other weeks' : 'Other days'}>
           <button type="button" className="nav-btn nav-pager-prev" disabled={!prev} onClick={prev?.go}>

@@ -28,3 +28,13 @@
 - **Sideways = a named pager, bottom-left:** "‹ Day 11 · Day 13 ›" (or weeks). Each side names its destination; the day before today reads "Today ›"; at an end, that side is dimmed.
 
 **Rejected:** different icons on the same row (e.g. an up-arrow for back). Still three similar controls in one place; position and form together make the difference unmistakable.
+
+## Update: "Mila's stars" becomes "Close"
+
+**Chose:** The button that opens her sky (bottom-left on Today) is the same button that closes it. As her sky opens it morphs in place: the mini-sky icon shrinks out as an ✕ rotates in, the label cross-fades from "Mila's stars" to "Close", and the width animates between the two. Closing reverses it.
+
+**Consequences:**
+- Leaving her sky is always bottom-left, at every level (galaxy, week, day), so the breadcrumb no longer needs "Today". It starts at "Mila's stars" and appears only inside a week or day; at the top level the big "Mila's stars" title takes that corner.
+- The week/day pager moved to the bottom centre of the sky area, clear of Close.
+
+**Why:** The thing you tapped to go somewhere is the thing you tap to come back, in the same spot. Nothing to search for, and the transition explains itself.
