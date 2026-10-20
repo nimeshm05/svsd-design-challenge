@@ -276,7 +276,7 @@ function Finale({ stage }) {
           ))}
         </g>
       </svg>
-      <div className="fin-brand"><StarGlyph size={58} color="#FFF8E6" /><b>Constellate</b><span>Her story, one day at a time.</span></div>
+      <div className="fin-brand"><StarGlyph size={58} color="#FFF8E6" /><b>Constellate</b><span>Every baby’s story, one day at a time.</span></div>
     </div>
   )
 }
@@ -766,7 +766,7 @@ export function DemoFilm({ active, thumb }) {
       <div className="dfilm-close" aria-hidden={!v.close}>
         {/* her days, as a sky: one small star each, scattered, lighting one after another */}
         <div className="dfilm-field">{FIELD.map((f, k) => <i key={k} style={{ '--k': k, left: `${f[0]}%`, top: `${f[1]}%`, '--z': f[2], '--tw': `${f[3]}s` }} />)}</div>
-        <p className="dfilm-c1">Her story, one day at a time.</p>
+        <p className="dfilm-c1">Every baby’s story, one day at a time.</p>
         <p className="dfilm-c2">Every star is <mark className="is-cream">hers to keep</mark>.</p>
         <div className="dfilm-c3"><StarGlyph size={46} color="#FFF8E6" /><span>Constellate</span></div>
       </div>
