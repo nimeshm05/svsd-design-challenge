@@ -121,7 +121,7 @@ const CLIPS = {
   mila: { src: './clips/still-mila.webp', until: 99, rate: 1 }, // Mila, asleep in her incubator: the film opens on her
   explain: { src: './clips/still-explain.webp', until: 99, rate: 1 }, // her doctor and nurse, explaining everything at once
   dad: { src: './clips/still-dad.webp', until: 4.3, rate: 0.55 }, // forward, cut before it changes angle (7.8 s)
-  home: { src: './clips/still-home.webp', from: 1.4, until: 7.9, rate: 1 }, // buckling her car seat (6.5 s)
+  home: { src: './clips/still-goinghome.webp', from: 1.4, until: 7.9, rate: 1 }, // buckling her car seat (6.5 s)
   mom: { src: './clips/still-mom.webp', until: 4.35, rate: 0.68 }, // (6.4 s)
   daily: { src: './clips/still-daily.webp', until: 4.6, rate: 0.78 }, // (5.9 s)
   momSky: { src: './clips/still-sky.webp', until: 7.95, rate: 0.75 }, // from behind the screen: a tap, then a pinch (10.6 s)
@@ -579,8 +579,7 @@ export function DemoFilm({ active, thumb }) {
       await chapter('story', 0.2); set({ pad: true, foot: null }); await wait(0.6)
       await tap('.fd-next'); lit('.fd-words', 1.15); await line('One device at a time, lit on her body, in one plain sentence.', 'comprehension')
       await tap('.fd-next'); lit('.fd-words', 1.15); await wait(1.6)
-      lit(null); for (let n = 0; n < 5 && find('.fd-next'); n++) { await flick('.fd-next'); await wait(0.45) }
-      lit('.fd-words', 1.15); await line('And at the end, what he most needed to hear: you can talk to her.')
+      lit(null)
       await reason('Nurses told us that telling parents everything at once is too much to take in. So the screen sets the pace: one thing at a time.')
 
       // ── Her day
@@ -641,13 +640,20 @@ export function DemoFilm({ active, thumb }) {
       lit((d) => d.querySelector('.cv-gpanel'), 1.1); await line('Day 6: the first time Dad held her, kept as it happened.', 'connection')
       await reason('Progress without charts or percentiles, never comparing her to anyone. Every day counts, the hard ones too.')
       look('center')
-      await show('home', 0.6); feat('Going home', 'connection'); await line('When she goes home, her screen retells her whole stay, star by star,')
+
+      // going home: Mom carries her out; her screen retells her stay and its sky becomes a mobile;
+      // then the camera pushes into that mobile on the screen, and it becomes the real one over her crib
+      feat('Going home', 'connection'); set({ pad: false, foot: { id: 'home', at: R.clock } }); await show('home', 0.6)
+      await line('Three months later, Mila is going home.')
+      cap(null); set({ pad: true, foot: null }); await wait(0.8)
+      await line('Before they leave, her screen retells her whole stay, star by star,')
       for (let n = 0; n < 16 && find('.cv-story'); n++) { await flick('.cv-story'); await wait(0.4) }
       await line('and her sky becomes a mobile.')
       await tap('.cv-takehome-btn'); await line('One they get to take home.')
-      cap(null); set({ foot: { id: 'home', at: R.clock } }); await wait(1)
-      set({ pad: false }); await line('Mila is going home, and her sky goes with her.')
-      set({ foot: { id: 'mobile', at: R.clock } }); await wait(4)
+      cap(null); through(); await wait(1.6) // into the mobile on her screen...
+      set({ foot: { id: 'mobile', at: R.clock } }); await wait(1.2) // ...and it's the real one, over her crib
+      await line('Her sky goes home with her.')
+      out(); await wait(0.4)
       cap(null); feat(null); set({ tint: null, foot: null })
 
       // ── If she doesn't go home
@@ -709,7 +715,7 @@ export function DemoFilm({ active, thumb }) {
     return () => { delete window.__filmNav }
   }, [active, thumb])
   return (
-    <div ref={host} className={`dfilm ${v.lift ? 'has-lift' : ''} ${v.seeking ? 'is-seeking' : ''} ${playing ? '' : 'is-paused'} look-${v.look} ${v.tint ? `tint-${v.tint}` : ''} ${v.pad ? 'is-pad' : ''} ${side ? `has-call ${side}` : ''} ${v.call?.over ? 'has-over' : ''} ${v.close ? `is-close is-c${v.close}` : ''}`}>
+    <div ref={host} className={`dfilm ${v.ask ? 'has-ask' : ''} ${v.lift ? 'has-lift' : ''} ${v.seeking ? 'is-seeking' : ''} ${playing ? '' : 'is-paused'} look-${v.look} ${v.tint ? `tint-${v.tint}` : ''} ${v.pad ? 'is-pad' : ''} ${side ? `has-call ${side}` : ''} ${v.call?.over ? 'has-over' : ''} ${v.close ? `is-close is-c${v.close}` : ''}`}>
       <div className="dfilm-bg" aria-hidden="true"><i className="w-connection" /><i className="w-comprehension" /><i className="w-awareness" /><i className="w-night" /><i className="w-dawn" /></div>
       <div className="dfilm-cam" style={{ transform: cam, '--s': scale }}>
         <Monitor screen={screen}>

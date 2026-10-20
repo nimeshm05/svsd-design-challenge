@@ -1874,3 +1874,17 @@ body:has(.panel) { overflow: auto; }
 .ov-steps span { font-size: clamp(14px, 1.2vw, 16px); line-height: 1.5; color: var(--text-2); }
 
 .foot.foot-mila { animation: fade 1.6s ease both; } /* the film eases in on Mila */
+
+/* problem cards without a box: the picture dims and softens behind the words instead */
+.dfilm-ask { background: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 0; border-radius: 0; text-shadow: 0 2px 30px rgba(0, 0, 0, .95), 0 0 2px rgba(0, 0, 0, .6); }
+.dfilm-ask em { text-shadow: 0 1px 16px rgba(0, 0, 0, .95); color: rgba(246, 238, 219, .82); }
+.dfilm .foot-wrap, .dfilm .dfilm-cam { transition: filter .9s ease, opacity 1s ease; }
+.dfilm.has-ask .foot-wrap, .dfilm.has-ask .dfilm-cam { filter: brightness(.32) blur(3px) saturate(.85); }
+.dfilm-when { text-shadow: 0 1px 14px rgba(0, 0, 0, .95); }
+/* captions over the drawings: a soft shadow band, not a box */
+.dfilm-cap { text-shadow: 0 2px 22px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .7); }
+/* "why we built it this way": no box either; a soft band along the bottom keeps every caption readable */
+.dfilm-why { background: none; border: 0; box-shadow: none; padding: 0; text-align: center; text-shadow: 0 2px 24px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .7); }
+.dfilm-why span { color: var(--cream); opacity: .9; }
+.dfilm::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 34%; z-index: 13; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(4, 4, 8, .45) 45%, rgba(4, 4, 8, .82)); }
