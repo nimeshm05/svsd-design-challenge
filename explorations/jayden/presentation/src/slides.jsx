@@ -695,7 +695,7 @@ const CONSTRAINTS = [
   { who: 'Baby', c: 'Sensitive to light, needs quiet rest', r: 'Dark mode, silent, angled away from the incubator',
     before: { src: './shots/baby previous.png', caption: 'Bright colors from the screen can light up the room', alt: 'An earlier version of the day screen: a large glowing pink-and-white star with long light flares fills most of the screen, beside a panel with the baby’s weight, breathing and time with family.' },
     after: { src: './shots/baby new.png', caption: 'Screen is dark by default to reduce residual light', alt: 'The new default screen: almost entirely black, with a small dim star, the time 1:12 a.m. in soft gray, “Next care 3:00 a.m. · Mila is resting,” and a Care team button.' } },
-  { who: 'Nurse', c: '“You have to be quick… life or death.”', r: 'Zero new tasks; content comes from charting',
+  { who: 'Nurse', c: '“You have to be quick… life or death.” (retired NICU nurse)', r: 'Zero new tasks; content comes from charting',
     before: { src: './shots/nurse previous.webp', caption: 'Nurses would have to write a new summary', alt: 'An early design idea of a baby dashboard' },
     after: { src: './shots/nurse new.png', caption: 'Nurse charts are incorporated into day overview', alt: '' } },
   { who: 'Family', c: 'Not every baby goes home', r: 'Nothing assumes an outcome; sensitive news only after a clinician talks with the family',
@@ -1054,11 +1054,11 @@ function Close() {
 // Niko's real story, from his family's public fundraiser and our interview with his mom, Lauren. Only what we
 // know: anything we haven't confirmed with Lauren stays out. Quotes are Lauren's, from our interview with her.
 const JOURNEY = [
-  { when: 'Nov 14, 2025', title: 'An emergency birth', p: 'connection', img: './shots/niko-1.webp', what: 'Lauren has an emergency C-section. Niko arrives a little over two months early.', q: 'I didn’t have the luxury of having my baby right away and putting him on my chest.', who: 'Lauren, Niko’s mom' },
-  { when: 'The first days', title: 'Two hospitals', p: 'connection', img: './shots/niko-2.webp', what: 'Niko is born at one hospital, but his care is in another hospital’s NICU. From the start, his family’s life moves there.', q: null },
-  { when: 'His diagnoses', title: 'A new language', p: 'comprehension', img: './shots/niko-3.webp', what: 'Niko has Tetralogy of Fallot, a rare heart condition, and esophageal atresia: his esophagus isn’t connected to his stomach. Two conditions, two specialist teams.', q: '[Medical terminology] is a new language.', who: 'Lauren, Niko’s mom' },
-  { when: 'Every day', title: 'Round-the-clock care', p: 'awareness', img: './shots/niko-4.webp', what: 'Life is centered on the NICU. Scott and Lauren take time away from work to be by his side, day after day.', q: 'In the ICU, time just… doesn’t exist. It’s just a mash of time.', who: 'Lauren, Niko’s mom' },
-  { when: 'Outside the unit', title: 'The weight of it all', p: 'awareness', img: './shots/niko-5.webp', what: 'Daily costs, and the worry of keeping their health insurance, follow them home. They can’t always be at his bedside.', q: null },
+  { when: 'Nov 14, 2025', title: 'An emergency birth', felt: 'Lauren is recovering from major surgery, and still can’t hold her son.', p: 'connection', img: './shots/niko-1.webp', what: 'Lauren has an emergency C-section. Niko arrives a little over two months early.', q: 'I didn’t have the luxury of having my baby right away and putting him on my chest.', who: 'Lauren, Niko’s mom' },
+  { when: 'The first days', title: 'Two hospitals', felt: 'Healing from surgery in one place, while her newborn is cared for in another.', p: 'connection', img: './shots/niko-2.webp', what: 'Niko is born at one hospital, but his care is in another hospital’s NICU. From the start, his family’s life moves there.', q: 'They’re hooked up to leads, they’re hooked up to pulse ox… ensuring that these itty-bitty babies are gonna survive.', who: 'Lauren, Niko’s mom' },
+  { when: 'His diagnoses', title: 'A new language', felt: 'Two rare conditions, explained in words they’ve never heard, while they’re exhausted and scared.', p: 'comprehension', img: './shots/niko-3.webp', what: 'Niko has Tetralogy of Fallot, a rare heart condition, and esophageal atresia: his esophagus isn’t connected to his stomach. Two conditions, two specialist teams.', q: 'Medical terminology is a new language. Ask all the dumb questions, because it’s most important to understand your child’s care.', who: 'Lauren, Niko’s mom' },
+  { when: 'Every day', title: 'Round-the-clock care', felt: 'Long days and nights at his bedside, until the hours blur together.', p: 'awareness', img: './shots/niko-4.webp', what: 'Life is centered on the NICU. Scott and Lauren take time away from work to be by his side, day after day.', q: 'How is it already 6 p.m.? How is it already time for the shift change? You have no sense of time at all.', who: 'Lauren, Niko’s mom' },
+  { when: 'Outside the unit', title: 'The weight of it all', felt: 'Bills, work, insurance, and the guilt of every hour they can’t be with him.', p: 'awareness', img: './shots/niko-5.webp', what: 'Daily costs, and the worry of keeping their health insurance, follow them home. They can’t always be at his bedside.', q: 'Where the mom and dad are having to work full-time… the NICU experience itself would be almost impossible.', who: 'Lauren, Niko’s mom' },
 ]
 function Journey({ step = 0 }) {
   // like a page in a picture book: the drawing whole, framed, on the right; the words on the left; the timeline below
@@ -1070,6 +1070,7 @@ function Journey({ step = 0 }) {
           <span className="nj-k">Niko&apos;s NICU journey</span>
           <span className="nj-date">{m.when}</span>
           <h2 className="nj-title">{m.title}</h2>
+          {m.felt && <p className="nj-felt">{m.felt}</p>}
           <p className="nj-what">{m.what}</p>
           {m.q && <blockquote className="nj-q"><p>&ldquo;{m.q}&rdquo;</p><cite>{m.who}</cite></blockquote>}
         </div>
@@ -1250,12 +1251,33 @@ function Overview({ step = 0 }) {
   )
 }
 
+/* ---------- v2: in their words, one voice at a time, before we name what we found ---------- */
+const VOICES = [
+  ['Waking up every day and watching your child fight for their life… It’s this really terrible thing, but if you think about it, you are also celebrating.', 'Lauren, Niko’s mom, current NICU parent'],
+  ['When you first go into the NICU… they have wires, they’re pulling blood, they’re doing all of these things. So it’s really hard to bond with your baby.', 'Former PICU parent'],
+  ['The most overwhelming part was not understanding all of the different roles and all the different machines that were involved.', 'Former PICU parent'],
+  ['We felt so whiplashed, because we would be told one thing by one team. And then the next day it would be completely different.', 'Lauren, Niko’s mom'],
+  ['We tell them everything, but sometimes it’s too much. They don’t understand.', 'Retired NICU nurse, 35 years'],
+  ['One of the hardest things about being in the hospital is that your life does not stop outside the hospital.', 'Former PICU parent'],
+]
+function Voices({ step = 0 }) {
+  const i = Math.min(step, VOICES.length - 1), [q, who] = VOICES[i]
+  return (
+    <div className="center vo">
+      <R d={0} className="k">In their words</R>
+      <blockquote className="vo-q" key={i}><p>&ldquo;{q}&rdquo;</p><cite>{who}</cite></blockquote>
+      <ol className="vo-dots" aria-hidden="true">{VOICES.map((_, k) => <li key={k} className={k === i ? 'is-on' : k < i ? 'is-past' : ''} />)}</ol>
+    </div>
+  )
+}
+
 export const SLIDES = [
   { id: 'title', section: 'Constellate', planet: true, View: Title },
   { id: 'niko', section: 'Niko', View: Niko },
   { id: 'nicu', section: 'The NICU', planet: true, View: define({ k: 'The NICU', word: 'Neonatal Intensive Care Unit', say: '“nick-you”', children: <>The hospital unit where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
   { id: 'journey', section: '01 · Niko’s journey', planet: true, steps: JOURNEY.length, View: Journey },
   { id: 'asked', section: '02 · Research', planet: true, steps: 3, View: Asked },
+  { id: 'voices', section: '02 · Research', steps: VOICES.length, View: Voices },
   { id: 'heard', section: '02 · Research', View: Heard },
   { id: 'wall', section: '02 · Research', View: Wall },
   { id: 'pillars', section: '03 · The problem', planet: true, tint: 'all', steps: 3, View: Pillars },

@@ -587,7 +587,7 @@ export function DemoFilm({ active, thumb }) {
       await scene({ when: 'Day 1 · 4:20 a.m.', name: 'Her first screen', p: 'connection', q: 'How can I feel close to her before I can hold her?', today: 'A wall of monitors and numbers, and no time to explain.', still: 'dad' })
       set({ pad: true, foot: null }); await wait(1)
       lit('.fd-star', 1.18); await line('Her screen opens with her: her name, and how small she is, in something he can picture.', 'connection')
-      await reason('In the first hours, parents need to meet their baby before her data. So we led with her, not her numbers.')
+      await reason('In the first hours, parents need to meet their baby before her data. So the words are hopeful and warm, and she’s a person here, not a patient.')
 
       // ── What's on her
       mark('What’s on her')
@@ -596,7 +596,7 @@ export function DemoFilm({ active, thumb }) {
       await tap('.fd-next'); lit('.fd-words', 1.15); await line('One device at a time, lit on her body, in one plain sentence.', 'comprehension')
       await tap('.fd-next'); lit('.fd-words', 1.15); await wait(1.6)
       lit(null)
-      await reason('Nurses told us that telling parents everything at once is too much to take in. So the screen sets the pace: one thing at a time.')
+      await reason('Parents can’t miss anything, it’s their child’s life, but everything at once is overwhelming. So it’s complete, but one thing at a time.')
 
       // ── Her day
       mark('Her day')
@@ -605,7 +605,7 @@ export function DemoFilm({ active, thumb }) {
       set({ pad: true, foot: null }); await wait(0.8)
       await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.4)
       lit('.cv-cap', 1.2); await line('Her day, hour by hour, with the moments her nurses noted, like when Mom came in.', 'connection')
-      await reason('Nurses can’t take on new work. So everything here comes from charting they already do.')
+      await reason('Parents told us they only notice time passing at shift change. So the time is always on screen, and her day is broken down hour by hour, from notes nurses already write.')
       await drag('.cv-arc-mark[data-kind="family"]', '.cv-arc-now', () => post({ type: 'mila:show', what: 'today' }))
 
       // ── Words in a tap
@@ -614,7 +614,7 @@ export function DemoFilm({ active, thumb }) {
       set({ pad: true, foot: null }); await wait(0.8)
       await tap('.cv-term-btn'); await wait(0.4)
       lit('.cv-pop', 1.22); await line('Warm words first. One tap for the real word, shown on her own body.', 'comprehension')
-      await reason('Parents want to learn the language, not be shielded from it. So we kept the real words, a tap away.')
+      await reason('“Ask all the dumb questions,” Lauren told us. So we kept the real words, a tap away, for parents to learn the language at their own pace.')
       await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })))
 
       // ── What's ahead
@@ -646,7 +646,7 @@ export function DemoFilm({ active, thumb }) {
       const six = (d) => d.querySelector('.cv-gday[aria-label^="Day 6"]') ?? d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]')
       await tap(six); await wait(0.5)
       lit((d) => d.querySelector('.cv-gpanel'), 1.1); await line('Day 6: the first time Dad held her, kept as it happened.', 'connection')
-      await reason('Progress without charts or percentiles, never comparing her to anyone. Every day counts, the hard ones too.')
+      await reason('One mom told us about the day her son finally pooped: “beautiful in its own way.” So firsts become planets, celebrated, and progress never compares her to anyone.')
       look('center')
 
       // going home: Mom carries her out; her screen retells her stay and its sky becomes a mobile;
@@ -679,7 +679,7 @@ export function DemoFilm({ active, thumb }) {
       await line('When they’re ready, her sky becomes a place to remember her, a page at a time.')
       for (let n = 0; n < 6 && find('.rem-continue'); n++) { await flick('.rem-continue'); await wait(0.9) }
       await line('Loved, every day.')
-      await reason('Nothing assumes an outcome. Her kept sky opens only when the family chooses.')
+      await reason('Constellations show progress, but they’re also a memory, whatever the outcome. Her kept sky opens only when the family chooses.')
       cap(null); feat(null); set({ pad: false }); await wait(1.2)
 
       // ── closing
