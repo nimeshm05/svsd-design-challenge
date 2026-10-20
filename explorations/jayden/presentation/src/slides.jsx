@@ -1189,6 +1189,16 @@ const PillarAsk = (p) => function PillarAskView() {
   )
 }
 
+// after the competitive analysis, what it showed, in the pillar slides' design
+function Gap() {
+  return (
+    <div className="center pa is-gap">
+      <R d={0} className="pa-k"><Icon name="star" size={22} color="var(--cream)" />The gap<span>What we found</span></R>
+      <R d={1} as="p" className="pa-q">Every NICU tool shows parents data, but none tell their baby’s story in a way that speaks to how parents feel.</R>
+    </div>
+  )
+}
+
 /* ---------- v2: Mila, our persona, before the film ---------- */
 function Mila() {
   return (
@@ -1293,6 +1303,7 @@ export const SLIDES = [
   { id: 'q-comprehension', section: '03 · The problem', tint: 'all', View: PillarAsk('comprehension') },
   { id: 'q-awareness', section: '03 · The problem', tint: 'all', View: PillarAsk('awareness') },
   { id: 'compete', section: '03 · The problem', tint: 'all', View: Compete },
+  { id: 'gap', section: '03 · The problem', tint: 'all', View: Gap },
   { id: 'hmw', section: '03 · The problem', tint: 'all', steps: 4, View: HMW },
   { id: 'brainstorm', section: '03 · Ideation', planet: true, View: Brainstorm },
   { id: 'mom', section: '04 · Modality', planet: true, View: Mom },

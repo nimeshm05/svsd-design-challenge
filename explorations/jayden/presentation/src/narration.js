@@ -24,6 +24,7 @@ export const NARRATION = {
   'q-comprehension': 'Comprehension sounds like: what is all of this on my baby? And what does that word mean?',
   'q-awareness': 'And awareness: what’s next, and who is caring for my baby tonight? How are they doing right now?',
   compete: 'Other tools help with logistics, photos or journaling. None of them turn a baby’s chart into something parents can follow.',
+  gap: 'Every NICU tool shows parents data, but none tell their baby’s story in a way that speaks to how parents feel.',
   hmw: ['So we asked: how might we help parents', 'feel connected to their baby,', 'understand what’s happening,', 'and stay aware of what’s ahead?'],
   brainstorm: 'We brainstormed dozens of ideas across all three needs.',
   insight: 'Within those limits, one thing kept coming back: everything parents need is already in their baby’s chart. It just never reaches them in a form they can use.',
