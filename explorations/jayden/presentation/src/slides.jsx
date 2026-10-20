@@ -1304,7 +1304,6 @@ export const SLIDES = [
   { id: 'overview', section: '06 · Constellate', steps: 3, feature: ['sky', 'openWeek', 'day6'], padSide: true, View: Overview },
   { id: 'demo', section: '07 · One stay, question by question', planet: true, bare: true, View: DemoFilm },
   { id: 'recap', section: '07 · Constellate', View: Recap },
-  { id: 'f-live', section: '08 · Try it', feature: 'today', View: Feature({ id: 'f-live', show: 'today', k: 'Try it', p: 'connection', title: <>Her bedside, live</>, text: 'The real prototype. Tap anywhere.' }) },
   { id: 'close', section: 'Constellate', View: Close },
 ]
 
