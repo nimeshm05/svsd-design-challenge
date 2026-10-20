@@ -1487,3 +1487,28 @@ body:has(.panel) { overflow: auto; }
    Its own play/scrub bar stays hidden until the pointer rests on it. */
 .dfilm .dfc { opacity: 0; transition: opacity .4s ease; }
 .dfilm .dfc:hover, .dfilm .dfc:focus-within { opacity: 1; }
+
+/* her star view, seen from behind the glass over Mom's clip: mirrored, faint, lit like a screen */
+.dfilm-mirror { position: absolute; inset: 0; z-index: 9; pointer-events: none; overflow: hidden; }
+.dfilm-mirror-box { position: absolute; inset: 0; opacity: 0; mix-blend-mode: screen; will-change: transform, opacity; }
+.dfilm-mirror-flip { position: absolute; inset: 0; transform: scaleX(-1); filter: blur(.4px) saturate(1.1); }
+.dfilm-mirror-flip iframe { width: 100%; height: 100%; border: 0; background: transparent; }
+.dfilm-mirror-ring { position: absolute; width: 120px; height: 120px; border-radius: 50%; opacity: 0;
+  border: 1.5px solid rgba(255, 248, 230, .9); box-shadow: 0 0 24px rgba(243, 227, 181, .55), inset 0 0 18px rgba(243, 227, 181, .35); }
+
+/* the product names itself, over her sky: the one title card that holds longest and glows */
+.big.is-hero { animation: big-in 1s ease both; gap: 16px; }
+.big.is-hero .big-art { width: min(560px, 50vw); }
+.big.is-hero .big-t { font-size: clamp(64px, 8vw, 128px); color: var(--cream); letter-spacing: -.025em; text-shadow: 0 0 90px rgba(243, 227, 181, .35); }
+.big.is-hero .big-sub { font-family: var(--display); font-weight: 300; font-size: clamp(20px, 1.9vw, 28px); animation-delay: 1.4s; }
+
+/* every clip just fades in; leaving is the crossfade's job (.foot-wrap), so no clip blinks out on its own */
+.foot.foot-dad, .foot.foot-mom, .foot.foot-daily, .foot.foot-home, .foot.foot-mobile, .foot.foot-momSky { animation: fade .8s ease both; }
+.foot-momSky .foot-box { animation: none; width: max(100%, calc(100vh * 16 / 9)); left: 50%; border-radius: 0; box-shadow: none; }
+
+/* where a pain point is answered: a parent's own words, quietly above; the pillar and what it became, on the label */
+.dfilm-capq { display: block; margin: 0 auto 12px; max-width: 46ch; quotes: "“" "”"; font-family: var(--display); font-style: italic; font-weight: 300; font-size: .72em; line-height: 1.4; color: rgba(246, 238, 219, .72); }
+.dfilm-capq span { display: block; margin-top: 4px; font-family: var(--mono); font-style: normal; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(246, 238, 219, .45); }
+.dfilm-capq span::before { content: "— "; }
+.dfilm-capk em { font-style: normal; text-transform: none; letter-spacing: .02em; font-family: var(--sans, inherit); color: rgba(246, 238, 219, .7); }
+.dfilm-capk em::before { content: "·"; margin: 0 8px 0 2px; color: rgba(246, 238, 219, .4); }
