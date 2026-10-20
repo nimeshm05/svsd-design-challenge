@@ -42,9 +42,9 @@ export const NARRATION = {
   ],
   modality: 'Next, how would parents reach it? We designed for touch first, dim by default, with a night mode for the hours parents spend there in the dark.',
   overview: [
-    'So we built Constellate: a bedside screen that turns her chart into something parents can follow. One idea runs through it: every day becomes a star, shaped by what her nurses already chart.',
-    'Every week becomes a constellation, so parents can see her whole stay at a glance.',
-    'And her firsts become planets. Let’s walk through it with Mila, a baby built from the families we met.',
+    'So we built Constellate, to make her chart easy to take in. A day of charting, her care, her changes, the plan, the moments her family was there, becomes one star.',
+    'A week becomes a constellation, so the days stop blurring together.',
+    'And what matters is lit up: her firsts are planets. Let’s walk through it with Mila, a baby built from the families we met.',
   ],
   stars: [
     'One idea runs through it. Every day of her stay becomes a star, shaped by what her nurses already chart.',

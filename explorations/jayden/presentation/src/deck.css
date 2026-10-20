@@ -1872,3 +1872,10 @@ body:has(.panel) { overflow: auto; }
 .ov-steps b { font-family: var(--display); font-weight: 400; font-size: clamp(20px, 1.9vw, 26px); color: var(--text); }
 .ov-steps li.is-on b { color: var(--cream); }
 .ov-steps span { font-size: clamp(14px, 1.2vw, 16px); line-height: 1.5; color: var(--text-2); }
+
+/* slide 19: a day of charting → one star */
+.ov-digest { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 2px 0 4px; }
+.ov-digest span { padding: 5px 11px; border-radius: 999px; font-size: 13px; color: var(--text-2); background: #0d0d11; border: 1px solid color-mix(in srgb, var(--cream) 14%, transparent); }
+.ov-digest i { position: relative; width: 34px; height: 1px; margin: 0 4px; background: color-mix(in srgb, var(--cream) 50%, transparent); }
+.ov-digest i::after { content: ""; position: absolute; right: -1px; top: -3.5px; width: 7px; height: 7px; border-top: 1px solid var(--cream); border-right: 1px solid var(--cream); transform: rotate(45deg); }
+.ov-digest b { display: inline-flex; align-items: center; gap: 7px; font-family: var(--display); font-weight: 400; font-size: 18px; color: #FFF8E6; }

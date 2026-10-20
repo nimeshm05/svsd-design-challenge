@@ -1229,16 +1229,22 @@ function Recap() {
 
 /* ---------- v2: what Constellate is, beside the product itself ---------- */
 const CONCEPT = [
-  ['Every day becomes a star.', 'Shaped by what her nurses already chart: her care, her changes, the moments her family was there.'],
-  ['Every week, a constellation.', 'Her whole stay at a glance, so the days stop blurring together.'],
-  ['Her firsts are planets.', 'First touch, first hold, first bottle. The hard days stay too: stars never disappear.'],
+  ['A day, in one glance.', 'Hours of charting gather into one star: her care, her changes, the moments her family was there.'],
+  ['A week, in one shape.', 'Each week becomes a constellation, so the days stop blurring together.'],
+  ['What matters, lit up.', 'Her firsts become planets: first touch, first hold, first bottle. Hard days stay too.'],
 ]
+// what goes into one day's star: the pieces parents get today, gathered into one thing to take in
+const DIGEST = ['8 care times', 'a breathing change', 'Dad’s visit']
 function Overview({ step = 0 }) {
-  // what it is, then the idea that runs through it, built a step at a time beside the live screen
   return (
     <div className="ov">
       <R d={0} className="k">Constellate</R>
-      <R d={1} as="h2" className="ov-h">A bedside screen that turns her chart into <L>something parents can follow</L>.</R>
+      <R d={1} as="h2" className="ov-h">Her chart, made <L>easy to take in</L>.</R>
+      <R d={2} className="ov-digest" aria-label="A day of charting becomes one star">
+        {DIGEST.map((x) => <span key={x}>{x}</span>)}
+        <i aria-hidden="true" />
+        <b><StarGlyph size={18} color="#FFF8E6" />one star</b>
+      </R>
       <ol className="ov-steps">
         {CONCEPT.map(([t, d], k) => (
           <li key={t} className={k === step ? 'is-on' : k < step ? 'is-past' : ''}>
@@ -1269,7 +1275,7 @@ export const SLIDES = [
   { id: 'k-open', section: '04 · Constraints', View: KOpen },
   { id: 'constraints', section: '04 · Constraints', steps: CONSTRAINT_STEPS, View: Constraints },
   { id: 'insight', section: '05 · The insight', View: statement({ k: 'The insight', big: true, children: <>Everything parents need is <L>already in her chart</L>. It just never reaches them in a form they can use.</> }) },
-  { id: 'overview', section: '06 · Constellate', planet: true, steps: 3, feature: ['first', 'sky', 'week'], padSide: true, View: Overview },
+  { id: 'overview', section: '06 · Constellate', planet: true, steps: 3, feature: ['sky', 'sky', 'week'], padSide: true, View: Overview },
   { id: 'demo', section: '07 · Her stay, question by question', planet: true, bare: true, View: DemoFilm },
   { id: 'recap', section: '07 · Constellate', View: Recap },
   { id: 'f-live', section: '08 · Try it', feature: 'today', View: Feature({ id: 'f-live', show: 'today', k: 'Try it', p: 'connection', title: <>Her bedside, live</>, text: 'The real prototype. Tap anywhere.' }) },
