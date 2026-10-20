@@ -7,15 +7,15 @@ import { StarGlyph } from './glyphs.jsx'
 // Every slide as a small, finished thumbnail with its number and a one-line label, grouped by chapter.
 // It follows the deck: the slide being shown is outlined, and clicking a thumbnail moves the deck there.
 const LABELS = {
-  title: 'Title', hook: 'Hook: a parent’s quote', both: 'The tension: both things at once',
+  title: 'Title', niko: 'Meet Niko', hook: 'Hook: a parent’s quote', both: 'The tension: both things at once',
   nicu: 'What the NICU is', environment: 'Inside the NICU, in four senses', wall: 'Secondary research: our wall and finding',
   gap: 'The gap: how parents make sense of it', asked: 'So we listened: 4 interviews',
   heard: 'Parents get the pieces, left to put them together', telephone: 'Both sides of the conversation',
   'p-open': 'Our research pointed to three needs', pillars: 'The three pillars (builds)', problem: 'Problem statement', compete: 'Competitive analysis', hmw: 'Opportunity: how might we (builds)',
   principles: 'Each pain point became a principle', brainstorm: 'Brainstorm: ideas over our affinity map', sort: 'Ideas float to their principles', thread: 'What the ideas had in common',
   film: 'Concept film: day → star → sky → planets → her name', 's-open': 'Stars never disappear', system: 'The story layer: design system',
-  'k-open': 'Three people at every bedside', constraints: 'Constraints table', mom: 'A tired mom in a hospital bed', modality: 'Touch, remote or gesture', iterations: 'Previous iterations: where it started',
-  board: 'Storyboard: her stay, six moments', demo: 'Demo film: the product, feature by feature', 'f-live': 'Live prototype, for questions',  'both-close': 'Every day counts (builds)', close: 'Every star is hers to keep',
+  'k-open': 'Three people at every bedside', constraints: 'Constraints table, then each one: before → after (builds)', mom: 'A tired mom in a hospital bed', modality: 'Touch, remote or gesture', iterations: 'Previous iterations: where it started',
+  board: 'Storyboard: her stay, six moments', demo: 'Demo film: the product, feature by feature', 'f-live': 'Live prototype, for questions', 'both-close': 'Niko goes home (builds)', 'every-day': 'Every day counts', close: 'Every star is hers to keep',
 }
 const FEAT_NAMES = { first: 'Her first star', walk: 'What’s on her', today: 'Her day, as an arc', term: 'Medical words in a tap', family: 'Moments you were there for', ahead: 'What’s ahead', night: 'Night view', sky: 'Every day becomes a star', home: 'Going home', not: 'If she doesn’t go home' }
 FEATURES.forEach((f) => { LABELS[f.id] = `${f.k}: ${FEAT_NAMES[f.show]}` })

@@ -78,6 +78,16 @@ function Title() {
   )
 }
 
+// who this is for: one real baby, before any numbers
+function Niko() {
+  return (
+    <div className="center niko">
+      <R d={0} as="h2" className="h">Meet Niko</R>
+      <R d={2}><Shot src="./shots/niko.webp" pan={false} alt="Niko, a tiny baby in the NICU, held up by a nurse in a blue glove. Niko wears oversized red heart-shaped sunglasses, with a feeding tube taped across one cheek, framed by a red cut-out heart." /></R>
+    </div>
+  )
+}
+
 const HOOK = 'Waking up every day and watching your child fight for their life… It’s this really terrible thing, but if you think about it, you are also celebrating.'
 function Hook() {
   const words = HOOK.split(' ')
@@ -94,9 +104,9 @@ function Hook() {
 /* ---------- The NICU ---------- */
 // what our secondary research said about the room itself (8 papers and standards; see README)
 const SENSES = [
-  { k: 'Sound', t: 'Noise is linked to changes in heart rate, breathing and sleep. Alarms are often the loudest sound in the room.' },
+  { k: 'Sound', t: 'Noise is linked to changes in heart rate, breathing and sleep.' },
   { k: 'Light', t: 'Light that cycles between day and night is linked to better weight gain and shorter stays.' },
-  { k: 'Touch', t: 'The baby is too fragile for an ordinary hold. It needs to be held with special techniques and extra protection.' },
+  { k: 'Touch', t: 'The baby needs to be held in specific positions with extra protection.' },
   { k: 'Space', t: 'The incubator isn’t a protective bubble. The room itself can impact the baby’s health.' },
 ]
 function Environment() {
@@ -210,7 +220,7 @@ function Heard() {
     <div className="finding">
       <div className="finding-words">
         <R d={0} className="k">What we found</R>
-        <R d={1} as="p" className="statement-p is-big">Parents get the <L>pieces</L>, and are left to <L>put them together</L>.</R>
+        <R d={1} as="p" className="statement-p is-big">Parents get the <L>pieces</L> but are left to <L>put them together</L>.</R>
       </div>
       <R d={2} className="finding-art"><Puzzle /></R>
     </div>
@@ -559,8 +569,8 @@ function Film({ active, thumb }) {
 
 const FLOW = [
   { p: 'connection', principle: 'Keep parents in their baby’s story, even when apart', feature: 'Mila’s Sky' },
-  { p: 'comprehension', principle: 'Turn care into a story parents can follow', feature: 'Today screen and scheduled summary' },
-  { p: 'awareness', principle: 'Show what’s happening now and what’s ahead', feature: 'Timeline and What’s Next' },
+  { p: 'comprehension', principle: 'Turn care into a cohesive story parents can follow', feature: 'Today screen and scheduled summary' },
+  { p: 'awareness', principle: 'Show what’s happening now and prepare for what’s ahead', feature: 'Timeline and What’s Next' },
 ]
 function Principles() {
   return (
@@ -664,24 +674,133 @@ const Deep = (p) => function DeepView() {
 }
 
 /* ---------- 04 · Constraints ---------- */
+// One row per person or rule at the bedside. A row with `before` and `after` also gets a walkthrough after the
+// table: its For and Constraint lift to the top as a label, then the previous screen, then the iterated one.
+// To fill in a row, edit its `before` / `after` (src: null shows a placeholder frame).
 const CONSTRAINTS = [
-  { who: 'Baby', c: 'Sensitive to light, needs quiet rest', r: 'Dark mode, silent, angled away from the incubator' },
-  { who: 'Nurse', c: '“You have to be quick… life or death.”', r: 'Zero new tasks; content comes from charting' },
-  { who: 'Family', c: 'Not every baby goes home', r: 'Nothing assumes an outcome; sensitive news only after a clinician talks with the family' },
-  { who: 'Privacy', c: 'HIPAA laws', r: 'Resides in the room itself (only authorized personnel); sleep mode shows no important information' },
+  { who: 'Baby', c: 'Sensitive to light, needs quiet rest', r: 'Dark mode, silent, angled away from the incubator',
+    before: { src: './shots/baby previous.png', caption: 'Bright colors from the screen can light up the room', alt: 'An earlier version of the day screen: a large glowing pink-and-white star with long light flares fills most of the screen, beside a panel with the baby’s weight, breathing and time with family.' },
+    after: { src: './shots/baby new.png', caption: 'Screen is dark by default to reduce residual light', alt: 'The new default screen: almost entirely black, with a small dim star, the time 1:12 a.m. in soft gray, “Next care 3:00 a.m. · Mila is resting,” and a Care team button.' } },
+  { who: 'Nurse', c: '“You have to be quick… life or death.”', r: 'Zero new tasks; content comes from charting',
+    before: { src: './shots/nurse previous.webp', caption: 'Nurses would have to write a new summary', alt: 'An early design idea of a baby dashboard' },
+    after: { src: './shots/nurse new.png', caption: 'Nurse charts are incorporated into day overview', alt: '' } },
+  { who: 'Family', c: 'Not every baby goes home', r: 'Nothing assumes an outcome; sensitive news only after a clinician talks with the family',
+    before: { src: './shots/parent previous.png', caption: 'Only highlights key moments from the hospital, lacking the memory of the baby itself', alt: '' },
+    after: { src: './shots/parent new.png', caption: 'Highlights the unique characteristics of the baby, beyond the medical status', alt: '' } },
 ]
-function Constraints() {
+// Steps: 0 the table · then per walkthrough row: lift, before, after · last: the table again (the last label home).
+// Going from one row's "after" to the next row's "lift" is one click: the label flies home, the table blinks
+// back in, then the next row lifts.
+const WALK = CONSTRAINTS.flatMap((x, k) => (x.before ? [k] : []))
+const PHASES = ['lift', 'before', 'after']
+const CONSTRAINT_STEPS = WALK.length * PHASES.length + 2
+const walkAt = (step) => (step < 1 || step > WALK.length * PHASES.length
+  ? { row: -1, phase: 'rest' }
+  : { row: WALK[Math.floor((step - 1) / PHASES.length)], phase: PHASES[(step - 1) % PHASES.length] })
+const LABEL_GAP = 28 // between For and Constraint in the label, as in the table
+const LABEL_ABOVE = 30 // the label's vertical center, above the top of the screens
+const iconFor = (who) => (who === 'Family' ? 'parent' : who.toLowerCase())
+const Who = ({ x, size = 30 }) => <><Icon name={iconFor(x.who)} size={size} />{x.who}</>
+
+function WalkShot({ shot, kind, on }) {
   return (
-    <div className="constraints">
-      <R d={0} className="k">Constraints</R>
-      <div className="ctable" role="table">
+    <figure className={`cwalk-shot is-${kind} ${on ? 'is-on' : ''}`} aria-hidden={!on}>
+      <div className="cwalk-frame">
+        {shot.src
+          ? <img src={shot.src} alt={shot.alt} />
+          : <div className="cwalk-placeholder">Screen to come</div>}
+      </div>
+      <figcaption><span className="cwalk-tag">{kind === 'before' ? 'Before' : 'After'}</span><p>{shot.caption}</p></figcaption>
+    </figure>
+  )
+}
+
+function Constraints({ step = 0, active, thumb }) {
+  const host = useRef(null)
+  const [pos, setPos] = useState(null)
+  const remeasure = useRef(null)
+  useLayoutEffect(() => {
+    const el = host.current
+    if (!el || thumb) return
+    // layout offsets, not screen rects, so the slide's own entrance transforms don't skew them
+    const at = (n) => { let x = 0, y = 0; while (n && n !== el) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent } return [x, y] }
+    const measure = () => {
+      const rows = WALK.map((k) => {
+        const slot = (part) => el.querySelector(`.crow[data-row="${k}"] .cwalk-slot.is-${part}`)
+        // each label piece is pinned by its left-center: in its cell, and just above the screens, left-aligned with the table
+        const home = (n) => { const [x, y] = at(n); return [x, y + n.offsetHeight / 2] }
+        const y = at(el.querySelector(`.cwalk-pair[data-row="${k}"] .cwalk-shot`))[1] - LABEL_ABOVE
+        // the Constraint starts after For as it's actually drawn in the label, so it can never overlap it
+        const whoW = el.querySelector(`.cwalk-fly.is-who[data-row="${k}"] .cwalk-as-cell`).offsetWidth
+        return {
+          who: { home: home(slot('who')), top: [0, y] },
+          c: { home: home(slot('c')), top: [whoW + LABEL_GAP, y] },
+        }
+      })
+      setPos(Object.fromEntries(WALK.map((k, j) => [k, rows[j]])))
+    }
+    measure()
+    remeasure.current = measure
+    // the type can arrive after the first measure (web fonts), so watch the pieces themselves, not just the slide
+    const ro = new ResizeObserver(measure)
+    ;[el, ...el.querySelectorAll('.cwalk-slot, .cwalk-as-cell, .cwalk-shot')].forEach((n) => ro.observe(n))
+    document.fonts?.ready.then(measure)
+    document.fonts?.addEventListener('loadingdone', measure)
+    return () => { ro.disconnect(); document.fonts?.removeEventListener('loadingdone', measure); remeasure.current = null }
+  }, [thumb])
+  // and once more on every click, before it paints, so a label always leaves from and lands on real positions
+  useLayoutEffect(() => { if (active) remeasure.current?.() }, [step, active])
+
+  // what this click changed, kept steady until the next click (re-renders mustn't restart the timing)
+  const tr = useRef({ step, from: step })
+  if (!active) tr.current = { step, from: step }
+  else if (tr.current.step !== step) tr.current = { step, from: tr.current.step }
+  const cur = walkAt(step), pre = walkAt(tr.current.from)
+  const swap = pre.row >= 0 && cur.row >= 0 && pre.row !== cur.row
+  const lift = swap ? 0.9 : 0 // on a swap, the next label waits for the last one to land and the table to show
+  const stage = cur.row !== pre.row ? lift + 0.55 : 0.1
+  const away = cur.row >= 0
+
+  // a label piece travels between its cell and the top, in the table's own type the whole way
+  const fly = (k, part, x) => {
+    const p = pos?.[k]
+    const [tx, ty] = p ? (cur.row === k ? p[part].top : p[part].home) : [0, 0]
+    return (
+      <span className={`cwalk-fly is-${part} ${cur.row === k ? 'is-away' : ''}`} data-row={k} style={{ transform: `translate(${tx}px, ${ty}px)` }}>
+        <span className="cwalk-as-cell">{part === 'who' ? <Who x={x} /> : x.c}</span>
+      </span>
+    )
+  }
+  return (
+    <div ref={host} className={`constraints cwalk ${away ? 'is-away' : ''} ${swap ? `is-swap-${step % 2}` : ''}`}
+      style={{ '--lift-delay': `${lift}s`, '--stage-delay': `${stage}s` }}>
+      <div className="cwalk-fade"><R d={0} className="k">Constraints</R></div>
+      <div className="ctable cwalk-fade" role="table">
         <R d={1} className="crow is-head" role="row"><span role="columnheader">For</span><span role="columnheader">Constraint</span><span role="columnheader">Our response</span></R>
         {CONSTRAINTS.map((x, k) => (
-          <R key={x.who} d={2 + k} className={`crow ${x.todo ? 'is-todo' : ''}`} role="row">
-            <span role="cell" className="crow-who"><Icon name={x.who === 'Family' ? 'parent' : x.who.toLowerCase()} size={30} />{x.who}</span><span role="cell">{x.c}</span><span role="cell" className="crow-r">{x.r}</span>
+          <R key={x.who} d={2 + k} className={`crow ${x.todo ? 'is-todo' : ''} ${cur.row === k ? 'is-away' : ''}`} role="row" data-row={k}>
+            <span role="cell" className="crow-who"><span className="cwalk-slot is-who"><Who x={x} /></span></span>
+            <span role="cell"><span className="cwalk-slot is-c">{x.c}</span></span>
+            <span role="cell" className="crow-r">{x.r}</span>
           </R>
         ))}
       </div>
+      {!thumb && (
+        <>
+          <div className="cwalk-layer" aria-hidden="true">
+            {WALK.map((k) => <span key={k}>{fly(k, 'who', CONSTRAINTS[k])}{fly(k, 'c', CONSTRAINTS[k])}</span>)}
+          </div>
+          {/* before, then after beside it; both stay up until the label goes home */}
+          <div className="cwalk-stage">
+            {WALK.map((k) => (
+              <div key={k} className="cwalk-pair" data-row={k}>
+                <WalkShot shot={CONSTRAINTS[k].before} kind="before" on={cur.row === k && cur.phase !== 'lift'} />
+                <WalkShot shot={CONSTRAINTS[k].after} kind="after" on={cur.row === k && cur.phase === 'after'} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }
@@ -886,12 +1005,22 @@ function Product({ thumb }) {
 }
 
 /* ---------- Close: back to where we started ---------- */
+// Niko again, going home: the photo, then it slides aside for a parent's words
 function Both({ step }) {
   return (
-    <div className="center statement both-close">
-      <R d={0} as="p" className="statement-p">“There are going to be peaks and valleys… But that doesn’t mean you’re moving backward. You are still moving forward, even if you feel stuck.”</R>
-      <R d={2} className="hook-who">Current NICU parent</R>
-      <p className={`statement-p is-big hmw-part ${step >= 1 ? 'is-in' : ''}`}>Mila&apos;s Sky shows that <L>every day counts</L>.</p>
+    <div className={`center home is-s${step}`}>
+      <R d={0} as="h2" className="h home-h">11 months later, we join</R>
+      <div className="home-row">
+        <R d={2} className="home-cell">
+          <div className="home-photo">
+            <Shot src="./shots/niko%20discharge.jpg" pan={false} alt="Niko, now a chubby, smiling baby, sits up wearing a black graduation cap and gown with a bow tie, a few lines still attached, under the caption “…on Niko’s journey home.”" />
+          </div>
+        </R>
+        <div className="home-quote">
+          <p className="statement-p">“There are going to be peaks and valleys… But that doesn’t mean you’re moving backward. You are still moving forward, even if you feel stuck.”</p>
+          <p className="hook-who">Current NICU parent</p>
+        </div>
+      </div>
     </div>
   )
 }
@@ -908,18 +1037,19 @@ function Close() {
 
 export const SLIDES = [
   { id: 'title', section: 'Mila’s Sky', planet: true, View: Title },
+  { id: 'niko', section: 'Hook', View: Niko },
   { id: 'hook', section: 'Hook', View: Hook },
   { id: 'both', section: 'Hook', View: statement({ k: 'The tension', big: true, children: <><L>Fear</L> and <L>joy</L>. NICU parents experience both, every day.</> }) },
   { id: 'nicu', section: 'The NICU', planet: true, View: define({ k: 'The NICU', word: 'Neonatal Intensive Care Unit', say: '“nick-you”', children: <>The hospital unit where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
   { id: 'environment', section: 'The NICU', View: Environment },
   { id: 'wall', section: '01 · Research', planet: true, View: Wall },
 
-  { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn&apos;t tell us <L>how parents make sense of it all</L>.</> }) },
+  { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn’t capture <L>what it feels like to live through it</L>.</> }) },
   { id: 'asked', section: '01 · Research', steps: 3, View: Asked },
   { id: 'heard', section: '01 · Research', View: Heard },
   { id: 'telephone', section: '01 · Research', View: Telephone },
 
-  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Our research pointed to <L>three needs</L>.</> }) },
+  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Our research pointed to <L>three unmet needs</L>.</> }) },
   { id: 'pillars', section: '02 · The problem', tint: 'all', steps: 3, View: Pillars },
   { id: 'problem', section: '02 · The problem', tint: 'all', View: Problem },
   { id: 'compete', section: '02 · The problem', tint: 'all', View: Compete },
@@ -934,14 +1064,13 @@ export const SLIDES = [
   { id: 'film', section: '05 · The idea and the story layer', planet: true, bare: true, View: Film },
 
   { id: 'k-open', section: '06 · Constraints', planet: true, View: KOpen },
-  { id: 'constraints', section: '06 · Constraints', View: Constraints },
-  { id: 'mom', section: '06 · Constraints', View: Mom },
-  { id: 'modality', section: '06 · Constraints', View: Modality },
-
-  { id: 'iterations', section: '07 · Previous iterations', planet: true, steps: ITER_MODE === 'focus' ? 4 : 1, View: Iterations },
+  { id: 'constraints', section: '06 · Constraints', steps: CONSTRAINT_STEPS, View: Constraints },
+  { id: 'mom', section: '07 · Modality', planet: true, View: Mom },
+  { id: 'modality', section: '07 · Modality', View: Modality },
 
   { id: 'demo', section: '08 · The product', planet: true, bare: true, View: DemoFilm },
   { id: 'f-live', section: '08 · The product', feature: 'today', View: Feature({ id: 'f-live', show: 'today', k: 'Try it', p: 'connection', title: <>Her bedside, live</>, text: 'The real prototype. Tap anywhere.' }) },
   { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
+  { id: 'every-day', section: 'Mila’s Sky', View: statement({ big: true, children: <>Mila&apos;s Sky shows that <L>every day counts</L>.</> }) },
   { id: 'close', section: 'Mila’s Sky', View: Close },
 ]
