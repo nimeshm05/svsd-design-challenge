@@ -248,7 +248,7 @@ function Big({ b }) {
 // celebrated); then her star and her name.
 const FIN_PTS = [[90, 330], [170, 280], [250, 300], [330, 230], [410, 260], [490, 190], [570, 220], [650, 160], [730, 200], [810, 140], [890, 170]]
 const FIN_PLANETS = [3, 6, 9]
-const FIN_WORDS = ['', 'Every baby’s life is a story.', 'In the NICU, it gets lost in charts, numbers and alarms.', 'Constellation keeps it, and celebrates every day of it.', '']
+const FIN_WORDS = ['', 'Every baby’s life is a story.', 'In the NICU, it gets lost in charts, numbers and alarms.', 'Constellate keeps it, and celebrates every day of it.', '']
 function Finale({ stage }) {
   return (
     <div className={`fin is-s${stage}`} aria-hidden="true">
@@ -271,7 +271,7 @@ function Finale({ stage }) {
           ))}
         </g>
       </svg>
-      <div className="fin-brand"><StarGlyph size={58} color="#FFF8E6" /><b>Constellation</b><span>Her story, one day at a time.</span></div>
+      <div className="fin-brand"><StarGlyph size={58} color="#FFF8E6" /><b>Constellate</b><span>Her story, one day at a time.</span></div>
     </div>
   )
 }
@@ -595,7 +595,7 @@ export function DemoFilm({ active, thumb }) {
       lit((d) => d.querySelector('.cv-gpanel'), 1.1); cap('Every moment of that day is kept, down to how she settled on his chest.'); await wait(4.2)
       lit(null); cap('Now Mom can be part of her story too, even on the days she wasn’t there.', 'connection'); await wait(4.2)
       cap(null); look('center'); set({ pad: false })
-      big({ t: 'Constellation', art: 'sky', hero: true, sub: 'Every day of her story, kept as a star.' }); await wait(4)
+      big({ t: 'Constellate', art: 'sky', hero: true, sub: 'Every day of her story, kept as a star.' }); await wait(4)
       big(null); await wait(0.6)
 
       // ── Day 98 · going home: her finished mobile, then the car seat, then her sky at home
@@ -665,7 +665,7 @@ export function DemoFilm({ active, thumb }) {
       <div className="dfilm-bg" aria-hidden="true"><i className="w-connection" /><i className="w-comprehension" /><i className="w-awareness" /><i className="w-night" /><i className="w-dawn" /></div>
       <div className="dfilm-cam" style={{ transform: cam, '--s': scale }}>
         <Monitor screen={screen}>
-          {!thumb && <iframe ref={frame} title="Constellation bedside display, in the demo" src="./prototype/index.html?embed=1&chapter=born" onLoad={() => setTimeout(() => setReady(true), 400)} />}
+          {!thumb && <iframe ref={frame} title="Constellate bedside display, in the demo" src="./prototype/index.html?embed=1&chapter=born" onLoad={() => setTimeout(() => setReady(true), 400)} />}
           {thumb && <div className="ipad-thumb"><StarGlyph size={44} color="#F3E3B5" /><span>Demo</span></div>}
           {/* the spotlight: the screen falls a little darker around what we're looking at */}
           <div className={`dfilm-lit ${v.lit ? 'is-on' : ''}`} style={v.lit ? { '--cx': `${v.lit.cx * 100}%`, '--cy': `${v.lit.cy * 100}%`, '--rx': `${v.lit.rx * 100}%`, '--ry': `${v.lit.ry * 100}%` } : undefined} />
@@ -718,7 +718,7 @@ export function DemoFilm({ active, thumb }) {
         <div className="dfilm-field">{FIELD.map((f, k) => <i key={k} style={{ '--k': k, left: `${f[0]}%`, top: `${f[1]}%`, '--z': f[2], '--tw': `${f[3]}s` }} />)}</div>
         <p className="dfilm-c1">Her story, one day at a time.</p>
         <p className="dfilm-c2">Every star is <mark className="is-cream">hers to keep</mark>.</p>
-        <div className="dfilm-c3"><StarGlyph size={46} color="#FFF8E6" /><span>Constellation</span></div>
+        <div className="dfilm-c3"><StarGlyph size={46} color="#FFF8E6" /><span>Constellate</span></div>
       </div>
 
       {/* play, pause and scrub: shown on hover, so a recording stays clean */}

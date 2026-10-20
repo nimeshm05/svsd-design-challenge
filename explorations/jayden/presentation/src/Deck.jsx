@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SLIDES } from './slides.jsx'
 import { StarGlyph } from './glyphs.jsx'
+import { NARRATION } from './narration.js'
 
 // The case study as a website you present from. One idea at a time; → / space / the › button to go on.
 // Behind every slide, the night sky drifts a little further with each step, its color warming to the
@@ -18,6 +19,9 @@ const STEPS = (k) => SLIDES[k].steps ?? 1
 export function Deck() {
   const [at, setAt] = useState(() => ({ i: fromHash(), step: 0 }))
   const { i, step } = at
+  // narration captions along the bottom (C hides or shows them); remembered in this browser only
+  const [cc, setCc] = useState(() => { try { return localStorage.getItem('deck-cc') !== 'off' } catch { return true } })
+  useEffect(() => { try { localStorage.setItem('deck-cc', cc ? 'on' : 'off') } catch { /* private window */ } }, [cc])
   const go = useCallback((n) => setAt({ i: Math.min(N - 1, Math.max(0, n)), step: 0 }), [])
   const next = useCallback(() => setAt(({ i, step }) => (step < STEPS(i) - 1 ? { i, step: step + 1 } : i < N - 1 ? { i: i + 1, step: 0 } : { i, step })), [])
   const prev = useCallback(() => setAt(({ i, step }) => (step > 0 ? { i, step: step - 1 } : i > 0 ? { i: i - 1, step: STEPS(i - 1) - 1 } : { i, step })), [])
@@ -44,6 +48,7 @@ export function Deck() {
       if (e.key === 'Home') go(0)
       if (e.key === 'End') go(N - 1)
       if (e.key === 'o' || e.key === 'O') openPanel()
+      if (e.key === 'c' || e.key === 'C') setCc((v) => !v)
     }
     const hash = () => { const n = fromHash(); setAt((a) => (a.i === n ? a : { i: n, step: 0 })) }
     window.addEventListener('keydown', key)
@@ -56,7 +61,7 @@ export function Deck() {
     <div className={`deck tint-${s.tint ?? 'night'} ${s.bare ? 'is-bare' : ''}`} style={{ '--i': i }}>
       <Sky />
       <header className="deck-top">
-        <span className="deck-mark"><StarGlyph size={14} />Constellation</span>
+        <span className="deck-mark"><StarGlyph size={14} />Constellate</span>
         <span className="deck-where"><span key={s.section} className="deck-section">{s.section}</span><button type="button" className="deck-panel-btn" onClick={openPanel} title="Story overview (O)">Overview ↗</button><span className="deck-count">{String(i + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}</span></span>
       </header>
 
@@ -69,6 +74,11 @@ export function Deck() {
       </main>
 
       <DemoPad show={s.feature} />
+
+      {(() => {
+        const n = NARRATION[s.id], line = Array.isArray(n) ? n[Math.min(step, n.length - 1)] : n
+        return cc && line && !s.bare && <p key={`${s.id}-${line}`} className="deck-cc">{line}</p>
+      })()}
 
       <footer className="deck-foot">
         <Progress i={i} go={go} />
@@ -142,7 +152,7 @@ function DemoPad({ show }) {
     <div className={`demo-pad-layer ${show ? 'is-on' : ''}`} aria-hidden={!show}>
       <div className="ipad demo-pad">
         <div className="ipad-screen">
-          <iframe ref={frame} title="Constellation bedside display" src="./prototype/index.html?embed=1&chapter=born"
+          <iframe ref={frame} title="Constellate bedside display" src="./prototype/index.html?embed=1&chapter=born"
             onLoad={() => setTimeout(() => show && frame.current?.contentWindow?.postMessage({ type: 'mila:show', what: show }, '*'), 300)} />
         </div>
         <i className="ipad-cam" aria-hidden="true" />
