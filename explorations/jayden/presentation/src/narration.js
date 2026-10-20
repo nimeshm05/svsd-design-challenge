@@ -44,7 +44,7 @@ export const NARRATION = {
   overview: [
     'So we built Constellate: a bedside screen that turns her chart into something parents can follow. One idea runs through it: every day becomes a star, shaped by what her nurses already chart.',
     'Every week becomes a constellation, so parents can see her whole stay at a glance.',
-    'And her firsts become planets. Let’s walk through it with Mila, a baby built from the families we met.',
+    'And her firsts become planets. Here’s how it works, through one baby’s stay.',
   ],
   stars: [
     'One idea runs through it. Every day of her stay becomes a star, shaped by what her nurses already chart.',

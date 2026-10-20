@@ -118,6 +118,7 @@ const OPEN_LEN = 10.4 // s: who she is, in the dark
 const CLIPS = {
   // each lasts as long as it's on screen, its fade out included, so none ever runs out and freezes
   // (length on screen: (until - from) / rate)
+  mila: { src: './clips/still-mila.webp', until: 99, rate: 1 }, // Mila, asleep in her incubator: the film opens on her
   dad: { src: './clips/still-dad.webp', until: 4.3, rate: 0.55 }, // forward, cut before it changes angle (7.8 s)
   home: { src: './clips/still-home.webp', from: 1.4, until: 7.9, rate: 1 }, // buckling her car seat (6.5 s)
   mom: { src: './clips/still-mom.webp', until: 4.35, rate: 0.68 }, // (6.4 s)
@@ -560,8 +561,12 @@ export function DemoFilm({ active, thumb }) {
 
       // ── Day 1, 4:20 a.m. · Mila, and her first screen
       mark('Day 1'); look('center', 'connection')
-      set({ foot: { id: 'dad', at: R.clock } }); await wait(0.8)
-      await line('Meet Mila. She’s born thirteen weeks early, at 880 grams, and her dad has just arrived.')
+      // the film opens on Mila herself, quietly, before anyone arrives
+      await wait(0.6); set({ foot: { id: 'mila', at: R.clock } }); await wait(1.4)
+      await line('Meet Mila. She’s born thirteen weeks early, at 880 grams.')
+      await line('She isn’t a real baby. She’s built from the families we met, so we can show a whole stay, the hard parts too.')
+      cap(null); set({ foot: { id: 'dad', at: R.clock } }); await wait(1)
+      await line('It’s 4:20 in the morning, and her dad has just arrived.')
       await scene({ when: 'Day 1 · 4:20 a.m.', name: 'Her first screen', p: 'connection', q: 'How can I feel close to her before I can hold her?', today: 'A wall of monitors and numbers, and no time to explain.', still: 'dad' })
       set({ pad: true, foot: null }); await wait(1)
       lit('.fd-star', 1.18); await line('Her screen opens with her: her name, and how small she is, in something he can picture.', 'connection')

@@ -1873,3 +1873,4 @@ body:has(.panel) { overflow: auto; }
 .ov-steps li.is-on b { color: var(--cream); }
 .ov-steps span { font-size: clamp(14px, 1.2vw, 16px); line-height: 1.5; color: var(--text-2); }
 
+.foot.foot-mila { animation: fade 1.6s ease both; } /* the film eases in on Mila */
