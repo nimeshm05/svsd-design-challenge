@@ -1023,3 +1023,75 @@ body:has(.panel) { overflow: auto; }
 /* the monitor's mount: a short neck into a pivot, then the pole it hangs from, down out of frame */
 .mon-arm-a { left: -14px; top: -40px; width: 28px; height: 60vh; border-radius: 8px; background: linear-gradient(90deg, #111214, #33363b 45%, #16181b) !important; }
 .mon-joint { left: -20px; top: 8px; width: 40px; height: 26px; border-radius: 8px !important; background: linear-gradient(180deg, #3d4046, #17191c) !important; }
+
+/* ===== The film's opening: Mila is born, then Dad arrives (footage with the product layered on it) ===== */
+.open { position: absolute; inset: 0; z-index: 8; background: #000; overflow: hidden; }
+/* the clip's frame, covering the screen exactly as the video does */
+.open-box { position: absolute; left: 50%; top: 50%; width: max(100%, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; transform: translate(-50%, -50%); }
+.open-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; animation: open-video-in 1.6s calc(var(--intro) - 1.3s) ease forwards; }
+@keyframes open-video-in { to { opacity: 1; } }
+/* one grade over the footage: deeper blacks, a soft vignette, a little grain */
+.open-grade { position: absolute; inset: 0; pointer-events: none; opacity: 0; animation: open-video-in 1.6s calc(var(--intro) - 1.3s) ease forwards;
+  background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 55%, rgba(0, 0, 0, .55)), linear-gradient(0deg, rgba(0, 0, 0, .25), transparent 30%); }
+
+/* 1 · her birth, in words, under the star */
+.open-words { position: absolute; left: 50%; top: 58%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+  animation: open-words-out .9s calc(var(--intro) - 1.6s) ease forwards; }
+@keyframes open-words-out { to { opacity: 0; filter: blur(8px); transform: translate(-50%, -6px); } }
+.ow { opacity: 0; filter: blur(6px); animation: ow-in 1.1s var(--ease) forwards; }
+@keyframes ow-in { to { opacity: 1; filter: none; } }
+.ow-1 { font-family: var(--mono); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--cream); animation-delay: 1.3s; order: -1; margin-bottom: 6px; }
+.ow-2 { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(56px, 6.4vw, 96px); line-height: 1; color: var(--text); animation-delay: 2s; }
+.ow-3 { font-family: var(--display); font-weight: 300; font-size: clamp(20px, 1.9vw, 28px); color: var(--text-2); animation-delay: 2.8s; }
+.ow-4 { font-size: clamp(15px, 1.3vw, 18px); color: var(--muted); animation-delay: 3.6s; }
+.ow-4 em { font-style: normal; color: var(--text); font-weight: 500; }
+
+/* the star: forms at the center, then glides to the monitor's own star and fades into it */
+.open-star { position: absolute; left: 50%; top: 42%; width: 0; height: 0; z-index: 3;
+  animation: open-star-born 1.6s .5s cubic-bezier(.3, 1.4, .5, 1) both, open-star-go 1.5s calc(var(--intro) - 1.4s) cubic-bezier(.65, 0, .3, 1) forwards; }
+.open-star .glyph { position: absolute; left: -32px; top: -32px; filter: drop-shadow(0 0 26px rgba(255, 248, 230, .95)) drop-shadow(0 0 70px rgba(243, 227, 181, .5)); }
+.open-star-glow { position: absolute; left: -90px; top: -90px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(243, 227, 181, .22), transparent 70%); animation: breathe 4s ease-in-out infinite; }
+@keyframes open-star-born { from { opacity: 0; transform: scale(.05); } to { opacity: 1; transform: scale(1); } }
+@keyframes open-star-go { 0% { left: 50%; top: 42%; transform: scale(1); opacity: 1; } 80% { opacity: 1; } 100% { left: 12.1%; top: 37%; transform: scale(.16); opacity: 0; } }
+
+/* 2 · layered on the footage: a ring on the monitor, tracking the camera's slow push in */
+.open-ring { position: absolute; z-index: 2; border-radius: 10px; border: 1.5px solid rgba(243, 227, 181, .85); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0), 0 0 30px rgba(243, 227, 181, .35);
+  left: 6.4%; top: 30.5%; width: 11.6%; height: 21%; opacity: 0;
+  animation: open-ring 4.1s calc(var(--intro) + .3s) linear forwards; }
+@keyframes open-ring {
+  0% { opacity: 0; left: 6.4%; top: 30.5%; width: 11.6%; height: 21%; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0), 0 0 30px rgba(243, 227, 181, .35); }
+  12% { opacity: 1; box-shadow: 0 0 0 9999px rgba(0, 0, 0, .38), 0 0 30px rgba(243, 227, 181, .35); }
+  50% { left: 4.6%; top: 29.6%; width: 14%; height: 27%; }
+  90% { opacity: 1; }
+  100% { opacity: 0; left: 2%; top: 29.5%; width: 16%; height: 32%; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0), 0 0 30px rgba(243, 227, 181, .35); }
+}
+/* the frosted card, in the dark lower left, below the monitor */
+.open-card { position: absolute; z-index: 2; left: 7%; top: 62%; width: min(380px, 26%); display: flex; flex-direction: column; gap: 6px; padding: 18px 20px;
+  border-radius: 16px; background: rgba(10, 10, 14, .62); backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2); border: 1px solid rgba(255, 255, 255, .09);
+  opacity: 0; animation: open-card 3.4s calc(var(--intro) + .8s) cubic-bezier(.2, .7, .2, 1) forwards; }
+@keyframes open-card { 0% { opacity: 0; transform: translateY(14px); filter: blur(6px); } 18%, 86% { opacity: 1; transform: none; filter: none; } 100% { opacity: 0; transform: translateY(-6px); } }
+.open-card b { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; font-size: clamp(22px, 1.9vw, 30px); color: var(--text); }
+.open-card .dfilm-call-line { font-size: clamp(13px, 1vw, 15px); }
+/* a quiet place-and-time tag, top left, while the footage plays */
+.open-tag { position: absolute; z-index: 2; left: 7%; top: 9%; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: rgba(243, 227, 181, .85);
+  opacity: 0; animation: open-tag 4.2s calc(var(--intro) + .2s) ease forwards; }
+@keyframes open-tag { 0% { opacity: 0; } 15%, 85% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .open * { animation-duration: .01s !important; } }
+/* timed to the footage: it starts 1.1 s before the intro ends, and cuts to his face at 4.5 s in */
+.open-ring { animation-duration: 2.9s; }
+.open-card { animation-duration: 2.7s; }
+.open-tag { animation-duration: 3.1s; }
+/* measured from the clip: the monitor's star sits at 15.5% / 46% when the star lands (1.2 s in);
+   the monitor grows from 8.3–22.6% × 40–65.5% (1.4 s) to 3.7–24% × 38.5–74.5% (4.3 s) as the camera pushes in */
+@keyframes open-star-go { 0% { left: 50%; top: 42%; transform: scale(1); opacity: 1; } 80% { opacity: 1; } 100% { left: 15.5%; top: 46%; transform: scale(.14); opacity: 0; } }
+.open-ring { left: 8.3%; top: 40%; width: 14.3%; height: 25.5%; }
+@keyframes open-ring {
+  0% { opacity: 0; left: 8.3%; top: 40%; width: 14.3%; height: 25.5%; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0), 0 0 30px rgba(243, 227, 181, .35); }
+  12% { opacity: 1; box-shadow: 0 0 0 9999px rgba(0, 0, 0, .38), 0 0 30px rgba(243, 227, 181, .35); }
+  50% { left: 6.4%; top: 39.6%; width: 17%; height: 30.5%; }
+  90% { opacity: 1; }
+  100% { opacity: 0; left: 3.5%; top: 38.2%; width: 20.8%; height: 36.6%; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0), 0 0 30px rgba(243, 227, 181, .35); }
+}
+/* the card in the darker equipment above the monitor; the tag below it */
+.open-card { left: 6.5%; top: 9%; }
+.open-tag { top: auto; bottom: 9%; left: 6.5%; }

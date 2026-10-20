@@ -79,6 +79,47 @@ const EX = {
   ),
 }
 
+/* ---------- the opening: Mila is born, then Dad arrives ---------- */
+// 1. A UI view in the dark: her first star forms; when, her name, how early, how small.
+// 2. Match cut: the star glides to the bedside monitor as the footage fades up around it, and lands on the
+//    star already on that screen. 3. Over the footage, the product is layered like an ad: a soft ring
+//    finds the monitor (tracking the camera's slow push), and a frosted card names what he's seeing.
+// 4. The cut to his face stays clean. Positions are in the clip's own frame (1280×720), which covers the
+//    screen like the video does, so the layers stay on the monitor at any window size.
+const OPEN_INTRO = 6.2 // s: her birth, before the footage
+const OPEN_CLIP = 7.4 // s of the 8 s clip (cut just before its end)
+function Opening() {
+  const vid = useRef(null)
+  useEffect(() => {
+    const t = setTimeout(() => { const v = vid.current; if (v) { v.currentTime = 0; v.play().catch(() => {}) } }, (OPEN_INTRO - 1.1) * 1000)
+    return () => clearTimeout(t)
+  }, [])
+  return (
+    <div className="open" style={{ '--intro': `${OPEN_INTRO}s` }}>
+      <div className="open-box">
+        <video ref={vid} className="open-video" src="./clips/dad-arrives.mp4" muted playsInline preload="auto" />
+        <div className="open-grade" aria-hidden="true" />
+        {/* layered on the footage */}
+        <span className="open-ring" aria-hidden="true" />
+        <div className="open-card">
+          <span className="dfilm-call-k" style={{ color: 'var(--connection)' }}><Icon name="connection" size={16} color="var(--connection)" />Connection</span>
+          <b>Her first star</b>
+          <span className="dfilm-call-line">The first thing he sees: her name, when she was born, and how small she is, in words he can picture.</span>
+        </div>
+        <span className="open-tag">Day 1 · 4:20 a.m.</span>
+        {/* her first star: born in the dark, then carried to the monitor */}
+        <span className="open-star" aria-hidden="true"><i className="open-star-glow" /><StarGlyph size={64} color="#FFF8E6" /></span>
+      </div>
+      <div className="open-words" aria-hidden="true">
+        <span className="ow ow-1">3:42 a.m.</span>
+        <b className="ow ow-2">Mila</b>
+        <span className="ow ow-3">Born thirteen weeks early.</span>
+        <span className="ow ow-4"><em>880 grams.</em> About the weight of a small pineapple.</span>
+      </div>
+    </div>
+  )
+}
+
 /* ---------- the bedside monitor ---------- */
 function Monitor({ children, screen }) {
   return (
@@ -97,7 +138,7 @@ export function DemoFilm({ active, thumb }) {
   const screen = useRef(null)
   const [ready, setReady] = useState(false)
   const [run, setRun] = useState(0)
-  const blank = { scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false }
+  const blank = { open: 0, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false }
   const [v, setV] = useState({ ...blank, t: 0 })
   const set = (patch) => setV((x) => ({ ...x, ...patch }))
 
@@ -150,20 +191,11 @@ export function DemoFilm({ active, thumb }) {
 
     const script = async () => {
       set({ ...blank })
-      await chapter('born', 0.6)
-      // establish: the monitor at an angle, then it turns to face us
-      await pad(); await wait(0.8)
-      set({ cap: 'Mila’s Sky lives at her bedside.' }); await wait(2.4)
-      look('center'); await wait(1.8); set({ cap: null })
-
-      // Day 1 · Connection
-      await moment({ k: '4:20 a.m.', t: 'Day 1' }, 'arrive', <>Dad meets her for the first time.</>) // CLIP slot 1
-      look('left', 'connection'); await pad(); await wait(0.4)
-      zoom('.fd-star', 1.6); await wait(1.2)
-      spot('.fd-star', { p: 'connection', title: 'Her first star', line: 'As big as she is. It asks nothing of him.' }); await wait(3)
-      zoom('.fd-size', 1.7); await wait(0.6)
-      spot('.fd-size', { p: 'connection', title: 'How small she is', line: 'In something he can picture, not only a number.' }, 'pineapple'); await wait(4)
-      out(); await wait(1)
+      await chapter('born', 0.3)
+      // Day 1: Mila is born (a UI view), and her first star carries us into Dad's arrival (the clip),
+      // with the product layered over the footage. See <Opening>.
+      set({ open: 1 }); await wait(OPEN_INTRO + OPEN_CLIP)
+      set({ open: 0 }); await wait(0.6)
 
       // Day 1 · Comprehension
       await moment(null, 'explain', <>Her nurse explains what&apos;s on her.</>) // CLIP slot 2
@@ -272,6 +304,7 @@ export function DemoFilm({ active, thumb }) {
         </div>
       )}
 
+      {v.open > 0 && <Opening />}
       {v.card && (
         <div className="dfilm-card" key={v.card.t}>
           <span className="dfilm-card-k">{v.card.k}</span>
