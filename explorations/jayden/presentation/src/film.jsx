@@ -321,6 +321,21 @@ function Monitor({ children, screen }) {
 const FILM_GUESS = 240
 const fmt = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`
 
+// Keeps what just left on screen a moment longer, marked "out", so a change is a crossfade instead of a cut
+function useFade(value, keyOf, ms = 900) {
+  const [list, setList] = useState([])
+  const k = value == null ? null : keyOf(value)
+  useEffect(() => {
+    setList((xs) => {
+      const kept = xs.filter((x) => x.k !== k).map((x) => ({ ...x, out: true })).slice(-2)
+      return value == null ? kept : [...kept, { k, v: value, out: false }]
+    })
+    const id = setTimeout(() => setList((xs) => xs.filter((x) => !x.out)), ms)
+    return () => clearTimeout(id)
+  }, [k]) // eslint-disable-line react-hooks/exhaustive-deps
+  return list
+}
+
 export function DemoFilm({ active, thumb }) {
   const frame = useRef(null)
   const screen = useRef(null)
@@ -452,7 +467,7 @@ export function DemoFilm({ active, thumb }) {
       set({ lift: { html: c.outerHTML, x: fr.left - hr.left + r.left * k, y: fr.top - hr.top + r.top * k, w: r.width, h: r.height, k, dy } })
     }
     const big = (b) => set({ big: b })
-    const dayCard = async (n, k, sub) => { set({ pad: false, cap: null, say: null }); big({ day: true, n, k, t: `Day ${n}`, sub }); await wait(3.6); big(null); await wait(0.4) }
+    const dayCard = async (n, k, sub, behind) => { set({ pad: false, cap: null, say: null }); big({ day: true, n, k, t: `Day ${n}`, sub }); await wait(1.2); if (behind) await behind(); await wait(2.4); big(null); await wait(0.6) }
     const script = async () => {
       set({ ...blank }); day(null)
       await chapter('born', 0.3)
@@ -485,7 +500,7 @@ export function DemoFilm({ active, thumb }) {
       lit(null); cap(null); await wait(0.6)
 
       // ── Day 3 · Comprehension, then Awareness
-      mark('Day 3'); await show('today', 0.1); day(3); await dayCard(3, null, 'Mom is finally well enough to come up.')
+      mark('Day 3'); await dayCard(3, null, 'Mom is finally well enough to come up.', async () => { await show('today', 0.1); day(3) })
       look('center', 'comprehension'); set({ foot: { id: 'mom', at: R.clock } })
       cap('She’s been recovering two floors up. Three days of missing everything.'); await wait(6.8)
       set({ foot: { id: 'daily', at: R.clock } }); cap('Now it’s all right there.'); await wait(4.4)
@@ -502,7 +517,7 @@ export function DemoFilm({ active, thumb }) {
       lit(null); cap(null); await wait(0.4)
 
       // ── Day 23 · into her stars, a week, a day
-      mark('Day 23'); await show('today', 0.2); day(23); await dayCard(23, null, 'Three weeks in, the days start to blur together.')
+      mark('Day 23'); await dayCard(23, null, 'Three weeks in, the days start to blur together.', async () => { await show('today', 0.2); day(23) })
       set({ pad: true }); look('center', 'connection'); await wait(1.4)
       await tap(sky); cap('So every day becomes a star.'); await wait(4.4)
       await tap('.cv-gweek'); cap('Mom can open the week she was recovering,'); await wait(3.4)
@@ -562,6 +577,9 @@ export function DemoFilm({ active, thumb }) {
   const scale = zoomed ? s : L.sc
   const ry = zoomed ? L.ry * 0.35 : L.ry, rx = zoomed ? 0 : L.rx
   const cam = `translate(${(0.5 - fx) * sw * scale + L.ox * window.innerWidth}px, ${(0.5 - fy) * sh * scale}px) scale(${scale}) rotateY(${ry}deg) rotateX(${rx}deg)`
+  const feet = useFade(v.foot, (f) => f.at, 1100)
+  const bigs = useFade(v.big, (b) => String(b.t) + (b.sub ?? ''), 900)
+  const caps = useFade(v.cap ? { t: v.cap, k: v.capk } : null, (c) => String(c.t), 600)
   const P = v.call && PILLAR[v.call.p]
   const side = v.call && !v.call.wide && !v.call.over ? (L.ox > 0 ? 'side-l' : 'side-r') : ''
   return (
@@ -588,15 +606,17 @@ export function DemoFilm({ active, thumb }) {
       )}
 
       {v.open > 0 && <Opening clock={clock} />}
-      {v.foot && (
-        <Footage src={CLIPS[v.foot.id].src} until={CLIPS[v.foot.id].until} rate={CLIPS[v.foot.id].rate} clock={clock} at={v.foot.at} className={`foot-${v.foot.id}`}>
-          {v.foot.tag && <span className="open-tag foot-tag">{v.foot.tag}</span>}
-        </Footage>
-      )}
+      {feet.map(({ k, v: f, out }) => (
+        <div key={k} className={`foot-wrap ${out ? 'is-out' : ''}`}>
+          <Footage src={CLIPS[f.id].src} until={CLIPS[f.id].until} rate={CLIPS[f.id].rate} clock={clock} at={f.at} className={`foot-${f.id}`}>
+            {f.tag && <span className="open-tag foot-tag">{f.tag}</span>}
+          </Footage>
+        </div>
+      ))}
       {v.born && <Born />}
       {v.talk && <Talk />}
       {v.fin > 0 && <Finale stage={v.fin} />}
-      {v.big && <Big key={String(v.big.t)} b={v.big} />}
+      {bigs.map(({ k, v: b, out }) => <div key={k} className={`big-wrap ${out ? 'is-out' : ''}`}><Big b={b} /></div>)}
       {v.lift && (
         <div className="dfilm-lift" style={{ left: v.lift.x, top: v.lift.y, width: v.lift.w, height: v.lift.h, '--k': v.lift.k, '--dy': `${v.lift.dy}px` }}>
           <div className="dfilm-lift-in" dangerouslySetInnerHTML={{ __html: v.lift.html }} />
@@ -612,7 +632,7 @@ export function DemoFilm({ active, thumb }) {
         </div>
       )}
       {v.scene && <div key={v.scene} className="dfilm-scene"><Scene kind={v.scene} /></div>}
-      {v.cap && <p key={String(v.cap)} className="dfilm-cap">{v.capk && <span className={`dfilm-capk is-${v.capk}`}><Icon name={v.capk} size={14} color={PILLAR[v.capk].color} />{PILLAR[v.capk].name}</span>}{v.cap}</p>}
+      {caps.map(({ k, v: c, out }) => <p key={k} className={`dfilm-cap ${out ? 'is-out' : ''}`}>{c.k && <span className={`dfilm-capk is-${c.k}`}><Icon name={c.k} size={14} color={PILLAR[c.k].color} />{PILLAR[c.k].name}</span>}{c.t}</p>)}
 
       <div className="dfilm-close" aria-hidden={!v.close}>
         {/* her days, as a sky: one small star each, scattered, lighting one after another */}
@@ -645,3 +665,4 @@ export function DemoFilm({ active, thumb }) {
     </div>
   )
 }
+

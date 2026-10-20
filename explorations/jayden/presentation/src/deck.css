@@ -1474,3 +1474,16 @@ body:has(.panel) { overflow: auto; }
 .foot-dadClose { animation: fade .7s 0s ease both; }
 .foot-dad { animation: fade .5s 0s ease both, open-out 1.6s 6.4s ease both; }
 .foot-dad { animation: fade .8s 0s ease both, open-out 1.6s 6.6s ease both; }
+
+/* crossfades: what leaves fades out while what arrives fades in, never a cut to black */
+.foot-wrap { position: absolute; inset: 0; z-index: 8; transition: opacity 1s ease; }
+.foot-wrap.is-out { opacity: 0; z-index: 7; pointer-events: none; }
+.big-wrap { position: absolute; inset: 0; z-index: 11; transition: opacity .8s ease; }
+.big-wrap.is-out { opacity: 0; pointer-events: none; }
+.dfilm-cap.is-out { animation: cap-out .5s ease forwards; }
+@keyframes cap-out { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, 0); filter: blur(3px); } }
+
+/* the film plays full screen: no labels, no progress; only the deck's arrows, bottom right.
+   Its own play/scrub bar stays hidden until the pointer rests on it. */
+.dfilm .dfc { opacity: 0; transition: opacity .4s ease; }
+.dfilm .dfc:hover, .dfilm .dfc:focus-within { opacity: 1; }
