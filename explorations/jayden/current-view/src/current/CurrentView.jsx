@@ -83,6 +83,8 @@ export function CurrentView({ onSky }) {
     formT.current = setTimeout(toSky, (end + 2.1) * 1000)
   }
   const goChapter = (c) => {
+    // a new chapter cancels today's star still forming, so it can't carry a later chapter off to her sky
+    clearTimeout(formT.current); setForm(null); setZoom(null)
     setWalk(null); setTeam(false); setNight(false); setDark(false); setMemory(false); setPage(c === 'home' ? 'discharge' : 'home'); setChapter(c)
     if (c === 'sky') setTimeout(() => document.querySelector('.cv-skyt')?.click(), 400) // today becomes a star
   }
