@@ -222,3 +222,35 @@ export const Feature = (f) => function FeatureView({ thumb }) {
     </div>
   )
 }
+
+// One question parents ask, answered. With a clip, it opens on that moment (the parent, the bedside) with the
+// question over it; the next step shows the screen that answers it (the live prototype, see DemoPad), what
+// parents do today beside what they can do now. One slide does what the feature highlight and the demo film did.
+export const Answer = (f) => function AnswerView({ thumb, step = 0, active }) {
+  const vid = useRef(null)
+  const onClip = f.clip && step === 0
+  useEffect(() => {
+    const v = vid.current; if (!v) return
+    v.playbackRate = f.rate ?? 0.8
+    if (active && onClip) { v.currentTime = f.from ?? 0; v.play().catch(() => {}) } else v.pause()
+  }, [active, onClip])
+  return (
+    <div className={`ans ${onClip ? 'is-clip' : 'is-screen'}`}>
+      {f.clip && (
+        <div className="ans-clip" aria-hidden={!onClip}>
+          {!thumb && <video ref={vid} src={f.clip} muted playsInline loop preload="auto" />}
+          <p className="ans-clip-q" key={String(onClip)}><span className={`is-${f.p}`}><Icon name={f.p} size={14} />{TAG[f.p]}</span>&ldquo;{f.q}&rdquo;</p>
+        </div>
+      )}
+      <div className="ans-top">
+        <p className={`ans-q is-${f.p}`}><Icon name={f.p} size={14} />&ldquo;{f.q}&rdquo;</p>
+        <h2 className="ans-h">{f.title}</h2>
+        <div className="feat-vs">
+          <p className="feat-before"><b>Today</b>{f.before}</p>
+          <p className="feat-after"><b>With Constellate</b>{f.text}</p>
+        </div>
+      </div>
+      <div className="feat-pad-spot">{thumb && <div className="ipad demo-pad is-thumb"><div className="ipad-screen"><div className="ipad-thumb"><Icon name={f.p} size={44} /></div></div></div>}</div>
+    </div>
+  )
+}

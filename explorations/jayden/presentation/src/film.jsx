@@ -118,11 +118,11 @@ const OPEN_LEN = 10.4 // s: who she is, in the dark
 const CLIPS = {
   // each lasts as long as it's on screen, its fade out included, so none ever runs out and freezes
   // (length on screen: (until - from) / rate)
-  dad: { src: './clips/dad-arrives.mp4', until: 4.3, rate: 0.55 }, // forward, cut before it changes angle (7.8 s)
-  home: { src: './clips/going-home.mp4', from: 1.4, until: 7.9, rate: 1 }, // buckling her car seat (6.5 s)
-  mom: { src: './clips/mom-day3.mp4', until: 4.35, rate: 0.68 }, // (6.4 s)
-  daily: { src: './clips/mom-daily.mp4', until: 4.6, rate: 0.78 }, // (5.9 s)
-  momSky: { src: './clips/mom-sky.mp4', until: 7.95, rate: 0.75 }, // from behind the screen: a tap, then a pinch (10.6 s)
+  dad: { src: './clips/still-dad.webp', until: 4.3, rate: 0.55 }, // forward, cut before it changes angle (7.8 s)
+  home: { src: './clips/still-home.webp', from: 1.4, until: 7.9, rate: 1 }, // buckling her car seat (6.5 s)
+  mom: { src: './clips/still-mom.webp', until: 4.35, rate: 0.68 }, // (6.4 s)
+  daily: { src: './clips/still-daily.webp', until: 4.6, rate: 0.78 }, // (5.9 s)
+  momSky: { src: './clips/still-sky.webp', until: 7.95, rate: 0.75 }, // from behind the screen: a tap, then a pinch (10.6 s)
   mobile: { src: './clips/mobile.mp4', from: 0.4, until: 7.95, rate: 1 }, // (7.5 s)
 }
 // Her star view, seen from behind the glass: the clip is shot from inside the monitor, so the screen she
@@ -212,7 +212,9 @@ function Footage({ src, clock, at, from = 0, until = 99, rate = 1, className = '
   return (
     <div className={`foot ${className}`} ref={host}>
       <div className="open-box foot-box">
-        <video ref={vid} className="foot-video" src={src} muted playsInline preload="auto" />
+        {/\.(webp|png|jpe?g)$/.test(src)
+          ? <img className="foot-video foot-still" src={src} alt="" /> // an illustration, with a slow push in (held to the film's clock)
+          : <video ref={vid} className="foot-video" src={src} muted playsInline preload="auto" />}
         <div className="open-grade foot-grade" aria-hidden="true" />
         {children}
       </div>
@@ -385,13 +387,15 @@ export function DemoFilm({ active, thumb }) {
   const screen = useRef(null)
   const [ready, setReady] = useState(false)
   const [run, setRun] = useState(0)
-  const blank = { born: false, open: 0, foot: null, say: null, talk: false, wipe: 0, hl: null, big: null, lift: null, lit: null, fin: 0, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false, mirror: null }
+  const blank = { born: false, open: 0, foot: null, say: null, talk: false, wipe: 0, hl: null, big: null, lift: null, lit: null, fin: 0, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false, mirror: null, ask: null, feat: null }
   const [v, setV] = useState({ ...blank, t: 0 })
   const set = (patch) => setV((x) => ({ ...x, ...patch }))
   const [playing, setPlaying] = useState(true)
   const [seekTo, setSeekTo] = useState(0)
   const [len, setLen] = useState(FILM_GUESS)
   const [marks, setMarks] = useState([])
+  const wantBeat = useRef(null) // a line to replay up to (← steps back by replaying to the line before)
+  const curBeat = useRef(0) // the line the film is holding on
   const [drag, setDragS] = useState(null) // where the scrubber is being dragged to
   const dragRef = useRef(null)
   const setDrag = (d) => { dragRef.current = d; setDragS(d) }
@@ -418,7 +422,8 @@ export function DemoFilm({ active, thumb }) {
   useEffect(() => {
     if (!active || !ready || thumb) return
     // the film's clock: it runs while playing; while seeking it jumps ahead through the script
-    const R = { dead: false, timers: [], clock: 0, target: seekTo, playing, openAt: 0 }
+    const R = { dead: false, timers: [], clock: 0, target: wantBeat.current != null ? Infinity : seekTo, playing, openAt: 0, beat: 0, release: null, queued: false }
+    curBeat.current = 0
     Rref.current = R
     let last = performance.now(), shown = -1
     // a plain timer (animation frames stop in a hidden window, and the film should keep time anyway)
@@ -440,6 +445,18 @@ export function DemoFilm({ active, thumb }) {
       step()
     })
     const mark = (label) => setMarks((m) => (m.some((x) => x.label === label) ? m : [...m, { t: R.clock, label }]))
+    // the presenter's pace: the film holds at every line until → (a press made mid-transition is kept for the next line)
+    const gate = () => new Promise((ok, no) => {
+      if (R.dead) return no(new Error('stop'))
+      R.beat += 1
+      const want = wantBeat.current
+      if (want != null && R.beat < want) return ok() // replaying to an earlier line: pass straight through
+      if (want != null && R.beat === want) { wantBeat.current = null; R.target = R.clock }
+      curBeat.current = R.beat
+      if (R.queued) { R.queued = false; return ok() }
+      R.release = ok
+    })
+    R.next = () => { if (R.release) { const go = R.release; R.release = null; go() } else R.queued = true }
     const doc = () => frame.current?.contentDocument
     const post = (msg) => frame.current?.contentWindow?.postMessage(msg, '*')
     const find = (sel) => (typeof sel === 'function' ? sel(doc()) : doc()?.querySelector(sel))
@@ -495,6 +512,8 @@ export function DemoFilm({ active, thumb }) {
     const sky = (d) => [...d.querySelectorAll('.nav-btn, button')].find((b) => /Mila.s stars/.test(b.textContent)) ?? d.querySelector('.cv-skyt')
 
     const say = (t, side, k) => set({ say: t ? { t, side, k } : null })
+    const feat = (name, p) => set({ feat: name ? { name, p } : null }) // the feature a chapter shows
+    const ask = (q, p, today) => set({ ask: q ? { q, p, today } : null }) // the question parents ask, the thread back to the pillars
     const cap = (c, k = null, q = null) => set({ cap: c, capk: k, capq: q }) // q: a parent's words from our interviews, echoed where it's answered
     const day = (n) => post({ type: 'mila:day', day: n })
     const mpost = (msg) => mframe.current?.contentWindow?.postMessage(msg, '*')
@@ -524,121 +543,108 @@ export function DemoFilm({ active, thumb }) {
       set({ ...blank }); day(null)
       await chapter('born', 0.3)
 
-      // ── her birth, drawn
-      mark('Mila'); set({ born: true }); await wait(9.2)
-      set({ born: false })
+      // The solution, question by question: each moment of Mila's stay raises one of the questions from the
+      // pillars (shown over it, in its pillar's colour), and her screen answers it, with every tap shown.
+      const hold = (t) => Math.max(2.6, t.split(/\s+/).length * 0.31 + 0.7)
+      const line = async (t, k = null) => { cap(t, k); await wait(0.6); await gate() } // held until →
 
-      // ── Day 1 · Connection
-      mark('Day 1'); await dayCard(1, '4:20 a.m.', 'Her first night in the NICU.')
+      // ── Day 1 · first night
+      mark('Day 1'); await dayCard(1, '4:20 a.m.', 'Mila is born, thirteen weeks early.')
       look('center', 'connection'); set({ foot: { id: 'dad', at: R.clock } })
-      cap('That’s her dad.'); await wait(2.6)
-      cap('He hasn’t gotten to hold her yet.'); await wait(4)
-      cap(null); set({ pad: true, foot: null }); await wait(1.4)
-      lit('.fd-star', 1.18); await wait(1)
-      cap('So her screen doesn’t open with numbers. It opens with her.'); await wait(3.4)
-      lit('.fd-size', 1.22); cap('It shows how small she is, in a way he can picture.'); await wait(3.2)
-      cap('He can’t hold her yet, so her screen gives him another way to feel close to her.', 'connection', 'I didn’t have the luxury of having my baby right away and putting him on my chest.'); await wait(5.4)
-      lit(null); cap(null); set({ pad: false }); await wait(1)
+      ask('How can I feel close to her before I can hold her?', 'connection', 'A wall of monitors and numbers, and no time to explain.'); await wait(1.2)
+      await line('It’s her first night. Her dad has just arrived, and he hasn’t been able to hold her yet.')
+      cap(null); set({ pad: true, foot: null }); feat('Her first screen', 'connection'); await wait(1.2)
+      lit('.fd-star', 1.18); await line('Her screen opens with her, not her numbers: her name, and how small she is, in something he can picture.', 'connection')
+      lit(null); cap(null)
+      feat(null); await chapter('story', 0.2); feat('What’s on her', 'comprehension'); ask('What is all of this on her?', 'comprehension', 'Every machine explained at once, at five in the morning.'); await wait(1.4)
+      await tap('.fd-next'); lit('.fd-words', 1.15); await line('So it explains what’s on her one thing at a time, each in one plain sentence.', 'comprehension')
+      await tap('.fd-next'); lit('.fd-words', 1.15); await wait(1.8)
+      await tap('.fd-next'); lit('.fd-words', 1.15); await wait(1.6)
+      lit(null); cap(null); for (let n = 0; n < 4 && find('.fd-next'); n++) { await flick('.fd-next'); await wait(0.45) }
+      lit('.fd-words', 1.15); await line('And then the thing he needed to hear: you can talk to her.')
+      lit(null); cap(null); ask(null); feat(null); set({ pad: false }); await wait(0.6)
 
-      // ── Day 1 · Comprehension: the nurse, all at once (slowly), then one thing at a time
-      mark('Her nurse'); await chapter('story', 0.1); set({ talk: true })
-      cap('A little later, her nurse walks him through everything on her.'); await wait(6.4)
-      cap('It’s a lot. At five in the morning, almost none of it sticks.', null, 'Medical terminology is a new language.'); await wait(7.4)
-      cap(null); set({ talk: false, pad: true }); await wait(1.4)
-      cap('So her screen explains it one thing at a time.', 'comprehension'); await tap('.fd-next'); await wait(0.6)
-      lit('.fd-words', 1.15); await wait(1.6)
-      await tap('.fd-next'); await wait(0.4); lit('.fd-words', 1.15); cap('Each step is in words he can actually hold on to.', 'comprehension'); await wait(2.8)
-      await tap('.fd-next'); await wait(1.4)
-      lit(null); cap(null); await wait(0.5)
-
-      // ── Day 3 · Comprehension, then Awareness
-      mark('Day 3'); await dayCard(3, null, 'Mom is finally well enough to come up.', async () => { await show('today', 0.1); day(3) })
-      look('center', 'comprehension'); set({ foot: { id: 'mom', at: R.clock } })
-      cap('She’s been recovering two floors up, and missed her first three days.'); await wait(5.6)
-      set({ foot: { id: 'daily', at: R.clock } }); cap('Now she can catch up on all of it.'); await wait(3.3)
-      cap(null); set({ pad: true, foot: null }); await wait(1.4)
-      lit('.cv-cap', 1.2); cap('Her screen tells her whole day, start to finish, in plain words.'); await wait(3.4)
+      // ── Day 3 · Mom's first visit
+      mark('Mom'); await dayCard(3, 'A few days later', 'Mom comes up for the first time.', async () => { await show('today', 0.1); day(3) })
+      look('center', 'connection'); set({ foot: { id: 'mom', at: R.clock } })
+      ask('What happened while I was away?', 'connection', 'Call the desk, or rely on what the last shift remembers.'); await wait(1.2)
+      await line('She’s been recovering from surgery, and has missed her first days.')
+      set({ foot: { id: 'daily', at: R.clock } }); await wait(2.6)
+      cap(null); set({ pad: true, foot: null }); feat('Her day', 'connection'); await wait(1)
+      await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.4)
+      lit('.cv-cap', 1.2); await line('Her whole day is there, hour by hour, with moments her nurses already chart. Nothing extra for them.', 'connection')
+      lit(null); await drag('.cv-arc-mark[data-kind="family"]', '.cv-arc-now', () => post({ type: 'mila:show', what: 'today' })); cap(null)
+      feat('Words in a tap', 'comprehension'); ask('What does that word mean?', 'comprehension', 'Nod along, then look it up later.'); await wait(1)
       await tap('.cv-term-btn'); await wait(0.4)
-      lit('.cv-pop', 1.25); cap('If a word is new to her, she can tap it to see what it means.', 'comprehension'); await wait(3.6)
-      lit(null); await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))); cap(null); await wait(0.6)
-      await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.5)
-      lit('.cv-cap', 1.22); cap('Even the moment she walked in is there, pulled from notes her nurses already write.'); await wait(4.2)
-      lit(null); cap('In here the hours blur together, and what’s next always catches you off guard.', null, 'In the ICU, time just doesn’t exist. It’s just a mash of time.'); await wait(5)
+      lit('.cv-pop', 1.22); await line('Warm words first. One tap, and the real word is explained, shown on her own body.', 'comprehension')
+      lit(null); await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))); cap(null)
+      feat('What’s ahead', 'awareness'); ask('What’s next, and who is caring for her tonight?', 'awareness', 'Rounds come and go. Ask at the desk.'); await wait(1)
       await tap('.cv-ahead-btn'); await wait(0.8)
-      lit((d) => d.querySelector('.ah-panel') ?? d.querySelector('.ah'), 1.08); cap('So her screen always shows what’s happening now, and what’s coming next.', 'awareness'); await wait(3.8)
-      lit(null); cap(null); await wait(0.4)
+      lit((d) => d.querySelector('.ah'), 1.05); await line('Her week is laid out: rounds tomorrow, what’s planned, and where Mom fits in.', 'awareness')
+      await tap((d) => [...d.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Next Steps')); await wait(0.5)
+      await line('Next Steps shows what each part of her care is working toward.')
+      lit(null); await tap('.nav-btn.is-call'); await wait(0.5)
+      lit('.ts', 1.1); await line('And her care team: who’s with her today, and who takes over tonight.')
+      lit(null); doc()?.querySelector('.ts-scrim')?.click(); cap(null); ask(null); feat(null); set({ pad: false }); await wait(0.6)
 
-      // ── Day 23 · her sky, the heart of the demo, as one flow: her full sky on her screen; through the glass to Mom
-      //    and Dad reaching into it (the same sky, mirrored over the clip); back out to her full sky; then a week,
-      //    a day, and a moment in it. The product names itself at the end.
-      mark('Her sky'); await dayCard(23, null, 'Three weeks in, the days start to blur together.', async () => {
-        await show('today', 0.2); day(23)
-        mpost({ type: 'mila:show', what: 'sky' }); mpost({ type: 'mila:day', day: 23 }) // the mirror waits on her stars
+      // ── 3 a.m.
+      mark('Night'); await dayCard(3, '3:00 a.m.', 'Mom is home, and can’t sleep.', async () => { await show('night', 0.2) })
+      set({ pad: true, tint: 'night' }); feat('Night view', 'awareness'); ask('How is she doing right now?', 'awareness', 'A 3 a.m. call to the unit, and a wait.'); await wait(1.2)
+      lit((d) => d.querySelector('.is-night-home') ?? d.querySelector('.cv-night-line'), 1.15)
+      await line('At night, the screen rests when she does: the time, her next care, and one quiet line. No 3 a.m. call needed.', 'awareness')
+      lit(null); cap(null); ask(null); feat(null); set({ pad: false, tint: null }); await wait(0.6)
+
+      // ── her last day: her sky, then going home
+      mark('Last day'); await dayCard(98, 'Three months later', 'Her last day in the NICU.', async () => {
+        await show('today', 0.2); day(98)
+        mpost({ type: 'mila:show', what: 'sky' }) // the mirror waits on her stars
       })
-      set({ pad: true }); look('center', 'connection'); await wait(1)
-      cap('Mom wants to see the days she missed, so she opens her stars.'); await wait(0.8)
-      await tap(sky); look('sky'); await wait(1.6)
-      cap('Every day Mila has been here is a star in her sky.'); await wait(3.6) // her full sky, drawn
-      cap(null); through(); await wait(1.3) // in through the glass...
-      set({ foot: { id: 'momSky', at: R.clock }, mirror: R.clock }); await wait(1.33) // ...to them, her finger landing
-      cap('She reaches for the stars from the week she was recovering upstairs.'); await wait(3.9)
-      cap('Each week of Mila’s life is its own little constellation.'); await wait(3.6) // her fingers open: the sky draws closer
-      cap(null); set({ foot: null, mirror: null }); await wait(1.1) // back through the glass, onto her screen...
-      out(); await wait(1.9) // ...and out to her full sky
-      await tap('.cv-gweek'); cap('Mom opens that first week.'); await wait(2.4)
-      const six = (d) => d.querySelector('.cv-gday[aria-label^="Day 6"]') ?? d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]') // in a week, each day is a .cv-gday
-      lit(six, 1.3); cap('One day in it shines a little brighter than the rest.'); await wait(3)
-      lit(null); await tap(six); await wait(0.6)
-      lit((d) => d.querySelector('.cv-day-scene') ?? d.querySelector('.cv-gpanel'), 1.12); cap('She opens it. Day 6 was the first time Dad held her.'); await wait(3.4)
-      const hold = (d) => d.querySelector('.cv-moment[aria-label*="hold" i]') ?? d.querySelectorAll('.cv-moment')[1] ?? d.querySelector('.cv-moment')
-      await tap(hold, () => find(hold)?.dispatchEvent(new MouseEvent('click', { bubbles: true })))
-      lit((d) => d.querySelector('.cv-gpanel'), 1.1); cap('Every moment of that day is kept, down to how she settled on his chest.'); await wait(4.2)
-      lit(null); cap('Now Mom can be part of her story too, even on the days she wasn’t there.', 'connection'); await wait(4.2)
-      cap(null); look('center'); set({ pad: false })
-      big({ t: 'Constellate', art: 'sky', hero: true, sub: 'Every day of her story, kept as a star.' }); await wait(4)
-      big(null); await wait(0.6)
-
-      // ── Day 98 · going home: her finished mobile, then the car seat, then her sky at home
-      mark('Going home'); await dayCard(98, null, 'The day her parents have been waiting for.', async () => { await show('home', 0.6) })
-      set({ pad: true, tint: 'dawn' }); await wait(0.8)
-      cap('Before they leave, her screen tells her whole story one more time.'); await wait(1.2)
-      for (let n = 0; n < 16 && find('.cv-story'); n++) {
-        if (n === 4) cap('Every day of it is there, including the hard ones.')
-        await flick('.cv-story'); await wait(0.4)
-      }
-      cap('Then every star in her sky gathers into a mobile.'); await wait(4.8)
-      await tap('.cv-takehome-btn'); cap('It’s theirs to take home.'); await wait(2.6)
+      set({ pad: true, tint: 'dawn' }); look('center', 'connection'); await wait(0.6)
+      feat('Her stars', 'connection'); ask('How far has she come?', 'connection', 'Weeks blur together, pieced together from memory.'); await wait(1.2)
+      // the product explains its own idea: today's moments gather into a star, then it takes its place in her sky
+      await tap(sky); await line('Every day becomes a star, shaped by what her nurses already chart.')
+      look('sky'); for (let n = 0; n < 40 && !find('.cv-gweek'); n++) await wait(0.25) // until her sky has opened
+      await line('Every week becomes a constellation: her whole stay, at a glance.')
+      cap(null); through(); await wait(1.3)
+      set({ foot: { id: 'momSky', at: R.clock }, mirror: R.clock }); await wait(1.33)
+      await line('On her last day, Mom and Dad look back at all of it. The hard days are there too. Stars never disappear.')
+      cap(null); set({ foot: null, mirror: null }); await wait(1.1)
+      out(); await wait(1.6)
+      await tap('.cv-gweek'); await wait(0.5)
+      lit((d) => d.querySelector('.cv-gday[aria-label*="First"]')?.closest('svg') ?? d.querySelector('.cv-gpanel'), 1.08)
+      await line('Her firsts are planets: first touch, first hold, first bottle.')
+      lit(null)
+      const six = (d) => d.querySelector('.cv-gday[aria-label^="Day 6"]') ?? d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]')
+      await tap(six); await wait(0.5)
+      lit((d) => d.querySelector('.cv-gpanel'), 1.1); await line('Day 6: the first time Dad held her.', 'connection')
+      lit(null); cap(null); ask(null); feat('Going home', 'connection')
+      await show('home', 0.6); await line('Then her screen retells her whole stay, star by star,')
+      for (let n = 0; n < 16 && find('.cv-story'); n++) { await flick('.cv-story'); await wait(0.4) }
+      await line('and her sky becomes a mobile.')
+      await tap('.cv-takehome-btn'); await line('One they get to take home.')
       cap(null); set({ foot: { id: 'home', at: R.clock } }); await wait(1)
-      set({ pad: false }); cap('Mila is going home.'); await wait(4.3)
-      set({ foot: { id: 'mobile', at: R.clock } }); cap('Her sky goes home with her, into the next chapter of her story.'); await wait(6.2)
-      cap(null); set({ tint: null })
+      set({ pad: false }); await line('Mila is going home.')
+      set({ foot: { id: 'mobile', at: R.clock } }); await line('And her sky goes with her.')
+      cap(null); feat(null); set({ tint: null })
 
       // ── and if she doesn't go home
-      mark('If she doesn’t'); set({ foot: null, pad: false }); await wait(1.6)
-      big({ t: 'Not every baby gets to go home like Mila.', art: 'sky' }); await wait(3.6)
-      big({ t: 'But even a short life is a whole story. Every day of it mattered.', art: 'sky' }); await wait(4.4)
-      big(null); await show('notStart', 0.1); set({ pad: true }); await wait(1.2)
-      cap('When a baby isn’t going home, the screen goes quiet. Just their name, and their nurse nearby.'); await wait(4.4)
-      // her kept sky, as the family goes through it: a page at a time, each moment lighting its day's star,
-      // then the last page with every moment and everyone who loved her. The words change as the page does.
-      const turn = async (c, sec) => { await tap('.rem-continue', () => { doc()?.querySelector('.rem-continue')?.click(); cap(c) }); await wait(sec) }
+      mark('If she doesn’t'); set({ foot: null, pad: false }); await wait(1.4)
+      big({ t: 'Not every baby gets to go home like Mila.', art: 'sky' }); await wait(1.2); await gate()
+      big(null); await show('notStart', 0.1); set({ pad: true }); feat('Her sky, kept', 'connection'); await wait(1.2)
+      await line('If she doesn’t, nothing assumes an outcome. The screen goes quiet: her name, and her nurse nearby.')
       const herSky = (d) => [...d.querySelectorAll('.cv-actions .nav-btn')].find((b) => b.textContent.trim() === 'Her sky')
-      await tap(herSky, () => { herSky(doc())?.click(); cap('When the family is ready, they can open her sky. It tells her life again, one moment at a time.') }); await wait(4.6)
-      await turn('Each moment comes from notes her nurses already wrote.', 3.8)
-      await turn('Nothing plays by itself. They turn each page, and can stay on one as long as they need.', 4.4)
-      await turn(null, 2.8)
-      await turn('The hard nights are kept too. They were part of her story.', 4.2)
-      await turn(null, 2.8)
-      await turn('At the end, their baby’s whole sky is there, with every moment and everyone who loved them.', 4.6)
-      cap('It stays with them, for as long as they want it.'); await wait(3.8)
-      cap(null); set({ pad: false }); await wait(1.4)
+      await tap(herSky, () => { herSky(doc())?.click() })
+      await line('When they’re ready, her sky becomes a place to remember her, a page at a time.')
+      for (let n = 0; n < 6 && find('.rem-continue'); n++) { await flick('.rem-continue'); await wait(0.9) }
+      await line('Loved, every day.')
+      cap(null); feat(null); set({ pad: false }); await wait(1.2)
 
       // ── closing
       mark('Closing')
-      set({ fin: 1 }); await wait(5.2)
-      set({ fin: 2 }); await wait(5.4)
-      set({ fin: 3 }); await wait(5.6)
-      set({ fin: 4 }); await wait(6.4)
+      set({ fin: 1 }); await wait(1.4); await gate()
+      set({ fin: 2 }); await wait(1.4); await gate()
+      set({ fin: 3 }); await wait(1.4); await gate()
+      set({ fin: 4 }); await wait(1.4); await gate()
       setLen(R.clock); set({ done: true })
     }
     script().catch(() => {})
@@ -655,11 +661,27 @@ export function DemoFilm({ active, thumb }) {
   const cam = `translate(${(0.5 - fx) * sw * scale + L.ox * window.innerWidth}px, ${(0.5 - fy) * sh * scale}px) scale(${scale}) rotateY(${ry}deg) rotateX(${rx}deg)`
   const feet = useFade(v.foot, (f) => f.at, 1100)
   const bigs = useFade(v.big, (b) => String(b.t) + (b.sub ?? ''), 900)
+  const asks = useFade(v.ask, (a) => a.q, 800)
+  const feats = useFade(v.feat, (x) => x.name, 700)
   const caps = useFade(v.cap ? { t: v.cap, k: v.capk, q: v.capq } : null, (c) => String(c.t), 600)
   const P = v.call && PILLAR[v.call.p]
   const side = v.call && !v.call.wide && !v.call.over ? (L.ox > 0 ? 'side-l' : 'side-r') : ''
   // where the scrubber sits: while a seek replays the script up to its target, it waits at the target
   const scrubT = drag ?? Math.max(v.t, seekTo)
+  // → the next line, ← the line before (a quick replay); past either end, the deck's slides again
+  const doneRef = useRef(false); doneRef.current = v.done
+  useEffect(() => {
+    if (!active || thumb) return
+    window.__filmNav = (dir) => {
+      const R = Rref.current
+      if (dir > 0) { if (doneRef.current || !R) return false; R.next(); return true }
+      const back = (wantBeat.current ?? curBeat.current) - 1
+      if (back < 1) return false
+      wantBeat.current = back; setSeekTo(0); setRun((r) => r + 1); setPlaying(true)
+      return true
+    }
+    return () => { delete window.__filmNav }
+  }, [active, thumb])
   return (
     <div ref={host} className={`dfilm ${v.lift ? 'has-lift' : ''} ${v.seeking ? 'is-seeking' : ''} ${playing ? '' : 'is-paused'} look-${v.look} ${v.tint ? `tint-${v.tint}` : ''} ${v.pad ? 'is-pad' : ''} ${side ? `has-call ${side}` : ''} ${v.call?.over ? 'has-over' : ''} ${v.close ? `is-close is-c${v.close}` : ''}`}>
       <div className="dfilm-bg" aria-hidden="true"><i className="w-connection" /><i className="w-comprehension" /><i className="w-awareness" /><i className="w-night" /><i className="w-dawn" /></div>
@@ -711,6 +733,8 @@ export function DemoFilm({ active, thumb }) {
         </div>
       )}
       {v.scene && <div key={v.scene} className="dfilm-scene"><Scene kind={v.scene} /></div>}
+      {feats.map(({ k, v: x, out }) => <p key={k} className={`dfilm-feat is-${x.p} ${out ? 'is-out' : ''}`}><span>Feature</span><b><StarGlyph size={16} color={PILLAR[x.p].color} />{x.name}</b></p>)}
+      {asks.map(({ k, v: a, out }) => <p key={k} className={`dfilm-ask is-${a.p} ${out ? 'is-out' : ''}`}><span><Icon name={a.p} size={14} color={PILLAR[a.p].color} />{PILLAR[a.p].name}</span>&ldquo;{a.q}&rdquo;{a.today && <em>Today: {a.today}</em>}</p>)}
       {caps.map(({ k, v: c, out }) => <p key={k} className={`dfilm-cap ${out ? 'is-out' : ''}`}>{c.q && <span className="dfilm-capq"><q>{c.q}</q><span>A NICU parent we interviewed</span></span>}{c.k && <span className={`dfilm-capk is-${c.k}`}><Icon name={c.k} size={14} color={PILLAR[c.k].color} />{PILLAR[c.k].name}<em>{PRINCIPLE[c.k]}</em></span>}{c.t}</p>)}
 
       <div className="dfilm-close" aria-hidden={!v.close}>

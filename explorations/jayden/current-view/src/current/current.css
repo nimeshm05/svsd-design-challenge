@@ -2029,3 +2029,42 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 /* the word popup's figure: the same front-facing her as the Day 1 walkthrough, still, so no drag */
 .cv-her-fig.is-front { height: 130px; margin-bottom: 4px; cursor: default; }
 .cv-her-fig.is-front .bf { height: 100%; }
+
+
+/* What's ahead: Sara's latest Next Steps (leads with the next step, three paths, swipe weeks) */
+.ah-current { display: inline-flex; align-items: center; gap: 8px; }
+.ah-current i { width: 7px; height: 7px; border-radius: 50%; background: var(--cream); flex: none; }
+/* Timeline: a week calendar, Sun → Sat in one row of equal days. Today has the cream stroke and holds its
+   full list, which scrolls inside; the other days list one line per event; days before today are quieter. */
+.ah-wk-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ah-wk-nav { display: flex; align-items: center; gap: 4px; }
+.ah-wk-btn { height: 30px; min-width: 30px; padding: 0 12px; border-radius: 8px; border: 1px solid rgba(243, 227, 181, .22);
+  background: transparent; color: var(--text-2); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; transition: border-color .2s, color .2s; }
+.ah-wk-btn.is-arrow { padding: 0; font-size: 18px; line-height: 1; }
+.ah-wk-btn:hover:not(:disabled) { border-color: rgba(243, 227, 181, .5); color: #F6EEDB; }
+.ah-wk-btn:disabled { opacity: .45; cursor: default; }
+.ah-wk-btn:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.ah-wk-label { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--cream); }
+.ah-wk-date { margin-left: auto; display: flex; align-items: baseline; gap: 6px; }
+.ah-wk-date span { font-size: 12px; color: var(--muted); }
+.ah-wk-date b { font-size: 15px; font-weight: 600; color: #F6EEDB; font-variant-numeric: tabular-nums; }
+.ah-wk .is-empty .ah-wk-date b { color: var(--muted); font-weight: 500; }
+.ah-wk-today .ah-wk-date b { color: var(--cream); font-size: 17px; }
+/* the other days: one line per event, cut short with an ellipsis */
+.ah-wk-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ah-wk-line { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 12.5px; line-height: 1.35; color: var(--text-2); }
+.ah-wk-dot { flex: none; width: 5px; height: 5px; margin: 0 2px; border-radius: 50%; background: color-mix(in srgb, var(--cream) 40%, transparent); }
+.ah-wk-lines > li:has(.ah-cal-event) { margin: 2px 0; }
+/* a day's width is narrow, so the time sits above what it is; a major event's › sits to the right */
+.ah-sched-row { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 6px; row-gap: 2px; padding: 7px 0; }
+.ah-sched-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; color: var(--muted); }
+.ah-tag { padding: 1px 8px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .14); font-style: normal; font-size: 11.5px; color: var(--text-2); }
+.ah-sched-row.is-major { padding: 9px 10px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--warm) 70%, transparent); border-left-width: 4px;
+  background: color-mix(in srgb, var(--warm) 22%, transparent); box-shadow: 0 0 18px -6px color-mix(in srgb, var(--warm) 60%, transparent);
+  font: inherit; color: inherit; text-align: left; cursor: pointer; transition: background .2s; }
+.ah-sched-row.is-major:hover { background: color-mix(in srgb, var(--warm) 32%, transparent); }
+.ah-sched-row.is-major:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.ah-sched-row.is-major .ah-sched-t { font-weight: 600; color: var(--warm); }
+.ah-sched-row.is-major .ah-sched-what b { font-weight: 700; color: #FFF8E6; }
+.ah-sched-row.is-major .ah-tag { border-color: color-mix(in srgb, var(--warm) 60%, transparent); color: color-mix(in srgb, var(--warm) 70%, #fff); }
+.ah-sched-row.is-major { transition: none; }

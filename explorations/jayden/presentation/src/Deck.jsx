@@ -26,6 +26,9 @@ export function Deck() {
   const next = useCallback(() => setAt(({ i, step }) => (step < STEPS(i) - 1 ? { i, step: step + 1 } : i < N - 1 ? { i: i + 1, step: 0 } : { i, step })), [])
   const prev = useCallback(() => setAt(({ i, step }) => (step > 0 ? { i, step: step - 1 } : i > 0 ? { i: i - 1, step: STEPS(i - 1) - 1 } : { i, step })), [])
   useEffect(() => { window.history.replaceState(null, '', `#${i + 1}`) }, [i])
+  // on the film, ← and → step through its moments first (see __filmNav in film.jsx)
+  const fwd = useCallback(() => { if (!window.__filmNav?.(1)) next() }, [next])
+  const back = useCallback(() => { if (!window.__filmNav?.(-1)) prev() }, [prev])
   // the story overview (?panel=1, its own window) follows the deck and can move it
   const bc = useRef(null)
   useEffect(() => {
@@ -43,8 +46,8 @@ export function Deck() {
   useEffect(() => {
     const key = (e) => {
       if (e.target.closest?.('input, textarea')) return
-      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); next() }
-      if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); prev() }
+      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); fwd() }
+      if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); back() }
       if (e.key === 'Home') go(0)
       if (e.key === 'End') go(N - 1)
       if (e.key === 'o' || e.key === 'O') openPanel()
@@ -54,7 +57,7 @@ export function Deck() {
     window.addEventListener('keydown', key)
     window.addEventListener('hashchange', hash)
     return () => { window.removeEventListener('keydown', key); window.removeEventListener('hashchange', hash) }
-  }, [next, prev, go])
+  }, [fwd, back, go])
 
   const s = SLIDES[i]
   return (
@@ -73,18 +76,18 @@ export function Deck() {
         ))}
       </main>
 
-      <DemoPad show={s.feature} />
+      <DemoPad side={s.padSide} show={s.clipFirst && step === 0 ? null : Array.isArray(s.feature) ? s.feature[Math.min(step, s.feature.length - 1)] : s.feature} />
 
       {(() => {
         const n = NARRATION[s.id], line = Array.isArray(n) ? n[Math.min(step, n.length - 1)] : n
-        return cc && line && !s.bare && <p key={`${s.id}-${line}`} className="deck-cc">{line}</p>
+        return cc && line && (!s.bare || s.cc) && <p key={`${s.id}-${line}`} className="deck-cc">{line}</p>
       })()}
 
       <footer className="deck-foot">
         <Progress i={i} go={go} />
         <span className="deck-arrows">
-          <button type="button" onClick={prev} disabled={i === 0 && step === 0} aria-label="Previous">‹</button>
-          <button type="button" onClick={next} disabled={i === N - 1 && step === STEPS(i) - 1} aria-label="Next">›</button>
+          <button type="button" onClick={back} disabled={i === 0 && step === 0} aria-label="Previous">‹</button>
+          <button type="button" onClick={fwd} disabled={i === N - 1 && step === STEPS(i) - 1} aria-label="Next">›</button>
         </span>
       </footer>
     </div>
@@ -142,14 +145,14 @@ function Progress({ i, go }) {
 // The bedside screen for the product slides: one live prototype that stays in place while the feature
 // slides change around it. It loads the first time a feature slide is reached, then each slide only asks
 // it to show its feature. Click inside it to use the real thing.
-function DemoPad({ show }) {
+function DemoPad({ show, side }) {
   const frame = useRef(null)
   const [live, setLive] = useState(false)
   useEffect(() => { if (show) setLive(true) }, [show])
   useEffect(() => { if (show) frame.current?.contentWindow?.postMessage({ type: 'mila:show', what: show }, '*') }, [show])
   if (!live) return null
   return (
-    <div className={`demo-pad-layer ${show ? 'is-on' : ''}`} aria-hidden={!show}>
+    <div className={`demo-pad-layer ${show ? 'is-on' : ''} ${side ? 'is-side' : ''}`} aria-hidden={!show}>
       <div className="ipad demo-pad">
         <div className="ipad-screen">
           <iframe ref={frame} title="Constellate bedside display" src="./prototype/index.html?embed=1&chapter=born"

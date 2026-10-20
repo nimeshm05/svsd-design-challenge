@@ -101,6 +101,14 @@ export function CurrentView({ onSky }) {
       ahead: () => { goChapter('day'); later(() => setPage('ahead')) },
       night: () => { goChapter('day'); later(() => setNight(true)) },
       sky: () => goChapter('sky'),
+      // her sky (today's star forms, then joins it), then her first week, once the sky is open: its firsts are planets
+      week: () => {
+        goChapter('sky')
+        const t0 = Date.now(), id = setInterval(() => {
+          const w = document.querySelector('.cv-gweek')
+          if (w) { clearInterval(id); w.click() } else if (Date.now() - t0 > 15000) clearInterval(id)
+        }, 300)
+      },
       home: () => goChapter('home'),
       not: () => { goChapter('not'); later(() => setMemory(true)) },
       notStart: () => goChapter('not'), // the quiet screen, before "Her sky" is opened
