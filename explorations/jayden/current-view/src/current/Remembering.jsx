@@ -7,20 +7,14 @@ import { DEFS, WEEKS, SkyDepth, dayStar, daysOf, pos } from './Galaxy.jsx'
 // its day's star, in the same type, bottom left. Unlike going home, nothing plays by itself and nothing
 // becomes an object to take away: the family turns each page (a tap anywhere, or "Continue"), and can stay
 // on a moment as long as they need. A few moments, each with a real detail, one of them hard. It ends on
-// everything at once: her whole sky, who she was, her moments, and the people who loved her.
+// everything at once: her whole sky, her moments, and the people who loved her.
 const STORY = [
-  { d: 1, k: 'Day 1', title: 'Mila', text: 'She arrived at 3:42 in the morning, about the weight of a small pineapple. Priya was with her from her first minute.',
-    facts: [['Born at', '3:42 a.m.'], ['Weight', '880 g']] },
+  { d: 1, k: 'Day 1', title: 'Mila', text: 'She arrived at 3:42 in the morning, about the weight of a small pineapple. Priya was with her from her first minute.' },
   { d: 4, k: 'Day 4', title: 'Your touch', text: 'Through the portholes, you cupped her head and her feet. She stayed still and calm under your hands.' },
   { d: 6, k: 'Day 6', title: 'In your arms', text: 'Priya helped lift her onto your chest. She stayed there for forty minutes, warm, and her breathing settled.' },
   { d: 14, k: 'Day 14', title: 'Her first bottle', text: 'She took a few small sips, then rested. Her nurse wrote that she worked hard at it.' },
   { d: 17, k: 'Day 17', title: 'A hard night', text: 'Her breathing needed more help, and her team stayed close. She came through it, and so did you.' },
   { d: 23, k: 'Day 23', title: 'Her own clothes', text: 'Her nurse dressed her in the soft sleepsuit you brought from home. She slept in it all afternoon.' },
-]
-const WHO = [
-  "She calmed to Dad's voice.",
-  'She settled when her hands were near her face.',
-  'On your chest, she was calm and steady.',
 ]
 
 export function Remembering({ theme }) {
@@ -66,11 +60,6 @@ export function Remembering({ theme }) {
           <span className="cv-story-k">{STORY[step].k}</span>
           <h3 className="cv-story-title">{STORY[step].title}</h3>
           <p className="cv-story-text">{STORY[step].text}</p>
-          {STORY[step].facts && (
-            <dl className="cv-story-facts">
-              {STORY[step].facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
-            </dl>
-          )}
           <div className="rem-story-foot">
             <span className="cv-story-dots" aria-hidden="true">
               {STORY.map((_, i) => <i key={i} className={i === step ? 'is-on' : i < step ? 'is-past' : ''} />)}
@@ -81,10 +70,6 @@ export function Remembering({ theme }) {
       ) : (
         <div className="rem-words">
           <p className="rem-name">Mila</p>
-          <section className="rem-sec">
-            <span className="rem-k">Who she was</span>
-            <ul className="rem-who">{WHO.map((t) => <li key={t}>{t}</li>)}</ul>
-          </section>
           <section className="rem-sec">
             <span className="rem-k">Her story</span>
             <ul className="rem-did">
