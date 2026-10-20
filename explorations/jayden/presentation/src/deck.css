@@ -920,3 +920,6 @@ body:has(.panel) { overflow: auto; }
 @keyframes twinkle-f { 50% { filter: brightness(.6); } }
 .is-c2 .dfilm-field i, .is-c3 .dfilm-field i { opacity: .8; }
 .is-c3 .dfilm-field i { opacity: .55; transition-delay: 0s; }
+
+/* lines that draw themselves in (the sketches, constellations, threads); lost with the old telephone line */
+@keyframes draw { to { stroke-dashoffset: 0; } }
