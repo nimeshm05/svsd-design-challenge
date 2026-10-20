@@ -619,18 +619,17 @@ export function DemoFilm({ active, thumb }) {
       big({ t: 'But even a short life is a whole story. Every day of it mattered.', art: 'sky' }); await wait(4.4)
       big(null); await show('notStart', 0.1); set({ pad: true }); await wait(1.2)
       cap('When a baby isn’t going home, the screen goes quiet. Just their name, and their nurse nearby.'); await wait(4.4)
-      cap('When the family is ready, they can open their baby’s sky and go through the story at their own pace.'); await wait(3.4)
-      // the first screen, then straight to the last: who their baby was, every moment, and everyone who loved them
-      await tap((d) => [...d.querySelectorAll('.cv-actions .nav-btn')].find((b) => b.textContent.trim() === 'Her sky'), () => {
-        // the moment her story mounts, and before it paints, turn to its last page
-        const d = doc(), mo = d && new d.defaultView.MutationObserver(() => {
-          if (!d.querySelector('.rem-continue')) return
-          mo.disconnect(); for (let n = 0; n < 8; n++) d.querySelector('.rem-continue')?.click()
-        })
-        mo?.observe(d.body, { childList: true, subtree: true })
-        ;[...(d?.querySelectorAll('.cv-actions .nav-btn') ?? [])].find((b) => b.textContent.trim() === 'Her sky')?.click()
-      })
-      await wait(0.6); cap('At the end, their baby’s whole sky is there, with every moment and everyone who loved them.'); await wait(4.2)
+      // her kept sky, as the family goes through it: a page at a time, each moment lighting its day's star,
+      // then the last page with every moment and everyone who loved her. The words change as the page does.
+      const turn = async (c, sec) => { await tap('.rem-continue', () => { doc()?.querySelector('.rem-continue')?.click(); cap(c) }); await wait(sec) }
+      const herSky = (d) => [...d.querySelectorAll('.cv-actions .nav-btn')].find((b) => b.textContent.trim() === 'Her sky')
+      await tap(herSky, () => { herSky(doc())?.click(); cap('When the family is ready, they can open her sky. It tells her life again, one moment at a time.') }); await wait(4.6)
+      await turn('Each moment comes from notes her nurses already wrote.', 3.8)
+      await turn('Nothing plays by itself. They turn each page, and can stay on one as long as they need.', 4.4)
+      await turn(null, 2.8)
+      await turn('The hard nights are kept too. They were part of her story.', 4.2)
+      await turn(null, 2.8)
+      await turn('At the end, their baby’s whole sky is there, with every moment and everyone who loved them.', 4.6)
       cap('It stays with them, for as long as they want it.'); await wait(3.8)
       cap(null); set({ pad: false }); await wait(1.4)
 
