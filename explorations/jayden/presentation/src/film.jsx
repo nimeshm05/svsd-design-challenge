@@ -621,19 +621,15 @@ export function DemoFilm({ active, thumb }) {
 
       // ── Her stars: the heart of it, and the longest chapter
       mark('Her stars')
-      await show('today', 0.2); day(98); mpost({ type: 'mila:show', what: 'sky' }) // the mirror waits on her stars
+      await show('today', 0.2); day(98)
       await scene({ when: 'Day 98 · her last day', name: 'Her stars', p: 'connection', q: 'How far has she come?', today: 'Weeks blur together, pieced together from memory.' })
       set({ pad: true, tint: 'dawn' }); look('sky'); await wait(0.8)
-      await tap(sky); await line('Every day becomes a star, shaped by what her nurses charted that day.')
+      await tap(sky); await line('Mom opens her stars. Today’s moments gather into one more star.')
       for (let n = 0; n < 40 && !find('.cv-gweek'); n++) await wait(0.25) // until her sky has opened
-      await line('Every week, a constellation. Her whole stay, at a glance.')
-      cap(null); through(); await wait(1.3)
-      set({ foot: { id: 'momSky', at: R.clock }, mirror: R.clock }); await wait(1.33)
+      await line('And it takes its place in her sky, beside every day before it.')
       await line('On her last day, Mom and Dad look back at all of it. The hard days are there too: stars never disappear.')
-      cap(null); set({ foot: null, mirror: null }); await wait(1.1)
-      out(); look('sky'); await wait(1.6)
       await tap('.cv-gweek'); await wait(0.5)
-      await line('Her firsts are planets: first touch, first hold, first bottle.')
+      await line('She opens the first week, the one she missed, and finds its planets.')
       const six = (d) => d.querySelector('.cv-gday[aria-label^="Day 6"]') ?? d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]')
       await tap(six); await wait(0.5)
       lit((d) => d.querySelector('.cv-gpanel'), 1.1); await line('Day 6: the first time Dad held her, kept as it happened.', 'connection')

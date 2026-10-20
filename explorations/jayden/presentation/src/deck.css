@@ -1861,3 +1861,14 @@ body:has(.panel) { overflow: auto; }
 .slide-overview .ov { width: 48%; margin-right: auto; display: flex; flex-direction: column; gap: 18px; }
 .ov-h { margin: 0; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(32px, 3.4vw, 52px); line-height: 1.12; color: var(--text); }
 .ov-p { margin: 0; max-width: 42ch; font-size: clamp(15px, 1.35vw, 18px); line-height: 1.55; color: var(--text-2); }
+
+/* slide 19: what it is, then the idea, one step at a time beside the live screen */
+.ov-steps { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.ov-steps li { display: grid; grid-template-columns: 18px 1fr; column-gap: 12px; opacity: .3; transition: opacity .6s ease; }
+.ov-steps li.is-past { opacity: .55; }
+.ov-steps li.is-on { opacity: 1; }
+.ov-steps i { grid-row: span 2; width: 10px; height: 10px; margin-top: 9px; border-radius: 50%; background: rgba(243, 227, 181, .5); }
+.ov-steps li.is-on i { background: #FFF8E6; box-shadow: 0 0 12px rgba(255, 248, 230, .8); }
+.ov-steps b { font-family: var(--display); font-weight: 400; font-size: clamp(20px, 1.9vw, 26px); color: var(--text); }
+.ov-steps li.is-on b { color: var(--cream); }
+.ov-steps span { font-size: clamp(14px, 1.2vw, 16px); line-height: 1.5; color: var(--text-2); }
