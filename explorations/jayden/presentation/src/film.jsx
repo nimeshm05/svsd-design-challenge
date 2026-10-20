@@ -119,6 +119,7 @@ const CLIPS = {
   // each lasts as long as it's on screen, its fade out included, so none ever runs out and freezes
   // (length on screen: (until - from) / rate)
   mila: { src: './clips/still-mila.webp', until: 99, rate: 1 }, // Mila, asleep in her incubator: the film opens on her
+  ahead: { src: './clips/still-ahead.webp', until: 99, rate: 1 }, // Mom, worrying about everything that might come next
   explain: { src: './clips/still-explain.webp', until: 99, rate: 1 }, // her doctor and nurse, explaining everything at once
   dad: { src: './clips/still-dad.webp', until: 4.3, rate: 0.55 }, // forward, cut before it changes angle (7.8 s)
   home: { src: './clips/still-goinghome.webp', from: 1.4, until: 7.9, rate: 1 }, // buckling her car seat (6.5 s)
@@ -504,6 +505,21 @@ export function DemoFilm({ active, thumb }) {
       after?.(); await wait(0.3)
       set({ touch: { ...q, s: 'lift' } }); await wait(0.5); set({ touch: null })
     }
+    // a slow drag across an element, as a parent would: the finger shown, real pointer events sent
+    const swipe = async (sel, dx, dy = 0, sec = 1.6) => {
+      const el = find(sel), f = frame.current; if (!el || !f) return
+      const r = el.getBoundingClientRect(), W = f.clientWidth, H = f.clientHeight
+      const x0 = r.left + r.width / 2 - dx / 2, y0 = r.top + r.height / 2 - dy / 2
+      const ev = (type, x, y) => el.dispatchEvent(new PointerEvent(type, { bubbles: true, clientX: x, clientY: y, pointerId: 1, pointerType: 'mouse', button: 0, buttons: type === 'pointerup' ? 0 : 1, isPrimary: true }))
+      set({ touch: { x: x0 / W, y: y0 / H, s: 'move' } }); await wait(0.6)
+      set({ touch: { x: x0 / W, y: y0 / H, s: 'press' } }); ev('pointerdown', x0, y0); await wait(0.2)
+      const n = Math.round(sec / 0.05)
+      for (let k = 1; k <= n; k++) {
+        const t = k / n, e = t * t * (3 - 2 * t), x = x0 + dx * e, y = y0 + dy * e
+        ev('pointermove', x, y); set({ touch: { x: x / W, y: y / H, s: 'drag' } }); await wait(sec / n)
+      }
+      ev('pointerup', x0 + dx, y0 + dy); set({ touch: { x: (x0 + dx) / W, y: (y0 + dy) / H, s: 'lift' } }); await wait(0.4); set({ touch: null })
+    }
     // a moment of her stay: its title card, then its sketch (the scenario clip's place)
     const moment = async (card, kind, cap, s = 3.8) => {
       set({ pad: false, spot: null, call: null, ex: null, card }); await wait(2.4)
@@ -603,8 +619,8 @@ export function DemoFilm({ active, thumb }) {
 
       // ── What's ahead
       mark('What’s ahead')
-      await scene({ when: 'Day 3', name: 'What’s ahead', p: 'awareness', q: 'What’s next, and who is caring for her tonight?', today: 'Rounds come and go. Ask at the desk.' })
-      set({ pad: true }); await wait(0.4)
+      await scene({ when: 'Day 3', name: 'What’s ahead', p: 'awareness', q: 'What’s next, and who is caring for her tonight?', today: 'Rounds come and go. Ask at the desk.', still: 'ahead' })
+      set({ pad: true, foot: null }); await wait(0.4)
       await tap('.cv-ahead-btn'); await wait(0.8)
       lit((d) => d.querySelector('.ah'), 1.05); await line('Her week: rounds, what’s planned, and where Mom fits in.', 'awareness')
       await tap((d) => [...d.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Next Steps')); await wait(0.5)
@@ -614,16 +630,6 @@ export function DemoFilm({ active, thumb }) {
       doc()?.querySelector('.ts-scrim')?.click()
       await reason('We show what’s planned, never predictions. No medical claims, just what’s coming and who’s there.')
 
-      // ── Night view
-      mark('Night')
-      await show('night', 0.2)
-      await scene({ when: 'Day 3 · 3:00 a.m.', name: 'Night view', p: 'awareness', q: 'How is she doing right now?', today: 'A 3 a.m. call to the unit, and a wait.' })
-      set({ pad: true, tint: 'night' }); await wait(0.8)
-      lit((d) => d.querySelector('.is-night-home') ?? d.querySelector('.cv-night-line'), 1.15)
-      await line('At night the screen rests when she does: the time, her next care, one quiet line.', 'awareness')
-      await reason('Babies this small are sensitive to light. So it’s dark and silent by default, readable at a glance from the chair.')
-      set({ tint: null })
-
       // ── Her stars: the heart of it, and the longest chapter
       mark('Her stars')
       await show('today', 0.2); day(98)
@@ -632,6 +638,8 @@ export function DemoFilm({ active, thumb }) {
       await tap(sky); await line('Mom opens her stars. Today’s moments gather into one more star.')
       for (let n = 0; n < 40 && !find('.cv-gweek'); n++) await wait(0.25) // until her sky has opened
       await line('And it takes its place in her sky, beside every day before it.')
+      await swipe('.cv-galaxy', -260, 30, 1.8); await swipe('.cv-galaxy', 220, -20, 1.5)
+      await line('Parents can drag through her whole stay, at their own pace.')
       await line('On her last day, Mom and Dad look back at all of it. The hard days are there too: stars never disappear.')
       await tap('.cv-gweek'); await wait(0.5)
       await line('She opens the first week, the one she missed, and finds its planets.')
@@ -647,13 +655,13 @@ export function DemoFilm({ active, thumb }) {
       await line('Three months later, Mila is going home.')
       cap(null); set({ pad: true, foot: null }); await wait(0.8)
       await line('Before they leave, her screen retells her whole stay, star by star,')
-      for (let n = 0; n < 16 && find('.cv-story'); n++) { await flick('.cv-story'); await wait(0.4) }
+      for (let n = 0; n < 40 && find('.cv-story'); n++) { await flick('.cv-story'); await wait(0.35) }
       await line('and her sky becomes a mobile.')
+      for (let n = 0; n < 40 && !find('.cv-discharge.is-mobile'); n++) await wait(0.25) // until the mobile is whole
+      await swipe('.cv-mobile', 300, 0, 2); await line('A model of her whole stay, one strand for each week. Drag to turn it.')
       await tap('.cv-takehome-btn'); await line('One they get to take home.')
-      cap(null); through(); await wait(1.6) // into the mobile on her screen...
-      set({ foot: { id: 'mobile', at: R.clock } }); await wait(1.2) // ...and it's the real one, over her crib
+      cap(null); set({ foot: { id: 'mobile', at: R.clock } }); await wait(1.4) // the real one, over her crib, dissolving in
       await line('Her sky goes home with her.')
-      out(); await wait(0.4)
       cap(null); feat(null); set({ tint: null, foot: null })
 
       // ── If she doesn't go home

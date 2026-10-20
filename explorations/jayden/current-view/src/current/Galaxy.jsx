@@ -134,6 +134,45 @@ const dust = (seed, n, colors, op, x0 = 0, y0 = 0, w = W, h = H, size = 1) => {
 }
 const NTINTS_G = () => ['#FFDCB5', '#D9CEFF', '#BDEBD3', '#C4E0FF', '#FFC9D8', '#F3E3B5', '#B9B4E6', '#FFB38A'].map((c) =>
   `<radialGradient id="g-n${c.slice(1)}"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".3" stop-color="${c}" stop-opacity=".22"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`).join('')
+// her stay laid out as on Mila's stars (Sara's): weeks in a zigzag, in order; used by her going-home mobile
+export function layoutStay(days) {
+  const nW = Math.max(...days.map((d) => d.week)), of = (w) => days.filter((d) => d.week === w)
+  // each week's shape: a gentle, curling walk along the path, never too close to a star already placed
+  const shapes = Array.from({ length: nW }, (_, i) => {
+    const w = i + 1, days = of(w)
+    let heading = DIR + (hash(w) - 0.5) * 0.8
+    const pts = [[0, 0]]
+    for (let k = 1; k < days.length; k++) {
+      const d = days[k].d, prev = pts[k - 1]
+      let best = null
+      for (let t = 0; t < 14 && !best; t++) {
+        const h = heading + (hash(d * 3 + t) - 0.5) * 1.6 + 0.35, step = 30 + hash(d + 5) * 10
+        const q = [prev[0] + Math.cos(h) * step, prev[1] + Math.sin(h) * step]
+        if (pts.every((o) => Math.hypot(o[0] - q[0], o[1] - q[1]) > 27)) { best = q; heading = h }
+      }
+      pts.push(best ?? [prev[0] + Math.cos(heading) * 32, prev[1] + Math.sin(heading) * 32])
+    }
+    const mx = pts.reduce((t, p) => t + p[0], 0) / pts.length, my = pts.reduce((t, p) => t + p[1], 0) / pts.length
+    return pts.map((p) => [p[0] - mx, p[1] - my])
+  })
+  // where each week sits: evenly along the line, nudged along and across it by its own seed
+  const mid = [(PATH.from[0] + PATH.to[0]) / 2, (PATH.from[1] + PATH.to[1]) / 2]
+  const span = Math.hypot(PATH.to[0] - PATH.from[0], PATH.to[1] - PATH.from[1])
+  const lay = (step) => shapes.map((pts, i) => {
+    const w = i + 1
+    const along = (i - (nW - 1) / 2) * step + (hash(w * 7 + 2) - 0.5) * 24
+    // a zigzag: week 1 high, week 2 low, week 3 high… each a little off its mark
+    const across = (i % 2 ? -1 : 1) * PATH.zig + (hash(w * 13 + 5) - 0.5) * 2 * PATH.jitter
+    const c = [mid[0] + U[0] * along + N[0] * across, mid[1] + U[1] * along + N[1] * across]
+    return pts.map((p) => [c[0] + p[0], c[1] + p[1]])
+  })
+  // weeks never touch: if any two come too close, space the whole path out a little more
+  const apart = (weeks) => weeks.every((a, i) => weeks.slice(i + 1).every((b) => a.every((p) => b.every((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) >= PATH.gap))))
+  let step = Math.max(PATH.minStep, nW > 1 ? span / (nW - 1) : 0), weeks = lay(step)
+  for (let k = 0; k < 40 && !apart(weeks); k++) weeks = lay((step += 8))
+  return weeks.flat()
+}
+
 export const DEFS = `<defs>
   <filter id="g-soft"><feTurbulence type="turbulence" baseFrequency=".05" numOctaves="1" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
  <filter id="g-cloud" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="34"/></filter>

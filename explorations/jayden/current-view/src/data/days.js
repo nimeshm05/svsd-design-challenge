@@ -534,3 +534,20 @@ export function dayDetail(d) {
   return { ...day, isToday, nowH, first: DAY_FIRSTS[d]?.title, story, supportLabel: SUPPORT_LABEL[day.support], moments: m,
     things: DAY_THINGS[d]?.map((x) => (x.at != null ? { ...x, t: fmt(x.at) } : x)) }
 }
+
+// a step back in week 7 (days 44-46) before she breathes on her own again.
+export const homeStay = {
+  today: 90,
+  firsts: { ...stay.firsts, 52: 'Open crib', 66: 'First bath', 79: 'Every feed by mouth' },
+  days: Array.from({ length: 90 }, (_, i) => {
+    const d = i + 1
+    return {
+      d,
+      week: Math.ceil(d / 7),
+      weight: d <= 23 ? stay.days[i].weight : stay.days[22].weight + (d - 23) * 20,
+      support: d <= 4 ? 'ventilator' : d <= 20 ? 'cpap' : d <= 37 ? 'high-flow' : d <= 43 ? 'low-flow' : d <= 46 ? 'high-flow' : 'room-air',
+      mood: d === 17 || d === 45 ? 'hard' : [16, 18, 44, 46].includes(d) ? 'mixed' : 'calm',
+      parent: d <= 23 ? stay.days[i].parent : 40 + ((d * 37) % 11) * 15,
+    }
+  }),
+}
