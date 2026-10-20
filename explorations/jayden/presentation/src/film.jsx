@@ -622,8 +622,13 @@ export function DemoFilm({ active, thumb }) {
       cap('When the family is ready, they can open their baby’s sky and go through the story at their own pace.'); await wait(3.4)
       // the first screen, then straight to the last: who their baby was, every moment, and everyone who loved them
       await tap((d) => [...d.querySelectorAll('.cv-actions .nav-btn')].find((b) => b.textContent.trim() === 'Her sky'), () => {
-        ;[...(doc()?.querySelectorAll('.cv-actions .nav-btn') ?? [])].find((b) => b.textContent.trim() === 'Her sky')?.click()
-        setTimeout(() => { for (let n = 0; n < 8; n++) doc()?.querySelector('.rem-continue')?.click() }, 60)
+        // the moment her story mounts, and before it paints, turn to its last page
+        const d = doc(), mo = d && new d.defaultView.MutationObserver(() => {
+          if (!d.querySelector('.rem-continue')) return
+          mo.disconnect(); for (let n = 0; n < 8; n++) d.querySelector('.rem-continue')?.click()
+        })
+        mo?.observe(d.body, { childList: true, subtree: true })
+        ;[...(d?.querySelectorAll('.cv-actions .nav-btn') ?? [])].find((b) => b.textContent.trim() === 'Her sky')?.click()
       })
       await wait(0.6); cap('At the end, it shows who their baby was and every moment they had together.'); await wait(4.2)
       cap('It stays with them, for as long as they want it.'); await wait(3.8)
