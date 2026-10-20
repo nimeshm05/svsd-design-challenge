@@ -70,6 +70,14 @@ const SCENES = {
     <path className="sk is-star" d={starPath(196, 44, 9)} />
     <path className="sk is-ray" d="M184 66 C176 74 168 76 160 76" />
   </>,
+  // a parent's hand resting on the incubator, her star above
+  keep: <>
+    <Incubator x={78} y={108} />
+    <path className="sk is-hand" d="M60 64 C76 60 96 66 112 74 L128 78 C134 79 134 86 128 86 L104 84" />
+    <path className="sk is-hand" d="M22 92 C34 80 46 70 60 64" />
+    <path className="sk is-star" d={starPath(184, 34, 9)} />
+    <path className="sk is-ray" d="M172 50 C162 60 150 66 138 70" />
+  </>,
 }
 export function Scene({ kind, className = '' }) {
   return (

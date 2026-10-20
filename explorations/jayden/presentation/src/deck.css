@@ -849,3 +849,74 @@ body:has(.panel) { overflow: auto; }
   .iter-row.is-focus { transition: opacity .3s ease; }
   .iter-row.is-focus.is-fading { opacity: 0; }
 }
+
+/* ===== The demo film: a product feature video, self-playing ===== */
+.slide.slide-demo { inset: -74px 0 -92px; padding: 0; }
+.dfilm { position: relative; width: 100%; height: 100%; max-width: none !important; overflow: hidden; }
+.dfilm-cam { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform-origin: 50% 50%;
+  transition: transform 1.7s cubic-bezier(.65, 0, .25, 1), opacity 1s ease; will-change: transform; }
+.dfilm.is-pad .dfilm-cam { opacity: 1; }
+.ipad.dfilm-pad { height: 70vh; width: auto; max-width: 84vw; max-height: none; aspect-ratio: 1.43; transition: box-shadow 1.2s ease;
+  box-shadow: 0 0 0 1px #3a3b40, 0 50px 120px rgba(0, 0, 0, .75), 0 0 160px rgba(107, 91, 214, .16); }
+.dfilm-pad .ipad-screen { position: relative; }
+.dfilm-pad iframe { pointer-events: none; }
+/* the spotlight: everything but the feature dims; the feature gets a soft cream edge */
+.dfilm-spot { position: absolute; border-radius: 14px; pointer-events: none; z-index: 2; box-shadow: 0 0 0 200vmax rgba(0, 0, 0, 0);
+  transition: left .9s cubic-bezier(.4, 0, .2, 1), top .9s cubic-bezier(.4, 0, .2, 1), width .9s cubic-bezier(.4, 0, .2, 1), height .9s cubic-bezier(.4, 0, .2, 1), box-shadow .8s ease; }
+.dfilm-spot.is-on { box-shadow: 0 0 0 200vmax rgba(0, 0, 0, .62), 0 0 0 calc(1.5px / var(--s)) rgba(243, 227, 181, .6), 0 0 calc(34px / var(--s)) rgba(243, 227, 181, .28); }
+/* the finger */
+.dfilm-touch { position: absolute; z-index: 3; width: calc(48px / var(--s)); height: calc(48px / var(--s)); margin: calc(-24px / var(--s)) 0 0 calc(-24px / var(--s)); border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, .5), rgba(255, 255, 255, .18) 62%, rgba(255, 255, 255, 0) 72%);
+  border: calc(1.5px / var(--s)) solid rgba(255, 255, 255, .8); box-shadow: 0 calc(6px / var(--s)) calc(22px / var(--s)) rgba(0, 0, 0, .45);
+  transition: left 1.4s cubic-bezier(.45, 0, .2, 1), top 1.4s cubic-bezier(.45, 0, .2, 1), transform .2s ease, opacity .35s ease; animation: touch-in .5s ease both; }
+@keyframes touch-in { from { opacity: 0; transform: scale(1.5); } }
+.dfilm-touch.is-press, .dfilm-touch.is-drag { transform: scale(.78); background: radial-gradient(circle, rgba(255, 255, 255, .7), rgba(255, 255, 255, .25) 62%, rgba(255, 255, 255, 0) 72%); }
+.dfilm-touch.is-press::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; border: calc(2px / var(--s)) solid rgba(255, 255, 255, .7); animation: ripple .7s ease-out both; }
+@keyframes ripple { to { transform: scale(2.4); opacity: 0; } }
+.dfilm-touch.is-lift { opacity: 0; transform: scale(1.2); }
+/* the callout: beside the feature when zoomed in, above the screen when wide */
+.dfilm-call { position: absolute; z-index: 4; left: 63%; top: 50%; transform: translateY(-50%); max-width: min(420px, 30vw); display: flex; flex-direction: column; gap: 8px;
+  animation: call-in .8s .25s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes call-in { from { opacity: 0; transform: translateY(calc(-50% + 14px)); filter: blur(6px); } }
+.dfilm-call.is-wide { left: 50%; top: 4.5%; transform: translateX(-50%); max-width: 70vw; align-items: center; text-align: center; animation-name: call-in-wide; }
+@keyframes call-in-wide { from { opacity: 0; transform: translate(-50%, 10px); filter: blur(6px); } }
+.dfilm-call-k { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.dfilm-call-k i { width: 7px; height: 7px; border-radius: 50%; }
+.dfilm-call b { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; font-size: clamp(28px, 2.8vw, 42px); line-height: 1.1; color: var(--text); }
+.dfilm-call-line { font-size: clamp(15px, 1.3vw, 18px); line-height: 1.45; color: var(--text-2); }
+.dfilm-call.is-wide b { font-size: clamp(24px, 2.3vw, 34px); }
+/* storyboard moments, standing in for the scenario clips */
+.dfilm-scene { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; animation: fade 1s ease both; }
+.dfilm-scene .scene { width: min(860px, 62vw); height: auto; }
+.dfilm-scene .sk { stroke-width: 1.4; }
+.dfilm-cap { position: absolute; z-index: 6; left: 50%; bottom: 6.5%; transform: translateX(-50%); width: max-content; max-width: 80vw; text-align: center;
+  font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 48; font-weight: 300; font-size: clamp(22px, 2.2vw, 32px); color: var(--text); animation: cap-in 1s .3s var(--ease) both; }
+.dfilm-cap b { font-weight: 400; color: var(--cream); }
+/* the closing */
+.dfilm-close { position: absolute; inset: 0; z-index: 7; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.dfilm-close p, .dfilm-c3 { position: absolute; left: 50%; transform: translateX(-50%); margin: 0; width: max-content; opacity: 0; filter: blur(8px); transition: opacity 1.6s ease, filter 1.6s ease, top 1.6s var(--ease); }
+.dfilm-c1 { top: 44%; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 96; font-weight: 300; font-size: clamp(32px, 3.6vw, 56px); color: var(--text-2); }
+.dfilm-c2 { top: 44%; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(44px, 5.4vw, 86px); letter-spacing: -.02em; color: var(--cream); }
+.dfilm-c3 { top: 62%; display: flex; flex-direction: column; align-items: center; gap: 14px; font-family: var(--display); font-size: clamp(22px, 2vw, 30px); color: var(--text); }
+.dfilm-c3 .glyph { filter: drop-shadow(0 0 24px rgba(255, 248, 230, .8)); }
+.is-c1 .dfilm-c1 { opacity: 1; filter: none; }
+.is-c2 .dfilm-c2, .is-c3 .dfilm-c2 { opacity: 1; filter: none; }
+.is-c3 .dfilm-c2 { top: 36%; }
+.is-c3 .dfilm-c3 { opacity: 1; filter: none; transition-delay: .8s; }
+.dfilm-c2 mark { background-size: 0% 82%; }
+.is-c2 .dfilm-c2 mark, .is-c3 .dfilm-c2 mark { background-size: 100% 82%; transition-delay: 1.4s; color: #FFF6DC; }
+.dfilm-field i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #FFF3D6; box-shadow: 0 0 6px rgba(255, 243, 214, .8); opacity: 0; transition: opacity 1.2s ease; transition-delay: calc(var(--k) * 40ms); }
+.dfilm-field { position: absolute; inset: 0; }
+.is-c2 .dfilm-field i, .is-c3 .dfilm-field i { opacity: .75; }
+.dfilm-bar { position: absolute; left: 50%; bottom: 18px; width: min(360px, 40vw); height: 2px; transform: translateX(-50%); background: rgba(243, 227, 181, .1); border-radius: 2px; overflow: hidden; z-index: 8; }
+.dfilm-bar i { display: block; height: 100%; background: var(--cream); opacity: .5; transition: width .2s linear; }
+.dfilm-replay { z-index: 9; }
+/* when a callout sits beside the zoomed screen, the right of the frame falls to black so the words stand alone */
+.dfilm::after { content: ''; position: absolute; inset: 0 0 0 auto; width: 46%; z-index: 3; pointer-events: none; opacity: 0; transition: opacity .9s ease;
+  background: linear-gradient(to left, rgba(0, 0, 0, .96) 0, rgba(0, 0, 0, .9) 62%, rgba(0, 0, 0, 0)); }
+.dfilm.has-call::after { opacity: 1; }
+/* the closing sky: her days light one by one, each its own size, twinkling softly */
+.dfilm-field i { width: calc(3px * var(--z)); height: calc(3px * var(--z)); transition-delay: calc(var(--k) * 28ms); animation: twinkle-f var(--tw) ease-in-out infinite; }
+@keyframes twinkle-f { 50% { filter: brightness(.6); } }
+.is-c2 .dfilm-field i, .is-c3 .dfilm-field i { opacity: .8; }
+.is-c3 .dfilm-field i { opacity: .55; transition-delay: 0s; }

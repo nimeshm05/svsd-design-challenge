@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Icon, StarGlyph } from './glyphs.jsx'
 import { Puzzle } from './puzzle.jsx'
-import { FEATURES, Feature, Storyboard } from './demo.jsx'
+import { Feature } from './demo.jsx'
+import { DemoFilm } from './film.jsx'
 
 export const ITER_MODE = 'focus' // 'focus' = one at a time, then into the row · 'row' = current staggered fade-in
 
@@ -939,8 +940,8 @@ export const SLIDES = [
 
   { id: 'iterations', section: '07 · Previous iterations', planet: true, steps: ITER_MODE === 'focus' ? 4 : 1, View: Iterations },
 
-  { id: 'board', section: '08 · The product', planet: true, View: Storyboard },
-  ...FEATURES.map((f) => ({ id: f.id, section: '08 · The product', feature: f.show, View: Feature(f) })),
+  { id: 'demo', section: '08 · The product', planet: true, bare: true, View: DemoFilm },
+  { id: 'f-live', section: '08 · The product', feature: 'today', View: Feature({ id: 'f-live', show: 'today', k: 'Try it', p: 'connection', title: <>Her bedside, live</>, text: 'The real prototype. Tap anywhere.' }) },
   { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
   { id: 'close', section: 'Mila’s Sky', View: Close },
 ]
