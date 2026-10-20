@@ -1580,3 +1580,39 @@ body:has(.panel) { overflow: auto; }
 .dfilm-capk em { font-style: normal; text-transform: none; letter-spacing: .02em; font-family: var(--sans, inherit); color: rgba(246, 238, 219, .7); }
 .dfilm-capk em::before { content: "·"; margin: 0 8px 0 2px; color: rgba(246, 238, 219, .4); }
 .dfilm-mirror-box { transition: opacity 1s ease; } /* leaves with the clip, never in one frame */
+
+/* ===== v2: a NICU journey, today ===== */
+.jr { width: min(1100px, 100%); display: flex; flex-direction: column; gap: clamp(18px, 3vh, 34px); }
+.jr-line { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; position: relative; }
+.jr-line::before { content: ""; position: absolute; left: 4px; right: 4px; top: 4px; height: 1px; background: rgba(243, 227, 181, .18); }
+.jr-line li { position: relative; display: flex; flex-direction: column; gap: 10px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); opacity: .45; transition: opacity .5s, color .5s; }
+.jr-line li i { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.jr-line li i.is-connection { background: var(--connection); } .jr-line li i.is-comprehension { background: var(--comprehension); } .jr-line li i.is-awareness { background: var(--awareness); }
+.jr-line li.is-past { opacity: .7; }
+.jr-line li.is-on { opacity: 1; color: var(--cream); }
+.jr-line li.is-on i { box-shadow: 0 0 0 5px rgba(243, 227, 181, .14); }
+.jr-card { display: flex; flex-direction: column; gap: 14px; max-width: 62ch; animation: rise .8s var(--ease) both; }
+.jr-need { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+.jr-need.is-connection { color: var(--connection); } .jr-need.is-comprehension { color: var(--comprehension); } .jr-need.is-awareness { color: var(--awareness); }
+.jr-when { margin: 0; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 96; font-weight: 300; font-size: clamp(38px, 4.4vw, 66px); line-height: 1.05; color: var(--text); }
+.jr-what { margin: 0; font-size: clamp(17px, 1.6vw, 22px); line-height: 1.5; color: var(--text-2); }
+.jr-q { margin: 8px 0 0; padding-left: 18px; border-left: 2px solid rgba(243, 227, 181, .35); }
+.jr-q p { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(19px, 1.8vw, 26px); line-height: 1.4; color: var(--cream); }
+.jr-q cite { display: block; margin-top: 8px; font-style: normal; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+/* ===== v2: what parents are really asking ===== */
+.qs { width: min(1000px, 100%); display: flex; flex-direction: column; gap: 22px; }
+.qs-table { display: flex; flex-direction: column; }
+.qs-row { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid rgba(243, 227, 181, .12); align-items: baseline; }
+.qs-row.is-head { padding-top: 0; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.qs-q { display: flex; align-items: baseline; gap: 12px; font-family: var(--display); font-weight: 400; font-size: clamp(20px, 2vw, 28px); color: var(--text); }
+.qs-q i { flex: none; width: 8px; height: 8px; border-radius: 50%; transform: translateY(-3px); }
+.qs-q i.is-connection { background: var(--connection); } .qs-q i.is-comprehension { background: var(--comprehension); } .qs-q i.is-awareness { background: var(--awareness); }
+.qs-now { font-size: clamp(15px, 1.35vw, 18px); color: var(--text-2); }
+
+/* ===== v2: each feature, against today ===== */
+.feat-vs { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; max-width: 920px; text-align: left; }
+.feat-vs p { margin: 0; font-size: clamp(14px, 1.25vw, 17px); line-height: 1.45; }
+.feat-vs b { display: block; margin-bottom: 6px; font-family: var(--mono); font-weight: 500; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+.feat-before { color: var(--muted); } .feat-before b { color: var(--muted); }
+.feat-after { color: var(--text); } .feat-after b { color: var(--cream); }

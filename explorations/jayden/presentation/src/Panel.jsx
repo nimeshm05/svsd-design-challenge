@@ -14,6 +14,7 @@ const LABELS = {
   'p-open': 'Our research pointed to three needs', pillars: 'The three pillars (builds)', problem: 'Problem statement', compete: 'Competitive analysis', hmw: 'Opportunity: how might we (builds)',
   principles: 'Each pain point became a principle', brainstorm: 'Brainstorm: ideas over our affinity map', sort: 'Ideas float to their principles', thread: 'What the ideas had in common',
   film: 'Concept film: day → star → sky → planets → her name', 's-open': 'Stars never disappear', system: 'The story layer: design system',
+  journey: 'A NICU journey, today: six moments (builds)', questions: 'What parents are really asking, and what they do today', insight: 'The insight: it’s already in her chart', overview: 'Mila’s Sky in one line', 'f-first': 'Day 1 screen', 'f-walk': 'What’s on her', 'f-term': 'Words in a tap', 'f-family': 'While you were away', 'f-ahead': 'What’s ahead and who’s caring', 'f-night': 'Night view', 'f-sky': 'Her sky: progress at a glance',
   'k-open': 'Three people at every bedside', constraints: 'Constraints table, then each one: before → after (builds)', mom: 'A tired mom in a hospital bed', modality: 'Touch, remote or gesture', iterations: 'Previous iterations: where it started',
   board: 'Storyboard: her stay, six moments', demo: 'Demo film: the product, feature by feature', 'f-live': 'Live prototype, for questions', 'both-close': 'Niko goes home (builds)', 'every-day': 'Every day counts', close: 'Every star is hers to keep',
 }

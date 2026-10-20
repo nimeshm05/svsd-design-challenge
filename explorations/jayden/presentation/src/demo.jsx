@@ -212,7 +212,12 @@ export const Feature = (f) => function FeatureView({ thumb }) {
     <div className="feat">
       <div className="rv feat-k" style={{ '--d': 0 }}><span>{f.k}</span><i className={`is-${f.p}`} />{TAG[f.p]}</div>
       <h2 className="rv feat-h" style={{ '--d': 1 }}>{f.title}</h2>
-      <p className="rv feat-p" style={{ '--d': 2 }}>{f.text}</p>
+      {f.before ? (
+        <div className="rv feat-vs" style={{ '--d': 2 }}>
+          <p className="feat-before"><b>Today</b>{f.before}</p>
+          <p className="feat-after"><b>With Mila&apos;s Sky</b>{f.text}</p>
+        </div>
+      ) : <p className="rv feat-p" style={{ '--d': 2 }}>{f.text}</p>}
       <div className="feat-pad-spot">{thumb && <div className="ipad demo-pad is-thumb"><div className="ipad-screen"><div className="ipad-thumb"><Icon name={f.p === 'baby' ? 'moon' : f.p} size={44} /></div></div></div>}</div>
     </div>
   )

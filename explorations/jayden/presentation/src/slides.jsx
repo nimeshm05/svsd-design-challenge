@@ -1035,42 +1035,94 @@ function Close() {
   )
 }
 
+
+/* ---------- v2: a NICU journey, today (the "before"), built moment by moment ---------- */
+// What families and nurses told us happens today, in the order a family lives it. Quotes are from our interviews.
+const JOURNEY = [
+  { when: 'The first night', p: 'connection', what: 'Dad arrives alone while Mom recovers from surgery. Machines, alarms, people moving fast. No one has time to explain.', q: 'I didn’t have the luxury of having my baby right away and putting him on my chest.', who: 'NICU parent' },
+  { when: 'Rounds', p: 'comprehension', what: 'Doctors talk through the plan at the bedside, quickly, in clinical terms. Parents nod, then look the words up on their phones.', q: '[Medical terminology] is a new language.', who: 'NICU parent' },
+  { when: 'Shift change', p: 'comprehension', what: 'A new nurse every shift. What a parent hears depends on who they ask, and when.', q: 'The hospital is like an elaborate game of telephone.', who: 'NICU parent' },
+  { when: 'Mom’s first visit', p: 'connection', what: 'She has missed days. The only record is what Dad remembers, and what’s on the whiteboard.', q: null },
+  { when: '3 a.m., at home', p: 'awareness', what: 'Parents call the unit to ask how the night went, and wait for whoever is free.', q: 'In the ICU, time just… doesn’t exist. It’s just a mash of time.', who: 'NICU parent' },
+  { when: 'A setback', p: 'comprehension', what: 'Her breathing support goes back up. Parents are told, but not what it means for her, or for going home.', q: 'We tell them everything, but sometimes it’s too much, they don’t understand.', who: 'Retired NICU nurse' },
+]
+function Journey({ step = 0 }) {
+  const i = Math.min(step, JOURNEY.length - 1), m = JOURNEY[i]
+  return (
+    <div className="jr">
+      <R d={0} className="k">A NICU journey, today</R>
+      <ol className="jr-line" aria-hidden="true">
+        {JOURNEY.map((x, k) => <li key={x.when} className={k === i ? 'is-on' : k < i ? 'is-past' : ''}><i className={`is-${x.p}`} /><span>{x.when}</span></li>)}
+      </ol>
+      <div className="jr-card" key={i}>
+        <span className={`jr-need is-${m.p}`}><Icon name={m.p} size={14} />{TAGS[m.p]}</span>
+        <h2 className="jr-when">{m.when}</h2>
+        <p className="jr-what">{m.what}</p>
+        {m.q && <blockquote className="jr-q"><p>&ldquo;{m.q}&rdquo;</p><cite>{m.who}</cite></blockquote>}
+      </div>
+    </div>
+  )
+}
+const TAGS = { connection: 'Connection', comprehension: 'Comprehension', awareness: 'Awareness' }
+
+/* ---------- v2: the needs, as the questions parents actually ask ---------- */
+const QUESTIONS = [
+  ['What happened while I was away?', 'Call the desk, ask whoever is on shift', 'connection'],
+  ['What does that word mean?', 'Google it later, or nod and stay confused', 'comprehension'],
+  ['What’s next? When are rounds?', 'Wait, or miss them', 'awareness'],
+  ['Who is caring for her tonight?', 'Ask at the desk', 'awareness'],
+  ['Is she getting better?', 'Piece it together from memory', 'connection'],
+]
+function Questions() {
+  return (
+    <div className="qs">
+      <R d={0} className="k">What parents are really asking</R>
+      <div className="qs-table" role="table">
+        <R d={1} className="qs-row is-head" role="row"><span role="columnheader">Parents ask</span><span role="columnheader">Today, they…</span></R>
+        {QUESTIONS.map(([q, now, p], k) => (
+          <R key={q} d={2 + k} className="qs-row" role="row">
+            <span role="cell" className="qs-q"><i className={`is-${p}`} />{q}</span><span role="cell" className="qs-now">{now}</span>
+          </R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export const SLIDES = [
+  // v2 (after Bryan's feedback): a real journey first, the product's usefulness before its feeling, then the story
   { id: 'title', section: 'Mila’s Sky', planet: true, View: Title },
-  { id: 'niko', section: 'Hook', View: Niko },
-  { id: 'hook', section: 'Hook', View: Hook },
-  { id: 'both', section: 'Hook', View: statement({ k: 'The tension', big: true, children: <><L>Fear</L> and <L>joy</L>. NICU parents experience both, every day.</> }) },
+  { id: 'niko', section: 'Niko', View: Niko },
   { id: 'nicu', section: 'The NICU', planet: true, View: define({ k: 'The NICU', word: 'Neonatal Intensive Care Unit', say: '“nick-you”', children: <>The hospital unit where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
-  { id: 'environment', section: 'The NICU', View: Environment },
-  { id: 'wall', section: '01 · Research', planet: true, View: Wall },
+  { id: 'journey', section: '01 · A NICU journey, today', planet: true, steps: JOURNEY.length, View: Journey },
 
-  { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn’t capture <L>what it feels like to live through it</L>.</> }) },
-  { id: 'asked', section: '01 · Research', steps: 3, View: Asked },
-  { id: 'heard', section: '01 · Research', View: Heard },
-  { id: 'telephone', section: '01 · Research', View: Telephone },
+  { id: 'wall', section: '02 · Research', planet: true, View: Wall },
+  { id: 'asked', section: '02 · Research', steps: 3, View: Asked },
+  { id: 'heard', section: '02 · Research', View: Heard },
 
-  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Our research pointed to <L>three unmet needs</L>.</> }) },
-  { id: 'pillars', section: '02 · The problem', tint: 'all', steps: 3, View: Pillars },
-  { id: 'problem', section: '02 · The problem', tint: 'all', View: Problem },
-  { id: 'compete', section: '02 · The problem', tint: 'all', View: Compete },
-  { id: 'hmw', section: '02 · The problem', tint: 'all', steps: 5, View: HMW },
-
-  { id: 'principles', section: '03 · Design principles', planet: true, tint: 'all', View: Principles },
-
+  { id: 'pillars', section: '03 · The problem', planet: true, tint: 'all', steps: 3, View: Pillars },
+  { id: 'questions', section: '03 · The problem', tint: 'all', View: Questions },
+  { id: 'compete', section: '03 · The problem', tint: 'all', View: Compete },
+  { id: 'hmw', section: '03 · The problem', tint: 'all', steps: 5, View: HMW },
   { id: 'brainstorm', section: '04 · Ideation', planet: true, View: Brainstorm },
-  { id: 'sort', section: '04 · Ideation', tint: 'all', View: Sort },
-  { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>Turn the pieces of a baby’s care into <L>a{' '}story</L>.</> }) },
+  { id: 'insight', section: '04 · The insight', View: statement({ k: 'The insight', big: true, children: <>Everything parents need is <L>already in her chart</L>. It just never reaches them in a form they can use.</> }) },
 
-  { id: 'film', section: '05 · The idea and the story layer', planet: true, bare: true, View: Film },
+  { id: 'k-open', section: '05 · Constraints', planet: true, View: KOpen },
+  { id: 'constraints', section: '05 · Constraints', steps: CONSTRAINT_STEPS, View: Constraints },
+  { id: 'modality', section: '05 · Modality', View: Modality },
 
-  { id: 'k-open', section: '06 · Constraints', planet: true, View: KOpen },
-  { id: 'constraints', section: '06 · Constraints', steps: CONSTRAINT_STEPS, View: Constraints },
-  { id: 'mom', section: '07 · Modality', planet: true, View: Mom },
-  { id: 'modality', section: '07 · Modality', View: Modality },
+  { id: 'overview', section: '06 · Mila’s Sky', planet: true, View: statement({ k: 'Mila’s Sky', big: true, children: <>A bedside screen that turns her chart into <L>something parents can follow</L>: what happened, what it means, and what’s next.</> }) },
+  { id: 'f-first', section: '06 · Mila’s Sky', feature: 'first', View: Feature({ k: 'Day 1', p: 'connection', title: <>Her first screen asks nothing of you</>, before: 'A wall of monitors and numbers no one has time to explain.', text: 'Her name, and how small she is in something you can picture.' }) },
+  { id: 'f-walk', section: '06 · Mila’s Sky', feature: 'walk', View: Feature({ k: 'What’s on her', p: 'comprehension', title: <>One thing at a time</>, before: 'Every machine explained at once, at five in the morning.', text: 'Each device lights up on her body, with one plain sentence.' }) },
+  { id: 'f-term', section: '06 · Mila’s Sky', feature: 'term', View: Feature({ k: 'Medical words', p: 'comprehension', title: <>Explained in a tap</>, before: 'Parents nod along, then look the words up later.', text: 'Warm words first. Tap any term to see what it means, shown on her own body.' }) },
+  { id: 'f-family', section: '06 · Mila’s Sky', feature: 'family', View: Feature({ k: 'Her day', p: 'connection', title: <>What happened while you were away</>, before: 'Call the desk, or rely on what the last shift remembers.', text: 'Her day as an arc, hour by hour, with moments her nurses already chart, like when Mom came in before her early feed.' }) },
+  { id: 'f-ahead', section: '06 · Mila’s Sky', feature: 'ahead', View: Feature({ k: 'What’s ahead', p: 'awareness', title: <>What’s next, and who’s caring for her</>, before: 'Rounds come and go, and parents miss them.', text: 'Tomorrow and this week, where you fit in, and who is on tonight.' }) },
+  { id: 'f-night', section: '06 · Mila’s Sky', feature: 'night', View: Feature({ k: 'Night', p: 'awareness', title: <>A screen that rests when she does</>, before: 'A 3 a.m. call to the unit to ask how the night is going.', text: 'Dimmed to the time, her next care time, and one quiet line.' }) },
+  { id: 'f-sky', section: '06 · Mila’s Sky', feature: 'sky', View: Feature({ k: 'Her sky', p: 'connection', title: <>Is she getting better?</>, before: 'Weeks blur together. Progress is pieced together from memory.', text: 'Every day becomes a star, every week a constellation, and her firsts are planets. How far she has come, at a glance.' }) },
 
-  { id: 'demo', section: '08 · The product', planet: true, bare: true, View: DemoFilm },
-  { id: 'f-live', section: '08 · The product', feature: 'today', View: Feature({ id: 'f-live', show: 'today', k: 'Try it', p: 'connection', title: <>Her bedside, live</>, text: 'The real prototype. Tap anywhere.' }) },
+  { id: 'demo', section: '07 · Her story', planet: true, bare: true, View: DemoFilm },
+  { id: 'f-live', section: '07 · Her story', feature: 'today', View: Feature({ id: 'f-live', show: 'today', k: 'Try it', p: 'connection', title: <>Her bedside, live</>, text: 'The real prototype. Tap anywhere.' }) },
   { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
-  { id: 'every-day', section: 'Mila’s Sky', View: statement({ big: true, children: <>Mila&apos;s Sky shows that <L>every day counts</L>.</> }) },
   { id: 'close', section: 'Mila’s Sky', View: Close },
 ]
+
