@@ -659,6 +659,8 @@ export function DemoFilm({ active, thumb }) {
   const caps = useFade(v.cap ? { t: v.cap, k: v.capk, q: v.capq } : null, (c) => String(c.t), 600)
   const P = v.call && PILLAR[v.call.p]
   const side = v.call && !v.call.wide && !v.call.over ? (L.ox > 0 ? 'side-l' : 'side-r') : ''
+  // where the scrubber sits: while a seek replays the script up to its target, it waits at the target
+  const scrubT = drag ?? Math.max(v.t, seekTo)
   return (
     <div ref={host} className={`dfilm ${v.lift ? 'has-lift' : ''} ${v.seeking ? 'is-seeking' : ''} ${playing ? '' : 'is-paused'} look-${v.look} ${v.tint ? `tint-${v.tint}` : ''} ${v.pad ? 'is-pad' : ''} ${side ? `has-call ${side}` : ''} ${v.call?.over ? 'has-over' : ''} ${v.close ? `is-close is-c${v.close}` : ''}`}>
       <div className="dfilm-bg" aria-hidden="true"><i className="w-connection" /><i className="w-comprehension" /><i className="w-awareness" /><i className="w-night" /><i className="w-dawn" /></div>
@@ -726,14 +728,14 @@ export function DemoFilm({ active, thumb }) {
           <button type="button" className="dfc-play" onClick={() => { if (v.done) { setSeekTo(0); setRun((r) => r + 1); setPlaying(true) } else setPlaying((p) => !p) }} aria-label={v.done ? 'Replay' : playing ? 'Pause' : 'Play'}>
             {v.done ? '↺' : playing ? <svg viewBox="0 0 12 12" width="12" height="12"><rect x="2" y="1.5" width="2.6" height="9" rx="1" fill="currentColor" /><rect x="7.4" y="1.5" width="2.6" height="9" rx="1" fill="currentColor" /></svg> : <svg viewBox="0 0 12 12" width="12" height="12"><path d="M3 1.5 L10.5 6 L3 10.5 Z" fill="currentColor" /></svg>}
           </button>
-          <span className="dfc-time">{fmt(drag ?? v.t)}</span>
+          <span className="dfc-time">{fmt(scrubT)}</span>
           {/* drag or click anywhere on the track; the film jumps there when you let go */}
-          <div className="dfc-track" role="slider" tabIndex={0} aria-label="Scrub the film" aria-valuemin={0} aria-valuemax={Math.round(len)} aria-valuenow={Math.round(v.t)}
+          <div className="dfc-track" role="slider" tabIndex={0} aria-label="Scrub the film" aria-valuemin={0} aria-valuemax={Math.round(len)} aria-valuenow={Math.round(scrubT)}
             onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); const r = e.currentTarget.getBoundingClientRect(); setDrag(Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * len) }}
             onPointerMove={(e) => { if (dragRef.current == null) return; const r = e.currentTarget.getBoundingClientRect(); setDrag(Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * len) }}
             onPointerUp={() => { const d = dragRef.current; if (d == null) return; setSeekTo(d); setRun((r) => r + 1); setDrag(null) }}
-            onKeyDown={(e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); setSeekTo(Math.max(0, v.t + (e.key === 'ArrowRight' ? 5 : -5))); setRun((r) => r + 1) } }}>
-            <i className="dfc-fill" style={{ width: `${Math.min(100, ((drag ?? v.t) / len) * 100)}%` }} />
+            onKeyDown={(e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); setSeekTo(Math.max(0, scrubT + (e.key === 'ArrowRight' ? 5 : -5))); setRun((r) => r + 1) } }}>
+            <i className="dfc-fill" style={{ width: `${Math.min(100, (scrubT / len) * 100)}%` }} />
             {marks.map((m) => <button key={m.label} type="button" className="dfc-mark" style={{ left: `${(m.t / len) * 100}%` }} title={m.label} onPointerDown={(e) => e.stopPropagation()} onClick={() => { setSeekTo(m.t); setRun((r) => r + 1) }}><span>{m.label}</span></button>)}
           </div>
           <span className="dfc-time is-len">{fmt(len)}</span>
