@@ -119,6 +119,7 @@ const CLIPS = {
   // each lasts as long as it's on screen, its fade out included, so none ever runs out and freezes
   // (length on screen: (until - from) / rate)
   mila: { src: './clips/still-mila.webp', until: 99, rate: 1 }, // Mila, asleep in her incubator: the film opens on her
+  explain: { src: './clips/still-explain.webp', until: 99, rate: 1 }, // her doctor and nurse, explaining everything at once
   dad: { src: './clips/still-dad.webp', until: 4.3, rate: 0.55 }, // forward, cut before it changes angle (7.8 s)
   home: { src: './clips/still-home.webp', from: 1.4, until: 7.9, rate: 1 }, // buckling her car seat (6.5 s)
   mom: { src: './clips/still-mom.webp', until: 4.35, rate: 0.68 }, // (6.4 s)
@@ -574,8 +575,8 @@ export function DemoFilm({ active, thumb }) {
 
       // ── What's on her
       mark('What’s on her')
-      await scene({ when: 'Day 1 · 5:10 a.m.', name: 'What’s on her', p: 'comprehension', q: 'What is all of this on her?', today: 'Every machine explained at once, at five in the morning.' })
-      await chapter('story', 0.2); set({ pad: true }); await wait(0.6)
+      await scene({ when: 'Day 1 · 5:10 a.m.', name: 'What’s on her', p: 'comprehension', q: 'What is all of this on her?', today: 'Every machine explained at once, at five in the morning.', still: 'explain' })
+      await chapter('story', 0.2); set({ pad: true, foot: null }); await wait(0.6)
       await tap('.fd-next'); lit('.fd-words', 1.15); await line('One device at a time, lit on her body, in one plain sentence.', 'comprehension')
       await tap('.fd-next'); lit('.fd-words', 1.15); await wait(1.6)
       lit(null); for (let n = 0; n < 5 && find('.fd-next'); n++) { await flick('.fd-next'); await wait(0.45) }
