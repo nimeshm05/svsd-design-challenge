@@ -452,6 +452,12 @@ export function DemoFilm({ active, thumb }) {
     const look = (name, tint) => set({ look: name, ...(tint !== undefined ? { tint } : {}) })
     const zoom = (sel, s = 1.55) => { const r = at(sel, 0); if (r) set({ cam: { fx: r.x + r.w / 2, fy: r.y + r.h / 2, s } }) }
     const out = () => set({ cam: { fx: 0.5, fy: 0.5, s: 1 }, spot: null, call: null, ex: null })
+    // push through the glass: the camera moves in until her screen fills the frame
+    const through = () => {
+      const H = host.current, S = screen.current
+      const s = H && S ? Math.max(H.clientWidth / S.clientWidth, H.clientHeight / S.clientHeight) * 1.04 : 1.8
+      set({ cam: { fx: 0.5, fy: 0.5, s } })
+    }
     const spot = (sel, call, ex) => set({ spot: at(sel), call: call ?? null, ex: ex ?? null })
     // a quick tap, for running through a flow fast
     const flick = async (sel) => {
@@ -562,40 +568,45 @@ export function DemoFilm({ active, thumb }) {
       lit((d) => d.querySelector('.ah-panel') ?? d.querySelector('.ah'), 1.08); cap('So her screen always shows what’s happening now, and what’s coming next.', 'awareness'); await wait(3.8)
       lit(null); cap(null); await wait(0.4)
 
-      // ── Day 23 · her sky, the heart of the demo. On her screen, Mom opens her stars; then we see her from behind
-      //    the glass, reaching into that same sky (mirrored over the clip); then back on her screen: a week, a day, a moment
+      // ── Day 23 · her sky, the heart of the demo, as one flow: her full sky on her screen; through the glass to Mom
+      //    and Dad reaching into it (the same sky, mirrored over the clip); back out to her full sky; then a week,
+      //    a day, and a moment in it. The product names itself at the end.
       mark('Her sky'); await dayCard(23, null, 'Three weeks in, the days start to blur together.', async () => {
         await show('today', 0.2); day(23)
         mpost({ type: 'mila:show', what: 'sky' }); mpost({ type: 'mila:day', day: 23 }) // the mirror waits on her stars
       })
       set({ pad: true }); look('center', 'connection'); await wait(1)
       cap('Mom wants to see the days she missed, so she opens her stars.'); await wait(0.8)
-      await tap(sky); look('sky'); await wait(2.2)
-      cap('Every day Mila has been here is a star in her sky.'); await wait(3.2)
-      cap(null); set({ foot: { id: 'momSky', at: R.clock }, mirror: R.clock }); await wait(1.33) // her finger lands
+      await tap(sky); look('sky'); await wait(1.6)
+      cap('Every day Mila has been here is a star in her sky.'); await wait(3.6) // her full sky, drawn
+      cap(null); through(); await wait(1.3) // in through the glass...
+      set({ foot: { id: 'momSky', at: R.clock }, mirror: R.clock }); await wait(1.33) // ...to them, her finger landing
       cap('She reaches for the stars from the week she was recovering upstairs.'); await wait(3.9)
-      cap('Each week of Mila’s life is its own little constellation.'); await wait(4.2) // her fingers open: the sky draws closer
-      cap(null); big({ t: 'Mila’s Sky', art: 'sky', hero: true, sub: 'Every day of her story, kept as a star.' }); await wait(1.2)
-      set({ mirror: null, foot: null }); await wait(2.6)
-      big(null); await wait(0.6) // back to her screen, on her stars
+      cap('Each week of Mila’s life is its own little constellation.'); await wait(3.6) // her fingers open: the sky draws closer
+      cap(null); set({ foot: null, mirror: null }); await wait(1.1) // back through the glass, onto her screen...
+      out(); await wait(1.9) // ...and out to her full sky
       await tap('.cv-gweek'); cap('Mom opens that first week.'); await wait(2.4)
-      const six = (d) => d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]') ?? d.querySelector('.cv-ghit')
+      const six = (d) => d.querySelector('.cv-gday[aria-label^="Day 6"]') ?? d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]') // in a week, each day is a .cv-gday
       lit(six, 1.3); cap('One day in it shines a little brighter than the rest.'); await wait(3)
       lit(null); await tap(six); await wait(0.6)
-      lit((d) => d.querySelector('.cv-day-scene') ?? d.querySelector('.cv-gpanel'), 1.12); cap('Day 6 was the first time Dad held her.'); await wait(3)
+      lit((d) => d.querySelector('.cv-day-scene') ?? d.querySelector('.cv-gpanel'), 1.12); cap('She opens it. Day 6 was the first time Dad held her.'); await wait(3.4)
       const hold = (d) => d.querySelector('.cv-moment[aria-label*="hold" i]') ?? d.querySelectorAll('.cv-moment')[1] ?? d.querySelector('.cv-moment')
       await tap(hold, () => find(hold)?.dispatchEvent(new MouseEvent('click', { bubbles: true })))
       lit((d) => d.querySelector('.cv-gpanel'), 1.1); cap('Every moment of that day is kept, down to how she settled on his chest.'); await wait(4.2)
       lit(null); cap('Now Mom can be part of her story too, even on the days she wasn’t there.', 'connection'); await wait(4.2)
-      cap(null); look('center'); await wait(0.6)
+      cap(null); look('center'); set({ pad: false })
+      big({ t: 'Mila’s Sky', art: 'sky', hero: true, sub: 'Every day of her story, kept as a star.' }); await wait(4)
+      big(null); await wait(0.6)
 
       // ── Day 98 · going home: her finished mobile, then the car seat, then her sky at home
-      mark('Going home'); await dayCard(98, null, 'The day her parents have been waiting for.', async () => {
-        await show('home', 1.2)
-        ;[...(doc()?.querySelectorAll('button') ?? [])].find((b) => /Skip to mobile/.test(b.textContent))?.click()
-      })
-      set({ pad: true, tint: 'dawn' }); await wait(1)
-      cap('On her last day, her whole sky becomes a mobile.'); await wait(3.8)
+      mark('Going home'); await dayCard(98, null, 'The day her parents have been waiting for.', async () => { await show('home', 0.6) })
+      set({ pad: true, tint: 'dawn' }); await wait(0.8)
+      cap('Before they leave, her screen tells her whole story one more time.'); await wait(1.2)
+      for (let n = 0; n < 16 && find('.cv-story'); n++) {
+        if (n === 4) cap('Every day of it is there, including the hard ones.')
+        await flick('.cv-story'); await wait(0.4)
+      }
+      cap('Then every star in her sky gathers into a mobile.'); await wait(4.8)
       await tap('.cv-takehome-btn'); cap('It’s theirs to take home.'); await wait(2.6)
       cap(null); set({ foot: { id: 'home', at: R.clock } }); await wait(1)
       set({ pad: false }); cap('Mila is going home.'); await wait(4.3)
@@ -608,12 +619,13 @@ export function DemoFilm({ active, thumb }) {
       big({ t: 'But even a short life is a whole story. Every day of it mattered.', art: 'sky' }); await wait(4.4)
       big(null); await show('notStart', 0.1); set({ pad: true }); await wait(1.2)
       cap('When a baby isn’t going home, the screen goes quiet. Just their name, and their nurse nearby.'); await wait(4.4)
-      await tap((d) => [...d.querySelectorAll('.cv-actions .nav-btn')].find((b) => b.textContent.trim() === 'Her sky')); await wait(0.5)
-      cap('When the family’s ready, they can go through the story at their own pace.'); await wait(2.2)
-      for (let n = 0; n < 10 && find('.rem-continue'); n++) {
-        if (n === 3) cap('It shows who their baby was, and every moment they had together.')
-        await flick('.rem-continue'); await wait(1)
-      }
+      cap('When the family is ready, they can open their baby’s sky and go through the story at their own pace.'); await wait(3.4)
+      // the first screen, then straight to the last: who their baby was, every moment, and everyone who loved them
+      await tap((d) => [...d.querySelectorAll('.cv-actions .nav-btn')].find((b) => b.textContent.trim() === 'Her sky'), () => {
+        ;[...(doc()?.querySelectorAll('.cv-actions .nav-btn') ?? [])].find((b) => b.textContent.trim() === 'Her sky')?.click()
+        setTimeout(() => { for (let n = 0; n < 8; n++) doc()?.querySelector('.rem-continue')?.click() }, 60)
+      })
+      await wait(0.6); cap('At the end, it shows who their baby was and every moment they had together.'); await wait(4.2)
       cap('It stays with them, for as long as they want it.'); await wait(3.8)
       cap(null); set({ pad: false }); await wait(1.4)
 

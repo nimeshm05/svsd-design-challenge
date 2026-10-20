@@ -1512,3 +1512,4 @@ body:has(.panel) { overflow: auto; }
 .dfilm-capq span::before { content: "— "; }
 .dfilm-capk em { font-style: normal; text-transform: none; letter-spacing: .02em; font-family: var(--sans, inherit); color: rgba(246, 238, 219, .7); }
 .dfilm-capk em::before { content: "·"; margin: 0 8px 0 2px; color: rgba(246, 238, 219, .4); }
+.dfilm-mirror-box { transition: opacity 1s ease; } /* leaves with the clip, never in one frame */
