@@ -101,6 +101,7 @@ export function CurrentView({ onSky }) {
       sky: () => goChapter('sky'),
       home: () => goChapter('home'),
       not: () => { goChapter('not'); later(() => setMemory(true)) },
+      notStart: () => goChapter('not'), // the quiet screen, before "Her sky" is opened
     }
     const on = (e) => {
       if (e.data?.type === 'mila:chapter') goChapter(e.data.chapter)

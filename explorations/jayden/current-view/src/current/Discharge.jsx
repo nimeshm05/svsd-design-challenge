@@ -171,6 +171,7 @@ export function Discharge({ theme, onBack }) {
   const ctl = useRef(null)
   const phaseRef = useRef('intro') // survives a style change, so the mobile doesn't replay its story
   const [story, setStory] = useState({ phase: 'intro', step: 0 })
+  const [took, setTook] = useState(false)
 
   useEffect(() => {
     const el = host.current
@@ -445,6 +446,14 @@ export function Discharge({ theme, onBack }) {
           ? <button type="button" className="nav-btn" onClick={() => ctl.current?.replay()}><span>Replay</span></button>
           : <button type="button" className="nav-btn" onClick={() => ctl.current?.skip()}><span>Skip to mobile</span></button>}
       </div>
+      {/* once her mobile is whole, the family can take it home (it's made for them to keep) */}
+      {story.phase === 'mobile' && (
+        <div className="cv-takehome">
+          {took
+            ? <p className="cv-takehome-done">Her mobile is on its way home with her. ✦</p>
+            : <button type="button" className="nav-btn is-primary cv-takehome-btn" onClick={() => setTook(true)}><span>Take her sky home</span></button>}
+        </div>
+      )}
     </div>
   )
 }

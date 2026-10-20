@@ -1388,3 +1388,89 @@ body:has(.panel) { overflow: auto; }
 .big-art { width: min(420px, 40vw); margin-bottom: 8px; }
 .big-art .scene { width: 100%; height: auto; }
 .fin-words { left: 0; right: 0; width: auto; max-width: none; padding: 0 8%; transform: none; }
+
+/* ===== Opening, drawn: forty weeks, her star at 27, a pineapple ===== */
+.born { position: absolute; inset: 0; z-index: 11; background: radial-gradient(ellipse at 50% 50%, #0b0c14, #000 72%); animation: fade 1s ease both, open-out 1s 13.4s ease both; }
+.born-art { position: absolute; left: 50%; top: 40%; width: min(1000px, 80vw); transform: translate(-50%, -50%); overflow: visible; animation: born-art-out 1.2s 8.4s ease both; }
+@keyframes born-art-out { to { opacity: .0; transform: translate(-50%, -60%); } }
+.born-line { stroke: rgba(243, 227, 181, .35); stroke-width: 1.4; stroke-dasharray: 820; stroke-dashoffset: 820; animation: draw 2s .4s ease forwards; }
+.born-rest { stroke: #000; stroke-width: 3; opacity: 0; animation: fade .1s 3.2s forwards; }
+.born-rest { stroke: rgba(0, 0, 0, 1); }
+.born-tick { stroke: rgba(243, 227, 181, .35); stroke-width: 1; opacity: 0; animation: fade .3s calc(.4s + var(--w) * .05s) forwards; }
+.born-tick.is-big { stroke: rgba(243, 227, 181, .6); }
+.born-wk { font-family: var(--mono); font-size: 12px; fill: var(--muted); text-anchor: middle; opacity: 0; animation: fade .6s 1.6s forwards; }
+.born-dot { fill: #FFF8E6; filter: drop-shadow(0 0 8px #FFF8E6); animation: born-travel 2.2s 2.4s cubic-bezier(.4, 0, .2, 1) both; }
+@keyframes born-travel { from { transform: translateX(0); } to { transform: translateX(553.5px); opacity: 0; } }
+.born-star { opacity: 0; animation: star-born 1.2s 4.4s cubic-bezier(.3, 1.4, .5, 1) forwards; transform-box: fill-box; transform-origin: center; }
+.born-star path { fill: #FFF8E6; filter: drop-shadow(0 0 14px rgba(255, 248, 230, .95)); } .born-glow { fill: rgba(243, 227, 181, .18); }
+.born-early { font-family: var(--display); font-size: 18px; fill: var(--cream); text-anchor: middle; opacity: 0; animation: fade .8s 5.6s forwards; }
+.born-art line.born-rest { opacity: 0; }
+.born-art::after { content: none; }
+.born-pine { position: absolute; left: 50%; top: 38%; width: 120px; transform: translate(-50%, -50%); opacity: 0; animation: fade .8s 9s forwards, open-out .8s 12.2s forwards; }
+.born-pine .ex-line { animation-delay: 9.2s; } .born-pine .ex-line.is-leaf { animation-delay: 9.8s; }
+.born-w { position: absolute; left: 0; right: 0; margin: 0; text-align: center; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 96; font-weight: 300; color: var(--text); opacity: 0; }
+.born-w1 { top: 66%; font-size: clamp(26px, 2.6vw, 40px); animation: ow-in 1.2s 1s var(--ease) forwards, open-out .8s 8s ease forwards; }
+.born-w2 { top: 74%; font-size: clamp(20px, 1.9vw, 28px); color: var(--text-2); animation: ow-in 1.2s 5.4s var(--ease) forwards, open-out .8s 8s ease forwards; }
+.born-w3 { top: 60%; font-size: clamp(24px, 2.4vw, 36px); animation: ow-in 1.2s 9.4s var(--ease) forwards, open-out .8s 12.2s ease forwards; }
+.born-w3 b { font-weight: 400; color: var(--cream); }
+.born-w4 { top: 46%; font-size: clamp(36px, 4vw, 62px); color: var(--cream); animation: ow-in 1.2s 12.6s var(--ease) forwards; }
+/* thirteen weeks she skipped: the end of the line, dashed */
+.born-art .born-rest { opacity: 1; stroke: #000; stroke-width: 4; stroke-dasharray: none; animation: none; }
+.born-art .born-rest + line { }
+
+/* ===== Day titles: the day, a caption, her sky so far ===== */
+.big.is-day { animation: big-in .8s ease both, open-out .6s 3.9s ease both; gap: 14px; }
+.big.is-day .big-sub { font-family: var(--display); font-weight: 300; font-size: clamp(20px, 1.9vw, 28px); color: var(--text-2); animation-delay: 1.2s; }
+.day-sky { width: min(820px, 70vw); margin-top: 18px; overflow: visible; }
+.day-sky-path { fill: none; stroke: var(--cream); stroke-width: 1.1; stroke-opacity: .4; stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: draw 2.4s 1.4s ease forwards; }
+.day-sky-star { fill: rgba(243, 227, 181, .14); }
+.day-sky-star.is-lit { fill: #F3E3B5; opacity: 0; animation: fade .4s calc(1.4s + var(--k) * .07s) ease forwards; }
+.day-sky-star.is-today { fill: #FFF8E6; filter: drop-shadow(0 0 10px rgba(255, 248, 230, .95)); }
+.big-art .day-sky { margin: 0 0 6px; }
+
+/* ===== The nurse's words: slower ===== */
+.talk-b { animation: talk-in .7s calc(.4s + var(--k) * 1.55s) cubic-bezier(.2, .9, .3, 1.2) both, talk-blur 2s 11.6s ease both; }
+/* clips */
+.foot-dad { animation: foot-blur-in .9s 0s ease both; }
+.foot-dadClose { animation: fade .8s 0s ease both, open-out 1.6s 3.6s ease both; }
+.foot-home { animation: foot-blur-in 1.2s 0s ease both, open-out 1.4s 8.6s ease both; }
+.foot-dadClose .foot-box, .foot-home .foot-box { animation: none; width: max(100%, calc(100vh * 16 / 9)); left: 50%; border-radius: 0; }
+/* the weeks she skipped stay dim (override the earlier stroke rules) */
+.born-skip { stroke: rgba(243, 227, 181, .14); stroke-width: 1.4; stroke-dasharray: 4 6; }
+.born-line { stroke-dasharray: 560; stroke-dashoffset: 560; }
+.born-tick.is-skip { stroke: rgba(243, 227, 181, .14); }
+/* captions rise in place; they never slide in from the side */
+.dfilm-cap { animation: cap-rise 1.1s .15s var(--ease) both; }
+@keyframes cap-rise { from { opacity: 0; transform: translate(-50%, 10px); filter: blur(4px); } to { opacity: 1; transform: translate(-50%, 0); filter: none; } }
+/* things that start hidden and fade up must fade *to* visible */
+@keyframes appear { to { opacity: 1; } }
+.born-tick { animation: appear .3s calc(.4s + var(--w) * .05s) forwards; }
+.born-wk { animation: appear .6s 1.6s forwards; }
+.born-early { animation: appear .8s 5.6s forwards; }
+.born-pine { animation: appear .8s 9s forwards, open-out .8s 12.2s forwards; }
+.day-sky-star.is-lit { animation: appear .4s calc(1.4s + var(--k) * .07s) ease forwards; }
+.big-phone { animation: appear .6s 1.2s ease forwards; }
+.big-phone-dot { animation: appear .3s calc(1.4s + var(--k) * .6s) ease forwards; }
+.fin-planet { animation: appear .7s calc(.6s + var(--k) * .33s) ease forwards; }
+.fin-alarm { opacity: 0; }
+.fin.is-s2 .fin-alarm { animation: appear .4s calc(1s + var(--k) * .6s) ease forwards; }
+.fin.is-s2 .fin-noise text { animation: appear .4s calc(.3s + var(--k) * .35s) ease forwards, flicker 1.6s calc(.3s + var(--k) * .35s) steps(2) infinite; }
+/* a quicker opening (about 9 s): born, early, small, then straight into Day 1 */
+.born { animation: fade .6s ease both, open-out .8s 8.4s ease both; }
+.born-line { animation: draw 1.4s .3s ease forwards; }
+.born-tick { animation: appear .25s calc(.3s + var(--w) * .03s) forwards; }
+.born-wk { animation: appear .5s 1s forwards; }
+.born-dot { animation: born-travel 1.5s 1.3s cubic-bezier(.4, 0, .2, 1) both; }
+.born-star { animation: star-born 1s 2.6s cubic-bezier(.3, 1.4, .5, 1) forwards; }
+.born-early { animation: appear .6s 3.2s forwards; }
+.born-art { animation: born-art-out 1s 5s ease both; }
+.born-w1 { animation: ow-in 1s .5s var(--ease) forwards, open-out .7s 5s ease forwards; }
+.born-w2 { animation: ow-in 1s 3s var(--ease) forwards, open-out .7s 5s ease forwards; }
+.born-pine { animation: appear .7s 5.6s forwards, open-out .7s 8.2s forwards; }
+.born-pine .ex-line { animation-delay: 5.7s; } .born-pine .ex-line.is-leaf { animation-delay: 6.1s; }
+.born-w3 { animation: ow-in 1s 5.8s var(--ease) forwards, open-out .7s 8.2s ease forwards; }
+.born-w4 { display: none; }
+/* his face first (real speed), then the wide shot of him at her bedside, which dissolves into her screen */
+.foot-dadClose { animation: fade .7s 0s ease both; }
+.foot-dad { animation: fade .5s 0s ease both, open-out 1.6s 6.4s ease both; }
+.foot-dad { animation: fade .8s 0s ease both, open-out 1.6s 6.6s ease both; }

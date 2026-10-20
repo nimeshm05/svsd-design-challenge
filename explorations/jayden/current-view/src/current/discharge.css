@@ -35,3 +35,7 @@
   background: rgba(11, 15, 20, .5); color: var(--text-2); font-size: 13px; animation: cv-fade-in .7s ease both; }
 .cv-story-ctl:hover { border-color: color-mix(in srgb, var(--cream) 55%, transparent); color: #F6EEDB; }
 @media (prefers-reduced-motion: reduce) { .cv-story, .cv-story-ctl { animation-duration: .01s; } }
+
+/* take her sky home: bottom center, once the mobile is whole */
+.cv-takehome { position: absolute; z-index: 3; left: 50%; bottom: 7%; transform: translateX(-50%); animation: cv-fade-in .8s .4s ease both; }
+.cv-takehome-done { margin: 0; padding: 10px 18px; border-radius: 999px; background: rgba(243, 227, 181, .1); border: 1px solid rgba(243, 227, 181, .35); color: var(--cream); font-size: 15px; animation: cv-fade-in .6s ease both; }
