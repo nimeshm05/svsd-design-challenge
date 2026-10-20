@@ -2,7 +2,7 @@
 // accent). What's on her sits where it touches her, with a thin wire out to the side of her bed.
 // Coordinates are in the image's own units (272 × 397), so the marks stay on her at any size.
 const W = 272, H = 397
-const SRC = '/images/baby-front.png'
+const SRC = `${import.meta.env.BASE_URL}images/baby-front.png`
 
 const DEVICES = {
   vent: { at: [[136, 77]], mark: (x, y) => <rect x={x - 6} y={y - 3.5} width="12" height="7" rx="2.5" />, wire: 'M142 77 C 190 76, 240 70, 300 64' },
