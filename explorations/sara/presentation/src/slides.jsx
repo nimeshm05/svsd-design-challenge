@@ -103,9 +103,9 @@ function Hook() {
 /* ---------- The NICU ---------- */
 // what our secondary research said about the room itself (8 papers and standards; see README)
 const SENSES = [
-  { k: 'Sound', t: 'Noise is linked to changes in heart rate, breathing and sleep. Alarms are often the loudest sound in the room.' },
+  { k: 'Sound', t: 'Noise is linked to changes in heart rate, breathing and sleep.' },
   { k: 'Light', t: 'Light that cycles between day and night is linked to better weight gain and shorter stays.' },
-  { k: 'Touch', t: 'The baby is too fragile for an ordinary hold. It needs to be held with special techniques and extra protection.' },
+  { k: 'Touch', t: 'The baby needs to be held in specific positions with extra protection.' },
   { k: 'Space', t: 'The incubator isn’t a protective bubble. The room itself can impact the baby’s health.' },
 ]
 function Environment() {
@@ -219,7 +219,7 @@ function Heard() {
     <div className="finding">
       <div className="finding-words">
         <R d={0} className="k">What we found</R>
-        <R d={1} as="p" className="statement-p is-big">Parents get the <L>pieces</L>, and are left to <L>put them together</L>.</R>
+        <R d={1} as="p" className="statement-p is-big">Parents get the <L>pieces</L> but are left to <L>put them together</L>.</R>
       </div>
       <R d={2} className="finding-art"><Puzzle /></R>
     </div>
@@ -1004,12 +1004,22 @@ function Product({ thumb }) {
 }
 
 /* ---------- Close: back to where we started ---------- */
+// Niko again, going home: the photo, then it slides aside for a parent's words
 function Both({ step }) {
   return (
-    <div className="center statement both-close">
-      <R d={0} as="p" className="statement-p">“There are going to be peaks and valleys… But that doesn’t mean you’re moving backward. You are still moving forward, even if you feel stuck.”</R>
-      <R d={2} className="hook-who">Current NICU parent</R>
-      <p className={`statement-p is-big hmw-part ${step >= 1 ? 'is-in' : ''}`}>Mila&apos;s Sky shows that <L>every day counts</L>.</p>
+    <div className={`center home is-s${step}`}>
+      <R d={0} as="h2" className="h home-h">11 months later, we join</R>
+      <div className="home-row">
+        <R d={2} className="home-cell">
+          <div className="home-photo">
+            <Shot src="./shots/niko%20discharge.jpg" pan={false} alt="Niko, now a chubby, smiling baby, sits up wearing a black graduation cap and gown with a bow tie, a few lines still attached, under the caption “…on Niko’s journey home.”" />
+          </div>
+        </R>
+        <div className="home-quote">
+          <p className="statement-p">“There are going to be peaks and valleys… But that doesn’t mean you’re moving backward. You are still moving forward, even if you feel stuck.”</p>
+          <p className="hook-who">Current NICU parent</p>
+        </div>
+      </div>
     </div>
   )
 }
@@ -1033,12 +1043,12 @@ export const SLIDES = [
   { id: 'environment', section: 'The NICU', View: Environment },
   { id: 'wall', section: '01 · Research', planet: true, View: Wall },
 
-  { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn&apos;t tell us <L>how parents make sense of it all</L>.</> }) },
+  { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn’t capture <L>what it feels like to live through it</L>.</> }) },
   { id: 'asked', section: '01 · Research', steps: 3, View: Asked },
   { id: 'heard', section: '01 · Research', View: Heard },
   { id: 'telephone', section: '01 · Research', View: Telephone },
 
-  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Our research pointed to <L>three needs</L>.</> }) },
+  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Our research pointed to <L>three unmet needs</L>.</> }) },
   { id: 'pillars', section: '02 · The problem', tint: 'all', steps: 3, View: Pillars },
   { id: 'problem', section: '02 · The problem', tint: 'all', View: Problem },
   { id: 'compete', section: '02 · The problem', tint: 'all', View: Compete },
@@ -1060,5 +1070,6 @@ export const SLIDES = [
   { id: 'board', section: '08 · The product', planet: true, View: Storyboard },
   ...FEATURES.map((f) => ({ id: f.id, section: '08 · The product', feature: f.show, View: Feature(f) })),
   { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
+  { id: 'every-day', section: 'Mila’s Sky', View: statement({ big: true, children: <>Mila&apos;s Sky shows that <L>every day counts</L>.</> }) },
   { id: 'close', section: 'Mila’s Sky', View: Close },
 ]
