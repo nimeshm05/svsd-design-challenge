@@ -667,8 +667,12 @@ export function DemoFilm({ active, thumb }) {
       // ── If she doesn't go home
       mark('If she doesn’t')
       await show('notStart', 0.1)
-      await scene({ when: 'If she doesn’t go home', name: 'Her sky, kept', p: 'connection', q: 'And if she doesn’t go home?', today: 'A file of records, and memories that fade.' })
-      set({ pad: true }); await wait(1)
+      // no question card here: the two quiet title cards from before, each held, then the screen goes quiet
+      cap(null); why(null); feat(null); set({ pad: false, foot: null })
+      big({ t: 'But not every baby gets to go home like Mila.', art: 'sky' }); await wait(1.2); await gate()
+      big({ t: 'Even a short life is a whole story. Every day of it mattered.', art: 'sky' }); await wait(1.2); await gate()
+      big(null); await wait(0.6)
+      feat('Her sky, kept', 'connection'); set({ pad: true }); await wait(1)
       await line('The screen goes quiet: her name, and her nurse nearby.')
       const herSky = (d) => [...d.querySelectorAll('.cv-actions .nav-btn')].find((b) => b.textContent.trim() === 'Her sky')
       await tap(herSky, () => { herSky(doc())?.click() })
