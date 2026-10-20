@@ -1,3 +1,4 @@
+import { NavBack } from './NavIcons.jsx'
 import { useEffect, useRef, useState } from 'react'
 import { ahead, events, today, week } from '../data/days.js'
 import { glossary } from '../data/glossary.js'
@@ -263,7 +264,7 @@ function EventDetail({ ev, onBack, backRef }) {
   return (
     <section className="ah-ev" aria-labelledby="ah-ev-title">
       <div className="ah-ev-top">
-        <button ref={backRef} type="button" className="cv-back" onClick={onBack}>‹ Back</button>
+        <NavBack btnRef={backRef} label="What's ahead" onClick={onBack} />
         <span className="ah-review">Placeholder content · for care-team review</span>
       </div>
       <div className="ah-ev-grid">

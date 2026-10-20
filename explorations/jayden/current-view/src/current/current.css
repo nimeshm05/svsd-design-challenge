@@ -1558,3 +1558,461 @@
 .fd-size span { font-size: clamp(13px, 1.35vw, 15px); }
 .fd-size em { font-size: clamp(12px, 1.2vw, 13.5px); }
 .fd-size span b { font-size: inherit; }
+/* ======================================================================================
+   Navigation system. One inset, two bars, one button spec, one icon set.
+   - Every page: a top bar (back + title on the left, the corner action on the right) and a
+     bottom bar (secondary actions left, the one primary action right), both on the same
+     inset from the screen edge, including her sky, a week, a day and the discharge mobile.
+   - "Back" is always top-left and always names where it goes: ‹ Today, ‹ Mila's stars, ‹ Week 2.
+   - Buttons: 36px tall (with an invisible 44px hit area), 14px medium label, 16px SVG icon,
+     6px icon-label gap. The icon side gets 3px less padding so the pair looks optically centred.
+   ====================================================================================== */
+.cv-page {
+  --edge-x: 40px; --edge-y: 32px; --nav-h: 36px; --nav-hit: 44px; --nav-gap: 8px;
+  --nav-border: color-mix(in srgb, var(--cream) 32%, transparent);
+  --nav-border-hi: color-mix(in srgb, var(--cream) 60%, transparent);
+}
+/* navigation scales with the screen (1176px wide at full size), so a small window is the same screen, smaller */
+.cv-page .cv-screen { padding: var(--edge-y) var(--edge-x); }
+
+/* the two bars */
+.cv-page .cv-top { min-height: var(--nav-h); align-items: center; margin: 0; }
+.cv-page .cv-top-left, .cv-page .cv-top-right { display: flex; align-items: center; gap: 16px; min-height: var(--nav-h); }
+.cv-page .cv-top-left .cv-top-title { margin: 0; line-height: 1; }
+.cv-page .cv-actions { min-height: var(--nav-h); align-items: center; gap: var(--nav-gap); margin-top: auto; }
+.cv-page .cv-actions-left { gap: var(--nav-gap); align-items: center; }
+
+/* overlays (her sky, the discharge mobile) sit on exactly the same bars */
+.cv-page .cv-galaxy-nav, .cv-page .nav-bar-top {
+  position: absolute; z-index: 3; left: var(--edge-x); top: var(--edge-y); height: var(--nav-h);
+  display: flex; align-items: center; gap: var(--nav-gap);
+}
+.cv-page .cv-galaxy-nav[hidden] { display: none; }
+/* (.nav-btn sets position: relative for its hit area, so the corner button needs the higher specificity) */
+.cv-page .nav-btn.cv-discharge-btn, .cv-page .cv-story-ctls {
+  position: absolute; z-index: 3; right: var(--edge-x); top: var(--edge-y); height: var(--nav-h); display: flex; align-items: center;
+}
+/* titles start one bar below the top bar */
+.cv-page .cv-galaxy-title, .cv-page .cv-galaxy.is-galaxy .cv-galaxy-title { left: var(--edge-x); top: calc(var(--edge-y) + var(--nav-h) + 22px); gap: 6px; }
+.cv-page .cv-discharge .cv-galaxy-title { top: calc(var(--edge-y) + var(--nav-h) + 22px); }
+.cv-page .cv-galaxy-head { gap: 4px; }
+.cv-page .cv-story { left: var(--edge-x); bottom: var(--edge-y); }
+.cv-page .cv-sheet.cv-ginfo { left: var(--edge-x); top: calc(var(--edge-y) + var(--nav-h) + 96px); }
+
+/* the button */
+.cv-page .nav-btn {
+  position: relative; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none;
+  height: var(--nav-h); padding: 0 14px; margin: 0; border-radius: 999px;
+  border: 1px solid var(--nav-border); background: rgba(8, 10, 14, .55); color: #F1EADB;
+  font-family: var(--font-ui); font-size: 14px; font-weight: 500; line-height: 1; letter-spacing: .005em; white-space: nowrap;
+  cursor: pointer; transition: border-color .2s, background-color .2s, color .2s, opacity .2s;
+}
+.cv-page .nav-btn > span { display: block; line-height: 1; padding-top: 1px; } /* cap-height centring */
+.cv-page .nav-btn:has(> svg:first-child) { padding-left: 11px; }
+.cv-page .nav-btn.is-trailing { padding-right: 11px; }
+/* smaller to look at, same to tap: the hit area stays 44px */
+.cv-page .nav-btn::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: var(--nav-hit); transform: translateY(-50%); }
+.cv-page .nav-btn:hover { border-color: var(--nav-border-hi); background: rgba(243, 227, 181, .06); color: #fff; }
+.cv-page .nav-btn:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
+.cv-page .nav-btn:disabled { opacity: .32; cursor: default; pointer-events: none; }
+
+.cv-page .nav-btn.is-primary { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; }
+.cv-page .nav-btn.is-primary:hover { background: #fff3cf; border-color: #fff3cf; color: #000; }
+.cv-page .nav-btn.is-icon { width: var(--nav-h); padding: 0; }
+.cv-page .nav-step { display: inline-flex; gap: 4px; }
+
+.cv-page .nav-btn.is-icon::before { left: 50%; width: var(--nav-hit); transform: translate(-50%, -50%); }
+
+/* the info button by "Mila's stars": an icon-only quiet button */
+.cv-page .cv-ginfo-btn { width: 32px; height: 32px; margin: 0; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: var(--text-2); background: transparent; }
+.cv-page .cv-ginfo-btn:hover, .cv-page .cv-ginfo-btn[aria-expanded="true"] { color: var(--cream); background: rgba(243, 227, 181, .08); }
+
+/* theme 2 (confetti): same geometry, its own colours */
+.theme-confetti .nav-btn.is-call { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; }
+
+/* night and comfort care: same geometry, almost no light */
+.cv-screen.is-night .nav-btn, .cv-screen:has(.comfort) .nav-btn { background: transparent; border-color: #2c3135; color: #9aa0a4; font-weight: 500; }
+.cv-screen.is-night .nav-btn:hover, .cv-screen:has(.comfort) .nav-btn:hover { border-color: #4a5055; color: #c9ced1; }
+
+/* the event detail page in What's ahead: its back sits on the same bar height */
+.cv-page .ah-ev-top { min-height: var(--nav-h); display: flex; align-items: center; gap: 16px; }
+
+/* retire the old one-off controls where they might still render */
+.cv-page .cv-today-btn, .cv-page .cv-back-today { display: none; }
+
+/* ---- scale + icons ----
+   Every nav number scales with the window (full size at ~1230px wide, never below a readable floor),
+   so a small window shows the same screen, smaller, instead of oversized buttons on a tiny screen.
+   Icons: cropped viewBoxes, one optical height (--ic) against the label's cap height, 1.5px stroke. */
+.cv-page {
+  --edge-x: clamp(16px, 3.25vw, 40px); --edge-y: clamp(14px, 2.6vw, 32px);
+  --nav-h: clamp(28px, 2.95vw, 36px); --nav-gap: clamp(6px, .65vw, 8px);
+  --nav-fs: clamp(12px, 1.14vw, 14px); --nav-px: clamp(10px, 1.14vw, 14px);
+  --ic: clamp(10px, .98vw, 12px);
+}
+.cv-page .nav-btn { font-size: var(--nav-fs); padding: 0 var(--nav-px); gap: calc(var(--ic) * .58); }
+.cv-page .nav-btn > span { padding-top: 0; }
+@supports (text-box: trim-both cap alphabetic) {
+  .cv-page .nav-btn > span { text-box: trim-both cap alphabetic; } /* centre on the cap height, not the line box */
+}
+.cv-page .nav-btn:has(> svg:first-child) { padding-left: calc(var(--nav-px) - 2px); }
+.cv-page .nav-btn.is-trailing { padding-right: calc(var(--nav-px) - 2px); }
+.cv-page .nav-btn.is-icon, .cv-page .nav-btn.is-icon:has(> svg:first-child) { width: var(--nav-h); padding: 0; } /* beats the icon-side padding rule */
+/* a chevron's weight sits at its point: nudge each half a pixel toward its open side so it reads centred */
+.cv-page .nav-btn.is-icon .nav-ic.is-left { translate: .5px 0; }
+.cv-page .nav-btn.is-icon .nav-ic.is-right { translate: -.5px 0; }
+
+.nav-ic, .cv-page .nav-ic { height: var(--ic); width: auto; flex: none; display: block; overflow: visible;
+  fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.nav-ic * { vector-effect: non-scaling-stroke; }
+.cv-page .nav-ic.is-chev { height: calc(var(--ic) * .86); }               /* a chevron reads larger than its box */
+.cv-page .nav-btn.is-icon .nav-ic.is-chev { height: calc(var(--ic) * 1.05); }
+.cv-page .cv-ginfo-btn .nav-ic { height: calc(var(--ic) * 1.15); }
+/* the mini sky on "Mila's stars": same height as the other icons, its own colours */
+.cv-page .nav-btn .cv-lookup { height: calc(var(--ic) * 1.0); width: auto; margin: 0; overflow: visible; }
+/* Figtree (theme 2) sits its cap height ~0.6px higher than Geist: lift the icons to match */
+.theme-confetti .nav-btn > svg { translate: 0 -0.6px; }
+
+/* prototype bar: wrap, never push the page sideways */
+.cv-proto { max-width: 100%; justify-content: center; }
+.cv-proto .cv-seg { flex-wrap: wrap; max-width: 100%; }
+.cv-page { overflow-x: hidden; }
+.theme-confetti .nav-btn.is-icon .nav-ic.is-left { translate: .5px -.6px; }
+.theme-confetti .nav-btn.is-icon .nav-ic.is-right { translate: -.5px -.6px; }
+
+/* Day panel: plain description, then label/value metrics in two columns */
+
+.cv-page .cv-gfacts { margin: 0; display: flex; flex-direction: column; border-top: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-gfacts-row { display: grid; grid-template-columns: 112px 1fr; column-gap: 16px; align-items: baseline; padding: 9px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-gfacts dt { font-size: 13px; color: var(--muted); }
+.cv-page .cv-gfacts dd { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Breadcrumb (where you are, top-left) and pager (sideways, bottom-left) in her sky.
+   Up and sideways look different on purpose: slashes up top, named chevron buttons below. */
+.cv-page .nav-crumbs ol { list-style: none; margin: 0; padding: 0 6px; height: var(--nav-h); display: flex; align-items: center;
+  border: 1px solid var(--nav-border); border-radius: 999px; background: rgba(8, 10, 14, .55); }
+.cv-page .nav-crumbs li { display: flex; align-items: center; }
+.cv-page .nav-crumb { position: relative; display: flex; align-items: center; height: var(--nav-h); padding: 0 8px; margin: 0; border: 0; background: none;
+  font-family: var(--font-ui); font-size: var(--nav-fs); font-weight: 500; line-height: 1; color: var(--text-2); white-space: nowrap; cursor: pointer; }
+.cv-page button.nav-crumb::before { content: ''; position: absolute; inset: 50% 0 auto; height: var(--nav-hit); transform: translateY(-50%); }
+.cv-page button.nav-crumb:hover { color: #fff; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--cream) 50%, transparent); text-underline-offset: 4px; }
+.cv-page button.nav-crumb:focus-visible { outline: 2px solid var(--cream); outline-offset: -2px; border-radius: 999px; }
+.cv-page .nav-crumb.is-here { color: var(--cream); cursor: default; }
+.cv-page .nav-crumbs-sep { color: color-mix(in srgb, var(--cream) 30%, transparent); font-size: var(--nav-fs); line-height: 1; }
+
+.cv-page .nav-pager { position: absolute; z-index: 3; left: var(--edge-x); bottom: var(--edge-y); display: flex; gap: var(--nav-gap); }
+.cv-page .nav-pager .nav-btn:disabled { opacity: .3; }
+.cv-galaxy.is-leaving .nav-pager { opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+
+/* No visible scrollbars anywhere (scrolling, wheel and touch still work) */
+html, body, .cv-page, .cv-page * { scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+/* ---- Week and day panels: one spacing rhythm ----
+   title → 14px → description → 28px → section (heading → 10px → content) → 28px → section … */
+.cv-page .cv-gpanel {
+  right: var(--edge-x); top: var(--edge-y); bottom: var(--edge-y); width: min(380px, 36%);
+  display: flex; flex-direction: column; gap: 28px; padding: 6px 0 24px; overflow-y: auto;
+}
+.cv-page .cv-gpanel-title { margin: 0 0 -14px; line-height: 1.08; }          /* title sits 14px above its description */
+.cv-page .cv-gpanel-desc { display: flex; flex-direction: column; gap: 10px; }
+.cv-page .cv-gpanel-desc p { margin: 0; font-size: 15px; line-height: 1.4; color: var(--text-2); text-wrap: pretty; }
+.cv-page .cv-gsec { display: flex; flex-direction: column; gap: 10px; }
+.cv-page .cv-gsec-k { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-family: var(--font-ui); }
+.theme-nursery .cv-gsec-k { font-family: "Geist Mono", ui-monospace, monospace; font-weight: 500; letter-spacing: .08em; }
+
+/* rows shared by metrics, moments and firsts: label column, value column, hairline between rows */
+.cv-page .cv-gfacts, .cv-page .cv-grows { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0;
+  border-top: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-gfacts-row, .cv-page .cv-grows > li > button {
+  display: grid; grid-template-columns: 104px 1fr; column-gap: 16px; align-items: baseline; padding: 10px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-grows > li > button { width: 100%; margin: 0; border-top: 0; border-left: 0; border-right: 0; background: none; text-align: left; cursor: pointer; color: var(--text); font: inherit; }
+.cv-page .cv-grows > li > button:hover .cv-grows-v { color: var(--cream); }
+.cv-page .cv-grows > li > button:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 4px; }
+.cv-page .cv-gfacts dt, .cv-page .cv-grows-k { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cv-page .cv-gfacts dd, .cv-page .cv-grows-v { margin: 0; font-size: 14px; line-height: 1.35; color: var(--text); display: flex; flex-direction: column; gap: 4px; }
+.cv-page .cv-grows-v { flex-direction: row; align-items: center; gap: 8px; }
+.cv-page .cv-grows .cv-gplanet { flex: none; }
+
+/* a tappable time inside a paragraph */
+.cv-page .cv-gpanel-at { padding: 0; margin: 0; border: 0; background: none; font: inherit; color: var(--warm); font-variant-numeric: tabular-nums; cursor: pointer;
+  text-decoration: underline dotted; text-underline-offset: 3px; }
+.cv-page .cv-gpanel-at:hover, .cv-page .cv-gpanel-at[aria-expanded="true"] { color: var(--cream); text-decoration-style: solid; }
+
+/* a selected moment or an opened detail: one quiet card */
+.cv-page .cv-gmoment { gap: 8px; padding: 14px 16px; border-radius: 12px; }
+.cv-page .cv-gmoment-t { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cv-page .cv-gmoment b { font-size: 16px; }
+.cv-page .cv-gmoment p { line-height: 1.4; }
+
+/* week: day chips */
+.cv-page .cv-gpanel-days { margin-top: 0; gap: 6px; }
+
+/* ---- "Mila's stars" ⇄ "Close": one button, same place, morphs as her sky opens and closes ---- */
+.cv-page .cv-skyt { gap: calc(var(--ic) * .58); padding-left: calc(var(--nav-px) - 2px); }
+.cv-skyt-ic { position: relative; flex: none; height: var(--ic); width: calc(var(--ic) * 1.48); transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-skyt.is-open .cv-skyt-ic { width: calc(var(--ic) * .9); }
+.cv-skyt-ic > svg { position: absolute; top: 50%; left: 50%; transition: opacity .35s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-page .cv-skyt-ic .cv-lookup { height: var(--ic); width: auto; transform: translate(-50%, -50%); }
+.cv-page .cv-skyt-ic .nav-ic.is-x { height: calc(var(--ic) * .82); transform: translate(-50%, -50%) rotate(-90deg) scale(.6); opacity: 0; }
+.cv-skyt.is-open .cv-skyt-ic .cv-lookup { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
+.cv-skyt.is-open .cv-skyt-ic .nav-ic.is-x { opacity: 1; transform: translate(-50%, -50%) rotate(0) scale(1); }
+
+.cv-skyt-label { position: relative; display: block; height: 1em; width: var(--wa, auto); overflow: hidden; transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-skyt.is-open .cv-skyt-label { width: var(--wb, auto); }
+.cv-skyt-label > span { position: absolute; left: 0; top: 0; line-height: 1; white-space: nowrap; transition: opacity .3s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-skyt-label > span:last-child { opacity: 0; transform: translateY(40%); }
+.cv-skyt.is-open .cv-skyt-label > span:first-child { opacity: 0; transform: translateY(-40%); }
+.cv-skyt.is-open .cv-skyt-label > span:last-child { opacity: 1; transform: none; }
+.cv-skyt[aria-disabled="true"] { pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .cv-skyt *, .cv-skyt-ic, .cv-skyt-label { transition-duration: .01s !important; } }
+
+/* it stays put while today turns into a star and back; the rest of the footer fades as before */
+.cv-screen.is-forming .cv-actions, .cv-screen.is-unforming .cv-actions { opacity: 1; animation: none; }
+.cv-screen.is-forming .cv-actions > :not(.cv-actions-left) { opacity: 0; transition: opacity .7s ease; }
+.cv-screen.is-unforming .cv-actions > :not(.cv-actions-left) { animation: cv-fade-in .8s ease 2s both; }
+.cv-screen.is-galaxy .cv-actions { z-index: 4; }
+
+/* her sky: the title takes the top-left corner (no breadcrumb at the top level) */
+.cv-page .cv-galaxy.is-galaxy .cv-galaxy-title { top: var(--edge-y); }
+/* pager: bottom centre of the sky area (left of the side panel), clear of Close */
+.cv-page .nav-pager { left: calc((100% - min(380px, 36%) - var(--edge-x)) / 2); transform: translateX(-50%); }
+
+/* close buttons inside sheets and cards: same button, aligned to the end of their row / card */
+.cv-page .cv-sheet-head .nav-btn { flex: none; }
+.cv-page .cv-gmoment .nav-btn.is-close { align-self: flex-start; margin-top: 4px; }
+.cv-page .nav-ic.is-x { height: calc(var(--ic) * .82); }
+
+/* Dot pagination: bottom centre of the sky. The current dot stretches into a pill. */
+.cv-page .nav-dots { position: absolute; z-index: 3; bottom: var(--edge-y); left: calc((100% - min(380px, 36%) - var(--edge-x)) / 2); transform: translateX(-50%);
+  height: var(--nav-h); display: flex; align-items: center; gap: 2px; padding: 0 8px; border-radius: 999px; background: rgba(8, 10, 14, .45); }
+.cv-page .nav-dot { position: relative; display: grid; place-items: center; width: 20px; height: var(--nav-h); padding: 0; margin: 0; border: 0; background: none; cursor: pointer; }
+.cv-page .nav-dot::before { content: ''; position: absolute; inset: 50% auto auto 50%; width: 32px; height: var(--nav-hit); transform: translate(-50%, -50%); } /* easy to tap */
+.cv-page .nav-dot i { display: block; width: 6px; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--cream) 35%, transparent);
+  transition: width .35s cubic-bezier(.22, 1, .36, 1), background-color .25s; }
+.cv-page .nav-dot:hover i { background: color-mix(in srgb, var(--cream) 70%, transparent); }
+.cv-page .nav-dot.is-on { width: 34px; }
+.cv-page .nav-dot.is-on i { width: 20px; background: var(--cream); }
+.cv-page .nav-dot:focus-visible { outline: none; }
+.cv-page .nav-dot:focus-visible i { outline: 2px solid var(--cream); outline-offset: 3px; }
+.cv-page .nav-dot { transition: width .35s cubic-bezier(.22, 1, .36, 1); }
+.cv-galaxy.is-leaving .nav-dots { opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+
+/* Moments: a row opens in place — the description sits under its title, in the value column */
+.cv-page .cv-grows > li { border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-grows > li > button { border-bottom: 0; }
+.cv-page .cv-grows > li.is-open .cv-grows-v { color: var(--cream); }
+.cv-page .cv-grows-desc { margin: -4px 0 0 120px; padding: 0 0 12px; display: flex; flex-direction: column; gap: 6px; animation: cv-grows-in .3s ease both; }
+.cv-page .cv-grows-desc p { margin: 0; font-size: 14px; line-height: 1.4; color: var(--text-2); text-wrap: pretty; }
+.cv-page .cv-grows-by { font-size: 12px; color: var(--muted); }
+@keyframes cv-grows-in { from { opacity: 0; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .cv-page .cv-grows-desc { animation: none; } }
+/* dots: centred under the sky, but never closer to Close than a clear gap (Close ≈ 100px wide, dots ≈ 160px) */
+.cv-page .nav-dots { left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2), calc(var(--edge-x) + 100px + 24px + 80px)); }
+/* final rule: left edge = centred under the sky (minus half the dots), but never left of Close + a gap */
+.cv-page .nav-dots { transform: none; left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2 - 80px), calc(var(--edge-x) + 112px)); }
+.cv-page .nav-dot { width: clamp(13px, 1.6vw, 20px); }
+.cv-page .nav-dot.is-on { width: clamp(24px, 2.7vw, 34px); }
+.cv-page .nav-dot.is-on i { width: clamp(14px, 1.6vw, 20px); }
+.cv-page .nav-dots { padding: 0 clamp(4px, .65vw, 8px); left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2 - 80px), calc(var(--edge-x) + clamp(96px, 9vw, 112px))); }
+/* dots: positioned by measurement (Galaxy.jsx); no transform, so `left` is the row's left edge */
+.cv-page .nav-dots { transform: none; }
+/* dots: centred on a fixed anchor (Galaxy.jsx), so the row never slides; only the active dot animates */
+.cv-page .nav-dots { transform: translateX(-50%); transition: none; }
+
+/* sections breathe more, and their headings read brighter */
+.cv-page .cv-gpanel { gap: 40px; }
+.cv-page .cv-gpanel-title { margin-bottom: -26px; }   /* keep the title 14px above its description */
+.cv-page .cv-gsec { gap: 12px; }
+.cv-page .cv-gsec-k { color: #ECE6DA; }
+/* panel descriptions: line height = 1.3 × font size */
+.cv-page .cv-gpanel-desc p, .cv-page .cv-grows-desc p { line-height: 1.3; }
+
+/* ======================= Care team: the people, nothing else ======================= */
+.cv-scrim.ts-scrim { background: rgba(3, 4, 7, .7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: cv-fade-in .25s ease both; }
+.cv-page .ts {
+  box-sizing: border-box; width: min(420px, 100%); max-height: min(640px, 92vh); overflow-y: auto;
+  padding: 24px 28px 12px; border-radius: 22px; background: #0b0c10;
+  border: 1px solid color-mix(in srgb, var(--cream) 12%, transparent);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .6); color: var(--text);
+  animation: ts-in .35s cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes ts-in { from { opacity: 0; transform: translateY(10px) scale(.985); } }
+.cv-page .ts-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; }
+.cv-page .ts-head .nav-btn { margin-right: -8px; }
+.cv-page .ts-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 28px; line-height: 1.1; color: var(--cream); }
+.cv-page .ts-list { list-style: none; margin: 0; padding: 0; }
+.cv-page .ts-list li { display: flex; flex-direction: column; gap: 4px; padding: 14px 0; border-top: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); }
+.cv-page .ts-list b { font-size: 16px; font-weight: 600; color: #fff; }
+.cv-page .ts-list span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
+@media (prefers-reduced-motion: reduce) { .cv-page .ts, .ts-scrim { animation: none; } }
+
+/* care team: people are tappable rows; asking and the confirmation share the sheet */
+.cv-page .ts { padding: 24px 28px 24px; }
+.cv-page .ts-body { display: flex; flex-direction: column; gap: 20px; animation: cv-fade-in .3s ease both; }
+.cv-page .ts-head { margin-bottom: 0; }
+.cv-page .ts-head.is-nav { margin: 0 -8px; }
+.cv-page .ts-head.is-nav .nav-btn { margin: 0; }
+.cv-page .ts-list { margin-top: -4px; }
+.cv-page .ts-list li { padding: 0; }
+.cv-page .ts-person { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cv-page .ts-list .ts-person span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
+
+.cv-page .ts-title-block { display: flex; flex-direction: column; gap: 6px; }
+.cv-page .ts-title-block.is-center { align-items: center; text-align: center; }
+.cv-page .ts-sub { margin: 0; font-size: 14px; line-height: 1.35; color: var(--text-2); text-wrap: pretty; }
+.cv-page .ts-sec { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.cv-page .ts-reasons { gap: 8px; }
+.cv-page .ts-reasons legend { padding: 0; margin-bottom: 10px; }
+.cv-page .ts-reason { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); font-size: 15px; line-height: 1.3; color: var(--text); transition: border-color .2s, background-color .2s; }
+.cv-page .ts-reason:hover { border-color: color-mix(in srgb, var(--cream) 30%, transparent); }
+.cv-page .ts-reason.is-on { border-color: color-mix(in srgb, var(--cream) 55%, transparent); background: color-mix(in srgb, var(--cream) 6%, transparent); }
+.cv-page .ts-reason input { position: absolute; opacity: 0; pointer-events: none; }
+.cv-page .ts-radio { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--cream) 45%, transparent); display: grid; place-items: center; }
+.cv-page .ts-reason.is-on .ts-radio { border-color: var(--cream); }
+.cv-page .ts-reason.is-on .ts-radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--cream); }
+.cv-page .ts-reason:has(input:focus-visible) { outline: 2px solid var(--cream); outline-offset: 2px; }
+.cv-page .ts-note { box-sizing: border-box; width: 100%; resize: none; padding: 12px 14px; border-radius: 12px; font: inherit; font-size: 15px; line-height: 1.35;
+  color: var(--text); background: transparent; border: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .ts-note::placeholder { color: var(--muted); }
+.cv-page .ts-note:focus { outline: none; border-color: color-mix(in srgb, var(--cream) 55%, transparent); }
+.cv-page .ts-cta { width: 100%; height: 44px; font-size: 15px; }
+.cv-page .ts-done { padding-top: 8px; }
+.cv-page .ts-check { align-self: center; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%;
+  background: color-mix(in srgb, var(--cream) 10%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--cream) 30%, transparent); }
+.cv-page .ts-check svg { width: 26px; height: 26px; fill: none; stroke: var(--cream); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 24; stroke-dashoffset: 24; animation: ts-draw .5s .15s cubic-bezier(.22, 1, .36, 1) forwards; }
+@keyframes ts-draw { to { stroke-dashoffset: 0; } }
+.cv-page .ts-sent-what { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 12px; text-align: center;
+  border: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); font-size: 14px; color: var(--text); }
+.cv-page .ts-sent-note { font-style: italic; color: var(--text-2); }
+@media (prefers-reduced-motion: reduce) { .cv-page .ts-body { animation: none; } .cv-page .ts-check svg { animation: none; stroke-dashoffset: 0; } }
+
+/* care team rows: who + availability on the left, Call on the right */
+.cv-page .ts-list li { display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 14px 0; }
+.cv-page .ts-person { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cv-page .ts-person b { font-size: 16px; font-weight: 600; color: #fff; }
+.cv-page .ts-person span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
+.cv-page .ts-call { flex: none; }
+.cv-page .ts-call.is-calling { opacity: 1; border-color: var(--nav-border-hi); }
+.cv-page .ts-call.is-calling .nav-ic { animation: ts-ring 1s ease-in-out infinite; }
+.cv-page .ts-call.is-called { opacity: 1; color: var(--cream); border-color: color-mix(in srgb, var(--cream) 45%, transparent); }
+@keyframes ts-ring { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+@media (prefers-reduced-motion: reduce) { .cv-page .ts-call.is-calling .nav-ic { animation: none; } }
+.cv-page .ts > .ts-head { margin-bottom: 14px; }
+.cv-page .ts-list { margin-top: 0; }
+
+/* care team: photo, name, availability; one Call button at the bottom */
+.cv-page .ts-photo { flex: none; width: 44px; height: 44px; border-radius: 50%; object-fit: cover; display: block;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cream) 18%, transparent); background: #16141f; }
+.cv-page .ts-list li.is-later .ts-photo { opacity: .55; }
+.cv-page .ts-list li:first-child .ts-photo { box-shadow: 0 0 0 2px #0b0c10, 0 0 0 3.5px color-mix(in srgb, var(--warm, #ffb38a) 80%, transparent); }
+.cv-page .ts-list { margin-bottom: 20px; }
+.cv-page .ts-list li:last-child { border-bottom: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); }
+.cv-page .ts-call.ts-cta { width: 100%; height: 44px; }
+.cv-page .nav-btn.is-primary.ts-call.is-calling, .cv-page .nav-btn.is-primary.ts-call.is-called { opacity: 1; }
+/* a still picture of her (no turning) */
+.her3d.is-still { cursor: default; touch-action: auto; user-select: none; }
+
+/* Her picture in the design system's colours: cream for her and her wires, the warm accent
+   (copper in DS1, pink in DS2) for the thing being explained, a faint cream frame */
+.cv-page .her3d-dev { stroke: color-mix(in srgb, var(--cream) 55%, transparent); opacity: 1; }
+.cv-page .her3d-dev circle, .cv-page .her3d-dev rect, .cv-page .her3d-dev ellipse { fill: color-mix(in srgb, var(--cream) 18%, transparent); }
+.cv-page .her3d-dev.is-new, .cv-page .her3d .her3d-dev.is-new { stroke: var(--warm); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--warm) 70%, transparent)); }
+.cv-page .her3d-dev.is-new circle, .cv-page .her3d-dev.is-new rect, .cv-page .her3d-dev.is-new ellipse { fill: color-mix(in srgb, var(--warm) 35%, transparent); }
+.cv-page .her3d-dev.is-gone { stroke: color-mix(in srgb, var(--cream) 40%, transparent); }
+.cv-page .her3d-post { color: color-mix(in srgb, var(--cream) 55%, transparent); opacity: 1; }
+.cv-page .her3d-post.is-new { color: var(--warm); }
+.cv-page .her3d-bed { background: color-mix(in srgb, var(--cream) 3%, transparent); border-color: color-mix(in srgb, var(--cream) 14%, transparent); }
+.cv-page .her3d-stage { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cream) 14%, transparent)); }
+
+/* Every dot pagination looks like the week/day dots: 6px faded-cream dots ~20px apart,
+   the current one a 20px cream pill, on a faint dark capsule */
+.cv-page :is(.fd-dots, .cv-story-dots) { display: inline-flex; align-items: center; gap: 0; height: 28px; padding: 0 8px; border-radius: 999px; background: rgba(8, 10, 14, .45); }
+.cv-page :is(.fd-dots, .cv-story-dots) i { display: block; flex: none; width: 6px; height: 6px; margin: 0 7px; border-radius: 3px; opacity: 1;
+  background: color-mix(in srgb, var(--cream) 35%, transparent); transition: width .35s cubic-bezier(.22, 1, .36, 1), background-color .25s; }
+.cv-page :is(.fd-dots, .cv-story-dots) i.is-past { background: color-mix(in srgb, var(--cream) 35%, transparent); }
+.cv-page :is(.fd-dots, .cv-story-dots) i.is-on { width: 20px; background: var(--cream); }
+.cv-page .cv-story-dots { align-self: flex-start; margin-top: 10px; }
+
+/* "What's on her": the explanation is always two balanced lines; dots and Next sit on the bottom bar */
+.cv-page .fd-walk .fd-words { min-height: 0; }
+.cv-page .fd-walk .fd-line { max-width: 44ch; text-wrap: balance; line-height: 1.35;
+  min-height: calc(2lh); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.cv-page .fd-walk-nav { position: absolute; z-index: 2; left: var(--edge-x); right: var(--edge-x); bottom: var(--edge-y); height: var(--nav-h);
+  display: flex; align-items: center; justify-content: center; gap: 0; }
+.cv-page .fd-walk-nav .fd-next { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+/* standard button: the old one-off size and colours no longer apply */
+.cv-page .nav-btn.fd-next { height: var(--nav-h); padding: 0 var(--nav-px); border-radius: 999px; font-size: var(--nav-fs); }
+.cv-page .nav-btn.fd-next.is-trailing { padding-right: calc(var(--nav-px) - 2px); }
+.cv-page .nav-btn.fd-next.is-done { background: var(--cream); border-color: var(--cream); color: #0a0a0a; }
+.cv-page .fd.fd-walk { position: static; } /* so the bottom bar anchors to the screen, like every other bottom bar */
+
+/* "What's on her" → "Next": one centred button under the words, the dots under it (not a bottom bar) */
+.cv-page .fd.fd-walk { position: relative; }
+.cv-page .fd-walk-nav { position: static; left: auto; right: auto; bottom: auto; height: auto;
+  display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 18px; }
+.cv-page .fd-walk-nav .fd-next { position: static; transform: none; }
+
+/* morphing button (What's on her → Next → Done), same motion as "Mila's stars" → "Close" */
+.cv-page .mb { gap: 0; padding: 0 var(--nav-px); }
+.cv-page .mb-label { position: relative; display: block; height: 1em; overflow: hidden; transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-page .mb-label > span { position: absolute; left: 0; top: 0; line-height: 1; white-space: nowrap; }
+.cv-page .mb-measure { visibility: hidden; position: absolute; }
+.cv-page .mb-in { animation: mb-in .5s cubic-bezier(.22, 1, .36, 1) both; }
+.cv-page .mb-out { animation: mb-out .35s ease both; }
+@keyframes mb-in { from { opacity: 0; transform: translateY(40%); } }
+@keyframes mb-out { to { opacity: 0; transform: translateY(-40%); } }
+.cv-page .mb-chev { display: flex; align-items: center; overflow: hidden; width: 0; margin-left: 0; opacity: 0;
+  transition: width .5s cubic-bezier(.22, 1, .36, 1), margin-left .5s cubic-bezier(.22, 1, .36, 1), opacity .35s ease; }
+.cv-page .mb.has-chev .mb-chev { width: calc(var(--ic) * .86 * 8 / 14 + 2px); margin-left: calc(var(--ic) * .58); opacity: 1; }
+.cv-page .mb.has-chev { padding-right: calc(var(--nav-px) - 2px); }
+/* dots above the button, only during the walkthrough */
+.cv-page .fd-walk-nav { flex-direction: column; gap: 14px; }
+.cv-page .fd-dots.is-hidden { display: none; }
+@media (prefers-reduced-motion: reduce) { .cv-page .mb-in, .cv-page .mb-out { animation: none; } .cv-page .mb-label, .cv-page .mb-chev { transition: none; } }
+
+/* "What's on her": her, front-facing and still, with what's on her marked where it touches her */
+.fd-model { height: 220px; }
+.bf { position: relative; height: 100%; aspect-ratio: 272 / 397; }
+.bf-img { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; pointer-events: none;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--cream) 12%, transparent)); }
+.bf-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.bf-dev { fill: color-mix(in srgb, var(--cream) 22%, transparent); stroke: color-mix(in srgb, var(--cream) 50%, transparent);
+  stroke-width: 1.2; vector-effect: non-scaling-stroke; transition: stroke .4s ease, fill .4s ease; }
+.bf-dev * { vector-effect: non-scaling-stroke; }
+.bf-wire { fill: none; stroke-linecap: round; opacity: .55; }
+.bf-dev.is-new { fill: color-mix(in srgb, var(--warm) 40%, transparent); stroke: var(--warm); stroke-width: 1.6;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--warm) 75%, transparent)); }
+.bf-dev.is-new .bf-wire { opacity: .9; }
+/* while one thing is lit, everything else on her steps back */
+.bf-dev { transition: stroke .4s ease, fill .4s ease, opacity .4s ease; }
+.bf:has(.bf-dev.is-new) .bf-dev:not(.is-new) { opacity: .25; }
+.bf-img { transition: opacity .4s ease; }
+.bf:has(.bf-dev.is-new) .bf-img { opacity: .45; }
+/* the dots and the button stay in one place on every step: pinned near the bottom of her story,
+   with the dots' room kept even when they're hidden, so "What's on her" → "Next" → "Done" never moves */
+.cv-page .fd { position: relative; padding-bottom: 132px; }
+.cv-page .fd-walk-nav { position: absolute; left: 0; right: 0; bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.cv-page .fd-dots.is-hidden { display: inline-flex; visibility: hidden; }
+.cv-page .cv-screen > .fd { align-self: stretch; }
+/* her story never grows the screen: the picture gives up height first, so the button can't be pushed */
+.cv-page .cv-screen > .fd { min-height: 0; padding-bottom: 112px; }
+.cv-page .fd-walk-nav { bottom: 24px; }
+.cv-page .fd-walk .fd-model { flex: 0 1 220px; height: auto; min-height: 120px; }
+.cv-page .fd-walk .fd-model .bf { height: 100%; max-height: 220px; }
+@media (max-width: 760px) { .cv-page .cv-screen:has(> .fd) { min-height: min(640px, 86vh); } }
+
+/* her story moves gently: whatever is new rises in, the words again on each step (keyed by step);
+   the dots and the button never animate, so they stay put */
+@keyframes fd-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.cv-page .fd > :not(.fd-walk-nav) { animation: fd-rise .6s cubic-bezier(.22, 1, .36, 1) both; }
+.cv-page .fd > :nth-child(2):not(.fd-walk-nav) { animation-delay: .06s; }
+.cv-page .fd > :nth-child(3):not(.fd-walk-nav) { animation-delay: .12s; }
+.cv-page .fd > :nth-child(4):not(.fd-walk-nav) { animation-delay: .18s; }
+.cv-page .fd-walk .fd-words { animation-duration: .45s; animation-delay: 0s; }
+.cv-page .fd-walk-nav { animation: none; }
+@media (prefers-reduced-motion: reduce) { .cv-page .fd > * { animation: none; } }

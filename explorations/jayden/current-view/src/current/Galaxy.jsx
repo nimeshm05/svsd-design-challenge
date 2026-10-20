@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { CenterIcon, CloseButton, InfoIcon } from './NavIcons.jsx'
 import { stay, weekInfo, dayDetail } from '../data/days.js'
 
 // Her whole stay, after Nimesh's galaxy (explorations/nimesh/galaxy): one space and one camera.
@@ -268,7 +269,22 @@ function layerBox(bx, k) {
 }
 
 /* ---------- The day ring ---------- */
-const LANE = { parent: 0.72, first: 0.72, care: 1, change: 1.26 }
+// Every moment sits on the one 24-hour ring, at its time. Moments that land within ~half an hour of
+// each other ease apart along the ring (keeping their order) so neither hides the other.
+const RING_X = 300 // the day ring's centre in the sky's drawing units (dots line up under it)
+const MIN_GAP = 0.17 // radians between neighbours on the ring
+function ringAngles(moments) {
+  const order = moments.map((m, i) => ({ i, a: ang(m.h) })).sort((p, q) => moments[p.i].h - moments[q.i].h)
+  const out = new Array(moments.length)
+  for (let k = 0; k < order.length; ) {
+    let j = k
+    while (j + 1 < order.length && order[j + 1].a - order[j].a < MIN_GAP) j++
+    const n = j - k + 1, mid = (order[k].a + order[j].a) / 2
+    for (let t = k; t <= j; t++) out[order[t].i] = mid + (t - k - (n - 1) / 2) * MIN_GAP
+    k = j + 1
+  }
+  return out
+}
 const ang = (h) => -Math.PI / 2 + (h / 24) * Math.PI * 2 // midnight at the top, clockwise
 function momentMark(theme, m, x, y) {
   const c = theme === 'confetti'
@@ -282,12 +298,13 @@ function momentMark(theme, m, x, y) {
     return c ? `<path d="${starN(x, y, 12)}" fill="${col || '#ffd23f'}" stroke="${col || '#ffd23f'}" stroke-width="1.6" stroke-linejoin="round" filter="url(#g-soft)"/>`
       : `<path d="${softSparkle(x, y, 13)}" fill="${col || '#f3e3b5'}"/>`
   }
-  return c ? `<path d="${sparkle(x, y, 7, 0.32)}" fill="#ffffff"/>` : `<circle cx="${x}" cy="${y}" r="4.5" fill="#f3e3b5" opacity=".9"/>`
+  // care times: quiet, so the day's real moments stand out (their tap target stays 22px)
+  return c ? `<path d="${sparkle(x, y, 5, 0.32)}" fill="#ffffff" opacity=".5"/>` : `<circle cx="${x}" cy="${y}" r="3" fill="#f3e3b5" opacity=".45"/>`
 }
 
 function DayScene({ theme, day, sel, onPick }) {
   const c = theme === 'confetti'
-  const ox = 300, oy = 322, R = 150
+  const ox = RING_X, oy = 322, R = 150
   const ringCol = c ? '#7cc0ff' : '#f3e3b5'
   const arc = (h0, h1, r) => {
     const pts = Array.from({ length: 49 }, (_, k) => { const a = ang(h0 + ((h1 - h0) * k) / 48); return [ox + Math.cos(a) * r, oy + Math.sin(a) * r] })
@@ -300,28 +317,31 @@ function DayScene({ theme, day, sel, onPick }) {
     b += dayStar(theme, day, ox, oy, 2.2)
     return b
   }, [theme, day, c])
+  // care times aren't drawn on the ring (the panel says how many there were); only the day's moments are
+  const shown = useMemo(() => day.moments.map((m, i) => ({ m, i })).filter(({ m }) => m.kind !== 'care'), [day])
+  const angles = useMemo(() => ringAngles(shown.map(({ m }) => m)), [shown])
   return (
     <svg className="cv-day-scene" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" role="img" aria-label={`Day ${day.d}: ${day.story}`}>
       <rect x="-2000" y="-2000" width="5000" height="5000" fill="#000" />
       <g dangerouslySetInnerHTML={{ __html: back }} />
       {/* the 24-hour ring: lit up to now on today, whole on past days */}
-      {[0.72, 1, 1.26].map((k) => <circle key={k} cx={ox} cy={oy} r={R * k} fill="none" stroke={ringCol} strokeOpacity={k === 1 ? 0.22 : 0.1} strokeWidth={c && k === 1 ? 3 : 1} />)}
+      <circle className="cv-ring-main" cx={ox} cy={oy} r={R} fill="none" stroke={ringCol} strokeOpacity={0.22} strokeWidth={c ? 3 : 1} />
       <polyline points={arc(0, day.nowH, R)} fill="none" stroke={ringCol} strokeOpacity={c ? 0.8 : 0.5} strokeWidth={c ? 4.5 : 1.6} strokeLinecap="round" />
       {[[0, '12 a.m.'], [6, '6 a.m.'], [12, '12 p.m.'], [18, '6 p.m.']].map(([h, l]) => {
-        const a = ang(h), x = ox + Math.cos(a) * (R * 1.5), y = oy + Math.sin(a) * (R * 1.5)
+        const a = ang(h), x = ox + Math.cos(a) * (R * 1.22), y = oy + Math.sin(a) * (R * 1.22) // close to the ring, clear of its moments
         return <text key={h} x={x} y={y + 5} textAnchor="middle" className="cv-ring-hour">{l}</text>
       })}
       {day.isToday && (() => {
         const a = ang(day.nowH)
         return (
           <g className="cv-ring-now">
-            <line x1={ox + Math.cos(a) * 40} y1={oy + Math.sin(a) * 40} x2={ox + Math.cos(a) * R * 1.36} y2={oy + Math.sin(a) * R * 1.36} stroke={c ? '#ffd23f' : '#ffb38a'} strokeWidth="2" strokeLinecap="round" />
-            <text x={ox + Math.cos(a) * R * 1.36 + 8} y={oy + Math.sin(a) * R * 1.36 + 4} fill={c ? '#ffd23f' : '#ffb38a'} className="cv-ring-now-label">Now</text>
+            <line x1={ox + Math.cos(a) * 40} y1={oy + Math.sin(a) * 40} x2={ox + Math.cos(a) * R * 1.18} y2={oy + Math.sin(a) * R * 1.18} stroke={c ? '#ffd23f' : '#ffb38a'} strokeWidth="2" strokeLinecap="round" />
+            <text x={ox + Math.cos(a) * R * 1.18 + 8} y={oy + Math.sin(a) * R * 1.18 + 4} fill={c ? '#ffd23f' : '#ffb38a'} className="cv-ring-now-label">Now</text>
           </g>
         )
       })()}
-      {day.moments.map((m, i) => {
-        const a = ang(m.h), r = R * LANE[m.kind], x = ox + Math.cos(a) * r, y = oy + Math.sin(a) * r
+      {shown.map(({ m, i }, k) => {
+        const a = angles[k], x = ox + Math.cos(a) * R, y = oy + Math.sin(a) * R
         const on = sel === i
         return (
           <g key={i} className={`cv-moment ${on ? 'is-on' : ''}`} onClick={() => onPick(i)} role="button" tabIndex={0}
@@ -416,98 +436,120 @@ function ShootingStars() {
 }
 
 /* ---------- Panels ---------- */
+// A panel section: a small heading, then its content, on one spacing rhythm.
+function Sec({ title, children, className = '' }) {
+  return (
+    <section className={`cv-gsec ${className}`}>
+      {title && <h4 className="cv-gsec-k">{title}</h4>}
+      {children}
+    </section>
+  )
+}
+
 function WeekPanel({ w, onDay }) {
   const info = weekInfo[w - 1]
   const firsts = daysOf(w).filter((d) => stay.firsts[d.d])
   return (
     <aside className="cv-gpanel" aria-label={`Week ${w}`}>
-      <span className="cv-gpanel-k">Week {w}</span>
       <h3 className="cv-gpanel-title">{info.title}</h3>
-      <p className="cv-gpanel-text">{info.summary}</p>
+      <div className="cv-gpanel-desc"><p>{info.summary}</p></div>
+      {info.hard && <Sec title="What changed"><div className="cv-gpanel-desc"><p>{info.hard}</p></div></Sec>}
       {firsts.length > 0 && (
-        <ul className="cv-gpanel-firsts">
-          {firsts.map((d) => <li key={d.d}><button type="button" onClick={() => onDay(d.d)}><span className="cv-gplanet" aria-hidden="true" />{stay.firsts[d.d]} <em>Day {d.d}</em></button></li>)}
-        </ul>
+        <Sec title="Firsts">
+          <ul className="cv-grows">
+            {firsts.map((d) => (
+              <li key={d.d}>
+                <button type="button" onClick={() => onDay(d.d)}>
+                  <span className="cv-grows-k">Day {d.d}</span><span className="cv-grows-v"><span className="cv-gplanet" aria-hidden="true" />{stay.firsts[d.d]}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Sec>
       )}
-      {info.hard && (
-        <div className="cv-gpanel-hard">
-          <span className="cv-gpanel-k">What changed</span>
-          <p>{info.hard}</p>
-        </div>
-      )}
-      <div className="cv-gpanel-days">
-        {daysOf(w).map((d) => <button key={d.d} type="button" onClick={() => onDay(d.d)} className={d.d === stay.today ? 'is-today' : ''}>Day {d.d}</button>)}
-      </div>
     </aside>
   )
 }
 
-// The day's few things to know, numbered as on the day page. A thing with a time opens in place.
-function DayThings({ things }) {
-  const [open, setOpen] = useState(null)
-  const [noImg, setNoImg] = useState(false)
+// Label and value in two columns; a metric with several values lists them one per line.
+function Facts({ rows }) {
   return (
-    <section className="cv-gthings" aria-label="3 things to know today">
-      <span className="cv-gpanel-k">3 things to know today</span>
-      <ol>
-        {things.map((x, i) => (
-          <li key={x.title}>
-            <span className="cv-gthings-num">{i + 1}</span>
-            <div className="cv-gthings-text">
-              <b>{x.title}</b>
-              {x.text && <span>{x.text}</span>}
-              {x.detail && (
-                <button type="button" className="cv-gthings-at" aria-expanded={open === i} aria-controls={`cv-gthing-${i}`}
-                  onClick={() => setOpen(open === i ? null : i)}>{x.t}</button>
-              )}
-              {x.detail && open === i && (
-                <div className="cv-gmoment cv-gthings-detail" id={`cv-gthing-${i}`}>
-                  <b>{x.detail.title}</b>
-                  <p>{x.detail.text}</p>
-                  <figure className="cv-gthings-img">
-                    {noImg ? <figcaption>{x.detail.alt}</figcaption>
-                      : <img src={x.detail.img} alt={x.detail.alt} onError={() => setNoImg(true)} />}
-                  </figure>
-                  <button type="button" className="cv-gmoment-close" onClick={() => setOpen(null)}>Close</button>
-                </div>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
-    </section>
+    <dl className="cv-gfacts">
+      {rows.map(([label, values]) => (
+        <div key={label} className="cv-gfacts-row">
+          <dt>{label}</dt>
+          <dd>{[].concat(values).map((v) => <span key={v}>{v}</span>)}</dd>
+        </div>
+      ))}
+    </dl>
   )
 }
 
+// The day in plain paragraphs: its story, then what else a parent should know, then its care times.
+// A "thing to know" that repeats the story isn't said twice, but its time (and what it opens) joins the story.
+function dayParagraphs(day) {
+  const story = { text: day.story }
+  const rest = []
+  for (const x of day.things ?? []) {
+    if (day.story.toLowerCase().startsWith(x.title.toLowerCase())) { if (x.detail) story.thing = x; continue }
+    rest.push({ text: [x.title.replace(/\.?$/, '.'), x.text].filter(Boolean).join(' '), thing: x.detail ? x : null })
+  }
+  const cares = day.moments.filter((m) => m.kind === 'care').length
+  return [story, ...rest, ...(cares ? [{ text: `${cares} care times, each with a feed and a diaper change.` }] : [])]
+}
+
 function DayPanel({ day, sel, onPick }) {
-  const m = sel != null ? day.moments[sel] : null
+  const [open, setOpen] = useState(null) // a "thing" opened from its time
+  const paras = dayParagraphs(day)
+  const moments = day.moments.filter((x) => x.kind !== 'care')
   return (
     <aside className="cv-gpanel" aria-label={`Day ${day.d}`}>
-      <span className="cv-gpanel-k">{day.isToday ? 'Today' : `Day ${day.d}`} · Week {day.week}</span>
-      <h3 className="cv-gpanel-title">{day.first ?? (day.isToday ? `Day ${day.d}` : `Day ${day.d}`)}</h3>
-      {day.things && <DayThings key={day.d} things={day.things} />}
-      <p className="cv-gpanel-text">{day.story}</p>
-      <dl className="cv-gpanel-facts">
-        <div><dt>Breathing help</dt><dd>{day.supportLabel}</dd></div>
-        <div><dt>Weight</dt><dd>{day.weight.toLocaleString()} g</dd></div>
-        <div><dt>Family time</dt><dd>{day.parent ? [Math.floor(day.parent / 60) && `${Math.floor(day.parent / 60)} h`, day.parent % 60 && `${day.parent % 60} min`].filter(Boolean).join(' ') : '—'}</dd></div>
-      </dl>
-      {m ? (
-        <div className="cv-gmoment">
-          <span className="cv-gpanel-k">{m.t}</span>
-          <b>{m.title}</b>
-          <p>{m.plain}</p>
-          {m.by && <span className="cv-gmoment-by">{m.by}</span>}
-          <button type="button" className="cv-gmoment-close" onClick={() => onPick(null)}>All moments</button>
-        </div>
-      ) : (
-        <ol className="cv-gpanel-moments">
-          {day.moments.filter((x) => x.kind !== 'care').map((x) => {
-            const i = day.moments.indexOf(x)
-            return <li key={i}><button type="button" onClick={() => onPick(i)}><span>{x.t}</span>{x.title}</button></li>
-          })}
-          <li className="cv-gpanel-care">{day.moments.filter((x) => x.kind === 'care').length} care times, each with a feed and a diaper change</li>
-        </ol>
+      <h3 className="cv-gpanel-title">{day.first ?? `Day ${day.d}`}</h3>
+      <div className="cv-gpanel-desc">
+        {paras.map((p, i) => (
+          <Fragment key={i}>
+            <p>
+              {p.text}
+              {p.thing && <> <button type="button" className="cv-gpanel-at" aria-expanded={open === i} onClick={() => setOpen(open === i ? null : i)}>{p.thing.t}</button></>}
+            </p>
+            {p.thing && open === i && (
+              <div className="cv-gmoment">
+                <b>{p.thing.detail.title}</b>
+                <p>{p.thing.detail.text}</p>
+                <CloseButton className="cv-gmoment-close" onClick={() => setOpen(null)} />
+              </div>
+            )}
+          </Fragment>
+        ))}
+      </div>
+      <Sec title="Life support">
+        <Facts rows={[
+          ['Breathing help', day.supportLabel],
+          ['Weight', `${day.weight.toLocaleString()} g`],
+        ]} />
+      </Sec>
+      {moments.length > 0 && (
+        <Sec title="Moments">
+          {/* tap a moment: its description opens under its title, in place; tap again to close */}
+          <ol className="cv-grows">
+            {moments.map((x) => {
+              const i = day.moments.indexOf(x), on = i === sel
+              return (
+                <li key={i} className={on ? 'is-open' : ''}>
+                  <button type="button" aria-expanded={on} aria-controls={`cv-gm-${day.d}-${i}`} onClick={() => onPick(on ? null : i)}>
+                    <span className="cv-grows-k">{x.t}</span><span className="cv-grows-v">{x.title}</span>
+                  </button>
+                  {on && (
+                    <div className="cv-grows-desc" id={`cv-gm-${day.d}-${i}`}>
+                      <p>{x.plain}</p>
+                      {x.by && <span className="cv-grows-by">{x.by}</span>}
+                    </div>
+                  )}
+                </li>
+              )
+            })}
+          </ol>
+        </Sec>
       )}
     </aside>
   )
@@ -542,10 +584,16 @@ function placeLabels() {
 const LABEL_AT = placeLabels()
 
 /* ---------- The galaxy ---------- */
-export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
+export function Galaxy({ theme, onBack, exit = 0 }) {
   // it opens close on today's star (where the home screen left it) and pulls back to show its week
-  const [view, setView] = useState({ level: 'galaxy' })
-  const [story, setStory] = useState(true) // while her sky fades in around today's star
+  // review links: ?gweek=3 or ?gday=12 open straight into a week or a day
+  const [view, setView] = useState(() => {
+    const q = new URLSearchParams(window.location.search)
+    if (q.get('gday')) return { level: 'day', d: +q.get('gday') }
+    if (q.get('gweek')) return { level: 'week', w: +q.get('gweek') }
+    return { level: 'galaxy' }
+  })
+  const [story, setStory] = useState(() => !new URLSearchParams(window.location.search).get('page')) // while her sky fades in around today's star
   const [leaving, setLeaving] = useState(false) // while it fades away again, back to today
   const [landed, setLanded] = useState(true)
   const [sel, setSel] = useState(null)
@@ -685,18 +733,53 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
   }
   const onClickCapture = (e) => { if (justDragged.current) { e.stopPropagation(); e.preventDefault(); justDragged.current = false } }
 
-  // Two-finger scroll looks around; pinch zooms toward your fingers
+  // Two-finger scroll looks around (sideways swipes page in a week or day); pinch zooms toward your fingers
+  const swipe = useRef({ x: 0, done: false, t: 0 })
+  const pinch = useRef({ x: 0, done: false, t: 0 })
   useEffect(() => {
     const el = host.current
+    // One move per gesture: the trackpad keeps sending events (momentum, a long pinch), so a gesture
+    // counts once and the next one starts after a short quiet gap.
+    const once = (ref, e, amount, threshold, act) => {
+      const g = ref.current
+      clearTimeout(g.t)
+      g.t = setTimeout(() => { g.x = 0; g.done = false }, 220)
+      if (g.done) return
+      g.x += amount
+      if (Math.abs(g.x) > threshold) { g.done = true; act(Math.sign(g.x)) }
+    }
     const onWheel = (e) => {
-      if (view.level === 'day' || !landed || e.target.closest('.cv-gpanel')) return
+      if (e.ctrlKey) e.preventDefault() // a trackpad pinch: never let the browser zoom the page
+      if (e.target.closest('.cv-gpanel') && !e.ctrlKey) return
+      const level = view.level
+      // Pinch fingers together = zoom out = up one level: a day → its week → Mila's stars
+      if (e.ctrlKey && e.deltaY > 0 && (level === 'day' || level === 'week')) {
+        if (!landed) { once(pinch, e, 0, 1, () => {}); return } // mid-flight: absorb, don't double-step
+        once(pinch, e, e.deltaY, 12, () => (level === 'day' ? goWeek(wOf(view.d)) : goGalaxy()))
+        return
+      }
+      if (!landed) return
+      // In a week or a day, a sideways swipe moves to the one before or after
+      if (!e.ctrlKey && (level === 'week' || level === 'day')) {
+        const sideways = Math.abs(e.deltaX) > Math.abs(e.deltaY)
+        if (sideways || level === 'day') {
+          e.preventDefault()
+          if (!sideways) return
+          once(swipe, e, e.deltaX, 40, (k) => { // fingers move left → content moves left → the next one
+            if (level === 'week') goWeek(view.w + k)
+            else if (view.d + k >= 1 && view.d + k < stay.today) goDay(view.d + k) // never swipe out of her sky by accident
+          })
+          return
+        }
+      }
+      if (level === 'day') return
       e.preventDefault()
       const b = box.current, s = scaleOf(b), [cw, ch] = sizeRef.current
       if (e.ctrlKey) {
+        // spreading (and pinching together at the top level) zooms the view toward your fingers
         const r = el.getBoundingClientRect()
         const wx = b[0] + (e.clientX - r.left - (cw - b[2] * s) / 2) / s, wy = b[1] + (e.clientY - r.top - (ch - b[3] * s) / 2) / s
         const vw = Math.min(Math.max(1300, skyBox(cw, ch)[2] * 1.3), Math.max(220, b[2] * Math.exp(e.deltaY * 0.01))), k = vw / b[2]
-        if (e.deltaY > 0 && view.level === 'week' && vw > target[2] * 1.3) { goGalaxy(); return }
         applyBox(clampBox([wx - (wx - b[0]) * k, wy - (wy - b[1]) * k, vw, vw * (H / W)]))
       } else applyBox(clampBox([b[0] + e.deltaX / s, b[1] + e.deltaY / s, b[2], b[3]]))
       setTick((t) => t + 1)
@@ -712,7 +795,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         const k = e.key === 'ArrowRight' ? 1 : -1
         if (view.level === 'week') goWeek(view.w + k)
-        if (view.level === 'day') goDay(view.d + k)
+        if (view.level === 'day' && view.d + k >= 1 && view.d + k < stay.today) goDay(view.d + k)
       }
     }
     window.addEventListener('keydown', onKey)
@@ -748,7 +831,34 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
     })
   })()
   const day = view.level === 'day' ? dayDetail(view.d) : null
-  const backLabel = view.level === 'day' ? `‹ Week ${stay.days[view.d - 1].week}` : view.level === 'week' ? '‹ Her sky' : '‹ Today'
+  const wOf = (d) => stay.days[d - 1].week
+  const crumbs = [
+    { label: "Mila's stars", go: view.level === 'galaxy' ? null : goGalaxy },
+    ...(view.level === 'week' || view.level === 'day' ? [{ label: `Week ${view.level === 'week' ? view.w : wOf(view.d)}`, go: view.level === 'day' ? () => goWeek(wOf(view.d)) : null }] : []),
+    ...(view.level === 'day' ? [{ label: `Day ${view.d}`, go: null }] : []),
+  ]
+  const dots = view.level === 'week'
+    ? Array.from({ length: WEEKS }, (_, i) => ({ key: `w${i + 1}`, label: `Week ${i + 1}`, on: view.w === i + 1, go: () => goWeek(i + 1) }))
+    : view.level === 'day'
+      ? daysOf(wOf(view.d)).filter((d) => d.d < stay.today).map((d) => ({ key: `d${d.d}`, label: `Day ${d.d}`, on: view.d === d.d, go: () => goDay(d.d) }))
+      : []
+
+  // The dots have one fixed anchor: the centre of the day's ring (computed from the layout, not measured),
+  // so paging weeks or days, or moving between a week and a day, never moves them. The row is centred on
+  // that point, so it grows and shrinks evenly as the active dot changes. Only a resize (or Close being in
+  // the way on a narrow screen) moves the anchor.
+  const dotsRef = useRef(null)
+  const [dotsX, setDotsX] = useState(null)
+  useLayoutEffect(() => {
+    const el = host.current
+    if (!el) return
+    const [cw, ch] = size, s = Math.max(cw / W, ch / H)
+    let x = (cw - W * s) / 2 + RING_X * s
+    const r = el.getBoundingClientRect(), close = document.querySelector('.cv-skyt')?.getBoundingClientRect()
+    const half = (dotsRef.current?.offsetWidth ?? 160) / 2
+    if (close) x = Math.max(x, close.right - r.left + 16 + half)
+    setDotsX(Math.round(x))
+  }, [size, view.level === 'week' || view.level === 'day'])
   const faded = view.level === 'day' ? 'is-faded' : ''
   const layer = (l) => <div key={l.name} className={`cv-glayer is-${l.name} ${faded}`} data-k={l.k} dangerouslySetInnerHTML={{ __html: l.html }} />
 
@@ -817,7 +927,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
             <b>Mila&apos;s stars</b>
             <button ref={infoBtn} type="button" className="cv-ginfo-btn" aria-label="How to navigate" aria-expanded={info} aria-controls="cv-ginfo"
               onClick={() => (info ? closeInfo() : setInfo(true))}>
-              <span className="cv-btn-icon" aria-hidden="true">i</span>
+              <InfoIcon />
             </button>
           </div>
           <p className="cv-gsum">
@@ -831,7 +941,7 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
           <div className="cv-sheet cv-ginfo" id="cv-ginfo" role="dialog" aria-label="How to navigate" ref={infoBox} tabIndex={-1}>
             <div className="cv-sheet-head">
               <h3>How to look around</h3>
-              <button type="button" className="cv-close" onClick={closeInfo}>Close</button>
+              <CloseButton onClick={closeInfo} />
             </div>
             <ul className="cv-help">
               <li><b>Each day is a star.</b> Each week of her stay makes its own constellation.</li>
@@ -841,24 +951,38 @@ export function Galaxy({ theme, onBack, onDischarge, exit = 0 }) {
           </div>
         </>
       )}
-      {view.level === 'galaxy' && !story && onDischarge && (
-        <button type="button" className="cv-btn is-quiet is-small cv-discharge-btn" onClick={onDischarge}>Time to discharge!</button>
-      )}
       {view.level === 'week' && landed && <WeekPanel w={view.w} onDay={goDay} />}
       {view.level === 'day' && landed && <DayPanel day={day} sel={sel} onPick={setSel} />}
 
-      <div className="cv-galaxy-nav" hidden={view.level === 'today' || story}>
-        {view.level !== 'galaxy' && <button type="button" className="cv-galaxy-back" onClick={up}>{backLabel}</button>}
-        {view.level !== 'galaxy' && (
-          <span className="cv-galaxy-step">
-            <button type="button" onClick={() => (view.level === 'week' ? goWeek(view.w - 1) : goDay(view.d - 1))}
-              disabled={view.level === 'week' ? view.w <= 1 : view.d <= 1} aria-label={view.level === 'week' ? 'Previous week' : 'Previous day'}>‹</button>
-            <button type="button" onClick={() => (view.level === 'week' ? goWeek(view.w + 1) : goDay(view.d + 1))}
-              disabled={view.level === 'week' && view.w >= WEEKS} aria-label={view.level === 'week' ? 'Next week' : 'Next day'}>›</button>
-          </span>
-        )}
-        {panned && <button type="button" className="cv-galaxy-center" onClick={recenter}>Center</button>}
+      {/* Where you are, top-left (in a week or a day): a breadcrumb. Tap an earlier step to go up.
+          Leaving her sky is the Close button, bottom-left, where "Mila's stars" was.
+          Slashes, not chevrons, so it never reads as "previous / next". */}
+      <div className="cv-galaxy-nav" hidden={view.level === 'today' || story || (view.level === 'galaxy' && !panned)}>
+        {view.level !== 'galaxy' && <nav className="nav-crumbs" aria-label="Where you are">
+          <ol>
+            {crumbs.map((c, i) => (
+              <li key={c.label}>
+                {i > 0 && <span className="nav-crumbs-sep" aria-hidden="true">/</span>}
+                {c.go
+                  ? <button type="button" className="nav-crumb" onClick={c.go}>{c.label}</button>
+                  : <span className="nav-crumb is-here" aria-current="page">{c.label}</span>}
+              </li>
+            ))}
+          </ol>
+        </nav>}
+        {panned && <button type="button" className="nav-btn" onClick={recenter}><CenterIcon /><span>Center</span></button>}
       </div>
+
+      {/* Moving sideways, bottom centre of the sky: dots, one per week (in a week) or per day of
+          this week (in a day). Swipe sideways on the trackpad, use ← →, or tap a dot. */}
+      {(view.level === 'week' || view.level === 'day') && !story && dots.length > 1 && (
+        <nav ref={dotsRef} className="nav-dots" aria-label={view.level === 'week' ? 'Weeks' : 'Days'} style={dotsX != null ? { left: dotsX } : { visibility: 'hidden' }}>
+          {dots.map((x) => (
+            <button key={x.key} type="button" className={`nav-dot ${x.on ? 'is-on' : ''}`} aria-label={x.label}
+              aria-current={x.on ? 'page' : undefined} onClick={x.go}><i /></button>
+          ))}
+        </nav>
+      )}
     </div>
   )
 }

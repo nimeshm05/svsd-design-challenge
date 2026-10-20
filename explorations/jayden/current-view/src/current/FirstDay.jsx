@@ -1,4 +1,6 @@
-import { HerModel } from './HerModel.jsx'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { BabyFront } from './BabyFront.jsx'
+import { ChevronRight } from './NavIcons.jsx'
 
 // Her first day on the bedside screen: how her story begins.
 // Parents first stand here in shock, often hours after she was born. Nothing asks anything of them:
@@ -34,60 +36,85 @@ function FirstStar({ theme, big = false }) {
   )
 }
 
-export function FirstDay({ stage, theme, walk, setWalk }) {
-  // the nurse-led walkthrough: one thing on her lit at a time, a plain sentence, then "Next"
-  if (walk != null) {
-    const done = walk >= FIRST.on.length
-    const item = FIRST.on[Math.min(walk, FIRST.on.length - 1)]
-    return (
-      <div className="fd fd-walk">
-        <div className="fd-model">
-          <HerModel present={FIRST.on.map((o) => o.id)} changed={done ? [] : [item.id]}
-            label={done ? 'Mila, with everything on her right now.' : `Mila, with her ${item.name.toLowerCase()} lit.`} />
-        </div>
-        {done ? (
-          <div className="fd-words">
-            <p className="fd-title">That&apos;s everything on her right now.</p>
-            <p className="fd-line">You can talk to her. When her nurse says it&apos;s okay, you can touch her through the portholes.</p>
-          </div>
-        ) : (
-          <div className="fd-words">
-            <p className="fd-title">{item.name}</p>
-            <p className="fd-line">{item.means}</p>
-          </div>
-        )}
-        <div className="fd-walk-nav">
-          <span className="fd-dots" aria-label={done ? 'Done' : `${walk + 1} of ${FIRST.on.length}`}>
-            {FIRST.on.map((o, i) => <i key={o.id} className={i === walk || (done && i === FIRST.on.length - 1) ? 'is-on' : i < walk ? 'is-past' : ''} />)}
-          </span>
-          {done
-            ? <button type="button" className="fd-next is-done" onClick={() => setWalk(null)}>Done</button>
-            : <button type="button" className="fd-next" onClick={() => setWalk(walk + 1)}>Next</button>}
-        </div>
-      </div>
-    )
-  }
-
+// One button whose label morphs in place (like "Mila's stars" → "Close"): the old label lifts away,
+// the new one rises in, the width eases to fit, and a trailing › slides in or out.
+function MorphButton({ label, chevron = false, onClick }) {
+  const [shown, setShown] = useState(label)
+  const [prev, setPrev] = useState(null)
+  const [w, setW] = useState(null)
+  const measure = useRef(null)
+  useLayoutEffect(() => {
+    if (label === shown) return undefined
+    setPrev(shown)
+    setShown(label)
+    const t = setTimeout(() => setPrev(null), 500)
+    return () => clearTimeout(t)
+  }, [label]) // eslint-disable-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => { if (measure.current) setW(measure.current.offsetWidth) }, [shown])
   return (
-    <div className="fd">
-      <FirstStar theme={theme} big />
-      {stage === 'arrival' ? (
+    <button type="button" className={`nav-btn is-primary fd-next mb ${chevron ? 'has-chev' : ''}`} onClick={onClick} aria-label={shown}>
+      <span className="mb-label" style={w != null ? { width: w } : undefined} aria-hidden="true">
+        <span ref={measure} className="mb-measure">{shown}</span>
+        {prev && <span key={`o-${prev}`} className="mb-out">{prev}</span>}
+        <span key={`i-${shown}`} className={prev ? 'mb-in' : 'mb-now'}>{shown}</span>
+      </span>
+      <span className="mb-chev" aria-hidden="true"><ChevronRight /></span>
+    </button>
+  )
+}
+
+export function FirstDay({ stage, theme, walk, setWalk }) {
+  // Her first day. On "Her story begins", her nurse opens "What's on her": one thing on her lit at a
+  // time, a plain sentence, then "Next". The button stays the same element throughout, so it morphs.
+  const walking = walk != null
+  const done = walking && walk >= FIRST.on.length
+  const item = walking ? FIRST.on[Math.min(walk, FIRST.on.length - 1)] : null
+  const label = !walking ? "What\u2019s on her" : done ? 'Done' : 'Next'
+  return (
+    <div className={`fd ${walking ? 'fd-walk' : ''}`}>
+      {walking ? (
         <>
-          {/* two quiet groups with room between them: who she is, then how small she is */}
-          <div className="fd-group">
-            <p className="fd-name">Mila</p>
-            <p className="fd-born">Born today at {FIRST.born}</p>
+          <div className="fd-model">
+            <BabyFront present={FIRST.on.map((o) => o.id)} changed={done ? [] : [item.id]}
+              label={done ? 'Mila, with everything on her right now.' : `Mila, with her ${item.name.toLowerCase()} lit.`} />
           </div>
-          <div className="fd-group fd-size">
-            <span><b>{FIRST.grams} grams</b>, {FIRST.feel}.</span>
-            <em>Her star is as big as she is.</em>
+          <div className="fd-words" key={walk}>
+            <p className="fd-title">{done ? 'That\u2019s everything on her right now.' : item.name}</p>
+            <p className="fd-line">{done ? 'You can talk to her. When her nurse says it\u2019s okay, you can touch her through the portholes.' : item.means}</p>
           </div>
         </>
       ) : (
         <>
-          <p className="fd-title is-serif">Every day becomes a star.</p>
-          <p className="fd-line">Tonight, her first one.</p>
+          <FirstStar theme={theme} big />
+          {stage === 'arrival' ? (
+            <>
+              {/* two quiet groups with room between them: who she is, then how small she is */}
+              <div className="fd-group">
+                <p className="fd-name">Mila</p>
+                <p className="fd-born">Born today at {FIRST.born}</p>
+              </div>
+              <div className="fd-group fd-size">
+                <span><b>{FIRST.grams} grams</b>, {FIRST.feel}.</span>
+                <em>Her star is as big as she is.</em>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="fd-title is-serif">Every day becomes a star.</p>
+              <p className="fd-line">Tonight, her first one.</p>
+            </>
+          )}
         </>
+      )}
+      {/* dots above, then the one button, centred under the words */}
+      {stage !== 'arrival' && (
+        <div className="fd-walk-nav" key="nav">
+          <span className={`fd-dots ${walking ? '' : 'is-hidden'}`} aria-label={walking ? (done ? 'Done' : `${walk + 1} of ${FIRST.on.length}`) : undefined} aria-hidden={!walking}>
+            {FIRST.on.map((o, i) => <i key={o.id} className={walking && (i === walk || (done && i === FIRST.on.length - 1)) ? 'is-on' : ''} />)}
+          </span>
+          <MorphButton label={label} chevron={walking && !done}
+            onClick={() => (!walking ? setWalk(0) : done ? setWalk(null) : setWalk(walk + 1))} />
+        </div>
       )}
     </div>
   )

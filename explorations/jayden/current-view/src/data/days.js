@@ -186,12 +186,13 @@ export const today = {
       'Gentle, still touch is easier for her than stroking.',
     ],
   },
-  // Who's caring for her right now. Parents see the team, and ask for help in one place.
+  // Who's caring for her right now. photo: sample portraits from randomuser.me (stand-ins, not real staff);
+  // img: a drawn fallback if the photo can't load (offline).
   team: [
-    { initials: 'P', name: 'Priya', role: 'Her nurse today', primary: true },
-    { initials: 'CN', name: '[Charge nurse]', role: 'Charge nurse · covers when Priya is with another baby' },
-    { initials: 'Dr', name: 'Dr. [Name]', role: 'Baby doctor on call' },
-    { initials: 'M', name: 'Marcus', role: 'Her nurse tonight, from 7 p.m.' },
+    { name: 'Priya', role: 'Her nurse', until: '7 p.m.', primary: true, img: '/images/team/priya.svg', photo: 'https://randomuser.me/api/portraits/women/40.jpg' },
+    { name: 'Lena', role: 'Charge nurse', until: '7 p.m.', backup: true, img: '/images/team/lena.svg', photo: 'https://randomuser.me/api/portraits/women/44.jpg' },
+    { name: 'Dr. Osei', role: 'Baby doctor on call', until: '8 a.m.', doctor: true, img: '/images/team/osei.svg', photo: 'https://randomuser.me/api/portraits/men/49.jpg' },
+    { name: 'Marcus', role: 'Her night nurse', from: '7 p.m.', img: '/images/team/marcus.svg', photo: 'https://randomuser.me/api/portraits/men/32.jpg' },
   ],
   calm: {
     status: 'Sleeping after her noon feed.', // how she is right now: observational, never medical

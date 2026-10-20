@@ -2,7 +2,7 @@
 //   short:  the quiet one-line meaning shown under her current step on Next Steps
 //   stands: what an abbreviation (or the name her team may use) stands for, if any
 //   body:   1–2 plain sentences shown when the term is tapped; entries without one aren't tappable
-//   image:  a local illustration (public/images/glossary/); null shows the placeholder
+//   image:  a local illustration (public/images/glossary/); null shows no picture
 // Placeholder copy, for care-team review. It explains; it never advises or predicts.
 export const glossary = {
   'CPAP mask': {
@@ -48,4 +48,3 @@ export const glossary = {
   },
 }
 
-export const GLOSSARY_PLACEHOLDER = `${import.meta.env.BASE_URL}images/glossary/placeholder.svg`
