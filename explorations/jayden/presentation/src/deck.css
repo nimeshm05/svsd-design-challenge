@@ -1222,3 +1222,32 @@ body:has(.panel) { overflow: auto; }
 .dfilm.has-call::after, .dfilm.side-l::after { opacity: 0; }
 .dfilm-cap { bottom: 10%; }
 .foot-mom .foot-box { animation: to-left 1.2s 1.9s cubic-bezier(.65, 0, .25, 1) both; }
+/* the deck's (hidden) footer must not sit on top of the film's controls */
+.deck.is-bare .deck-foot { pointer-events: none; }
+.deck.is-bare .deck-arrows button { pointer-events: auto; opacity: .35; }
+.dfc { bottom: 26px; }
+.dfc-track { cursor: pointer; touch-action: none; }
+.dfc-track:focus-visible { outline: 2px solid var(--cream); outline-offset: 4px; border-radius: 4px; }
+
+/* ===== Clips, full frame: they ease in, play slowed, then push into her screen or blur through ===== */
+.foot-box { overflow: visible; }
+.foot-dad .foot-box, .foot-nurse .foot-box, .foot-mom .foot-box { width: max(100%, calc(100vh * 16 / 9)); left: 50%; border-radius: 0; box-shadow: none; }
+.foot { animation: foot-blur-in .9s 0s ease both; }
+@keyframes foot-blur-in { from { opacity: 0; filter: blur(14px); } }
+/* Dad: into the monitor, toward her star (it sits at 14% / 52% near the end of the shot) */
+.foot-dad .foot-box { animation: push-dad 1.3s 5.9s cubic-bezier(.65, 0, .35, 1) both; transform-origin: 14% 52%; }
+@keyframes push-dad { to { transform: translate(-50%, -50%) scale(4.6); } }
+.foot-dad { animation: foot-blur-in .9s 0s ease both, open-out .5s 6.6s ease both; }
+/* the nurse: into the monitor beside her */
+.foot-nurse .foot-box { animation: push-nurse 1.3s 7.3s cubic-bezier(.65, 0, .35, 1) both; transform-origin: 15.5% 44%; }
+@keyframes push-nurse { to { transform: translate(-50%, -50%) scale(4.6); } }
+.foot-nurse { animation: foot-blur-in .9s 0s ease both, open-out .5s 8.1s ease both; }
+/* Mom: no monitor in her shot, so the frame drifts closer and dissolves into the screen */
+.foot-mom .foot-box { animation: drift-mom 6.6s 0s linear both; transform-origin: 40% 45%; }
+@keyframes drift-mom { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(1.12); } }
+.foot-mom { animation: foot-blur-in .9s 0s ease both, foot-blur-out .8s 5.8s ease both; }
+@keyframes foot-blur-out { to { opacity: 0; filter: blur(16px); } }
+/* the closing: "Every day becomes a star." rises above her name; the sky fills in behind */
+.dfilm.is-c3 .dfilm-c2 { opacity: 0; }
+.dfilm.is-c3 .dfilm-c1 { opacity: 1; filter: none; top: 36%; }
+.dfilm.is-c3 .dfilm-field i { opacity: .7; }
