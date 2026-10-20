@@ -11,13 +11,13 @@
 @media (prefers-reduced-motion: reduce) { .cv-discharge { animation-duration: .01s; } }
 
 /* Her story, told before the mobile: one moment at a time, bottom left, in the galaxy panel's type */
-.cv-story { position: absolute; z-index: 2; left: 22px; bottom: 22px; width: min(360px, calc(100% - 44px)); display: flex; flex-direction: column; gap: 6px;
+.cv-story { position: absolute; z-index: 2; left: 4%; bottom: 22px; width: min(400px, 40%); display: flex; flex-direction: column; gap: 6px;
   cursor: pointer; animation: cv-story-in .7s cubic-bezier(.22, 1, .36, 1) both; }
 @keyframes cv-story-in { from { opacity: 0; transform: translateY(8px); } }
 .cv-story-k { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--cream); opacity: .85; }
 .theme-nursery .cv-story-k { font-family: "Geist Mono", ui-monospace, monospace; }
 .cv-story-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.15; color: var(--cream); }
-.cv-story-text { margin: 0; font-size: 15px; line-height: 1.45; color: var(--text-2); }
+.cv-story-text { margin: 0; font-size: clamp(15px, 1.5vw, 17px); line-height: 1.5; color: #e8e0cf; }
 .cv-story-facts { display: flex; gap: 22px; margin: 6px 0 0; }
 .cv-story-facts div { display: flex; flex-direction: column; gap: 2px; }
 .cv-story-facts dt { font-size: 12px; color: var(--muted); }
@@ -27,6 +27,14 @@
 .cv-story-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--cream); opacity: .2; transition: opacity .4s ease; }
 .cv-story-dots i.is-past { opacity: .5; }
 .cv-story-dots i.is-on { opacity: 1; }
+/* Continue, shared with her kept story: right of the dots, or on its own */
+.cv-story-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+.cv-story-foot .cv-story-dots { margin-top: 0; }
+.cv-story-continue { margin-left: auto; cursor: pointer; background: transparent; color: #F6EEDB; font: inherit; font-size: 14px; }
+/* story-style progress, small, left of Continue: one segment per slide */
+.cv-story-bar { flex: 0 1 140px; display: flex; gap: 3px; pointer-events: none; }
+.cv-story-bar span { flex: 1; height: 2px; border-radius: 1px; overflow: hidden; background: color-mix(in srgb, var(--cream) 22%, transparent); }
+.cv-story-bar i { display: block; height: 100%; background: var(--cream); transform: scaleX(0); transform-origin: left; }
 .cv-discharge.is-mobile .cv-galaxy-title { animation: cv-fade-in .9s ease both; }
 
 /* Skip / Replay: quiet, top right */
@@ -35,3 +43,15 @@
   background: rgba(11, 15, 20, .5); color: var(--text-2); font-size: 13px; animation: cv-fade-in .7s ease both; }
 .cv-story-ctl:hover { border-color: color-mix(in srgb, var(--cream) 55%, transparent); color: #F6EEDB; }
 @media (prefers-reduced-motion: reduce) { .cv-story, .cv-story-ctl { animation-duration: .01s; } }
+/* A screen's closing step: the app's primary button, centered at the bottom with a soft glow,
+   fading in once the screen has settled. Clear of the phone's home bar. */
+.cv-cta { position: absolute; z-index: 3; left: 50%; bottom: max(28px, calc(env(safe-area-inset-bottom) + 20px)); transform: translateX(-50%);
+  white-space: nowrap; cursor: pointer; box-shadow: 0 0 28px color-mix(in srgb, var(--cream) 22%, transparent);
+  animation: cv-cta-in 1.2s ease 1s both; }
+@keyframes cv-cta-in { from { opacity: 0; transform: translate(-50%, 6px); } }
+/* on her kept sky: quiet, under her words on the left, a cream outline only; it comes in with the closing
+   words, on their timing */
+.cv-btn.is-quiet.rem-cta { left: 4%; transform: none; box-shadow: none; border-color: color-mix(in srgb, var(--cream) 70%, transparent); color: var(--text-2);
+  animation: cv-story-in 1.8s ease .4s both; }
+.cv-btn.is-quiet.rem-cta:hover { border-color: var(--cream); color: #F6EEDB; }
+@media (prefers-reduced-motion: reduce) { .cv-cta { animation: none; } }

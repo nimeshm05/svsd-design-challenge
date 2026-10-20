@@ -27,10 +27,12 @@ export function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; re
 const PATH = { from: [215, 330], to: [805, 330], minStep: 190, zig: 78, jitter: 22, gap: 70 }
 const DIR = Math.atan2(PATH.to[1] - PATH.from[1], PATH.to[0] - PATH.from[0])
 const U = [Math.cos(DIR), Math.sin(DIR)], N = [U[1], -U[0]] // along her stay, and across it (toward upper left)
-const POS = (() => {
+// any stay's sky: her days (each with its week) in order, as positions in the galaxy's units
+export function layoutStay(days) {
+  const nW = Math.max(...days.map((d) => d.week)), of = (w) => days.filter((d) => d.week === w)
   // each week's shape: a gentle, curling walk along the path, never too close to a star already placed
-  const shapes = Array.from({ length: WEEKS }, (_, i) => {
-    const w = i + 1, days = daysOf(w)
+  const shapes = Array.from({ length: nW }, (_, i) => {
+    const w = i + 1, days = of(w)
     let heading = DIR + (hash(w) - 0.5) * 0.8
     const pts = [[0, 0]]
     for (let k = 1; k < days.length; k++) {
@@ -51,7 +53,7 @@ const POS = (() => {
   const span = Math.hypot(PATH.to[0] - PATH.from[0], PATH.to[1] - PATH.from[1])
   const lay = (step) => shapes.map((pts, i) => {
     const w = i + 1
-    const along = (i - (WEEKS - 1) / 2) * step + (hash(w * 7 + 2) - 0.5) * 24
+    const along = (i - (nW - 1) / 2) * step + (hash(w * 7 + 2) - 0.5) * 24
     // a zigzag: week 1 high, week 2 low, week 3 high… each a little off its mark
     const across = (i % 2 ? -1 : 1) * PATH.zig + (hash(w * 13 + 5) - 0.5) * 2 * PATH.jitter
     const c = [mid[0] + U[0] * along + N[0] * across, mid[1] + U[1] * along + N[1] * across]
@@ -59,10 +61,11 @@ const POS = (() => {
   })
   // weeks never touch: if any two come too close, space the whole path out a little more
   const apart = (weeks) => weeks.every((a, i) => weeks.slice(i + 1).every((b) => a.every((p) => b.every((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) >= PATH.gap))))
-  let step = Math.max(PATH.minStep, WEEKS > 1 ? span / (WEEKS - 1) : 0), weeks = lay(step)
+  let step = Math.max(PATH.minStep, nW > 1 ? span / (nW - 1) : 0), weeks = lay(step)
   for (let k = 0; k < 40 && !apart(weeks); k++) weeks = lay((step += 8))
   return weeks.flat()
-})()
+}
+const POS = layoutStay(stay.days)
 // her whole sky (at least the screen's own drawing space), with room around the outermost stars
 const SKY = [
   Math.min(0, ...POS.map((p) => p[0] - 50)), Math.min(0, ...POS.map((p) => p[1] - 50)),
@@ -147,11 +150,13 @@ export const DEFS = `<defs>
 
 /* ---------- A day's star in each style ---------- */
 // Night Nursery's stars are colored too (softer than Confetti), so neighboring days are easy to tell apart
+// a star grows with her up to this weight, so a long stay's later stars still fit their place in the sky
+const GROW_TO = 1400
 const NTINTS = ['#FFDCB5', '#D9CEFF', '#BDEBD3', '#C4E0FF', '#FFC9D8', '#F3E3B5']
 const nTint = (d) => (d.d === stay.today ? '#FFB38A' : d.mood === 'hard' ? '#B9B4E6' : NTINTS[(d.d * 4) % NTINTS.length])
 function nurseryDay(d, x, y, s = 1) {
   const bright = { calm: 1, mixed: 0.85, hard: 0.68 }[d.mood]
-  const r = (9 + Math.max(0, d.weight - 880) * 0.016) * s // grows with her
+  const r = (9 + Math.max(0, Math.min(d.weight, GROW_TO) - 880) * 0.016) * s // grows with her
   const warm = Math.min(1, d.parent / 210)
   const col = nTint(d)
   let g = ''
@@ -160,12 +165,11 @@ function nurseryDay(d, x, y, s = 1) {
   // the same four-point sparkle as the stars on today's arc
   return g + `<path d="${sparkle(x, y, r * 0.95)}" fill="${col}" opacity="${bright}"/>`
 }
-const FIRSTS = Object.keys(stay.firsts).map(Number)
 const TINTS = ['#ffd23f', '#ff9a3c', '#ffffff', '#ff8fc8', '#7ee0a5']
 function confettiDay(d, x, y, s = 1) {
   const points = { ventilator: 8, cpap: 6, 'high-flow': 5, 'low-flow': 4, 'room-air': 4 }[d.support]
   const bright = { calm: 1, mixed: 0.82, hard: 0.6 }[d.mood]
-  const r = (8.5 + Math.max(0, d.weight - 880) * 0.026) * s
+  const r = (8.5 + Math.max(0, Math.min(d.weight, GROW_TO) - 880) * 0.026) * s
   const warm = Math.min(1, d.parent / 210)
   const tint = d.mood === 'hard' ? '#b9d6ff' : TINTS[(d.d * 3) % 5]
   let g = ''
@@ -173,14 +177,16 @@ function confettiDay(d, x, y, s = 1) {
   const shape = points === 4 ? sparkle(x, y, r * 1.2, 0.28) : starN(x, y, r, points, points > 5 ? 0.52 : 0.46)
   return g + `<path d="${shape}" fill="${tint}" stroke="${tint}" stroke-width="${1.4 * s}" stroke-linejoin="round" opacity="${bright}" filter="url(#g-soft)"/>`
 }
-export const dayStar = (theme, d, x, y, s = 1) => {
-  if (stay.firsts[d.d] && d.d !== stay.today) {
-    const i = FIRSTS.indexOf(d.d)
+// done: her stay is whole (no day still forming), as when her sky is kept to remember her
+// sky: whose stay the day belongs to (its firsts and today), her stay so far unless another is given
+export const dayStar = (theme, d, x, y, s = 1, done = false, sky = stay) => {
+  if (sky.firsts[d.d] && (d.d !== sky.today || done)) {
+    const i = Object.keys(sky.firsts).map(Number).indexOf(d.d)
     return `<circle cx="${x}" cy="${y}" r="${24 * s}" fill="url(#${theme === 'confetti' ? 'g-butter' : 'g-cream'})" opacity=".55"/>` +
       (theme === 'confetti' ? planet(x, y, 11 * s, ['#3ecf7a', '#ff8fc8', '#7cc0ff'][i % 3], '#ffd23f', 'filter="url(#g-soft)"')
         : planet(x, y, 10 * s, ['#f6e7b8', '#c8b8ff', '#9ee6c4'][i % 3], '#ffb38a'))
   }
-  if (d.d === stay.today) return formingStar(theme, x, y, s)
+  if (d.d === sky.today && !done) return formingStar(theme, x, y, s)
   return theme === 'confetti' ? confettiDay(d, x, y, s) : nurseryDay(d, x, y, s)
 }
 

@@ -167,6 +167,25 @@ export const skyPlanets = [
 export const today = {
   day: 23,
   clock: { label: '2:10 p.m.', night: '1:12 a.m.', h: 14.17 },
+  // Who she is: opened by tapping her name. Never medical events; her as a person.
+  // Traits come from what is already recorded (her nurses' notes, her monitors) or what a parent noticed:
+  // nothing here asks her nurses to do more.
+  about: {
+    age: '23 days old',
+    along: '30 weeks, 2 days along',
+    due: 'Her due date is about 10 weeks away.',
+    traits: [
+      { text: 'She settles when her hands are near her face.', from: "From her nurses' notes" },
+      { text: "She calms to Dad's voice.", from: 'Noticed by Dad' },
+      { text: 'She rests best with the cover over her incubator.', from: "From her nurses' notes" },
+      { text: 'During skin-to-skin, she is calm and steady.', from: 'From her monitors' },
+    ],
+    senses: [
+      'Voices are some of the clearest things she can hear now.',
+      'Her eyes open more each week, but bright light is still a lot for her.',
+      'Gentle, still touch is easier for her than stroking.',
+    ],
+  },
   // Who's caring for her right now. Parents see the team, and ask for help in one place.
   team: [
     { initials: 'P', name: 'Priya', role: 'Her nurse today', primary: true },
@@ -231,10 +250,12 @@ export const today = {
   },
   harder: {
     status: 'Resting on her CPAP mask, after a long night.',
+    // one line on the home screen: [words] in brackets are clinical terms, tappable for what they mean
+    statusOne: 'Resting on her [CPAP] mask after a long night',
     statusTerm: { word: 'CPAP', means: 'a small mask that gives steady air pressure so her lungs stay open' },
     changes: [
       {
-        t: '4:15 a.m.', h: 4.25, title: 'She is back on the CPAP mask', short: 'Back on her CPAP mask for a while', line: 'Her breathing needed more support in the night. She is resting now.',
+        t: '4:15 a.m.', h: 4.25, title: 'She is back on the CPAP mask', short: 'Back on her CPAP mask for a while', one: 'Back on her [CPAP] mask for more breathing support', line: 'Her breathing needed more support in the night. She is resting now.',
         plain: 'Her breathing needed more support overnight, so the team put the mask back on. She is resting now.',
         term: { word: 'CPAP', means: 'a small mask that gives steady air pressure so her lungs stay open' },
         by: 'Marcus, her night nurse', device: 'cpap',
@@ -242,7 +263,7 @@ export const today = {
     ],
     decisions: [
       {
-        t: '11:00 a.m.', h: 11, status: 'deciding', team: 'Breathing', short: 'A plan, still being made', line: 'Her breathing team is deciding when she can go back to her nasal cannula.',
+        t: '11:00 a.m.', h: 11, status: 'deciding', team: 'Breathing', short: 'A plan, still being made', one: 'Deciding when she can go back to her [nasal cannula]', line: 'Her breathing team is deciding when she can go back to her nasal cannula.',
         term: { word: 'Nasal cannula', means: 'soft prongs in her nose that give a gentle flow of air' },
         text: 'Her breathing team is still deciding what to try next.',
         source: 'From her breathing team',
@@ -251,14 +272,14 @@ export const today = {
     upcoming: [{ when: 'Tomorrow, 10 a.m.', short: 'Rounds with you', text: 'Her breathing team will talk it through with you at rounds.' }],
     waiting: [{ short: 'Eye exam', text: 'An eye exam to check how her eyes are growing.', note: 'Date not set yet' }],
     care: [
-      { h: 0, t: '12:00 a.m.', diaper: 'Wet diaper', sleep: 'Slept before and after', short: 'A midnight feed', line: 'A fresh diaper, then back to sleep.' },
-      { h: 3, t: '3:00 a.m.', diaper: 'Wet diaper', sleep: 'Unsettled, then slept', short: 'A restless night', line: 'A few brief dips in her oxygen, then she slept.', term: { word: 'Oxygen dips (desats)', means: 'her oxygen level dropping for a moment; her nurse watches closely and helps' } },
-      { h: 6, t: '6:00 a.m.', diaper: 'Wet diaper', sleep: 'Resting on CPAP', short: 'Her early feed', line: 'Resting with her CPAP mask on.' },
-      { h: 9, t: '9:00 a.m.', diaper: 'Wet and dirty diaper', sleep: 'Slept after', short: 'Her morning feed', line: 'Through her feeding tube, then a long nap.', term: { word: 'Feeding tube', means: 'a thin tube through her nose to her tummy that carries her milk' } },
-      { h: 12, t: '12:00 p.m.', diaper: 'Wet diaper', sleep: 'Resting since', short: 'Her noon feed', line: 'She has been resting since.' },
+      { h: 0, t: '12:00 a.m.', diaper: 'Wet diaper', sleep: 'Slept before and after', short: 'A midnight feed', one: 'A midnight feed, then back to sleep', line: 'A fresh diaper, then back to sleep.' },
+      { h: 3, t: '3:00 a.m.', diaper: 'Wet diaper', sleep: 'Unsettled, then slept', short: 'A restless night', one: 'A restless night, with a few [oxygen dips]', line: 'A few brief dips in her oxygen, then she slept.', term: { word: 'Oxygen dips (desats)', means: 'her oxygen level dropping for a moment; her nurse watches closely and helps' } },
+      { h: 6, t: '6:00 a.m.', diaper: 'Wet diaper', sleep: 'Resting on CPAP', short: 'Her early feed', one: 'Her early feed, resting on her [CPAP] mask', line: 'Resting with her CPAP mask on.' },
+      { h: 9, t: '9:00 a.m.', diaper: 'Wet and dirty diaper', sleep: 'Slept after', short: 'Her morning feed', one: 'Her morning feed through her [feeding tube], then a long nap', line: 'Through her feeding tube, then a long nap.', term: { word: 'Feeding tube', means: 'a thin tube through her nose to her tummy that carries her milk' } },
+      { h: 12, t: '12:00 p.m.', diaper: 'Wet diaper', sleep: 'Resting since', short: 'Her noon feed', one: 'Her noon feed, and resting since', line: 'She has been resting since.' },
     ],
     saved: [{ h: 5.2, t: '5:10 a.m.', text: 'Mom came in before her early feed', short: 'Mom came in before her early feed', line: 'Noted by Marcus, her night nurse.', from: 'Noted by Marcus, her night nurse' }],
-    firsts: [{ h: 9.4, t: '9:25 a.m.', short: 'Wore her own clothes for the first time', title: 'Her own clothes, for the first time', line: 'The soft sleepsuit you brought from home.', plain: 'Her nurse dressed her in the soft sleepsuit you brought from home.' }],
+    firsts: [{ h: 9.4, t: '9:25 a.m.', short: 'Wore her own clothes for the first time', one: 'Wore the soft sleepsuit you brought from home', title: 'Her own clothes, for the first time', line: 'The soft sleepsuit you brought from home.', plain: 'Her nurse dressed her in the soft sleepsuit you brought from home.' }],
     setup: {
       start: ['cannula', 'feeding', 'heart', 'temp', 'pulse'],
       changes: [{ h: 4.25, add: ['cpap'], remove: ['cannula'] }],
@@ -282,7 +303,7 @@ export const ahead = {
         who: 'Breathing and baby doctors · agreed at rounds', review: 'In about 2 days',
       },
       {
-        area: 'Feeding', steps: ['Feeding tube', 'First bottle', 'Breastfeeding'], at: 0, status: 'waiting',
+        area: 'Feeding', steps: ['Feeding tube', 'First bottle', 'Feeding by mouth'], at: 0, status: 'waiting',
         plan: 'All her milk goes through her tube while she grows stronger.',
         who: 'Baby doctors and lactation team', review: 'Talked about at rounds each week',
       },
@@ -290,6 +311,21 @@ export const ahead = {
         area: 'Staying warm', steps: ['Incubator', 'Open crib'], at: 0, status: 'waiting',
         plan: 'In her incubator until she can keep herself warm.',
         who: 'Her nurses and baby doctors', review: 'Checked every day',
+      },
+      {
+        area: 'Pulse oximetry', steps: ['Pulse oximeter', 'Spot checks', 'Off the oxygen monitor'], at: 0, status: 'waiting',
+        plan: 'The soft wrap on her foot stays on while she needs breathing help.',
+        who: 'Her nurses and breathing team', review: 'Checked every day',
+      },
+      {
+        area: 'IV lines', steps: ['Central line', 'IV line', 'No IV needed'], at: 2, status: 'decided',
+        plan: 'Her IV came out today. All her milk now goes through her feeding tube.',
+        who: 'Her nurses and baby doctors', review: 'Agreed at rounds',
+      },
+      {
+        area: 'Mechanical ventilator', steps: ['Ventilator', 'Coming off the ventilator', 'Off the ventilator'], at: 2, status: 'decided',
+        plan: 'She no longer needs the ventilator. Her breathing help now comes through her nose.',
+        who: 'Breathing team', review: 'Agreed at rounds',
       },
     ],
     checks: [{ what: 'Eye exam', note: 'Date not set yet' }, { what: 'Hearing screen', note: 'Before she goes to a new unit' }],
@@ -305,7 +341,7 @@ export const ahead = {
         who: 'Breathing team', review: 'Tomorrow at rounds, 10 a.m.',
       },
       {
-        area: 'Feeding', steps: ['Feeding tube', 'First bottle', 'Breastfeeding'], at: 0, status: 'waiting',
+        area: 'Feeding', steps: ['Feeding tube', 'First bottle', 'Feeding by mouth'], at: 0, status: 'waiting',
         plan: 'All her milk goes through her tube while she grows stronger.',
         who: 'Baby doctors and lactation team', review: 'Talked about at rounds each week',
       },
@@ -313,6 +349,21 @@ export const ahead = {
         area: 'Staying warm', steps: ['Incubator', 'Open crib'], at: 0, status: 'waiting',
         plan: 'In her incubator until she can keep herself warm.',
         who: 'Her nurses and baby doctors', review: 'Checked every day',
+      },
+      {
+        area: 'Pulse oximetry', steps: ['Pulse oximeter', 'Spot checks', 'Off the oxygen monitor'], at: 0, status: 'waiting',
+        plan: 'The soft wrap on her foot stays on while she needs breathing help.',
+        who: 'Her nurses and breathing team', review: 'Checked every day',
+      },
+      {
+        area: 'IV lines', steps: ['Central line', 'IV line', 'No IV needed'], at: 2, status: 'decided',
+        plan: 'She doesn’t have an IV right now. All her milk goes through her feeding tube.',
+        who: 'Her nurses and baby doctors', review: 'Agreed at rounds',
+      },
+      {
+        area: 'Mechanical ventilator', steps: ['Ventilator', 'Coming off the ventilator', 'Off the ventilator'], at: 2, status: 'decided',
+        plan: 'She doesn’t need the ventilator. Her breathing help comes through her CPAP mask.',
+        who: 'Breathing team', review: 'Agreed at rounds',
       },
     ],
     checks: [{ what: 'Eye exam', note: 'Date not set yet' }, { what: 'Hearing screen', note: 'Before she goes to a new unit' }],
@@ -347,23 +398,29 @@ export const tomorrow = {
   ],
 }
 
-// "What's ahead" → This week: today and the next six days. Routine care is a quiet line;
-// major events (surgeries, procedures) open their own page. Days are named by weekday and her day count.
+// "What's ahead" → Timeline: the two days before today, today, and the next six days. Routine care is a
+// quiet line; major events (surgeries, procedures) open their own page. Days are named by weekday and her day count.
 // `every`: a recurring task, every N hours from midnight. Today's box lists each one; other days show `what`.
 export const week = [
+  { name: 'Sunday', short: 'Sun', day: 21, items: [
+    { t: '8 a.m.', what: 'Rounds' }, { t: '9:30 a.m.', what: 'Gentler breathing help' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+  ] },
+  { name: 'Monday', short: 'Mon', day: 22, items: [
+    { t: '7 a.m.', what: 'Rounds' }, { t: '6 p.m.', what: 'Bath time' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+  ] },
   { name: 'Tuesday', short: 'Tue', day: 23, today: true, items: [
     { t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }, { t: '7 p.m.', what: 'Marcus takes over' },
   ] },
   { name: 'Wednesday', short: 'Wed', day: 24, items: [
-    { t: '3 a.m.', what: 'IV insertion' }, { t: '7 a.m.', what: 'Rounds' },
-    { t: '10 a.m.', what: 'Heart surgery', event: 'heart-surgery' },
-    { t: '2 p.m.', what: 'Surgeon talks with you' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+    { t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Thursday', short: 'Thu', day: 25, items: [
     { t: '7 a.m.', what: 'Rounds' }, { t: '1 p.m.', what: 'Family meeting' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Friday', short: 'Fri', day: 26, items: [
-    { t: '7 a.m.', what: 'Rounds' }, { what: 'Breathing check' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+    { t: '3 a.m.', what: 'IV insertion' }, { t: '7 a.m.', what: 'Rounds' },
+    { t: '10 a.m.', what: 'Heart surgery', event: 'heart-surgery' },
+    { t: '2 p.m.', what: 'Surgeon talks with you' }, { what: 'Breathing check' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Saturday', short: 'Sat', day: 27, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
   { name: 'Sunday', short: 'Sun', day: 28, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
@@ -375,7 +432,7 @@ export const week = [
 export const events = {
   'heart-surgery': {
     name: 'Heart surgery',
-    when: 'Tomorrow, Wednesday · Day 24',
+    when: 'Friday · Day 26',
     time: '10 a.m.',
     target: 'heart',
     targetLabel: 'Her heart',
@@ -400,7 +457,7 @@ const PARENT_MINUTES = [0, 45, 30, 120, 60, 162, 90, 40, 140, 70, 30, 150, 110, 
 export const stay = {
   today: 23,
   weeks: ['Hello, small one', 'Finding a rhythm', 'More help breathing', 'This week'],
-  firsts: { 4: 'First touch', 6: 'First hold', 14: 'First bottle of your milk', 23: 'Her own clothes' },
+  firsts: { 4: 'First touch', 6: 'First hold', 14: 'First bottle', 23: 'Her own clothes' },
   days: Array.from({ length: 23 }, (_, i) => {
     const d = i + 1
     return {
@@ -414,12 +471,31 @@ export const stay = {
   }),
 }
 
+// Going home: her whole stay, 90 days in 13 weeks, as her discharge story and mobile tell it. Synthetic.
+// Her first 23 days are the same as above; after that she grows, needs less help breathing, and has
+// a step back in week 7 (days 44-46) before she breathes on her own again.
+export const homeStay = {
+  today: 90,
+  firsts: { ...stay.firsts, 52: 'Open crib', 66: 'First bath', 79: 'Every feed by mouth' },
+  days: Array.from({ length: 90 }, (_, i) => {
+    const d = i + 1
+    return {
+      d,
+      week: Math.ceil(d / 7),
+      weight: d <= 23 ? stay.days[i].weight : stay.days[22].weight + (d - 23) * 20,
+      support: d <= 4 ? 'ventilator' : d <= 20 ? 'cpap' : d <= 37 ? 'high-flow' : d <= 43 ? 'low-flow' : d <= 46 ? 'high-flow' : 'room-air',
+      mood: d === 17 || d === 45 ? 'hard' : [16, 18, 44, 46].includes(d) ? 'mixed' : 'calm',
+      parent: d <= 23 ? stay.days[i].parent : 40 + ((d * 37) % 11) * 15,
+    }
+  }),
+}
+
 // Weeks of her stay: a title, a short summary, and (when there was one) what was hard,
 // told plainly and quietly, as in Nimesh's week panel. `caption` is the few words under each week's
 // name in her sky, in a parent's gentle voice.
 export const weekInfo = [
   { title: 'Hello, small one', caption: 'Hello, small one', summary: 'Mila arrived thirteen weeks early. She rested while machines did some of the work, you touched her hand on day 4, and on day 6 you held her for the first time.' },
-  { title: 'Finding a rhythm', caption: 'Getting to know you', summary: 'Her feeds grew bigger and steadier, and she slowly gained weight. On day 14 she had her first bottle of your milk.' },
+  { title: 'Finding a rhythm', caption: 'Getting to know you', summary: 'Her feeds grew bigger and steadier, and she slowly gained weight. On day 14 she had her first bottle.' },
   { title: 'More help breathing', caption: 'Holding on together', summary: 'For part of this week Mila needed more help with her breathing, and her team stayed close.',
     hard: 'On day 17 her breathing needed more support overnight, so her team turned up her CPAP. By evening she was settled again. Her nurse can tell you what this means for her.' },
   { title: 'This week', caption: 'Right here beside you', summary: 'Her breathing needed more help again in the night, and she wore her own clothes for the first time. This week is still forming.' },
@@ -430,18 +506,46 @@ const DAY_FIRSTS = {
   23: { h: 9.4, t: '9:25 a.m.', short: 'Wore her own clothes for the first time', title: 'Her own clothes, for the first time', line: 'The soft sleepsuit you brought from home.', plain: 'Her nurse dressed her in the soft sleepsuit you brought from home.' },
   4: { h: 11, title: 'First touch', plain: 'You touched her hand for the first time, through the incubator’s porthole.' },
   6: { h: 14.25, title: 'First hold', plain: 'You held her for the first time. She stayed warm and calm on your chest.' },
-  14: { h: 15.4, title: 'First bottle of your milk', plain: 'She tried her first bottle of your milk and took a little before resting.' },
+  14: { h: 15.4, title: 'First bottle', plain: 'She tried her first bottle and took a little before resting.' },
 }
 // The few things a parent most needs to know about a day, in order. A thing can open to more:
 // `at` is the hour it happened, `detail` what her nurse noted, `img` a photo slot for it.
 const DAY_THINGS = {
   6: [
-    { title: 'Her feeds grew a little', text: 'She now gets a little more of your milk through her feeding tube at each care time.' },
+    { title: 'Her feeds grew a little', text: 'She now gets a little more milk through her feeding tube at each care time.' },
     { title: 'You held her for the first time', at: 14.25,
       detail: { title: 'Kangaroo hold, 45 min', text: 'She rested skin-to-skin on your chest, and her heart rate and breathing stayed steady the whole time.',
         img: '/images/kangaroo-hold.jpg', alt: 'A mother in a NICU chair holding her tiny baby skin-to-skin on her chest in a kangaroo hold, a soft blanket over them both.' } },
     { title: 'Steady on CPAP', text: 'Her gentle breathing help stayed the same, and her monitors were quiet for most of the day.' },
   ],
+}
+// Changes in her breathing help, by day of her stay.
+const STAY_CHANGES = {
+  5: { h: 10, title: 'Off the ventilator', plain: 'She moved from the ventilator to CPAP, a gentler kind of breathing help.', by: 'Respiratory therapist' },
+  17: { h: 4.5, hard: true, title: 'More breathing help for a while', plain: 'Her breathing needed more support overnight, so her team turned up her CPAP. She settled again by evening.', by: 'Her night nurse' },
+  21: { h: 9.5, title: 'Gentler breathing help', plain: 'She moved from CPAP to soft nose prongs that give a gentle flow of air.', by: 'Respiratory therapist' },
+}
+// Planned for next week, beyond what `week` writes out. Sample data.
+const PLANNED = {
+  30: [{ t: '10 a.m.', what: 'Eye exam' }],
+  32: [{ t: '1 p.m.', what: 'Family meeting' }],
+  33: [{ what: 'Breathing check' }],
+}
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+// The Timeline's schedule for any day of her stay, in `week`'s item shape: the days `week` writes out,
+// or else her usual care (rounds, care every 3 hours) plus, for days gone by, what happened (firsts and
+// breathing changes) and, for days ahead, what's planned. Nothing before she was born or past next week.
+export function scheduleFor(n) {
+  const written = week.find((d) => d.day === n)
+  if (written) return written.items
+  const t = week.find((d) => d.today), twd = WEEKDAYS.indexOf(t.short)
+  if (n < 1 || n > t.day + 13 - twd) return []
+  const wd = (((twd + n - t.day) % 7) + 7) % 7
+  const items = [{ t: wd === 0 || wd === 6 ? '8 a.m.' : '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }]
+  if (n > t.day) return [...items, ...(PLANNED[n] ?? [])]
+  if (n === 1) items.push({ what: 'The day she arrived' })
+  for (const x of [DAY_FIRSTS[n], STAY_CHANGES[n]]) if (x) items.push({ t: fmt(x.h), what: x.title })
+  return items
 }
 const CALM_STORIES = ['A calm day. She slept well between care times.', 'She grew a little and rested well.', 'A quiet day of feeds and sleep.', 'She was settled and comfortable all day.']
 const fmt = (h) => {
@@ -464,9 +568,7 @@ export function dayDetail(d) {
     const hrs = Math.floor(day.parent / 60), mins = day.parent % 60
     m.push({ h: fh, kind: 'parent', title: 'Time with family', plain: `A parent was with her for ${hrs ? `${hrs} h ` : ''}${mins} min.`, by: '' })
   }
-  if (d === 5) m.push({ h: 10, kind: 'change', title: 'Off the ventilator', plain: 'She moved from the ventilator to CPAP, a gentler kind of breathing help.', by: 'Respiratory therapist' })
-  if (d === 17) m.push({ h: 4.5, kind: 'change', hard: true, title: 'More breathing help for a while', plain: 'Her breathing needed more support overnight, so her team turned up her CPAP. She settled again by evening.', by: 'Her night nurse' })
-  if (d === 21) m.push({ h: 9.5, kind: 'change', title: 'Gentler breathing help', plain: 'She moved from CPAP to soft nose prongs that give a gentle flow of air.', by: 'Respiratory therapist' })
+  if (STAY_CHANGES[d]) m.push({ ...STAY_CHANGES[d], kind: 'change' })
   if (isToday) {
     today.calm.changes.forEach((c) => m.push({ h: c.h, kind: 'change', title: c.title, plain: c.plain, by: c.by }))
     today.calm.decisions.forEach((x) => m.push({ h: x.h, kind: 'change', title: 'Breathing plan decided', plain: x.text, by: x.source }))
