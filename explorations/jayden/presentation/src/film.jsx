@@ -26,6 +26,8 @@ const LOOK = {
   center: { ox: 0, ry: 0, rx: 0, sc: 1 },
   left: { ox: -0.2, ry: 9, rx: 2, sc: 0.86 }, // monitor on the left, words on the right
   right: { ox: 0.2, ry: -9, rx: 2, sc: 0.86 }, // monitor on the right, words on the left
+  splitR: { ox: 0.235, ry: -6, rx: 1, sc: 0.6 }, // split screen: footage on the left, the screen on the right
+  splitL: { ox: -0.235, ry: 6, rx: 1, sc: 0.6 }, // split screen: the screen on the left, footage on the right
 }
 
 /* ---------- small animations that show what happens ---------- */
@@ -104,50 +106,27 @@ const EX = {
 // 4. The camera pushes into the monitor and the film carries on inside the screen.
 // Everything here is driven by the film's clock (pause, scrub). Positions are in the clip's own frame,
 // which covers the screen exactly as the video does.
-const OPEN_INTRO = 4.6 // s: her birth, before the footage
-const OPEN_VIDEO = 8 // s of the reversed clip
-const OPEN_LEN = OPEN_INTRO + OPEN_VIDEO + 0.6
-const NURSE_LEN = 8
+const OPEN_LEN = 5.4 // s: her birth, in the dark
+// the scenario clips: where each is cut, and which side it goes to when the screen splits
+const CLIPS = {
+  dad: { src: './clips/dad-arrives.mp4', until: 4.3, len: 6.4 }, // forward, cut before it changes angle
+  nurse: { src: './clips/nurse-explains.mp4', until: 7.9, len: 8.6 },
+  mom: { src: './clips/mom-day3.mp4', until: 4.35, len: 6 },
+}
 function Opening({ clock }) {
   const host = useRef(null)
-  const vid = useRef(null)
   useEffect(() => {
     const loop = () => {
-      const el = host.current, v = vid.current
-      if (el) {
-        const local = clock.local()
-        // every CSS animation in here is held and set to this moment
-        el.getAnimations({ subtree: true }).forEach((an) => { if (an.playState !== 'paused') an.pause(); an.currentTime = local * 1000 })
-        if (v && v.readyState >= 1) {
-          const vt = Math.min(Math.max(local - (OPEN_INTRO - 0.4), 0), v.duration - 0.05)
-          if (clock.playing() && local > OPEN_INTRO - 0.4) {
-            if (v.paused) v.play().catch(() => {})
-            if (Math.abs(v.currentTime - vt) > 0.25) v.currentTime = vt
-          } else {
-            if (!v.paused) v.pause()
-            if (Math.abs(v.currentTime - vt) > 0.04) v.currentTime = vt
-          }
-        }
-      }
+      const el = host.current
+      if (el) { const local = clock.local(); el.getAnimations({ subtree: true }).forEach((an) => { if (an.playState !== 'paused') an.pause(); an.currentTime = local * 1000 }) }
     }
     loop()
     const id = setInterval(loop, 30)
     return () => clearInterval(id)
   }, [clock])
   return (
-    <div className="open" ref={host} style={{ '--intro': `${OPEN_INTRO}s` }}>
-      <div className="open-box">
-        <video ref={vid} className="open-video" src="./clips/dad-arrives-reversed.mp4" muted playsInline preload="auto" />
-        <div className="open-grade" aria-hidden="true" />
-        <span className="open-tag">Day 1 · 4:20 a.m.</span>
-        {/* her Day 1 screen, lifting out of the monitor as it comes into view, then staying */}
-        <div className="open-lift">
-          <span className="dfilm-call-k" style={{ color: 'var(--connection)' }}><Icon name="connection" size={16} color="var(--connection)" />Connection</span>
-          <b className="open-lift-title">Her first star</b>
-          {EX.firststar()}
-        </div>
-        <span className="open-star" aria-hidden="true"><i className="open-star-glow" /><StarGlyph size={64} color="#FFF8E6" /></span>
-      </div>
+    <div className="open is-birth" ref={host}>
+      <span className="open-star" aria-hidden="true"><i className="open-star-glow" /><StarGlyph size={64} color="#FFF8E6" /></span>
       <div className="open-words" aria-hidden="true">
         <span className="ow ow-1">3:42 a.m.</span>
         <b className="ow ow-2">Mila</b>
@@ -161,7 +140,7 @@ function Opening({ clock }) {
 /* ---------- a scenario clip, with the product layered on it ---------- */
 // Footage plays from the film's clock (so it pauses and scrubs). Its layers are children; their CSS
 // animations are held and set to the clip's own time, so their delays read as seconds into the clip.
-function Footage({ src, clock, at, className = '', children }) {
+function Footage({ src, clock, at, until = 99, className = '', children }) {
   const host = useRef(null)
   const vid = useRef(null)
   useEffect(() => {
@@ -171,8 +150,8 @@ function Footage({ src, clock, at, className = '', children }) {
         const local = clock.now() - at
         el.getAnimations({ subtree: true }).forEach((an) => { if (an.playState !== 'paused') an.pause(); an.currentTime = local * 1000 })
         if (v && v.readyState >= 1) {
-          const vt = Math.min(Math.max(local, 0), v.duration - 0.05)
-          if (clock.playing()) { if (v.paused) v.play().catch(() => {}); if (Math.abs(v.currentTime - vt) > 0.25) v.currentTime = vt }
+          const vt = Math.min(Math.max(local, 0), until, v.duration - 0.05)
+          if (clock.playing() && local < until) { if (v.paused) v.play().catch(() => {}); if (Math.abs(v.currentTime - vt) > 0.25) v.currentTime = vt }
           else { if (!v.paused) v.pause(); if (Math.abs(v.currentTime - vt) > 0.04) v.currentTime = vt }
         }
       }
@@ -180,7 +159,7 @@ function Footage({ src, clock, at, className = '', children }) {
     loop()
     const id = setInterval(loop, 30)
     return () => clearInterval(id)
-  }, [clock, at])
+  }, [clock, at, until])
   return (
     <div className={`foot ${className}`} ref={host}>
       <div className="open-box foot-box">
@@ -213,7 +192,7 @@ export function DemoFilm({ active, thumb }) {
   const screen = useRef(null)
   const [ready, setReady] = useState(false)
   const [run, setRun] = useState(0)
-  const blank = { open: 0, foot: null, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false }
+  const blank = { open: 0, foot: null, say: null, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false }
   const [v, setV] = useState({ ...blank, t: 0 })
   const set = (patch) => setV((x) => ({ ...x, ...patch }))
   const [playing, setPlaying] = useState(true)
@@ -306,98 +285,77 @@ export function DemoFilm({ active, thumb }) {
     const pad = async (cap) => { set({ pad: true, cap: cap ?? null }); await wait(1.2) }
     const sky = (d) => [...d.querySelectorAll('.nav-btn, button')].find((b) => /Mila.s stars/.test(b.textContent)) ?? d.querySelector('.cv-skyt')
 
+    const say = (t, side, k) => set({ say: t ? { t, side, k } : null })
+    const cap = (c) => set({ cap: c })
+    const day = (n) => post({ type: 'mila:day', day: n })
     const script = async () => {
-      set({ ...blank })
+      set({ ...blank }); day(null)
       await chapter('born', 0.3)
-      // Day 1: Mila is born (a UI view), then Dad's arrival, backwards: his face, then her monitor, its
-      // screen lifting out beside it; then into the screen. See <Opening>.
-      mark('Day 1'); R.openAt = R.clock; set({ open: 1 }); await wait(OPEN_LEN - 0.6)
-      // inside the screen: her first star fills the frame, then the monitor pulls back into view
-      look('center'); set({ pad: true, cam: { fx: 0.5, fy: 0.42, s: 2.6 } }); await wait(0.6)
-      set({ open: 0 }); await wait(0.6)
-      out(); await wait(1.8)
 
-      // Day 1 · Comprehension
-      mark('What’s on her')
-      // the nurse clip: she points at the monitor, its "What's on her" lifts out and stays; then into it
-      await chapter('story', 0.2)
-      set({ pad: false, foot: { id: 'nurse', at: R.clock } }); await wait(NURSE_LEN - 0.6)
-      look('right', 'comprehension'); set({ pad: true, cam: { fx: 0.5, fy: 0.62, s: 2.4 } }); await wait(0.6)
-      set({ foot: null }); await wait(0.3)
-      out(); await wait(1.6)
-      await tap('.fd-next'); await wait(1)
-      zoom('.fd-model', 1.45); await wait(1.1)
-      spot('.fd-model', { p: 'comprehension', title: 'One thing at a time', line: 'Each thing on her lit on her body, in one plain sentence.' }, 'one'); await wait(2.6)
-      await tap('.fd-next'); await wait(1.5)
-      await tap('.fd-next'); await wait(1.7)
-      out(); await wait(1)
+      // 1 · her birth, in the dark
+      mark('Born'); R.openAt = R.clock; set({ open: 1 }); await wait(OPEN_LEN - 0.4)
 
-      // Day 23 · Comprehension, then Connection
-      mark('Day 23')
-      await moment({ k: 'Three weeks later', t: 'Day 23' }, 'away', <>Mom has been recovering, two floors away.</>) // CLIP slot 3
-      set({ scene: 'chair', cap: <>She comes back after a hard night.</> }); await wait(3.6); set({ scene: null, cap: null }) // CLIP slot 4
-      await show('today', 0.3); look('left', 'comprehension'); await pad(); await wait(0.4)
-      zoom('.cv-one', 1.6); await wait(1.2)
-      spot('.cv-cap', { p: 'comprehension', title: 'Her day, in plain words', line: 'What happened, and what’s next, in one line.' }, 'status'); await wait(2.8)
-      await tap('.cv-term-btn'); await wait(0.5)
-      look('center'); zoom('.cv-pop', 2.05); await wait(1.3)
-      spot('.cv-pop', { p: 'comprehension', title: 'The medical word, one tap away', line: 'With her 3D model, when it’s something on her.', over: true }, 'decode'); await wait(4.6)
-      set({ spot: null, call: null, ex: null }); await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))); await wait(0.5)
-      look('right', 'connection'); zoom('.cv-arc', 1.3); await wait(1.4)
-      await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.5)
-      spot('.cv-cap', { p: 'connection', title: 'Moments she was there for', line: 'Kept from her nurse’s notes, even the ones she slept through.' }, 'chart'); await wait(4.6)
-      out(); await wait(0.8)
+      // 2 · Dad arrives; the frame splits, and her first star is waiting on the screen beside him
+      mark('Day 1'); look('splitR', 'connection'); set({ open: 0, foot: { id: 'dad', at: R.clock, tag: 'Day 1 · 4:20 a.m.' } })
+      cap('Her dad meets her for the first time.'); await wait(1.7)
+      set({ pad: true }); await wait(1.2)
+      say('Her first star.', 'tr'); await wait(2.6)
+      cap('It asks nothing of him. Just her name, and how small she is.'); await wait(2.6)
+      say(null); cap(null)
 
-      // Day 23 · Awareness
-      mark('What’s ahead')
-      look('left', 'awareness'); await show('today', 0.9)
-      spot('.cv-clock', { p: 'awareness', title: 'Time, on every screen', line: 'So her day never turns into a blur.' }); await wait(2.6)
-      out(); await wait(0.9)
-      await tap('.cv-ahead-btn'); await wait(1.4)
-      spot((d) => d.querySelector('.ah-panel') ?? d.querySelector('.ah'), { p: 'awareness', title: 'What’s ahead', line: 'Today and the next six days. Nothing is a surprise.' }, 'week'); await wait(3.6)
-      await tap((d) => [...d.querySelectorAll('.ah-tabs button')].find((b) => /Next Steps/.test(b.textContent))); await wait(0.8)
-      spot((d) => d.querySelector('.ah-panel') ?? d.querySelector('.ah'), { p: 'awareness', title: 'Next steps', line: 'Where she is on each path, and what comes next.' }); await wait(3)
-      out(); await wait(0.6)
+      // 3 · her nurse explains; the screen swaps sides, the walkthrough runs beside her
+      mark('What’s on her'); await chapter('story', 0.1)
+      look('splitL', 'comprehension'); set({ foot: { id: 'nurse', at: R.clock, tag: 'Day 1 · 5:10 a.m.' } })
+      cap('Her nurse explains what’s on her,'); await wait(1.6)
+      await tap('.fd-next'); await wait(0.6)
+      cap('one thing at a time, in plain words.'); say('What’s on her.', 'tl'); await wait(1.6)
+      await tap('.fd-next'); await wait(1.4)
+      await tap('.fd-next'); await wait(1.2)
+      say(null); cap(null)
 
-      // Night
-      mark('Night')
-      await moment({ k: '1:12 a.m.', t: 'Night' }, 'night', <>She stays beside her, in the dark.</>, 3.4) // CLIP slot 5
-      await show('night', 0.3); look('center', 'night'); await pad(); await wait(0.6)
-      set({ call: { p: 'baby', title: 'Night view', line: 'The screen almost disappears: the time, and one quiet line.', wide: true } }); await wait(3.8)
-      set({ call: null })
+      // 4 · Day 3: Mom comes in (the clip), the frame splits with her day on the screen, then we push in
+      mark('Day 3'); await show('today', 0.1); day(3)
+      set({ pad: false }); look('splitR', 'comprehension'); set({ foot: { id: 'mom', at: R.clock, tag: 'Day 3' } })
+      cap('Three days later, Mom is well enough to come see her.'); await wait(1.9)
+      set({ pad: true }); await wait(1.1)
+      say('Her day, in plain words.', 'tr'); cap('Everything she missed, in words she can follow.'); await wait(3.2)
+      say(null); set({ foot: null }); look('left'); zoom('.cv-one', 1.5); cap(null); await wait(1.4)
+      await tap('.cv-term-btn'); await wait(0.4)
+      look('center'); zoom('.cv-pop', 1.9); say(null); cap('Medical words, explained in a tap.'); await wait(3.4)
+      await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))); await wait(0.3)
+      look('right', 'connection'); zoom('.cv-arc', 1.25); cap(null); await wait(1)
+      await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.3)
+      say('Moments she was there for.', 'l'); cap('Kept from what her nurse already writes down.'); await wait(3)
+      out(); say(null); look('left', 'awareness'); await wait(0.8)
+      await tap('.cv-ahead-btn'); cap('And what comes next, so nothing is a surprise.'); say('What’s ahead.', 'r'); await wait(3.4)
+      say(null); cap(null)
 
-      // Looking back · every day becomes a star
-      mark('Every day')
-      await moment({ k: 'Looking back', t: 'Every day' }, null, null)
-      await show('today', 0.2); look('hero', 'connection'); await pad(); await wait(0.6)
-      look('center'); await wait(0.8)
-      await tap(sky); await wait(0.4)
-      set({ cap: 'Today’s moments gather into one star.' }); await wait(6)
-      set({ cap: null, call: { p: 'connection', title: 'Every day becomes a star', line: 'Her weeks become constellations. The sky only grows.', wide: true } }); await wait(4.4)
-      set({ call: null })
+      // 5 · Day 23: every day becomes a star
+      mark('Day 23'); await show('today', 0.2); day(23); look('center', 'connection'); await wait(0.6)
+      say('Day 23', 'top'); await wait(1.2)
+      await tap(sky); say(null); await wait(0.4)
+      cap('Every day, her moments gather into a star.'); await wait(5.4)
+      cap('Her weeks become constellations. Her sky only grows.'); await wait(4)
+      cap(null)
 
-      // Day 98 · going home
-      mark('Going home')
-      await moment({ k: 'Day 98', t: 'Going home' }, 'ending', <>The day she goes home.</>) // CLIP slot 6
-      await show('home', 0.3); look('center', 'dawn'); await pad(); await wait(4.6)
-      set({ call: { p: 'connection', title: 'Her sky goes home with her', line: 'Every star, as a mobile above her crib.', wide: true } }); await wait(4)
-      set({ call: null })
+      // 6 · going home
+      mark('Going home'); look('center', 'dawn'); await show('home', 0.2)
+      say('Day 98', 'top'); cap('And on the day she goes home, her sky goes with her.'); await wait(5)
+      say(null); cap(null)
 
-      // If she doesn't go home
-      mark('If she doesn’t')
-      await moment({ k: 'And if she doesn’t', t: 'go home' }, 'keep', <>Nothing on the screen assumes an ending.</>) // CLIP slot 7
-      await show('not', 0.3); look('center', null); await pad(); await wait(2.2)
-      set({ call: { p: 'connection', title: 'Her story, kept', line: 'Told at the family’s pace, one moment at a time.', wide: true } }); await wait(3)
-      await tap('.rem-continue'); await wait(2.6)
-      await tap('.rem-continue'); await wait(2.8)
-      set({ call: null })
+      // 7 · and if she doesn't: the screen goes quiet; nothing is labelled or tapped
+      mark('Whatever happens'); set({ pad: false, tint: null }); await wait(1.6)
+      cap('Not every story ends at home.'); await wait(3)
+      await show('not', 0.1); look('center', null); set({ pad: true }); await wait(1.6)
+      cap('But every day was hers.'); await wait(4)
+      cap(null)
 
       // closing
       mark('Closing')
-      set({ pad: false, cap: null, tint: null }); await wait(1.6)
-      set({ close: 1 }); await wait(3.6)
-      set({ close: 2 }); await wait(3.8)
-      set({ close: 3 }); await wait(5)
+      set({ pad: false, cap: null, tint: null }); await wait(1.2)
+      set({ close: 1 }); await wait(3.2)
+      set({ close: 2 }); await wait(3.6)
+      set({ close: 3 }); await wait(4.6)
       setLen(R.clock); set({ done: true })
     }
     script().catch(() => {})
@@ -436,21 +394,12 @@ export function DemoFilm({ active, thumb }) {
       )}
 
       {v.open > 0 && <Opening clock={clock} />}
-      {v.foot?.id === 'nurse' && (
-        <Footage src="./clips/nurse-explains.mp4" clock={clock} at={v.foot.at} className="foot-nurse">
-          <span className="open-tag foot-tag">Day 1 · 5:10 a.m.</span>
-          <div className="open-lift foot-lift">
-            <span className="dfilm-call-k" style={{ color: 'var(--comprehension)' }}><Icon name="comprehension" size={16} color="var(--comprehension)" />Comprehension</span>
-            <b className="open-lift-title">What&apos;s on her</b>
-            <div className="ex ex-ui ex-walk">
-              <span className="ex-walk-k">1 of 6</span>
-              <b>Breathing tube</b>
-              <span>A soft tube that helps her breathe while her lungs grow stronger.</span>
-              <i className="ex-walk-dots">{[0, 1, 2, 3, 4, 5].map((k) => <i key={k} className={k === 0 ? 'is-on' : ''} />)}</i>
-            </div>
-          </div>
+      {v.foot && (
+        <Footage src={CLIPS[v.foot.id].src} until={CLIPS[v.foot.id].until} clock={clock} at={v.foot.at} className={`foot-${v.foot.id}`}>
+          {v.foot.tag && <span className="open-tag foot-tag">{v.foot.tag}</span>}
         </Footage>
       )}
+      {v.say && <div key={v.say.t} className={`dfilm-say is-${v.say.side ?? 'r'}`}>{v.say.k && <span>{v.say.k}</span>}<b>{v.say.t}</b></div>}
       {v.card && (
         <div className="dfilm-card" key={v.card.t}>
           <span className="dfilm-card-k">{v.card.k}</span>

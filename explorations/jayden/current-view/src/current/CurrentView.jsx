@@ -48,6 +48,7 @@ export function CurrentView({ onSky }) {
   const first = (chapter === 'born' || chapter === 'story') && !night
   const comfort = chapter === 'not' && !night
   const [dark, setDark] = useState(false) // comfort care: the family can turn the screen off
+  const [dayLabel, setDayLabel] = useState(null) // the day number shown in the header, when a presentation asks
   const [memory, setMemory] = useState(false) // her sky, opened only when the family chooses
   const d = today[kind]
   const onSub = page !== 'home' && page !== 'galaxy' && page !== 'discharge' && !night // a page with Back
@@ -104,6 +105,7 @@ export function CurrentView({ onSky }) {
     const on = (e) => {
       if (e.data?.type === 'mila:chapter') goChapter(e.data.chapter)
       if (e.data?.type === 'mila:show') SHOW[e.data.what]?.()
+      if (e.data?.type === 'mila:day') setDayLabel(e.data.day ?? null) // a film can show the same screen on another day
     }
     window.addEventListener('message', on)
     return () => window.removeEventListener('message', on)
@@ -192,7 +194,7 @@ export function CurrentView({ onSky }) {
         <header className="cv-top" hidden={comfort}>
           <span className="cv-top-left">
             {onSub && <NavBack label="Today" onClick={() => setPage('home')} />}
-            {first ? 'Mila · Day 1' : comfort ? 'Mila · Day 41' : page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? `Mila · Day ${today.day}` : null}
+            {first ? 'Mila · Day 1' : comfort ? 'Mila · Day 41' : page === 'ahead' && !night ? <span className="cv-top-title">What&apos;s ahead</span> : page !== 'progress' || night ? `Mila · Day ${dayLabel ?? today.day}` : null}
           </span>
           <span className="cv-top-right">
             <span className="cv-clock">{first ? (chapter === 'born' ? '4:20 a.m.' : '5:10 a.m.') : comfort ? '' : night ? today.clock.night : today.clock.label}</span>
