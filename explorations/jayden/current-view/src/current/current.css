@@ -1495,6 +1495,9 @@
 .rem-people { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); max-width: 40ch; }
 @media (prefers-reduced-motion: reduce) { .rem, .rem-star, .rem-line, .rem-words, .rem-halo { animation: none; opacity: 1; } }
 .cv-screen:has(.rem) .cv-actions { margin-top: auto; }
+/* the bar spans the screen; let taps through its empty part so Continue (under it) stays reachable */
+.cv-screen:has(.rem) .cv-actions { pointer-events: none; }
+.cv-screen:has(.rem) .cv-actions > * { pointer-events: auto; }
 .rem { padding: 2.5% 3% 11% 4%; }
 .rem-words { gap: 10px; }
 .rem-who li, .rem-did button { font-size: clamp(13.5px, 1.35vw, 15.5px); }
@@ -1513,6 +1516,9 @@
 .rem.is-story .rem-sky { position: absolute; left: 30%; right: 3%; top: 5%; bottom: 16%; width: auto; height: auto; }
 .rem-story { left: 4%; bottom: 92px; width: min(400px, 40%); cursor: default; }
 .rem-story .cv-story-text { font-size: clamp(15px, 1.5vw, 17px); line-height: 1.5; color: #e8e0cf; }
+/* hierarchy: the day sits apart as a label, the title leads, the words follow a step quieter */
+.rem-story .cv-story-k { margin-bottom: 8px; opacity: .7; }
+.rem-story .cv-story-text { color: #e8e0cf; opacity: .72; }
 .rem-story-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
 .rem-story-foot .cv-story-dots { margin-top: 0; }
 .rem-continue { cursor: pointer; background: transparent; color: #F6EEDB; font: inherit; font-size: 14px; }
@@ -1524,6 +1530,9 @@
 .rem-halo { animation: cv-fade-in .8s ease both, cv-breathe 4s ease-in-out .8s infinite; }
 .rem-again { position: absolute; z-index: 2; top: 18px; right: 20px; animation: cv-fade-in .6s .6s ease both; }
 .rem.is-end .rem-words { gap: 18px; }
+/* the last page: her name, her story, and who loved her, each given room */
+.rem.is-end .rem-words { gap: 36px; }
+.rem.is-end .rem-name { margin-bottom: 0; }
 
 /* ======================================================================================
    Navigation system. One inset, two bars, one button spec, one icon set.
