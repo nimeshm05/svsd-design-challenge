@@ -106,13 +106,13 @@ const EX = {
 // 4. The camera pushes into the monitor and the film carries on inside the screen.
 // Everything here is driven by the film's clock (pause, scrub). Positions are in the clip's own frame,
 // which covers the screen exactly as the video does.
-const OPEN_LEN = 5.4 // s: her birth, in the dark
+const OPEN_LEN = 10.4 // s: who she is, in the dark
 // the scenario clips: where each is cut, and which side it goes to when the screen splits
 const CLIPS = {
   // each plays a little slowed, so it fills its moment and never has to freeze
-  dad: { src: './clips/dad-arrives.mp4', until: 4.3, rate: 0.62 }, // forward, cut before it changes angle
-  nurse: { src: './clips/nurse-explains.mp4', until: 7.9, rate: 0.9 },
-  mom: { src: './clips/mom-day3.mp4', until: 4.35, rate: 0.65 },
+  dad: { src: './clips/dad-arrives.mp4', until: 4.3, rate: 0.5 }, // forward, cut before it changes angle (8.6 s)
+  nurse: { src: './clips/nurse-explains.mp4', until: 7.9, rate: 0.85 }, // (9.3 s)
+  mom: { src: './clips/mom-day3.mp4', until: 4.35, rate: 0.5 }, // (8.7 s)
 }
 function Opening({ clock }) {
   const host = useRef(null)
@@ -129,9 +129,9 @@ function Opening({ clock }) {
     <div className="open is-birth" ref={host}>
       <span className="open-star" aria-hidden="true"><i className="open-star-glow" /><StarGlyph size={64} color="#FFF8E6" /></span>
       <div className="open-words" aria-hidden="true">
-        <span className="ow ow-1">3:42 a.m.</span>
+        <span className="ow ow-1">This is</span>
         <b className="ow ow-2">Mila</b>
-        <span className="ow ow-3">Born thirteen weeks early.</span>
+        <span className="ow ow-3">She was born this morning at 3:42, thirteen weeks early.</span>
         <span className="ow ow-4"><em>880 grams.</em> About the weight of a small pineapple.</span>
       </div>
     </div>
@@ -291,80 +291,80 @@ export function DemoFilm({ active, thumb }) {
     const say = (t, side, k) => set({ say: t ? { t, side, k } : null })
     const cap = (c) => set({ cap: c })
     const day = (n) => post({ type: 'mila:day', day: n })
+    // a quiet place-and-time label, top left
+    const tag = (t) => set({ say: t ? { t, side: 'tag' } : null })
     const script = async () => {
       set({ ...blank }); day(null)
       await chapter('born', 0.3)
 
-      // 1 · her birth, in the dark
-      mark('Born'); R.openAt = R.clock; set({ open: 1 }); await wait(OPEN_LEN - 0.4)
+      // 1 · who she is: her star, her name, when, how small
+      mark('Mila'); R.openAt = R.clock; set({ open: 1 }); await wait(OPEN_LEN - 0.4)
 
-      // 2 · Day 1. Dad arrives (the clip), and we push into her screen
-      mark('Day 1'); look('center', 'connection'); set({ open: 0, foot: { id: 'dad', at: R.clock, tag: 'Day 1 · 4:20 a.m.' } })
-      cap('Nobody’s ready for the NICU.'); await wait(2.4)
-      cap('He can’t hold her yet. There are wires everywhere, and alarms he doesn’t understand.'); await wait(3.6)
+      // 2 · who he is. Full frame, then (as he looks to her screen) the frame splits: her first star beside him
+      mark('Her dad'); look('splitR', 'connection'); set({ open: 0, foot: { id: 'dad', at: R.clock } }); tag('Day 1 · 4:20 a.m.')
+      cap('This is her dad.'); await wait(3)
+      cap('He hasn’t been able to hold her yet.'); await wait(3)
+      set({ pad: true }); cap(null); await wait(1)
+      cap('But beside her, her first star is waiting for him.'); await wait(2.4)
+      // the clip ends and fades; her screen glides to the middle
+      look('center'); await wait(2.2)
+      set({ foot: null }); cap('Her name, and how small she is, in words he can picture.'); await wait(4.6)
+      cap(null); await wait(0.8)
+
+      // 3 · his nurse walks him through it. The clip, then the screen does it one thing at a time
+      mark('Her nurse'); await chapter('story', 0.1)
+      set({ pad: false, foot: { id: 'nurse', at: R.clock } }); tag('Day 1 · 5:10 a.m.')
+      cap('His nurse walks him through what’s on her.'); await wait(3.6)
+      cap('Tubes, sensors, words he’s never heard. It’s a lot.'); await wait(4)
+      cap(null); await wait(1.2)
+      set({ foot: null, pad: true }); await wait(1.4)
+      cap('So the screen shows him one thing at a time.'); await wait(1)
+      await tap('.fd-next'); await wait(2.4)
+      await tap('.fd-next'); cap('In plain words he can hold on to.'); await wait(2.6)
+      await tap('.fd-next'); await wait(2.4)
       cap(null); await wait(0.6)
-      set({ pad: true, cam: { fx: 0.5, fy: 0.42, s: 2.4 } }); await wait(0.4)
-      set({ foot: null }); cap('So the first thing on her screen isn’t a number. It’s her.'); await wait(2)
-      out(); await wait(1.4)
-      look('left'); say('Her first star.', 'r', 'Day 1'); cap('Her name, and a star as big as she is.'); await wait(3.6)
-      say(null); cap(null)
 
-      // 3 · her nurse walks him through it (the clip), and we push into the walkthrough
-      mark('What’s on her'); await chapter('story', 0.1)
-      set({ foot: { id: 'nurse', at: R.clock, tag: 'Day 1 · 5:10 a.m.' } })
-      cap('A few hours later, her nurse walks him through everything.'); await wait(3.2)
-      cap('It’s a lot to take in at five in the morning.'); await wait(3.4)
-      cap(null); await wait(1.4)
-      look('center', 'comprehension'); set({ cam: { fx: 0.5, fy: 0.6, s: 2.2 } }); await wait(0.4)
-      set({ foot: null }); out(); look('right'); await wait(1.2)
-      cap('So her screen takes it one thing at a time.'); await tap('.fd-next'); say('What’s on her.', 'l'); await wait(1.6)
-      await tap('.fd-next'); await wait(1.2)
-      cap('In words he can actually hold on to.'); await tap('.fd-next'); await wait(2.2)
-      say(null); cap(null)
-
-      // 4 · Day 3. Mom comes in (the clip); her day is waiting for her
+      // 4 · Day 3. Mom arrives; split with her day on the screen
       mark('Day 3'); await show('today', 0.1); day(3)
-      set({ foot: { id: 'mom', at: R.clock, tag: 'Day 3' } }); look('center', 'comprehension')
-      cap('Mom’s been stuck in recovery, two floors up.'); await wait(3.1)
-      cap('Three days of missing everything.'); await wait(3.3)
-      set({ foot: null }); cap('So her whole day is waiting for her, start to finish.'); await wait(3.4)
-      look('left'); zoom('.cv-one', 1.5); say('Her day, in plain words.', 'r', 'Day 3'); cap(null); await wait(2.6)
-      say(null); await tap('.cv-term-btn'); await wait(0.3)
-      look('center'); zoom('.cv-pop', 1.9); cap('And when the doctors’ words don’t make sense, one tap explains them.'); await wait(4)
-      await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))); cap(null); await wait(0.3)
-      look('right', 'connection'); zoom('.cv-arc', 1.25); await wait(1)
-      await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.2)
-      say('Moments she was there for.', 'l'); cap('Even the small moments get kept, straight from what her nurses already write down.'); await wait(4)
-      out(); say(null); cap(null); look('left', 'awareness'); await wait(0.9)
-      await tap('.cv-ahead-btn'); say('What’s ahead.', 'r'); cap('And no more guessing what tomorrow looks like.'); await wait(3.8)
-      say(null); cap(null)
+      set({ pad: false, foot: { id: 'mom', at: R.clock } }); look('splitR', 'comprehension'); tag('Day 3')
+      cap('Three days later, Mom is finally well enough to see her.'); await wait(3.4)
+      set({ pad: true }); cap(null); await wait(1)
+      cap('Everything she missed is right there, in plain words.'); await wait(4.2)
+      set({ foot: null }); look('center'); cap(null); await wait(1.8)
+      await tap('.cv-term-btn'); cap('When a word doesn’t make sense, one tap explains it.'); await wait(4.6)
+      await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))); cap(null); await wait(1)
+      await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' }))
+      cap('Even the moment she walked in is kept, from notes her nurses already write.'); await wait(4.8)
+      cap(null); await wait(0.6)
+      await tap('.cv-ahead-btn'); cap('And she can see what’s coming tomorrow.'); await wait(4.4)
+      cap(null); await wait(0.6)
 
       // 5 · Day 23. The days blur; every day becomes a star
-      mark('Day 23'); await show('today', 0.2); day(23); look('center', 'connection'); await wait(0.6)
-      say('Day 23', 'top'); cap('Three weeks in, the days start to blur together.'); await wait(3.4)
-      await tap(sky); say(null); cap('So each day gathers into a star,'); await wait(4.4)
-      cap('and slowly, her sky fills in.'); await wait(4.2)
+      mark('Day 23'); await show('today', 0.4); day(23); tag('Day 23')
+      cap('Weeks go by, and the days start to blur together.'); await wait(4)
+      await tap(sky); cap(null); await wait(0.6)
+      cap('So every day becomes a star.'); await wait(4.6)
+      cap('And her sky keeps growing.'); await wait(4.2)
       cap(null)
 
       // 6 · going home
-      mark('Going home'); look('center', 'dawn'); await show('home', 0.2)
-      say('Day 98', 'top'); cap('Ninety-eight days later, Mila goes home.'); await wait(3.4)
-      cap('And her sky goes with her.'); await wait(3.4)
-      say(null); cap(null)
+      mark('Going home'); tag('Day 98'); set({ tint: 'dawn' }); await show('home', 0.6)
+      cap('On day 98, Mila goes home.'); await wait(3.6)
+      cap('Her sky goes with her.'); await wait(3.8)
+      cap(null); tag(null)
 
-      // 7 · and if she doesn't: quiet, unlabeled, nothing tapped
-      mark('Whatever happens'); set({ pad: false, tint: null }); await wait(1.6)
-      cap('Not every story ends at home.'); await wait(3.2)
-      await show('not', 0.1); look('center', null); set({ pad: true }); await wait(1.4)
-      cap('But every day was hers.'); await wait(3.4)
-      cap('And every star is still hers to keep.'); await wait(3.8)
+      // 7 · and if she doesn't: quiet, unlabeled
+      mark('Whatever happens'); set({ pad: false, tint: null }); await wait(1.8)
+      cap('Not every story ends at home.'); await wait(3.6)
+      await show('not', 0.1); set({ pad: true }); await wait(1.6)
+      cap('But every day was hers to keep.'); await wait(4.8)
       cap(null)
 
       // closing
       mark('Closing')
-      set({ pad: false, cap: null, tint: null }); await wait(1.2)
-      set({ close: 1 }); await wait(3.4)
-      set({ close: 3 }); await wait(5)
+      set({ pad: false, cap: null, tint: null }); await wait(1.4)
+      set({ close: 1 }); await wait(3.6)
+      set({ close: 3 }); await wait(5.4)
       setLen(R.clock); set({ done: true })
     }
     script().catch(() => {})
