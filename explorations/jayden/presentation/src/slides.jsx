@@ -1227,6 +1227,17 @@ function Recap() {
   )
 }
 
+/* ---------- v2: what Constellate is, beside the product itself ---------- */
+function Overview() {
+  return (
+    <div className="ov">
+      <R d={0} className="k">Constellate</R>
+      <R d={1} as="h2" className="ov-h">A bedside screen that turns her chart into <L>something parents can follow</L>.</R>
+      <R d={2} as="p" className="ov-p">What happened, what it means, and what’s next, from notes her nurses already write. Dark and quiet by default, and there whenever a parent looks up.</R>
+    </div>
+  )
+}
+
 export const SLIDES = [
   { id: 'title', section: 'Constellate', planet: true, View: Title },
   { id: 'niko', section: 'Niko', View: Niko },
@@ -1246,8 +1257,7 @@ export const SLIDES = [
   { id: 'k-open', section: '04 · Constraints', View: KOpen },
   { id: 'constraints', section: '04 · Constraints', steps: CONSTRAINT_STEPS, View: Constraints },
   { id: 'insight', section: '05 · The insight', View: statement({ k: 'The insight', big: true, children: <>Everything parents need is <L>already in her chart</L>. It just never reaches them in a form they can use.</> }) },
-  { id: 'overview', section: '06 · Constellate', planet: true, View: statement({ k: 'Constellate', big: true, children: <>A bedside screen that turns her chart into <L>something parents can follow</L>.</> }) },
-  { id: 'mila', section: '07 · Meet Mila', planet: true, View: Mila },
+  { id: 'overview', section: '06 · Constellate', planet: true, feature: 'today', padSide: true, View: Overview },
   { id: 'demo', section: '07 · Her stay, question by question', planet: true, bare: true, View: DemoFilm },
   { id: 'recap', section: '07 · Constellate', View: Recap },
   { id: 'f-live', section: '08 · Try it', feature: 'today', View: Feature({ id: 'f-live', show: 'today', k: 'Try it', p: 'connection', title: <>Her bedside, live</>, text: 'The real prototype. Tap anywhere.' }) },

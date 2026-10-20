@@ -41,7 +41,7 @@ export const NARRATION = {
     'Those three constraints shaped every screen.',
   ],
   modality: 'Next, how would parents reach it? We designed for touch first, dim by default, with a night mode for the hours parents spend there in the dark.',
-  overview: 'So we built Constellate: a bedside screen that turns her chart into something parents can follow.',
+  overview: 'So we built Constellate: a bedside screen that turns her chart into something parents can follow. Let’s walk through it with Mila, a baby built from the families we met.',
   stars: [
     'One idea runs through it. Every day of her stay becomes a star, shaped by what her nurses already chart.',
     'Every week becomes a constellation, so parents can see her whole stay at a glance.',
@@ -55,7 +55,6 @@ export const NARRATION = {
     'What’s next, and who is caring for her tonight? Her week, where parents fit in, and her care team.',
     'How is she doing right now? At night, the screen rests when she does: the time, her next care, one quiet line.',
   ],
-  mila: 'To show how it all works, meet Mila. She’s born thirteen weeks early, at 880 grams. She isn’t a real baby: she’s built from Niko’s story and the other families we heard from.',
   recap: 'Six answers, one bedside screen. Each answers a question parents asked us, from her chart, with nothing new for nurses to write.',
   'f-live': 'This is the real prototype. You’re welcome to tap through it.',
   close: 'Every star is hers to keep. Thank you.',
