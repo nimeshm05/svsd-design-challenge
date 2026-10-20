@@ -2016,3 +2016,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .fd-walk .fd-words { animation-duration: .45s; animation-delay: 0s; }
 .cv-page .fd-walk-nav { animation: none; }
 @media (prefers-reduced-motion: reduce) { .cv-page .fd > * { animation: none; } }
+
+/* the word popup's figure: the same front-facing her as the Day 1 walkthrough, still, so no drag */
+.cv-her-fig.is-front { height: 130px; margin-bottom: 4px; cursor: default; }
+.cv-her-fig.is-front .bf { height: 100%; }

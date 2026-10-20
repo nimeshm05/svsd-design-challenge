@@ -3,7 +3,7 @@ import { days, today } from '../data/days.js'
 import { glossary } from '../data/glossary.js'
 import { Scan } from '../components/Scan.jsx'
 import { SkyArc } from './SkyArc.jsx'
-import { HerModel } from './HerModel.jsx'
+import { BabyFront } from './BabyFront.jsx'
 import { FirstDay } from './FirstDay.jsx'
 import { Comfort } from './Ending.jsx'
 import { Remembering } from './Remembering.jsx'
@@ -469,15 +469,14 @@ function OneLine({ text, d, h }) {
 }
 
 // Her, softly drawn, as she was at that moment: what's new glows, what came off stays as a faint ghost
-// Her, as a soft hologram: drag to turn her and see her from another side
 // device: the thing a term names, lit on her (shown in place of the breathing help it stands in for)
 const SWAPS = { cpap: 'cannula', cannula: 'cpap' }
 function HerFigure({ d, h, device }) {
   let { present, changed } = setupAt(d, h)
   if (device) { present = [...present.filter((x) => x !== SWAPS[device]), ...(present.includes(device) ? [] : [device])]; changed = [device] }
   return (
-    <div className="cv-her-fig">
-      <HerModel present={present} changed={changed} label="Mila, with what was on her. Drag to turn her." />
+    <div className="cv-her-fig is-front">
+      <BabyFront present={present} changed={changed} label="Mila, with what was on her." />
     </div>
   )
 }

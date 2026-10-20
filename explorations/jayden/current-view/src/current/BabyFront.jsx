@@ -5,6 +5,8 @@ const W = 272, H = 397
 const SRC = `${import.meta.env.BASE_URL}images/baby-front.png`
 
 const DEVICES = {
+  cpap: { at: [[136, 74]], mark: (x, y) => <ellipse cx={x} cy={y} rx="12" ry="9" />, wire: 'M148 74 C 190 74, 240 68, 300 62' },
+  cannula: { at: [[136, 72]], mark: (x, y) => <path d={`M${x - 9} ${y + 2} Q ${x} ${y - 4} ${x + 9} ${y + 2}`} />, wire: 'M145 74 C 190 74, 240 68, 300 62' },
   vent: { at: [[136, 77]], mark: (x, y) => <rect x={x - 6} y={y - 3.5} width="12" height="7" rx="2.5" />, wire: 'M142 77 C 190 76, 240 70, 300 64' },
   feeding: { at: [[127, 70]], mark: (x, y) => <circle cx={x} cy={y} r="2.6" />, wire: 'M127 70 C 122 110, 140 150, 156 180 M127 70 C 150 40, 230 34, 300 36' },
   heart: { at: [[108, 128], [166, 128], [112, 196]], mark: (x, y) => <circle cx={x} cy={y} r="5" />, wire: 'M166 128 C 220 124, 260 118, 300 114 M108 128 C 140 150, 230 150, 300 146 M112 196 C 170 200, 240 188, 300 180' },
