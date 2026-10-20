@@ -56,7 +56,7 @@ export function Deck() {
     <div className={`deck tint-${s.tint ?? 'night'} ${s.bare ? 'is-bare' : ''}`} style={{ '--i': i }}>
       <Sky />
       <header className="deck-top">
-        <span className="deck-mark"><StarGlyph size={14} />Mila&apos;s Sky</span>
+        <span className="deck-mark"><StarGlyph size={14} />Constellation</span>
         <span className="deck-where"><span key={s.section} className="deck-section">{s.section}</span><button type="button" className="deck-panel-btn" onClick={openPanel} title="Story overview (O)">Overview ↗</button><span className="deck-count">{String(i + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}</span></span>
       </header>
 
@@ -142,7 +142,7 @@ function DemoPad({ show }) {
     <div className={`demo-pad-layer ${show ? 'is-on' : ''}`} aria-hidden={!show}>
       <div className="ipad demo-pad">
         <div className="ipad-screen">
-          <iframe ref={frame} title="Mila's Sky bedside display" src="./prototype/index.html?embed=1&chapter=born"
+          <iframe ref={frame} title="Constellation bedside display" src="./prototype/index.html?embed=1&chapter=born"
             onLoad={() => setTimeout(() => show && frame.current?.contentWindow?.postMessage({ type: 'mila:show', what: show }, '*'), 300)} />
         </div>
         <i className="ipad-cam" aria-hidden="true" />

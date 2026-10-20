@@ -7,7 +7,7 @@ import { DemoFilm } from './film.jsx'
 export const ITER_MODE = 'focus' // 'focus' = one at a time, then into the row · 'row' = current staggered fade-in
 
 // The case study as one story. Its spine: NICU parents live two things at once (the fight and the
-// celebration), and Mila's Sky is a place that holds both. Each chapter opens on a realization, said
+// celebration), and Constellation is a place that holds both. Each chapter opens on a realization, said
 // big, with its key phrase lit; the slides after it are the evidence or what we did about it. The three
 // pillars keep their colors from the moment they appear to the last product screen.
 // Each slide: id, section (top right), tint (which pillar colors the sky), planet (a chapter's opening:
@@ -71,7 +71,7 @@ function Title() {
   return (
     <div className="center title">
       <R d={0} className="title-k">A NICU storytelling case study</R>
-      <R d={1} as="h1" className="title-h">Mila&apos;s Sky</R>
+      <R d={1} as="h1" className="title-h">Constellation</R>
       <R d={2} as="p" className="title-sub">Transforming NICU care into a story, one star at a time.</R>
       <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
     </div>
@@ -528,7 +528,7 @@ function Idea({ step = 0 }) {
           </span>
         ))}
         <span className="idea2-star"><span className="idea2-burst" /><StarGlyph size={84} color="#FFF8E6" /></span>
-        <span className="idea2-name">Mila&apos;s Sky</span>
+        <span className="idea2-name">Constellation</span>
       </div>
       <div className="idea2-words">
         <div className="k idea2-k">05 · The idea</div>
@@ -568,7 +568,7 @@ function Film({ active, thumb }) {
 }
 
 const FLOW = [
-  { p: 'connection', principle: 'Keep parents in their baby’s story, even when apart', feature: 'Mila’s Sky' },
+  { p: 'connection', principle: 'Keep parents in their baby’s story, even when apart', feature: 'Constellation' },
   { p: 'comprehension', principle: 'Turn care into a cohesive story parents can follow', feature: 'Today screen and scheduled summary' },
   { p: 'awareness', principle: 'Show what’s happening now and prepare for what’s ahead', feature: 'Timeline and What’s Next' },
 ]
@@ -641,7 +641,7 @@ const DEEP = {
     principle: 'Keep parents in their baby’s story, even when apart.',
     decision: 'Milestones without points or streaks. The sky only grows.',
     iter: <><s>Take your star home</s><span className="deep-to" aria-label="became">→</span><b>Every star is yours to keep</b></>,
-    feature: 'Mila’s Sky',
+    feature: 'Constellation',
   },
   comprehension: {
     principle: 'Turn care into a story parents can follow.',
@@ -830,9 +830,9 @@ function System() {
           <p>Stars for everyday moments, planets for big ones, defined by parents: &ldquo;Yes, he pooped!… in its own way, it&apos;s beautiful.&rdquo;</p>
         </R>
         <R d={3} className="col sys">
-          <div className="sys-art sys-name" aria-hidden="true">Mila&apos;s Sky</div>
+          <div className="sys-art sys-name" aria-hidden="true">Constellation</div>
           <span className="col-head">Naming and tone</span>
-          <p>&ldquo;Mila&apos;s Sky&rdquo; makes it her story, not a chart: hopeful and reassuring.</p>
+          <p>&ldquo;Constellation&rdquo;: her days, joined into one picture. Hopeful and reassuring, never clinical.</p>
         </R>
       </div>
     </div>
@@ -967,7 +967,7 @@ const CHAPTERS = [
   { id: 'born', name: 'Mila is born', note: 'Her first star, as big as she is.', p: ['connection'] },
   { id: 'story', name: 'Her story begins', note: 'What’s on her, one thing at a time.', p: ['comprehension'] },
   { id: 'day', name: 'A day', note: 'Today as an arc; terms explained; what’s ahead.', p: ['comprehension', 'awareness'] },
-  { id: 'sky', name: 'Her sky', note: 'Today becomes a star in Mila’s Sky.', p: ['connection', 'awareness'] },
+  { id: 'sky', name: 'Her sky', note: 'Today becomes a star in her sky.', p: ['connection', 'awareness'] },
   { id: 'home', name: 'Going home', note: 'Her sky becomes a mobile for home.', p: ['connection'] },
   { id: 'not', name: 'If she doesn’t go home', note: 'Her story, kept, at the family’s pace.', p: ['connection'] },
 ]
@@ -996,7 +996,7 @@ function Product({ thumb }) {
         <div className="ipad-screen">
           {thumb
             ? <div className="ipad-thumb"><StarGlyph size={40} color="#F3E3B5" /><span>Live prototype</span></div>
-            : <iframe ref={frame} title="Mila's Sky bedside display" src="./prototype/index.html?embed=1&chapter=day" />}
+            : <iframe ref={frame} title="Constellation bedside display" src="./prototype/index.html?embed=1&chapter=day" />}
         </div>
         <i className="ipad-cam" aria-hidden="true" />
       </R>
@@ -1091,7 +1091,7 @@ function Questions() {
 
 export const SLIDES = [
   // v2 (after Bryan's feedback): a real journey first, the product's usefulness before its feeling, then the story
-  { id: 'title', section: 'Mila’s Sky', planet: true, View: Title },
+  { id: 'title', section: 'Constellation', planet: true, View: Title },
   { id: 'niko', section: 'Niko', View: Niko },
   { id: 'nicu', section: 'The NICU', planet: true, View: define({ k: 'The NICU', word: 'Neonatal Intensive Care Unit', say: '“nick-you”', children: <>The hospital unit where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
   { id: 'journey', section: '01 · A NICU journey, today', planet: true, steps: JOURNEY.length, View: Journey },
@@ -1111,18 +1111,18 @@ export const SLIDES = [
   { id: 'constraints', section: '05 · Constraints', steps: CONSTRAINT_STEPS, View: Constraints },
   { id: 'modality', section: '05 · Modality', View: Modality },
 
-  { id: 'overview', section: '06 · Mila’s Sky', planet: true, View: statement({ k: 'Mila’s Sky', big: true, children: <>A bedside screen that turns her chart into <L>something parents can follow</L>: what happened, what it means, and what’s next.</> }) },
-  { id: 'f-first', section: '06 · Mila’s Sky', feature: 'first', View: Feature({ k: 'Day 1', p: 'connection', title: <>Her first screen asks nothing of you</>, before: 'A wall of monitors and numbers no one has time to explain.', text: 'Her name, and how small she is in something you can picture.' }) },
-  { id: 'f-walk', section: '06 · Mila’s Sky', feature: 'walk', View: Feature({ k: 'What’s on her', p: 'comprehension', title: <>One thing at a time</>, before: 'Every machine explained at once, at five in the morning.', text: 'Each device lights up on her body, with one plain sentence.' }) },
-  { id: 'f-term', section: '06 · Mila’s Sky', feature: 'term', View: Feature({ k: 'Medical words', p: 'comprehension', title: <>Explained in a tap</>, before: 'Parents nod along, then look the words up later.', text: 'Warm words first. Tap any term to see what it means, shown on her own body.' }) },
-  { id: 'f-family', section: '06 · Mila’s Sky', feature: 'family', View: Feature({ k: 'Her day', p: 'connection', title: <>What happened while you were away</>, before: 'Call the desk, or rely on what the last shift remembers.', text: 'Her day as an arc, hour by hour, with moments her nurses already chart, like when Mom came in before her early feed.' }) },
-  { id: 'f-ahead', section: '06 · Mila’s Sky', feature: 'ahead', View: Feature({ k: 'What’s ahead', p: 'awareness', title: <>What’s next, and who’s caring for her</>, before: 'Rounds come and go, and parents miss them.', text: 'Tomorrow and this week, where you fit in, and who is on tonight.' }) },
-  { id: 'f-night', section: '06 · Mila’s Sky', feature: 'night', View: Feature({ k: 'Night', p: 'awareness', title: <>A screen that rests when she does</>, before: 'A 3 a.m. call to the unit to ask how the night is going.', text: 'Dimmed to the time, her next care time, and one quiet line.' }) },
-  { id: 'f-sky', section: '06 · Mila’s Sky', feature: 'sky', View: Feature({ k: 'Her sky', p: 'connection', title: <>Is she getting better?</>, before: 'Weeks blur together. Progress is pieced together from memory.', text: 'Every day becomes a star, every week a constellation, and her firsts are planets. How far she has come, at a glance.' }) },
+  { id: 'overview', section: '06 · Constellation', planet: true, View: statement({ k: 'Constellation', big: true, children: <>A bedside screen that turns her chart into <L>something parents can follow</L>: what happened, what it means, and what’s next.</> }) },
+  { id: 'f-first', section: '06 · Constellation', feature: 'first', View: Feature({ k: 'Day 1', p: 'connection', title: <>Her first screen asks nothing of you</>, before: 'A wall of monitors and numbers no one has time to explain.', text: 'Her name, and how small she is in something you can picture.' }) },
+  { id: 'f-walk', section: '06 · Constellation', feature: 'walk', View: Feature({ k: 'What’s on her', p: 'comprehension', title: <>One thing at a time</>, before: 'Every machine explained at once, at five in the morning.', text: 'Each device lights up on her body, with one plain sentence.' }) },
+  { id: 'f-term', section: '06 · Constellation', feature: 'term', View: Feature({ k: 'Medical words', p: 'comprehension', title: <>Explained in a tap</>, before: 'Parents nod along, then look the words up later.', text: 'Warm words first. Tap any term to see what it means, shown on her own body.' }) },
+  { id: 'f-family', section: '06 · Constellation', feature: 'family', View: Feature({ k: 'Her day', p: 'connection', title: <>What happened while you were away</>, before: 'Call the desk, or rely on what the last shift remembers.', text: 'Her day as an arc, hour by hour, with moments her nurses already chart, like when Mom came in before her early feed.' }) },
+  { id: 'f-ahead', section: '06 · Constellation', feature: 'ahead', View: Feature({ k: 'What’s ahead', p: 'awareness', title: <>What’s next, and who’s caring for her</>, before: 'Rounds come and go, and parents miss them.', text: 'Tomorrow and this week, where you fit in, and who is on tonight.' }) },
+  { id: 'f-night', section: '06 · Constellation', feature: 'night', View: Feature({ k: 'Night', p: 'awareness', title: <>A screen that rests when she does</>, before: 'A 3 a.m. call to the unit to ask how the night is going.', text: 'Dimmed to the time, her next care time, and one quiet line.' }) },
+  { id: 'f-sky', section: '06 · Constellation', feature: 'sky', View: Feature({ k: 'Her sky', p: 'connection', title: <>Is she getting better?</>, before: 'Weeks blur together. Progress is pieced together from memory.', text: 'Every day becomes a star, every week a constellation, and her firsts are planets. How far she has come, at a glance.' }) },
 
   { id: 'demo', section: '07 · Her story', planet: true, bare: true, View: DemoFilm },
   { id: 'f-live', section: '07 · Her story', feature: 'today', View: Feature({ id: 'f-live', show: 'today', k: 'Try it', p: 'connection', title: <>Her bedside, live</>, text: 'The real prototype. Tap anywhere.' }) },
-  { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
-  { id: 'close', section: 'Mila’s Sky', View: Close },
+  { id: 'both-close', section: 'Constellation', steps: 2, View: Both },
+  { id: 'close', section: 'Constellation', View: Close },
 ]
 

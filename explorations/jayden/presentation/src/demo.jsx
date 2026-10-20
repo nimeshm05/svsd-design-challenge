@@ -179,7 +179,7 @@ export const Stretch = (id) => function StretchView({ active, step = 0, thumb })
           <div className="ipad-screen">
             {thumb || !live
               ? <div className="ipad-thumb"><Icon name={f.p} size={44} color={P.color} /><span>{f.name}</span></div>
-              : <iframe ref={frame} title={`Mila's Sky: ${f.name}`} src={`./prototype/index.html?embed=1&chapter=${id === 'day1' ? 'born' : 'day'}`}
+              : <iframe ref={frame} title={`Constellation: ${f.name}`} src={`./prototype/index.html?embed=1&chapter=${id === 'day1' ? 'born' : 'day'}`}
                   onLoad={() => setTimeout(() => frame.current?.contentWindow?.postMessage({ type: 'mila:show', what: f.show }, '*'), 300)} />}
           </div>
           <i className="ipad-cam" aria-hidden="true" />
@@ -215,7 +215,7 @@ export const Feature = (f) => function FeatureView({ thumb }) {
       {f.before ? (
         <div className="rv feat-vs" style={{ '--d': 2 }}>
           <p className="feat-before"><b>Today</b>{f.before}</p>
-          <p className="feat-after"><b>With Mila&apos;s Sky</b>{f.text}</p>
+          <p className="feat-after"><b>With Constellation</b>{f.text}</p>
         </div>
       ) : <p className="rv feat-p" style={{ '--d': 2 }}>{f.text}</p>}
       <div className="feat-pad-spot">{thumb && <div className="ipad demo-pad is-thumb"><div className="ipad-screen"><div className="ipad-thumb"><Icon name={f.p === 'baby' ? 'moon' : f.p} size={44} /></div></div></div>}</div>
