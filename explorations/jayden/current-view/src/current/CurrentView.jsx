@@ -101,6 +101,19 @@ export function CurrentView({ onSky }) {
       ahead: () => { goChapter('day'); later(() => setPage('ahead')) },
       night: () => { goChapter('day'); later(() => setNight(true)) },
       sky: () => goChapter('sky'),
+      // these pick up from wherever her sky already is, so one step leads into the next without starting over
+      openWeek: () => {
+        const go = () => { const w = document.querySelector('.cv-gweek'); if (w) w.click(); return !!w }
+        if (go()) return
+        if (!document.querySelector('.cv-galaxy')) goChapter('sky')
+        const t0 = Date.now(), id = setInterval(() => { if (go() || Date.now() - t0 > 15000) clearInterval(id) }, 300)
+      },
+      day6: () => { // her first week's planet day: the first time she was held
+        const pick = () => { const g = document.querySelector('.cv-gday[aria-label^="Day 6"]'); if (g) g.click(); return !!g }
+        if (pick()) return
+        SHOW.openWeek()
+        const t0 = Date.now(), id = setInterval(() => { if (pick() || Date.now() - t0 > 15000) clearInterval(id) }, 300)
+      },
       // her sky (today's star forms, then joins it), then her first week, once the sky is open: its firsts are planets
       week: () => {
         goChapter('sky')

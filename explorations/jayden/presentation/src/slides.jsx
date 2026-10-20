@@ -251,9 +251,9 @@ function Telephone() {
 
 /* ---------- 02 · The problem ---------- */
 const PAINS = [
-  { p: 'connection', qs: ['How can I feel close to her before I can hold her?', 'What happened while I was away?'], themes: [['Bonding', 'Weeks before a first hold'], ['Emotions', 'Fear and hope, every day'], ['Parent guilt', 'When they can’t be there']], pain: 'Parents can’t bond the way they expected, and guilt fills the gap.', q: 'I didn’t have the luxury of having my baby right away and like putting him on my chest.' },
-  { p: 'comprehension', qs: ['What is all of this on her?', 'What does that word mean?'], themes: [['Medical terminology', 'A whole new language'], ['Status of child', 'Is he okay today?'], ['Provider communication', 'A new nurse every shift']], pain: 'Parents have information, but not the whole picture.', q: '[Medical terminology] is a new language.' },
-  { p: 'awareness', qs: ['What’s next, and who is caring for her tonight?', 'How is she doing right now?'], themes: [['Situational awareness', 'What’s happening right now'], ['Holistic awareness', 'How far he’s come, and what’s next']], pain: 'Time disappears, and the next moment is a surprise.', q: 'In the ICU, time just like, it doesn’t exist. It’s just a mash of time.' },
+  { p: 'connection', qs: ['How can I feel close to my baby before I can hold them?', 'What happened while I was away?'], themes: [['Bonding', 'Weeks before a first hold'], ['Emotions', 'Fear and hope, every day'], ['Parent guilt', 'When they can’t be there']], pain: 'Parents can’t bond the way they expected, and guilt fills the gap.', q: 'I didn’t have the luxury of having my baby right away and like putting him on my chest.' },
+  { p: 'comprehension', qs: ['What is all of this on my baby?', 'What does that word mean?'], themes: [['Medical terminology', 'A whole new language'], ['Status of child', 'Is he okay today?'], ['Provider communication', 'A new nurse every shift']], pain: 'Parents have information, but not the whole picture.', q: '[Medical terminology] is a new language.' },
+  { p: 'awareness', qs: ['What’s next, and who is caring for my baby tonight?', 'How are they doing right now?'], themes: [['Situational awareness', 'What’s happening right now'], ['Holistic awareness', 'How far he’s come, and what’s next']], pain: 'Time disappears, and the next moment is a surprise.', q: 'In the ICU, time just like, it doesn’t exist. It’s just a mash of time.' },
 ]
 // one pillar at a time, each with what a parent said
 function Pillars({ step }) {
@@ -311,7 +311,7 @@ const RIVALS = [
 const MATRIX = {
   connection: [
     null,
-    { does: 'Watch the baby live, from anywhere', take: 'Seeing her isn’t the same as being part of her day: nothing is kept.' },
+    { does: 'Watch the baby live, from anywhere', take: 'Seeing your baby isn’t the same as being part of their day: nothing is kept.' },
     { does: 'Parents record milestones and photos', take: 'Parents have to do the recording, on top of everything else.' },
   ],
   comprehension: [
@@ -1056,7 +1056,7 @@ function Close() {
 const JOURNEY = [
   { when: 'Nov 14, 2025', title: 'An emergency birth', felt: 'Lauren is recovering from major surgery, and still can’t hold her son.', p: 'connection', img: './shots/niko-1.webp', what: 'Lauren has an emergency C-section. Niko arrives a little over two months early.', q: 'I didn’t have the luxury of having my baby right away and putting him on my chest.', who: 'Lauren, Niko’s mom' },
   { when: 'The first days', title: 'Two hospitals', felt: 'Healing from surgery in one place, while her newborn is cared for in another.', p: 'connection', img: './shots/niko-2.webp', what: 'Niko is born at one hospital, but his care is in another hospital’s NICU. From the start, his family’s life moves there.', q: 'They’re hooked up to leads, they’re hooked up to pulse ox… ensuring that these itty-bitty babies are gonna survive.', who: 'Lauren, Niko’s mom' },
-  { when: 'His diagnoses', title: 'A new language', felt: 'Two rare conditions, explained in words they’ve never heard, while they’re exhausted and scared.', p: 'comprehension', img: './shots/niko-3.webp', what: 'Niko has Tetralogy of Fallot, a rare heart condition, and esophageal atresia: his esophagus isn’t connected to his stomach. Two conditions, two specialist teams.', q: 'Medical terminology is a new language. Ask all the dumb questions, because it’s most important to understand your child’s care.', who: 'Lauren, Niko’s mom' },
+  { when: 'His diagnoses', title: 'A new language', felt: 'Complex conditions, explained in words they’d never heard, while they were exhausted and scared.', p: 'comprehension', img: './shots/niko-3.webp', what: 'Niko has Tetralogy of Fallot, a rare heart condition, and esophageal atresia: his esophagus isn’t connected to his stomach. Two conditions, two specialist teams.', q: 'Medical terminology is a new language. Ask all the dumb questions, because it’s most important to understand your child’s care.', who: 'Lauren, Niko’s mom' },
   { when: 'Every day', title: 'Round-the-clock care', felt: 'Long days and nights at his bedside, until the hours blur together.', p: 'awareness', img: './shots/niko-4.webp', what: 'Life is centered on the NICU. Scott and Lauren take time away from work to be by his side, day after day.', q: 'How is it already 6 p.m.? How is it already time for the shift change? You have no sense of time at all.', who: 'Lauren, Niko’s mom' },
   { when: 'Outside the unit', title: 'The weight of it all', felt: 'Bills, work, insurance, and the guilt of every hour they can’t be with him.', p: 'awareness', img: './shots/niko-5.webp', what: 'Daily costs, and the worry of keeping their health insurance, follow them home. They can’t always be at his bedside.', q: 'Where the mom and dad are having to work full-time… the NICU experience itself would be almost impossible.', who: 'Lauren, Niko’s mom' },
 ]
@@ -1068,10 +1068,8 @@ function Journey({ step = 0 }) {
       <div className="nj-page">
         <div className="nj-text" key={`t${i}`}>
           <span className="nj-k">Niko&apos;s NICU journey</span>
-          <span className="nj-date">{m.when}</span>
           <h2 className="nj-title">{m.title}</h2>
           {m.felt && <p className="nj-felt">{m.felt}</p>}
-          <p className="nj-what">{m.what}</p>
           {m.q && <blockquote className="nj-q"><p>&ldquo;{m.q}&rdquo;</p><cite>{m.who}</cite></blockquote>}
         </div>
         <figure className="nj-art">
@@ -1205,8 +1203,8 @@ function Mila() {
 
 /* ---------- v2: after the film, the six features as one constellation ---------- */
 const RECAP = [
-  ['Her first screen', 'connection', [150, 250]], ['Her day', 'connection', [300, 160]], ['What’s on her', 'comprehension', [460, 230]],
-  ['Words in a tap', 'comprehension', [610, 130]], ['What’s ahead', 'awareness', [760, 210]], ['Night view', 'awareness', [900, 120]],
+  ['First screen', 'connection', [150, 250]], ['Their day', 'connection', [300, 160]], ['What’s on them', 'comprehension', [460, 230]],
+  ['Words in a tap', 'comprehension', [610, 130]], ['What’s ahead', 'awareness', [760, 210]], ['Their stars', 'connection', [900, 120]],
 ]
 function Recap() {
   return (
@@ -1223,14 +1221,14 @@ function Recap() {
           </g>
         ))}
       </svg>
-      <R d={6} as="p" className="rc-p">Each one answers a question parents asked us, from her chart, with nothing new for nurses to write.</R>
+      <R d={6} as="p" className="rc-p">Each one answers a question parents asked us, from the chart, with nothing new for nurses to write.</R>
     </div>
   )
 }
 
 /* ---------- v2: what Constellate is, beside the product itself ---------- */
 const CONCEPT = [
-  ['Every day becomes a star.', 'Shaped by what her nurses already chart: her care, her changes, the moments her family was there.'],
+  ['Every day becomes a star.', 'Shaped by what nurses already chart: the care, the changes, the moments family was there.'],
   ['Every week, a constellation.', 'Her whole stay at a glance, so the days stop blurring together.'],
   ['Her firsts are planets.', 'First touch, first hold, first bottle. The hard days stay too: stars never disappear.'],
 ]
@@ -1239,7 +1237,7 @@ function Overview({ step = 0 }) {
   return (
     <div className="ov">
       <R d={0} className="k">Constellate</R>
-      <R d={1} as="h2" className="ov-h">A bedside screen that turns her chart into <L>something parents can follow</L>.</R>
+      <R d={1} as="h2" className="ov-h">A bedside screen that turns a baby’s chart into <L>something parents can follow</L>.</R>
       <ol className="ov-steps">
         {CONCEPT.map(([t, d], k) => (
           <li key={t} className={k === step ? 'is-on' : k < step ? 'is-past' : ''}>
@@ -1253,20 +1251,30 @@ function Overview({ step = 0 }) {
 
 /* ---------- v2: in their words, one voice at a time, before we name what we found ---------- */
 const VOICES = [
-  ['Waking up every day and watching your child fight for their life… It’s this really terrible thing, but if you think about it, you are also celebrating.', 'Lauren, Niko’s mom, current NICU parent'],
-  ['When you first go into the NICU… they have wires, they’re pulling blood, they’re doing all of these things. So it’s really hard to bond with your baby.', 'Former PICU parent'],
-  ['The most overwhelming part was not understanding all of the different roles and all the different machines that were involved.', 'Former PICU parent'],
   ['We felt so whiplashed, because we would be told one thing by one team. And then the next day it would be completely different.', 'Lauren, Niko’s mom'],
+  ['The hospital is like an elaborate game of telephone.', 'Lauren, Niko’s mom'],
   ['We tell them everything, but sometimes it’s too much. They don’t understand.', 'Retired NICU nurse, 35 years'],
-  ['One of the hardest things about being in the hospital is that your life does not stop outside the hospital.', 'Former PICU parent'],
 ]
-function Voices({ step = 0 }) {
-  const i = Math.min(step, VOICES.length - 1), [q, who] = VOICES[i]
+function Voices() {
   return (
-    <div className="center vo">
+    <div className="vo2">
       <R d={0} className="k">In their words</R>
-      <blockquote className="vo-q" key={i}><p>&ldquo;{q}&rdquo;</p><cite>{who}</cite></blockquote>
-      <ol className="vo-dots" aria-hidden="true">{VOICES.map((_, k) => <li key={k} className={k === i ? 'is-on' : k < i ? 'is-past' : ''} />)}</ol>
+      <div className="vo2-grid">
+        {VOICES.map(([q, who], k) => (
+          <R key={q} d={1 + k * 2} as="blockquote" className={`vo2-q ${k === 0 ? 'is-lead' : ''}`}><p>&ldquo;{q}&rdquo;</p><cite>{who}</cite></R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- v2: the solution's cover ---------- */
+function SolutionCover() {
+  return (
+    <div className="center title">
+      <R d={0} className="title-k">Solution</R>
+      <R d={1} as="h1" className="title-h">Constellate</R>
+      <R d={2} as="p" className="title-sub">A baby’s care, made something parents can follow.</R>
     </div>
   )
 }
@@ -1277,7 +1285,7 @@ export const SLIDES = [
   { id: 'nicu', section: 'The NICU', planet: true, View: define({ k: 'The NICU', word: 'Neonatal Intensive Care Unit', say: '“nick-you”', children: <>The hospital unit where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
   { id: 'journey', section: '01 · Niko’s journey', planet: true, steps: JOURNEY.length, View: Journey },
   { id: 'asked', section: '02 · Research', planet: true, steps: 3, View: Asked },
-  { id: 'voices', section: '02 · Research', steps: VOICES.length, View: Voices },
+  { id: 'voices', section: '02 · Research', View: Voices },
   { id: 'heard', section: '02 · Research', View: Heard },
   { id: 'wall', section: '02 · Research', View: Wall },
   { id: 'pillars', section: '03 · The problem', planet: true, tint: 'all', steps: 3, View: Pillars },
@@ -1287,12 +1295,14 @@ export const SLIDES = [
   { id: 'compete', section: '03 · The problem', tint: 'all', View: Compete },
   { id: 'hmw', section: '03 · The problem', tint: 'all', steps: 4, View: HMW },
   { id: 'brainstorm', section: '03 · Ideation', planet: true, View: Brainstorm },
-  { id: 'modality', section: '04 · Modality', planet: true, View: Modality },
+  { id: 'mom', section: '04 · Modality', planet: true, View: Mom },
+  { id: 'modality', section: '04 · Modality', View: Modality },
   { id: 'k-open', section: '04 · Constraints', View: KOpen },
   { id: 'constraints', section: '04 · Constraints', steps: CONSTRAINT_STEPS, View: Constraints },
-  { id: 'insight', section: '05 · The insight', View: statement({ k: 'The insight', big: true, children: <>Everything parents need is <L>already in her chart</L>. It just never reaches them in a form they can use.</> }) },
-  { id: 'overview', section: '06 · Constellate', planet: true, steps: 3, feature: ['first', 'sky', 'week'], padSide: true, View: Overview },
-  { id: 'demo', section: '07 · Her stay, question by question', planet: true, bare: true, View: DemoFilm },
+  { id: 'insight', section: '05 · The insight', View: statement({ k: 'The insight', big: true, children: <>Everything parents need is <L>already in their baby’s chart</L>. It just never reaches them in a form they can use.</> }) },
+  { id: 'solution', section: '06 · Constellate', planet: true, View: SolutionCover },
+  { id: 'overview', section: '06 · Constellate', steps: 3, feature: ['sky', 'openWeek', 'day6'], padSide: true, View: Overview },
+  { id: 'demo', section: '07 · One stay, question by question', planet: true, bare: true, View: DemoFilm },
   { id: 'recap', section: '07 · Constellate', View: Recap },
   { id: 'f-live', section: '08 · Try it', feature: 'today', View: Feature({ id: 'f-live', show: 'today', k: 'Try it', p: 'connection', title: <>Her bedside, live</>, text: 'The real prototype. Tap anywhere.' }) },
   { id: 'close', section: 'Constellate', View: Close },

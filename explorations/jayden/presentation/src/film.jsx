@@ -584,14 +584,14 @@ export function DemoFilm({ active, thumb }) {
       await line('She isn’t a real baby. She’s built from the families we met, so we can show a whole stay, the hard parts too.')
       cap(null); set({ foot: { id: 'dad', at: R.clock } }); await wait(1)
       await line('It’s 4:20 in the morning, and her dad has just arrived.')
-      await scene({ when: 'Day 1 · 4:20 a.m.', name: 'Her first screen', p: 'connection', q: 'How can I feel close to her before I can hold her?', today: 'A wall of monitors and numbers, and no time to explain.', still: 'dad' })
+      await scene({ when: 'Day 1 · 4:20 a.m.', name: 'First screen', p: 'connection', q: 'How can I feel close to her before I can hold her?', today: 'A wall of monitors and numbers, and no time to explain.', still: 'dad' })
       set({ pad: true, foot: null }); await wait(1)
       lit('.fd-star', 1.18); await line('Her screen opens with her: her name, and how small she is, in something he can picture.', 'connection')
       await reason('In the first hours, parents need to meet their baby before her data. So the words are hopeful and warm, and she’s a person here, not a patient.')
 
       // ── What's on her
       mark('What’s on her')
-      await scene({ when: 'Day 1 · 5:10 a.m.', name: 'What’s on her', p: 'comprehension', q: 'What is all of this on her?', today: 'Every machine explained at once, at five in the morning.', still: 'explain' })
+      await scene({ when: 'Day 1 · 5:10 a.m.', name: 'What’s on them', p: 'comprehension', q: 'What is all of this on her?', today: 'Every machine explained at once, at five in the morning.', still: 'explain' })
       await chapter('story', 0.2); set({ pad: true, foot: null }); await wait(0.6)
       await tap('.fd-next'); lit('.fd-words', 1.15); await line('One device at a time, lit on her body, in one plain sentence.', 'comprehension')
       await tap('.fd-next'); lit('.fd-words', 1.15); await wait(1.6)
@@ -601,7 +601,7 @@ export function DemoFilm({ active, thumb }) {
       // ── Her day
       mark('Her day')
       await show('today', 0.1); day(3)
-      await scene({ when: 'Day 3', name: 'Her day', p: 'connection', q: 'What happened while I was away?', today: 'Call the desk, or rely on what the last shift remembers.', still: 'mom' })
+      await scene({ when: 'Day 3', name: 'Their day', p: 'connection', q: 'What happened while I was away?', today: 'Call the desk, or rely on what the last shift remembers.', still: 'mom' })
       set({ pad: true, foot: null }); await wait(0.8)
       await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.4)
       lit('.cv-cap', 1.2); await line('Her day, hour by hour, with the moments her nurses noted, like when Mom came in.', 'connection')
@@ -633,7 +633,7 @@ export function DemoFilm({ active, thumb }) {
       // ── Her stars: the heart of it, and the longest chapter
       mark('Her stars')
       await show('today', 0.2); day(98)
-      await scene({ when: 'Day 98 · her last day', name: 'Her stars', p: 'connection', q: 'How far has she come?', today: 'Weeks blur together, pieced together from memory.' })
+      await scene({ when: 'Day 98 · her last day', name: 'Their stars', p: 'connection', q: 'How far has she come?', today: 'Weeks blur together, pieced together from memory.' })
       set({ pad: true, tint: 'dawn' }); look('sky'); await wait(0.8)
       await tap(sky); await line('Mom opens her stars. Today’s moments gather into one more star.')
       for (let n = 0; n < 40 && !find('.cv-gweek'); n++) await wait(0.25) // until her sky has opened
@@ -672,7 +672,7 @@ export function DemoFilm({ active, thumb }) {
       big({ t: 'But not every baby gets to go home like Mila.', art: 'sky' }); await wait(1.2); await gate()
       big({ t: 'Even a short life is a whole story. Every day of it mattered.', art: 'sky' }); await wait(1.2); await gate()
       big(null); await wait(0.6)
-      feat('Her sky, kept', 'connection'); set({ pad: true }); await wait(1)
+      feat('A kept sky', 'connection'); set({ pad: true }); await wait(1)
       await line('The screen goes quiet: her name, and her nurse nearby.')
       const herSky = (d) => [...d.querySelectorAll('.cv-actions .nav-btn')].find((b) => b.textContent.trim() === 'Her sky')
       await tap(herSky, () => { herSky(doc())?.click() })
@@ -779,7 +779,7 @@ export function DemoFilm({ active, thumb }) {
       {v.scene && <div key={v.scene} className="dfilm-scene"><Scene kind={v.scene} /></div>}
       {feats.map(({ k, v: x, out }) => <p key={k} className={`dfilm-feat is-${x.p} ${out ? 'is-out' : ''}`}><span>Feature</span><b><StarGlyph size={16} color={PILLAR[x.p].color} />{x.name}</b></p>)}
       {whys.map(({ k, v: t, out }) => <p key={k} className={`dfilm-why ${out ? 'is-out' : ''}`}><span>Why we built it this way</span>{t}</p>)}
-      {asks.map(({ k, v: a, out }) => <p key={k} className={`dfilm-ask is-${a.p} ${out ? 'is-out' : ''}`}><span><Icon name={a.p} size={14} color={PILLAR[a.p].color} />{PILLAR[a.p].name}</span>&ldquo;{a.q}&rdquo;{a.today && <em>Today: {a.today}</em>}</p>)}
+      {asks.map(({ k, v: a, out }) => <p key={k} className={`dfilm-ask is-${a.p} ${out ? 'is-out' : ''}`}><span><Icon name={a.p} size={14} color={PILLAR[a.p].color} />{PILLAR[a.p].name}</span>&ldquo;{a.q}&rdquo;</p>)}
       {v.when && v.ask && <p key={v.when} className="dfilm-when">{v.when}</p>}
       {caps.map(({ k, v: c, out }) => <p key={k} className={`dfilm-cap ${out ? 'is-out' : ''}`}>{c.q && <span className="dfilm-capq"><q>{c.q}</q><span>A NICU parent we interviewed</span></span>}{c.k && <span className={`dfilm-capk is-${c.k}`}><Icon name={c.k} size={14} color={PILLAR[c.k].color} />{PILLAR[c.k].name}<em>{PRINCIPLE[c.k]}</em></span>}{c.t}</p>)}
 
