@@ -113,8 +113,8 @@ const CLIPS = {
   dad: { src: './clips/dad-arrives.mp4', until: 4.3, rate: 0.5 }, // forward, cut before it changes angle (8.6 s)
   nurse: { src: './clips/nurse-explains.mp4', until: 7.9, rate: 0.85 }, // (9.3 s)
   mom: { src: './clips/mom-day3.mp4', until: 4.35, rate: 0.6 }, // (7.3 s)
-  daily: { src: './clips/mom-daily.mp4', until: 99, rate: 0.8 },
-  mobile: { src: './clips/mobile.mp4', until: 99, rate: 0.8 },
+  daily: { src: './clips/mom-daily.mp4', until: 4.6, rate: 0.75 }, // (6.1 s)
+  mobile: { src: './clips/mobile.mp4', until: 7.9, rate: 0.9 }, // (8.8 s)
 }
 function Opening({ clock }) {
   const host = useRef(null)
@@ -176,6 +176,72 @@ function Footage({ src, clock, at, until = 99, rate = 1, className = '', childre
 }
 
 /* ---------- motion graphics ---------- */
+// A big statement between scenes (an ad's title card): a small label, one line with a lit phrase, and
+// sometimes a drawing under it. Or a bold day title.
+function Big({ b }) {
+  return (
+    <div className={`big ${b.day ? 'is-day' : ''}`}>
+      {b.art === 'keep' && <div className="big-art"><Scene kind="keep" /></div>}
+      {b.k && <span className="big-k" style={b.color ? { color: b.color } : undefined}>{b.k}</span>}
+      <p className="big-t">{b.t}</p>
+      {b.art === 'phone' && (
+        <div className="big-phone">
+          <svg viewBox="0 0 600 60" preserveAspectRatio="none" aria-hidden="true">
+            <path className="big-phone-line" d="M10 30 C 60 30, 90 30, 140 30 S 200 22, 240 32 S 300 18, 340 36 S 400 12, 440 40 S 500 8, 540 44 S 580 14, 590 30" />
+            {[10, 150, 300, 450, 590].map((x, k) => <circle key={x} cx={x} cy={30} r={k === 0 || k === 4 ? 6 : 4} className={`big-phone-dot ${k === 0 ? 'is-from' : k === 4 ? 'is-to' : ''}`} style={{ '--k': k }} />)}
+          </svg>
+          <span className="is-from">Care team</span><span className="is-to">Parents</span>
+        </div>
+      )}
+      {b.sub && <span className="big-sub">{b.sub}</span>}
+    </div>
+  )
+}
+// The closing, illustrated: her days draw themselves into a constellation (her story); monitor numbers,
+// waveforms and alarms crowd over it (lost in the clinical); they clear, and her sky lights up (kept and
+// celebrated); then her star and her name.
+const FIN_PTS = [[90, 330], [170, 280], [250, 300], [330, 230], [410, 260], [490, 190], [570, 220], [650, 160], [730, 200], [810, 140], [890, 170]]
+const FIN_PLANETS = [3, 6, 9]
+const FIN_WORDS = ['', 'Every baby’s life is a story.', 'In the NICU, it gets lost in charts, numbers and alarms.', 'Mila’s Sky keeps it, and celebrates every day of it.', '']
+function Finale({ stage }) {
+  return (
+    <div className={`fin is-s${stage}`} aria-hidden="true">
+      <p className="fin-words" key={stage}>{FIN_WORDS[stage]}</p>
+      <svg className="fin-art" viewBox="0 0 980 420">
+        {/* her story: a constellation, drawn day by day */}
+        <polyline className="fin-path" points={FIN_PTS.map((p) => p.join(',')).join(' ')} />
+        {FIN_PTS.map(([x, y], k) => FIN_PLANETS.includes(k)
+          ? <g key={k} className="fin-planet" style={{ '--k': k }} transform={`translate(${x} ${y})`}><g transform="rotate(-18)"><ellipse rx="15" ry="4.5" /><circle r="6.5" /></g></g>
+          : <path key={k} className="fin-star" style={{ '--k': k }} transform={`translate(${x} ${y})`} d="M0 -9Q1.3 -1.3 9 0Q1.3 1.3 0 9Q-1.3 1.3 -9 0Q-1.3 -1.3 0 -9Z" />)}
+        {/* the clinical: waveforms, numbers and alarms that crowd over it */}
+        <g className="fin-noise">
+          <path className="fin-ecg" d="M0 120 H120 L135 90 L150 160 L165 60 L180 120 H340 L355 90 L370 160 L385 60 L400 120 H560 L575 90 L590 160 L605 60 L620 120 H780 L795 90 L810 160 L825 60 L840 120 H980" />
+          <path className="fin-ecg is-2" d="M0 360 C40 340 60 380 100 360 S160 340 200 360 S260 380 300 360 S360 340 400 360 S460 380 500 360 S560 340 600 360 S660 380 700 360 S760 340 800 360 S860 380 900 360 S960 340 980 360" />
+          {[['HR 168', 120, 60], ['SpO₂ 91%', 700, 70], ['RR 54', 860, 300], ['37.1 °C', 60, 250], ['FiO₂ 30%', 470, 395], ['08:00', 330, 40], ['IV 4 mL/h', 620, 300]].map(([t, x, y], k) => <text key={t} x={x} y={y} style={{ '--k': k }}>{t}</text>)}
+          {[[260, 380], [760, 250], [520, 60]].map(([x, y], k) => (
+            <g key={k} className="fin-alarm" style={{ '--k': k }} transform={`translate(${x} ${y})`}>
+              <circle r="16" /><path d="M-6 4 V-2 A6 6 0 0 1 6 -2 V4 Z M-8 4 H8" /><circle className="fin-alarm-ring" r="16" />
+            </g>
+          ))}
+        </g>
+      </svg>
+      <div className="fin-brand"><StarGlyph size={58} color="#FFF8E6" /><b>Mila&apos;s Sky</b><span>Her story, one day at a time.</span></div>
+    </div>
+  )
+}
+
+// copy an element of the screen, with its look, so it can be lifted out of the screen
+function cloneStyled(src) {
+  const c = src.cloneNode(false)
+  if (src.nodeType === 1) {
+    const cs = src.ownerDocument.defaultView.getComputedStyle(src)
+    c.setAttribute('style', [...cs].map((k) => `${k}:${cs.getPropertyValue(k)}`).join(';'))
+    c.removeAttribute('id')
+  }
+  src.childNodes.forEach((ch) => c.appendChild(cloneStyled(ch)))
+  return c
+}
+
 // The nurse explaining everything at once: bubbles stack up faster than he can read them, then blur together.
 const TALK = [
   ['n', 'This is her breathing tube.'],
@@ -211,7 +277,7 @@ function Monitor({ children, screen }) {
   )
 }
 
-const FILM_GUESS = 160
+const FILM_GUESS = 205
 const fmt = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`
 
 export function DemoFilm({ active, thumb }) {
@@ -219,7 +285,7 @@ export function DemoFilm({ active, thumb }) {
   const screen = useRef(null)
   const [ready, setReady] = useState(false)
   const [run, setRun] = useState(0)
-  const blank = { open: 0, foot: null, say: null, talk: false, wipe: 0, hl: null, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false }
+  const blank = { open: 0, foot: null, say: null, talk: false, wipe: 0, hl: null, big: null, lift: null, lit: null, fin: 0, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false }
   const [v, setV] = useState({ ...blank, t: 0 })
   const set = (patch) => setV((x) => ({ ...x, ...patch }))
   const [playing, setPlaying] = useState(true)
@@ -316,89 +382,115 @@ export function DemoFilm({ active, thumb }) {
     const sky = (d) => [...d.querySelectorAll('.nav-btn, button')].find((b) => /Mila.s stars/.test(b.textContent)) ?? d.querySelector('.cv-skyt')
 
     const say = (t, side, k) => set({ say: t ? { t, side, k } : null })
-    const cap = (c) => set({ cap: c })
+    const cap = (c, k = null) => set({ cap: c, capk: k })
     const day = (n) => post({ type: 'mila:day', day: n })
     // a quiet place-and-time label, top left
     const tag = (t) => set({ say: t ? { t, side: 'tag' } : null })
-    const hl = (sel) => set({ hl: sel ? at(sel, 0.006) : null })
-    let wipes = 0
-    const wipe = async (mid) => { set({ wipe: ++wipes }); await wait(0.7); mid?.(); await wait(0.9); set({ wipe: 0 }) }
+    // the spotlight, with a gentle push toward it
+    const lit = (sel, z = 1.22) => {
+      if (!sel) return set({ lit: null, cam: { fx: 0.5, fy: 0.5, s: 1 } })
+      const r = at(sel, 0); if (!r) return
+      set({ lit: { cx: r.x + r.w / 2, cy: r.y + r.h / 2, rx: Math.max(r.w * 0.85, 0.14), ry: Math.max(r.h * 1.1, 0.12) }, cam: { fx: 0.5 + (r.x + r.w / 2 - 0.5) * 0.6, fy: 0.5 + (r.y + r.h / 2 - 0.5) * 0.6, s: z } })
+    }
+    // lift a piece of the screen out of it, toward us
+    const lift = (sel, dy = -30) => {
+      if (!sel) return set({ lift: null })
+      const el = find(sel), f = frame.current, h = host.current
+      if (!el || !f || !h) return
+      const fr = f.getBoundingClientRect(), hr = h.getBoundingClientRect(), k = fr.width / f.clientWidth
+      const r = el.getBoundingClientRect()
+      const c = cloneStyled(el)
+      Object.assign(c.style, { position: 'relative', left: '0', top: '0', right: 'auto', bottom: 'auto', margin: '0', transform: 'none', width: `${r.width}px`, height: `${r.height}px`, opacity: '1', animation: 'none' })
+      set({ lift: { html: c.outerHTML, x: fr.left - hr.left + r.left * k, y: fr.top - hr.top + r.top * k, w: r.width, h: r.height, k, dy } })
+    }
+    const big = (b) => set({ big: b })
+    const dayCard = async (n, k) => { set({ pad: false, cap: null, say: null }); big({ day: true, k, t: `Day ${n}` }); await wait(2.6); big(null); await wait(0.4) }
+    const P = { connection: 'var(--connection)', comprehension: 'var(--comprehension)', awareness: 'var(--awareness)' }
     const script = async () => {
       set({ ...blank }); day(null)
       await chapter('born', 0.3)
 
-      // 1 · who she is
+      // ── who she is
       mark('Mila'); R.openAt = R.clock; set({ open: 1 }); await wait(OPEN_LEN - 0.4)
+      set({ open: 0 })
 
-      // 2 · who he is
-      mark('Her dad'); look('center', 'connection'); set({ open: 0, foot: { id: 'dad', at: R.clock } }); tag('Day 1 · 4:20 a.m.')
+      // ── Day 1 · Connection
+      mark('Day 1'); await dayCard(1, '4:20 a.m.')
+      look('center', 'connection'); set({ foot: { id: 'dad', at: R.clock } })
       cap('This is her dad.'); await wait(3)
-      cap('He hasn’t been able to hold her yet.'); await wait(3.4)
-      cap(null)
-      await wipe(() => set({ foot: null, pad: true }))
-      cap('But beside her, her first star is waiting for him.'); await wait(1.4)
-      hl('.fd-name'); await wait(2.6)
-      hl('.fd-size span'); cap('Her name, and how small she is, in words he can picture.'); await wait(4.4)
-      hl(null); cap(null)
+      cap('He hasn’t been able to hold her yet.'); await wait(3.6)
+      // a long, soft dissolve from his shot into her screen
+      cap(null); set({ pad: true }); await wait(2)
+      set({ foot: null }); lit('.fd-star', 1.18); await wait(1.4)
+      cap('So the first thing on her screen isn’t a number. It’s her.'); await wait(3.4)
+      lift('.fd-size'); cap('How small she is, in something he can picture.'); await wait(3.6)
+      lift(null); cap('When you can’t hold your baby yet, it’s easy to feel far away. This keeps him close to her story from the very first day.', 'connection'); await wait(5.6)
+      lit(null); cap(null); set({ pad: false }); await wait(1.2)
 
-      // 3 · the nurse explains: everything at once
+      // ── Day 1 · Comprehension
       mark('Her nurse')
-      await wipe(() => set({ pad: false, talk: true })); await chapter('story', 0.1); tag('Day 1 · 5:10 a.m.')
+      await chapter('story', 0.1); set({ talk: true })
       cap('A few hours later, his nurse walks him through what’s on her.'); await wait(4)
-      cap('It’s a lot to take in at five in the morning.'); await wait(3.6)
-      cap(null)
-      await wipe(() => set({ talk: false, pad: true }))
-      cap('So the screen shows him one thing at a time.'); await wait(1)
-      await tap('.fd-next'); await wait(1); hl('.fd-words'); await wait(1.6)
-      hl(null); await tap('.fd-next'); await wait(0.8); hl('.fd-words'); cap('In plain words he can hold on to.'); await wait(2)
-      hl(null); await tap('.fd-next'); await wait(2.2)
-      cap(null)
+      cap('She tells him everything. At five in the morning, most of it doesn’t stick.', 'comprehension'); await wait(4.4)
+      cap(null); set({ talk: false, pad: true }); await wait(1.6)
+      cap('So her screen takes it one thing at a time.'); await tap('.fd-next'); await wait(0.8)
+      lit('.fd-words', 1.15); await wait(2)
+      await tap('.fd-next'); await wait(0.6); lit('.fd-words', 1.15); cap('In plain words he can hold on to.'); await wait(2.4)
+      await tap('.fd-next'); await wait(1.8)
+      lit(null); cap(null); await wait(0.6)
 
-      // 4 · Day 3. Mom comes in; she looks at her day
-      mark('Day 3'); await show('today', 0.1); day(3)
-      await wipe(() => set({ pad: false, foot: { id: 'mom', at: R.clock } })); tag('Day 3')
-      cap('Three days later, Mom is finally well enough to see her.'); await wait(4.6)
-      set({ foot: { id: 'daily', at: R.clock } }); cap('Everything she missed is right there.'); await wait(4)
-      cap(null)
-      await wipe(() => set({ foot: null, pad: true }))
-      hl('.cv-one'); cap('Her day, in plain words.'); await wait(3)
-      hl('.cv-term-btn'); await wait(1)
-      hl(null); await tap('.cv-term-btn'); await wait(0.6)
-      hl('.cv-pop-means'); cap('When a word doesn’t make sense, one tap explains it.'); await wait(4.4)
-      hl(null); await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))); cap(null); await wait(0.8)
-      await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.4)
-      hl('.cv-one'); cap('Even the moment she walked in is kept, from notes her nurses already write.'); await wait(4.6)
-      hl(null); cap(null); await wait(0.4)
-      await tap('.cv-ahead-btn'); await wait(0.8)
-      hl((d) => d.querySelector('.ah-panel') ?? d.querySelector('.ah')); cap('And she can see what’s coming tomorrow.'); await wait(4)
-      hl(null); cap(null)
+      // ── Day 3 · Comprehension, then Awareness
+      mark('Day 3'); await show('today', 0.1); day(3); await dayCard(3)
+      look('center', 'comprehension'); set({ foot: { id: 'mom', at: R.clock } })
+      cap('Mom has been recovering two floors up. Three days of missing everything.'); await wait(6.8)
+      set({ foot: { id: 'daily', at: R.clock } }); cap('Now it’s all right there.'); await wait(4.4)
+      cap(null); set({ pad: true }); await wait(1.6)
+      set({ foot: null }); lit('.cv-cap', 1.2); cap('Her day, start to finish, in plain words.'); await wait(3.4)
+      await tap('.cv-term-btn'); await wait(0.5)
+      lit('.cv-pop', 1.1); await wait(0.6); lift('.cv-pop', -40); cap('And when a word doesn’t make sense, one tap explains it.'); await wait(4.4)
+      lift(null); lit(null); await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))); cap(null); await wait(0.8)
+      await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.6)
+      lit('.cv-cap', 1.2); await wait(0.4); lift('.cv-one'); cap('Even the moment she walked in is kept, from notes her nurses already write. Nothing extra for them.'); await wait(4.8)
+      lift(null); lit(null); cap(null); await wait(0.6)
+      cap('In here, the hours run together, and the next thing always comes as a surprise.', 'awareness'); await wait(4.4)
+      await tap('.cv-ahead-btn'); await wait(1)
+      lit((d) => d.querySelector('.ah-panel') ?? d.querySelector('.ah'), 1.08); cap('So she can always see what’s coming next.', 'awareness'); await wait(4.2)
+      lit(null); cap(null); await wait(0.4)
 
-      // 5 · Day 23
-      mark('Day 23'); await wipe(async () => { post({ type: 'mila:show', what: 'today' }); day(23) }); tag('Day 23')
-      cap('Weeks go by, and the days start to blur together.'); await wait(3.8)
-      await tap(sky); cap(null); await wait(0.6)
-      cap('So every day becomes a star.'); await wait(4.8)
-      cap('And her sky keeps growing.'); await wait(4)
-      cap(null)
-
-      // 6 · going home: her sky on the screen, then the real mobile above her crib
-      mark('Going home'); await wipe(() => { post({ type: 'mila:show', what: 'home' }); set({ tint: 'dawn' }) }); tag('Day 98')
-      cap('On day 98, Mila goes home.'); await wait(4)
-      set({ foot: { id: 'mobile', at: R.clock } }); cap('And her sky goes with her.'); await wait(5)
-      cap(null); tag(null)
-
-      // 7 · and if she doesn't: quiet, unlabeled
-      mark('Whatever happens'); set({ foot: null, pad: false, tint: null }); await wait(1.8)
-      cap('Not every story ends at home.'); await wait(3.6)
-      await show('not', 0.1); set({ pad: true }); await wait(1.6)
-      cap('But every day was hers to keep.'); await wait(4.8)
+      // ── Day 23 · into her stars, a week, a day
+      mark('Day 23'); await show('today', 0.2); day(23); await dayCard(23)
+      set({ pad: true }); look('center', 'connection')
+      cap('Three weeks in, the days start to blur together.'); await wait(3.6)
+      await tap(sky); cap(null); await wait(0.8)
+      cap('So every day becomes a star.'); await wait(5.4)
+      await tap('.cv-gweek'); cap('Mom can open the week she was recovering,'); await wait(4)
+      await tap((d) => d.querySelector('.cv-ghit[aria-label="Week 1, day 2"]') ?? d.querySelector('.cv-ghit')); cap('and see each day she missed, moment by moment.'); await wait(4.6)
+      cap('Her weeks become constellations. Her sky only grows.'); await wait(4)
       cap(null)
 
-      // closing
+      // ── Day 98 · going home: into her sky on the screen, out into the real mobile
+      mark('Going home'); await show('home', 0.1); await dayCard(98)
+      set({ pad: true, tint: 'dawn' }); look('center')
+      cap('On day 98, Mila goes home.'); await wait(5)
+      set({ cam: { fx: 0.5, fy: 0.5, s: 2.2 } }); cap(null); await wait(1)
+      set({ foot: { id: 'mobile', at: R.clock } }); await wait(1.2)
+      set({ pad: false }); cap('And her sky goes with her.'); await wait(5.6)
+      cap(null); set({ cam: { fx: 0.5, fy: 0.5, s: 1 }, tint: null })
+
+      // ── and if she doesn't: slow, centered, gentle
+      mark('Whatever happens'); set({ foot: null, pad: false }); await wait(2)
+      big({ t: 'Not every story ends at home.', art: 'keep' }); await wait(4.6)
+      big({ t: 'But every day she lived is still part of her story.', art: 'keep' }); await wait(5)
+      big(null); await show('not', 0.1); set({ pad: true }); await wait(1.6)
+      cap('So her sky stays, too. A place to remember her, at the family’s own pace.'); await wait(5.6)
+      cap(null); set({ pad: false }); await wait(1.4)
+
+      // ── closing: back to where we started
       mark('Closing')
-      set({ pad: false, cap: null, tint: null }); await wait(1.4)
-      set({ close: 1 }); await wait(3.6)
-      set({ close: 3 }); await wait(5.4)
+      set({ fin: 1 }); await wait(5.2)
+      set({ fin: 2 }); await wait(5.4)
+      set({ fin: 3 }); await wait(5.6)
+      set({ fin: 4 }); await wait(6.4)
       setLen(R.clock); set({ done: true })
     }
     script().catch(() => {})
@@ -416,13 +508,14 @@ export function DemoFilm({ active, thumb }) {
   const P = v.call && PILLAR[v.call.p]
   const side = v.call && !v.call.wide && !v.call.over ? (L.ox > 0 ? 'side-l' : 'side-r') : ''
   return (
-    <div ref={host} className={`dfilm ${v.seeking ? 'is-seeking' : ''} ${playing ? '' : 'is-paused'} look-${v.look} ${v.tint ? `tint-${v.tint}` : ''} ${v.pad ? 'is-pad' : ''} ${side ? `has-call ${side}` : ''} ${v.call?.over ? 'has-over' : ''} ${v.close ? `is-close is-c${v.close}` : ''}`}>
+    <div ref={host} className={`dfilm ${v.lift ? 'has-lift' : ''} ${v.seeking ? 'is-seeking' : ''} ${playing ? '' : 'is-paused'} look-${v.look} ${v.tint ? `tint-${v.tint}` : ''} ${v.pad ? 'is-pad' : ''} ${side ? `has-call ${side}` : ''} ${v.call?.over ? 'has-over' : ''} ${v.close ? `is-close is-c${v.close}` : ''}`}>
       <div className="dfilm-bg" aria-hidden="true"><i className="w-connection" /><i className="w-comprehension" /><i className="w-awareness" /><i className="w-night" /><i className="w-dawn" /></div>
       <div className="dfilm-cam" style={{ transform: cam, '--s': scale }}>
         <Monitor screen={screen}>
           {!thumb && <iframe ref={frame} title="Mila's Sky bedside display, in the demo" src="./prototype/index.html?embed=1&chapter=born" onLoad={() => setTimeout(() => setReady(true), 400)} />}
           {thumb && <div className="ipad-thumb"><StarGlyph size={44} color="#F3E3B5" /><span>Demo</span></div>}
-          {v.hl && <span key={`${v.hl.x}-${v.hl.y}`} className="dfilm-hl" style={{ left: `${v.hl.x * 100}%`, top: `${v.hl.y * 100}%`, width: `${v.hl.w * 100}%`, height: `${v.hl.h * 100}%` }} />}
+          {/* the spotlight: the screen falls a little darker around what we're looking at */}
+          <div className={`dfilm-lit ${v.lit ? 'is-on' : ''}`} style={v.lit ? { '--cx': `${v.lit.cx * 100}%`, '--cy': `${v.lit.cy * 100}%`, '--rx': `${v.lit.rx * 100}%`, '--ry': `${v.lit.ry * 100}%` } : undefined} />
           <div className={`dfilm-spot ${v.spot ? 'is-on' : ''}`} style={v.spot ? { left: `${v.spot.x * 100}%`, top: `${v.spot.y * 100}%`, width: `${v.spot.w * 100}%`, height: `${v.spot.h * 100}%` } : undefined} />
           {v.touch && <span className={`dfilm-touch is-${v.touch.s}`} style={{ left: `${v.touch.x * 100}%`, top: `${v.touch.y * 100}%` }} />}
         </Monitor>
@@ -444,6 +537,13 @@ export function DemoFilm({ active, thumb }) {
         </Footage>
       )}
       {v.talk && <Talk />}
+      {v.fin > 0 && <Finale stage={v.fin} />}
+      {v.big && <Big key={String(v.big.t)} b={v.big} />}
+      {v.lift && (
+        <div className="dfilm-lift" style={{ left: v.lift.x, top: v.lift.y, width: v.lift.w, height: v.lift.h, '--k': v.lift.k, '--dy': `${v.lift.dy}px` }}>
+          <div className="dfilm-lift-in" dangerouslySetInnerHTML={{ __html: v.lift.html }} />
+        </div>
+      )}
       {v.wipe > 0 && <Wipe key={v.wipe} />}
       {v.say && <div key={v.say.t} className={`dfilm-say is-${v.say.side ?? 'r'}`}>{v.say.k && <span>{v.say.k}</span>}<b>{v.say.t}</b></div>}
       {v.card && (
@@ -454,12 +554,12 @@ export function DemoFilm({ active, thumb }) {
         </div>
       )}
       {v.scene && <div key={v.scene} className="dfilm-scene"><Scene kind={v.scene} /></div>}
-      {v.cap && <p key={String(v.cap)} className="dfilm-cap">{v.cap}</p>}
+      {v.cap && <p key={String(v.cap)} className="dfilm-cap">{v.capk && <span className={`dfilm-capk is-${v.capk}`}><Icon name={v.capk} size={14} color={PILLAR[v.capk].color} />{PILLAR[v.capk].name}</span>}{v.cap}</p>}
 
       <div className="dfilm-close" aria-hidden={!v.close}>
         {/* her days, as a sky: one small star each, scattered, lighting one after another */}
         <div className="dfilm-field">{FIELD.map((f, k) => <i key={k} style={{ '--k': k, left: `${f[0]}%`, top: `${f[1]}%`, '--z': f[2], '--tw': `${f[3]}s` }} />)}</div>
-        <p className="dfilm-c1">Every day becomes a star.</p>
+        <p className="dfilm-c1">Her story, one day at a time.</p>
         <p className="dfilm-c2">Every star is <mark className="is-cream">hers to keep</mark>.</p>
         <div className="dfilm-c3"><StarGlyph size={46} color="#FFF8E6" /><span>Mila&apos;s Sky</span></div>
       </div>

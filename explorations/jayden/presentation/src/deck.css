@@ -1305,3 +1305,86 @@ body:has(.panel) { overflow: auto; }
 .foot-dad .foot-box, .foot-mom .foot-box, .foot-daily .foot-box, .foot-mobile .foot-box { animation: none; width: max(100%, calc(100vh * 16 / 9)); left: 50%; border-radius: 0; box-shadow: none; }
 .foot-dad, .foot-mom, .foot-daily, .foot-mobile { animation: foot-blur-in .9s 0s ease both; }
 .foot-mobile { z-index: 9; }
+
+/* ===== Ad pass: big statements, day titles, spotlight, lifted UI, long dissolves ===== */
+.big { position: absolute; inset: 0; z-index: 11; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; padding: 0 12%;
+  background: radial-gradient(ellipse at 50% 50%, #0a0b10, #000 72%); animation: big-in 1.1s ease both; }
+@keyframes big-in { from { opacity: 0; } }
+.big-k { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--cream); opacity: 0; animation: rise .9s .3s var(--ease) forwards; }
+.big-t { margin: 0; max-width: 22ch; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(40px, 4.6vw, 72px); line-height: 1.12; letter-spacing: -.02em; color: var(--text);
+  opacity: 0; animation: big-word 1.4s .45s cubic-bezier(.2, .7, .2, 1) forwards; }
+@keyframes big-word { from { opacity: 0; transform: scale(1.04); filter: blur(10px); } to { opacity: 1; transform: none; filter: none; } }
+.big-t mark { background-size: 0% 82%; transition: none; animation: mark-in 1.2s 1.6s var(--ease) forwards; }
+.big-t mark.is-connection { color: #FFEFC4; } .big-t mark.is-comprehension { color: #DDEEFF; } .big-t mark.is-awareness { color: #EDE4FF; } .big-t mark.is-cream { color: #FFF6DC; }
+@keyframes mark-in { to { background-size: 100% 82%; } }
+.big-sub { max-width: 46ch; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.5; color: var(--text-2); opacity: 0; animation: rise 1s 2.2s var(--ease) forwards; }
+.big.is-day .big-t { font-weight: 400; font-size: clamp(80px, 11vw, 170px); letter-spacing: -.03em; color: var(--cream); text-shadow: 0 0 80px rgba(243, 227, 181, .25); }
+.big.is-day { animation: big-in .8s ease both, open-out .6s 2.1s ease both; }
+/* care team to parents: a message that wobbles on the way */
+.big-phone { position: relative; width: min(620px, 70vw); margin-top: 18px; opacity: 0; animation: fade .6s 1.2s ease forwards; }
+.big-phone svg { width: 100%; height: 60px; overflow: visible; display: block; }
+.big-phone-line { fill: none; stroke: var(--cream); stroke-width: 1.4; stroke-opacity: .6; stroke-dasharray: 800; stroke-dashoffset: 800; animation: draw 2.8s 1.4s ease-in-out forwards; }
+.big-phone-dot { fill: #000; stroke: var(--cream); stroke-width: 1.4; opacity: 0; animation: fade .3s calc(1.4s + var(--k) * .6s) ease forwards; }
+.big-phone-dot.is-from { fill: var(--comprehension); stroke: none; } .big-phone-dot.is-to { fill: var(--cream); stroke: none; }
+.big-phone > span { position: absolute; top: 64px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: var(--muted); }
+.big-phone > .is-from { left: 0; } .big-phone > .is-to { right: 0; }
+/* the spotlight on the screen */
+.dfilm-lit { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1s ease;
+  background: radial-gradient(ellipse var(--rx) var(--ry) at var(--cx) var(--cy), transparent 0%, transparent 55%, rgba(0, 0, 0, .66) 100%); }
+.dfilm-lit.is-on { opacity: 1; }
+/* a piece of the screen, lifted out toward us */
+.dfilm-lift { position: absolute; z-index: 12; pointer-events: none; transform-origin: 0 0; transform: scale(var(--k)); animation: lift-out 1.1s cubic-bezier(.2, .8, .2, 1) forwards; }
+@keyframes lift-out { to { transform: translateY(var(--dy)) scale(calc(var(--k) * 1.28)); } }
+.dfilm-lift-in { border-radius: 14px; background: #0c0c11; box-shadow: 0 30px 80px rgba(0, 0, 0, .85), 0 0 0 1px rgba(243, 227, 181, .22), 0 0 40px rgba(243, 227, 181, .14); padding: 6px; transform-origin: 0 0; }
+.dfilm.has-lift .dfilm-cam { filter: brightness(.55); transition: transform 2.4s cubic-bezier(.45, 0, .25, 1), opacity 1.4s ease, filter .8s ease; }
+/* long, soft dissolves out of each clip */
+.foot-dad { animation: foot-blur-in .9s 0s ease both, open-out 1.8s 6.8s ease both; }
+.foot-mom { animation: foot-blur-in .9s 0s ease both; }
+.foot-daily { animation: fade .6s 0s ease both, open-out 1.6s 4.4s ease both; }
+.foot-mobile { animation: foot-blur-in 1.4s 0s ease both, open-out 1.2s 7.4s ease both; }
+.dfilm-cam { transition: transform 2.4s cubic-bezier(.45, 0, .25, 1), opacity 1.8s ease; }
+/* a pain point, named quietly above its caption */
+.dfilm-capk { display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 8px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; }
+.dfilm-capk.is-connection { color: var(--connection); } .dfilm-capk.is-comprehension { color: var(--comprehension); } .dfilm-capk.is-awareness { color: var(--awareness); }
+.dfilm-cap { max-width: 70vw; line-height: 1.35; }
+
+/* ===== The illustrated closing ===== */
+.fin { position: absolute; inset: 0; z-index: 11; background: radial-gradient(ellipse at 50% 55%, #0b0c14, #000 72%); display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fade 1.2s ease both; }
+.fin-words { position: absolute; top: 14%; left: 50%; transform: translateX(-50%); width: max-content; max-width: 80vw; margin: 0; text-align: center;
+  font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 96; font-weight: 300; font-size: clamp(30px, 3.2vw, 50px); color: var(--text); animation: big-word 1.3s .2s cubic-bezier(.2, .7, .2, 1) both; }
+.fin-art { width: min(1100px, 86vw); margin-top: 6vh; overflow: visible; }
+.fin-path { fill: none; stroke: var(--cream); stroke-width: 1.4; stroke-opacity: .5; stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: draw 4s .6s ease forwards; }
+.fin-star { fill: #F3E3B5; opacity: 0; transform-box: fill-box; transform-origin: center; animation: day-in .7s calc(.6s + var(--k) * .33s) var(--ease) forwards; }
+.fin-planet { opacity: 0; animation: fade .7s calc(.6s + var(--k) * .33s) ease forwards; }
+.fin-planet ellipse { fill: none; stroke: var(--warm); stroke-width: 1.4; } .fin-planet circle { fill: #EFDCAA; }
+/* the clinical noise: hidden at first, crowding in on stage 2, clearing on 3 */
+.fin-noise { opacity: 0; transition: opacity 1.2s ease, filter 1.2s ease; }
+.fin-ecg { fill: none; stroke: #6fd6a4; stroke-width: 1.6; stroke-opacity: .55; stroke-dasharray: 1400; stroke-dashoffset: 1400; }
+.fin-ecg.is-2 { stroke: #8FC8FF; }
+.fin-noise text { font-family: var(--mono); font-size: 18px; fill: #9fb3bd; opacity: 0; }
+.fin-alarm circle { fill: rgba(255, 120, 100, .14); stroke: #ff8a75; stroke-width: 1.2; } .fin-alarm path { fill: none; stroke: #ff8a75; stroke-width: 1.4; }
+.fin-alarm-ring { fill: none !important; animation: alarm-ring 1.2s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes alarm-ring { from { transform: scale(1); opacity: .8; } to { transform: scale(2.2); opacity: 0; } }
+.fin-alarm { opacity: 0; }
+.fin.is-s2 .fin-noise { opacity: 1; }
+.fin.is-s2 .fin-ecg { animation: draw 2.4s linear forwards; }
+.fin.is-s2 .fin-noise text { animation: fade .4s calc(.3s + var(--k) * .35s) ease forwards, flicker 1.6s calc(.3s + var(--k) * .35s) steps(2) infinite; }
+@keyframes flicker { 50% { opacity: .55; } }
+.fin.is-s2 .fin-alarm { animation: fade .4s calc(1s + var(--k) * .6s) ease forwards; }
+.fin.is-s2 .fin-path, .fin.is-s2 .fin-star, .fin.is-s2 .fin-planet { filter: blur(1.5px) brightness(.45); transition: filter 1s ease; }
+.fin.is-s3 .fin-noise { opacity: 0; filter: blur(8px); }
+.fin.is-s3 .fin-path { stroke-opacity: .85; filter: drop-shadow(0 0 6px rgba(243, 227, 181, .6)); }
+.fin.is-s3 .fin-star { filter: drop-shadow(0 0 10px rgba(255, 248, 230, .95)); fill: #FFF8E6; }
+.fin.is-s3 .fin-planet { filter: drop-shadow(0 0 10px rgba(255, 179, 138, .7)); }
+.fin.is-s3 .fin-path, .fin.is-s3 .fin-star, .fin.is-s3 .fin-planet, .fin.is-s4 .fin-path, .fin.is-s4 .fin-star, .fin.is-s4 .fin-planet { stroke-dashoffset: 0; opacity: 1; animation: none; }
+.fin-brand { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 14px; opacity: 0; transition: opacity 1.4s .6s ease; }
+.fin-brand .glyph { filter: drop-shadow(0 0 30px rgba(255, 248, 230, .95)); }
+.fin-brand b { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(56px, 6.4vw, 100px); line-height: 1; color: var(--cream); }
+.fin-brand span { font-size: clamp(16px, 1.4vw, 20px); color: var(--text-2); }
+.fin.is-s4 .fin-brand { opacity: 1; }
+.fin.is-s4 .fin-art { opacity: .28; filter: blur(1px); transition: opacity 1.4s ease, filter 1.4s ease; }
+.fin.is-s4 .fin-words { display: none; }
+/* the sketch above the words in the quiet moment */
+.big-art { width: min(420px, 40vw); margin-bottom: 8px; }
+.big-art .scene { width: 100%; height: auto; }
+.fin-words { left: 0; right: 0; width: auto; max-width: none; padding: 0 8%; transform: none; }
