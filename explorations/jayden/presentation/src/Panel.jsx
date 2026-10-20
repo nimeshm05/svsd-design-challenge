@@ -9,13 +9,13 @@ import { StarGlyph } from './glyphs.jsx'
 const LABELS = {
   title: 'Title', hook: 'Hook: a parent’s quote', both: 'The tension: both things at once',
   nicu: 'What the NICU is', environment: 'Inside the NICU, in four senses', wall: 'Secondary research: our wall and finding',
-  gap: 'The gap: how parents make sense of it', asked: 'So we asked them: 4 interviews',
-  heard: 'What’s said isn’t what’s heard', telephone: 'Both sides of the conversation',
-  'p-open': 'It came down to three things', pillars: 'The three pillars (builds)', problem: 'Problem statement', compete: 'Competitive analysis', hmw: 'Opportunity: how might we (builds)',
+  gap: 'The gap: how parents make sense of it', asked: 'So we listened: 4 interviews',
+  heard: 'Parents get the pieces, left to put them together', telephone: 'Both sides of the conversation',
+  'p-open': 'Our research pointed to three needs', pillars: 'The three pillars (builds)', problem: 'Problem statement', compete: 'Competitive analysis', hmw: 'Opportunity: how might we (builds)',
   principles: 'Each pain point became a principle', brainstorm: 'Brainstorm: ideas over our affinity map', sort: 'Ideas float to their principles', thread: 'What the ideas had in common',
   film: 'Concept film: day → star → sky → planets → her name', 's-open': 'Stars never disappear', system: 'The story layer: design system',
-  'k-open': 'Three people to protect', constraints: 'Constraints table', mom: 'A tired mom in a hospital bed', modality: 'Touch, remote or gesture',
-  board: 'Storyboard: her stay, six moments',  'both-close': 'Mila’s Sky holds both (builds)', close: 'Every star is hers to keep',
+  'k-open': 'Three people at every bedside', constraints: 'Constraints table', mom: 'A tired mom in a hospital bed', modality: 'Touch, remote or gesture', iterations: 'Previous iterations: where it started',
+  board: 'Storyboard: her stay, six moments',  'both-close': 'Every day counts (builds)', close: 'Every star is hers to keep',
 }
 const FEAT_NAMES = { first: 'Her first star', walk: 'What’s on her', today: 'Her day, as an arc', term: 'Medical words in a tap', family: 'Moments you were there for', ahead: 'What’s ahead', night: 'Night view', sky: 'Every day becomes a star', home: 'Going home', not: 'If she doesn’t go home' }
 FEATURES.forEach((f) => { LABELS[f.id] = `${f.k}: ${FEAT_NAMES[f.show]}` })

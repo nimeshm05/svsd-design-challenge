@@ -1,6 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Icon, StarGlyph } from './glyphs.jsx'
+import { Puzzle } from './puzzle.jsx'
 import { FEATURES, Feature, Storyboard } from './demo.jsx'
+
+export const ITER_MODE = 'focus' // 'focus' = one at a time, then into the row · 'row' = current staggered fade-in
 
 // The case study as one story. Its spine: NICU parents live two things at once (the fight and the
 // celebration), and Mila's Sky is a place that holds both. Each chapter opens on a realization, said
@@ -48,13 +51,27 @@ function Statement({ k, children, sub, big = false }) {
 }
 const statement = (props) => function StatementView() { return <Statement {...props} /> }
 
+// A term, set like a dictionary entry: headword, how it's said, what it means.
+function Define({ k, word, short, say, children }) {
+  return (
+    <div className="center define">
+      {k && <R d={0} className="k">{k}</R>}
+      <R d={1} as="h2" className="define-word">{word}</R>
+      <R d={2} as="p" className="define-meta">{short && <span>{short}</span>}<span>{say}</span><span>noun</span></R>
+      <R d={3} className="define-rule" />
+      <R d={4} as="p" className="define-p">{children}</R>
+    </div>
+  )
+}
+const define = (props) => function DefineView() { return <Define {...props} /> }
+
 /* ---------- Opening ---------- */
 function Title() {
   return (
     <div className="center title">
       <R d={0} className="title-k">A NICU storytelling case study</R>
       <R d={1} as="h1" className="title-h">Mila&apos;s Sky</R>
-      <R d={2} as="p" className="title-sub">Turning a premature baby&apos;s care into a story her parents can follow.</R>
+      <R d={2} as="p" className="title-sub">Transforming NICU care into a story, one star at a time.</R>
       <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
     </div>
   )
@@ -76,16 +93,16 @@ function Hook() {
 /* ---------- The NICU ---------- */
 // what our secondary research said about the room itself (8 papers and standards; see README)
 const SENSES = [
-  { k: 'Sound', t: 'Noise is linked to heart rate changes, apnea, lower oxygen and sleep disturbance. Monitor alarms are often the loudest sound in the room.' },
-  { k: 'Light', t: 'Cycling light between day and night is linked to better weight gain and shorter stays than constant light.' },
-  { k: 'Touch', t: 'Too little touch and voice. Holding, and especially skin-to-skin, are linked to better development.' },
-  { k: 'Space', t: 'The incubator isn’t a protective bubble: the room’s materials and shape change what the baby hears.' },
+  { k: 'Sound', t: 'Noise is linked to changes in heart rate, breathing and sleep. Alarms are often the loudest sound in the room.' },
+  { k: 'Light', t: 'Light that cycles between day and night is linked to better weight gain and shorter stays.' },
+  { k: 'Touch', t: 'The baby is too fragile for an ordinary hold. It needs to be held with special techniques and extra protection.' },
+  { k: 'Space', t: 'The incubator isn’t a protective bubble. The room itself can impact the baby’s health.' },
 ]
 function Environment() {
   return (
     <div className="env">
       <R d={0} className="k">Inside the NICU</R>
-      <R d={1} as="h2" className="h">Loud, bright, and never still, for the smallest people in the hospital.</R>
+      <R d={1} as="h2" className="h">For babies this fragile, the room itself is part of their care.</R>
       <div className="env-grid">
         {SENSES.map((x, k) => (
           <R key={x.k} d={2 + k * 0.6} className="env-card"><span className="env-k">{x.k}</span><p>{x.t}</p></R>
@@ -100,39 +117,101 @@ function Wall() {
   return (
     <div className="wall">
       <R d={0} className="k">Secondary research</R>
-      <R d={1} as="h2" className="h wall-h">The NICU environment <L>shapes how babies develop</L>, how nurses work, and how parents cope.</R>
+      <R d={1} as="h2" className="h wall-h">The research showed how the NICU affects babies’ growth, nurses’ work, and parents’ wellbeing.</R>
       <R d={2}><Shot src="./shots/research-wall.webp" alt="Our secondary research board: eight papers and standards on hospital exposures, noise and light, nurses' alarm challenges, incubator acoustics, sensory stimulation, NICU sound levels, NICU design standards and single-family rooms, each summarized in a table with sticky notes." /></R>
     </div>
   )
 }
 
 /* ---------- 01 · Research ---------- */
-function Asked() {
+// Who we listened to, in three steps: the headline alone; then the count and four icons; then the headline
+// rises to the title and each icon travels from the row into its person's card (the same icon, moved with
+// a transform from where it sat to where its card keeps a place for it).
+const PEOPLE = [
+  { id: 'P1', who: 'parent', role: 'Former SICU/PICU parent', at: 'Seattle Children’s', notes: ['Child spent significant time in the hospital with a congenital heart defect', 'Not NICU, but inpatient care from an extremely early age'] },
+  { id: 'P2', who: 'nurse', role: 'Retired NICU nurse', at: 'Kaiser Permanente (Los Angeles)', notes: ['35 years as a NICU nurse', 'Retired 7 years ago'] },
+  { id: 'P3', who: 'parent', role: 'Current NICU parent', at: 'Seattle Children’s', notes: ['Child has a rare congenital heart disease and esophageal atresia', 'In the NICU for the past 11 months'] },
+  { id: 'P4', who: 'nurse', role: 'Former NICU night-shift nurse', at: 'Seattle Children’s', notes: ['Worked in NICUs in Seattle and Texas', 'Mostly night shifts'] },
+]
+const BY_ID = Object.fromEntries(PEOPLE.map((p) => [p.id, p]))
+const ROW = ['P1', 'P3', 'P2', 'P4'] // parents, then nurses
+const Person = ({ id }) => <Icon name={BY_ID[id].who} size={40} color={BY_ID[id].who === 'nurse' ? 'var(--comprehension)' : undefined} />
+const Slot = ({ id }) => <span className="ivw-slot" data-p={id}><Person id={id} /></span>
+
+function Asked({ step, active, thumb }) {
+  const host = useRef(null)
+  const head = useRef(null)
+  const [pos, setPos] = useState(null)
+  useLayoutEffect(() => {
+    const el = host.current
+    if (!el || thumb) return
+    // layout offsets, not screen rects, so the slide's own entrance transforms don't skew them
+    const at = (n) => { let x = 0, y = 0; while (n && n !== el) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent } return [x, y] }
+    const slots = (sel) => Object.fromEntries([...el.querySelectorAll(sel)].map((n) => [n.dataset.p, at(n)]))
+    const measure = () => {
+      const h = head.current
+      setPos({ drop: el.clientHeight / 2 - (at(h)[1] + h.offsetHeight / 2), row: slots('.ivw-row .ivw-slot'), card: slots('.ivw-card .ivw-slot') })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    document.fonts?.ready.then(measure)
+    return () => ro.disconnect()
+  }, [thumb])
+  // arriving back from the next slide lands on the last step: show it, don't replay the flight
+  const [jump, setJump] = useState(false)
+  const was = useRef(active)
+  useLayoutEffect(() => {
+    if (active && !was.current && step > 0) {
+      setJump(true)
+      requestAnimationFrame(() => requestAnimationFrame(() => setJump(false)))
+    }
+    was.current = active
+  }, [active, step])
   return (
-    <div className="center asked">
-      <R d={0} as="p" className="asked-lead">So we asked them.</R>
-      <R d={1} className="asked-n">4</R>
-      <R d={2} className="asked-nk">interviews</R>
-      <R d={3} className="asked-who">
-        <span><Icon name="parent" size={40} /><Icon name="parent" size={40} />2 parents</span>
-        <span><Icon name="nurse" size={40} color="var(--comprehension)" /><Icon name="nurse" size={40} color="var(--comprehension)" />2 nurses</span>
-      </R>
+    <div ref={host} className={`ivw is-s${step} ${jump ? 'is-jump' : ''}`} style={pos ? { '--drop': `${pos.drop}px` } : undefined}>
+      <span className="k ivw-k">Who we talked to</span>
+      <div ref={head} className="ivw-head"><R d={0} as="p" className="statement-p">So we listened.</R></div>
+      <div className="ivw-row">
+        <span className="ivw-count"><b>4</b>interviews</span>
+        <i className="ivw-rule" />
+        <figure className="ivw-who">
+          <span className="ivw-icons">{ROW.map((id) => <Slot key={id} id={id} />)}</span>
+          <figcaption>2 parents · 2 nurses</figcaption>
+        </figure>
+      </div>
+      <div className="ivw-grid">
+        {PEOPLE.map((p, k) => (
+          <article key={p.id} className={`ivw-card is-${p.who}`} style={{ '--k': k }}>
+            <Slot id={p.id} />
+            <div className="ivw-text">
+              <span className="ivw-id">{p.id} · {p.at}</span>
+              <h3 className="ivw-role">{p.role}</h3>
+              <ul>{p.notes.map((n) => <li key={n}>{n}</li>)}</ul>
+            </div>
+          </article>
+        ))}
+      </div>
+      {pos && (
+        <div className="ivw-fly" aria-hidden="true">
+          {ROW.map((id, k) => {
+            const [x, y] = (step >= 2 ? pos.card : pos.row)[id]
+            return <span key={id} className="ivw-icon" style={{ transform: `translate(${x}px, ${y}px)`, '--k': k }}><Person id={id} /></span>
+          })}
+        </div>
+      )}
     </div>
   )
 }
 
 function Heard() {
   return (
-    <div className="center finding">
-      <R d={0} className="k">What we found</R>
-      <R d={1} as="p" className="statement-p is-big"><L>What&apos;s said</L> isn&apos;t <L>what&apos;s heard</L>.</R>
-      <R d={2} className="phone" aria-hidden="true">
-        <svg viewBox="0 0 600 60" preserveAspectRatio="none">
-          <path className="phone-line" d="M10 30 C 60 30, 90 30, 140 30 S 200 22, 240 32 S 300 18, 340 36 S 400 12, 440 40 S 500 8, 540 44 S 580 14, 590 30" />
-          {[10, 150, 300, 450, 590].map((x, k) => <circle key={x} cx={x} cy={30} r={k === 0 ? 5 : 4} className={`phone-dot ${k === 0 ? 'is-from' : k === 4 ? 'is-to' : ''}`} />)}
-        </svg>
-        <span className="phone-from">Care team</span><span className="phone-to">Parent</span>
-      </R>
+    <div className="finding">
+      <div className="finding-words">
+        <R d={0} className="k">What we found</R>
+        <R d={1} as="p" className="statement-p is-big">Parents get the <L>pieces</L>, and are left to <L>put them together</L>.</R>
+      </div>
+      <R d={2} className="finding-art"><Puzzle /></R>
     </div>
   )
 }
@@ -260,7 +339,7 @@ function HMW({ step }) {
     <div className="center statement hmw">
       <R d={0} className="k">Opportunity</R>
       <R d={1} as="p" className="statement-p">
-        …turn a baby&apos;s care into a story that helps parents{' '}
+        How might we turn a baby&apos;s care into a story that helps parents{' '}
         <span className={`hmw-part ${on(1)}`}><L p="connection">feel connected</L>,</span>{' '}
         <span className={`hmw-part ${on(2)}`}><L p="comprehension">understand what&apos;s happening</L>,</span>{' '}
         <span className={`hmw-part ${on(3)}`}>and <L p="awareness">stay aware of what&apos;s ahead</L>,</span>
@@ -285,9 +364,22 @@ const THEMES = [
 const tilt = (t) => `${(t.length % 5) - 2}deg`
 const ideas = () => [0, 1, 2, 3, 4].flatMap((k) => PS.map((p) => SORTED[p][k]))
 const CHIP_AT = (k) => [3 + (k % 5) * 19.2 + ((k * 7) % 5) - 2, 19 + Math.floor(k / 5) * 27 + ((k * 11) % 7) - 3]
-function Brainstorm() {
+// where each chip was on screen (its center, bob and tilt included) the moment the brainstorm was left.
+// Read in a layout cleanup, which runs before the slide's own classes change: once the slide is past,
+// its stage snaps back to its hidden pose (18px lower) and the bob stops, so reading later is off.
+const CHIP_LEFT = new Map()
+function Brainstorm({ active }) {
+  const host = useRef(null)
+  useLayoutEffect(() => {
+    if (!active) return
+    const el = host.current
+    return () => el?.querySelectorAll('.brain-chip').forEach((c) => {
+      const r = c.getBoundingClientRect()
+      CHIP_LEFT.set(c.dataset.idea, [r.left + r.width / 2, r.top + r.height / 2])
+    })
+  }, [active])
   return (
-    <div className="brain">
+    <div className="brain" ref={host}>
       <R d={0} className="k">Brainstorm</R>
       <R d={1} className="brain-pillars">
         {PS.map((p) => <span key={p} className={`is-${p}`}><Icon name={p} size={26} color={PILLARS[p].color} />{PILLARS[p].name}</span>)}
@@ -499,11 +591,14 @@ function Sort({ active }) {
     if (!active || !host.current) return
     host.current.querySelectorAll('.floater').forEach((el, n) => {
       el.style.animation = 'none'; el.style.transform = 'none'
+      // centers, not corners: a tilted chip's box is wider than the chip, but its center is where the chip is
       const to = el.getBoundingClientRect()
-      const from = document.querySelector(`.slide-brainstorm .brain-chip[data-idea="${el.dataset.idea}"]`)?.getBoundingClientRect()
+      const r = document.querySelector(`.slide-brainstorm .brain-chip[data-idea="${el.dataset.idea}"]`)?.getBoundingClientRect()
+      const from = CHIP_LEFT.get(el.dataset.idea) ?? (r && [r.left + r.width / 2, r.top + r.height / 2])
+      CHIP_LEFT.delete(el.dataset.idea)
       const [sx, sy] = scatter(n + 1)
-      el.style.setProperty('--fx', `${from ? from.left - to.left : sx}px`)
-      el.style.setProperty('--fy', `${from ? from.top - to.top : sy}px`)
+      el.style.setProperty('--fx', `${from ? from[0] - (to.left + to.width / 2) : sx}px`)
+      el.style.setProperty('--fy', `${from ? from[1] - (to.top + to.height / 2) : sy}px`)
       void el.offsetWidth
       el.style.animation = ''; el.style.transform = ''
     })
@@ -572,7 +667,7 @@ const CONSTRAINTS = [
   { who: 'Baby', c: 'Sensitive to light, needs quiet rest', r: 'Dark mode, silent, angled away from the incubator' },
   { who: 'Nurse', c: '“You have to be quick… life or death.”', r: 'Zero new tasks; content comes from charting' },
   { who: 'Family', c: 'Not every baby goes home', r: 'Nothing assumes an outcome; sensitive news only after a clinician talks with the family' },
-  { who: 'Privacy', c: '[to fill in]', r: '[to fill in]', todo: true },
+  { who: 'Privacy', c: 'HIPAA laws', r: 'Resides in the room itself (only authorized personnel); sleep mode shows no important information' },
 ]
 function Constraints() {
   return (
@@ -633,10 +728,119 @@ function KOpen() {
         <span><Icon name="nurse" size={64} color="var(--comprehension)" />Nurse</span>
         <span><Icon name="parent" size={64} />Family</span>
       </R>
-      <R d={2} as="p" className="statement-p">Every bedside has <L>three people to protect</L>: the baby, the nurse, and the family.</R>
+      <R d={2} as="p" className="statement-p">Our design has to work for <L>three people</L> at every bedside: the baby, the nurse, and the family.</R>
     </div>
   )
 }
+
+/* ---------- 07 · Previous iterations: where three features started ---------- */
+const ITERS = [
+  { src: './shots/iter-galaxy.webp', t: 'Exploring the galaxy’s visual direction', c: 'Beautifully crafted, but too layered and complex for a tired parent at the bedside.', alt: 'An early version: her stay drawn as a dense, swirling galaxy.' },
+  { src: './shots/iter-day-report.webp', t: 'Mapping the content and information architecture', c: 'Too much at once. We cut the content and layout down to the essentials.', alt: 'An early version: a full report of her day, section by section.' },
+  { src: './shots/iter-setup-3d.webp', t: '3D models for detailed care visuals', c: 'In the moment, parents needed other information more than a 3D model.', alt: 'An early version: a 3D model of the baby and everything on her.' },
+]
+function IterationsRow() {
+  return (
+    <div className="iters">
+      <R d={0} className="k">07 · Previous iterations</R>
+      <R d={1} as="h2" className="h">Where it started.</R>
+      <div className="iter-row">
+        {ITERS.map((x, k) => (
+          <R key={x.src} d={2 + k * 0.7} as="figure" className="iter">
+            <div className="iter-frame"><img src={x.src} alt={x.alt} /></div>
+            <figcaption><b>{x.t}</b><span>{x.c}</span></figcaption>
+          </R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// focus: each iteration arrives large, then travels (FLIP: translate + scale) into its slot as the next arrives.
+// Every figure always sits in its slot, so the row never reflows; "large" and "waiting" are transforms on top.
+const LIFT = 1.3 // the large caption's scale
+const twice = (f) => requestAnimationFrame(() => requestAnimationFrame(f))
+function IterationsFocus({ step, active, thumb }) {
+  const N = ITERS.length
+  const row = useRef(null)
+  const [g, setG] = useState(null)
+  useLayoutEffect(() => {
+    const el = row.current
+    if (!el || thumb) return
+    const slide = el.closest('.slide')
+    // layout offsets, not screen rects, so the slide's entrance and our own transforms don't skew them
+    const measure = () => {
+      let top = 0
+      for (let n = el; n && n !== slide; n = n.offsetParent) top += n.offsetTop
+      const w = el.clientWidth
+      const gap = 32
+      setG([...el.querySelectorAll('.iter')].map((fig) => {
+        const fr = fig.querySelector('.iter-frame'), cap = fig.querySelector('figcaption')
+        const sw = fr.offsetWidth, r = fr.offsetHeight / sw, cw = cap.offsetWidth * LIFT
+        const fw = Math.min((slide.clientHeight - 96 - top) / r, w * 0.62, w - gap - cw)
+        const fh = fw * r, s = fw / sw, x0 = (w - fw - gap - cw) / 2, sx = fig.offsetLeft
+        const cx = x0 + fw + gap - sx - cap.offsetLeft, cy = (fh - cap.offsetHeight * LIFT) / 2 - cap.offsetTop
+        return {
+          frame: { big: `translate(${x0 - sx}px, 0) scale(${s})`, wait: `translate(${x0 - sx + fw * 0.03}px, ${fh * 0.03}px) scale(${s * 0.94})` },
+          cap: { big: `translate(${cx}px, ${cy}px) scale(${LIFT})`, wait: `translate(${cx}px, ${cy + 10}px) scale(${LIFT})` },
+        }
+      }))
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    document.fonts?.ready.then(measure)
+    return () => ro.disconnect()
+  }, [thumb])
+
+  // which step is on screen; it holds while the slide leaves, and lags a beat for the reduced-motion crossfade
+  const [shown, setShown] = useState(thumb ? N : step)
+  const [jump, setJump] = useState(false)
+  const [fading, setFading] = useState(false)
+  const was = useRef({ active, step })
+  const fwd = useRef(true)
+  useLayoutEffect(() => {
+    if (thumb) return
+    const p = was.current
+    was.current = { active, step }
+    if (!active) return
+    // arriving at the slide (from either side) or skipping steps: show the state, don't replay the flights
+    if (!p.active || Math.abs(step - p.step) > 1) {
+      setShown(step); setFading(false); setJump(true); twice(() => setJump(false))
+      return
+    }
+    if (step === p.step) return
+    fwd.current = step > p.step
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setFading(true)
+      const t = setTimeout(() => { setShown(step); setFading(false) }, 300)
+      return () => clearTimeout(t)
+    }
+    setShown(step)
+  }, [active, step, thumb])
+
+  const at = thumb ? N : shown
+  return (
+    <div className="iters">
+      <R d={0} className="k">07 · Previous iterations</R>
+      <R d={1} as="h2" className="h">Where it started.</R>
+      <div ref={row} className={`iter-row is-focus ${jump || thumb ? 'is-jump' : ''} ${fading ? 'is-fading' : ''}`}>
+        {ITERS.map((x, k) => {
+          const state = k < at ? 'slot' : k === at ? 'big' : 'wait'
+          const t = g?.[k]
+          return (
+            <R key={x.src} d={2} as="figure" className={`iter is-${state} ${state === 'slot' && at < N ? 'is-dim' : ''}`}
+              style={{ '--d': 2, '--wait': state === 'big' && fwd.current ? '150ms' : '0ms' }}>
+              <div className="iter-frame" style={{ transform: state === 'slot' || !t ? 'none' : t.frame[state] }}><img src={x.src} alt={x.alt} /></div>
+              <figcaption style={{ transform: state === 'slot' || !t ? 'none' : t.cap[state] }}><b>{x.t}</b><span>{x.c}</span></figcaption>
+            </R>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+const Iterations = ITER_MODE === 'focus' ? IterationsFocus : IterationsRow
 
 /* ---------- 06 · At her bedside: the product, live ---------- */
 const CHAPTERS = [
@@ -684,8 +888,9 @@ function Product({ thumb }) {
 function Both({ step }) {
   return (
     <div className="center statement both-close">
-      <R d={0} as="p" className="statement-p">NICU parents live both things at once, every day.</R>
-      <p className={`statement-p is-big hmw-part ${step >= 1 ? 'is-in' : ''}`}>Mila&apos;s Sky <L>holds both</L>.</p>
+      <R d={0} as="p" className="statement-p">“There are going to be peaks and valleys… But that doesn’t mean you’re moving backward. You are still moving forward, even if you feel stuck.”</R>
+      <R d={2} className="hook-who">Current NICU parent</R>
+      <p className={`statement-p is-big hmw-part ${step >= 1 ? 'is-in' : ''}`}>Mila&apos;s Sky shows that <L>every day counts</L>.</p>
     </div>
   )
 }
@@ -703,17 +908,17 @@ function Close() {
 export const SLIDES = [
   { id: 'title', section: 'Mila’s Sky', planet: true, View: Title },
   { id: 'hook', section: 'Hook', View: Hook },
-  { id: 'both', section: 'Hook', View: statement({ k: 'The tension', big: true, children: <>NICU parents live <L>both things at once</L>, every day.</> }) },
-  { id: 'nicu', section: 'The NICU', planet: true, View: statement({ k: 'The NICU', children: <>The neonatal intensive care unit is where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
+  { id: 'both', section: 'Hook', View: statement({ k: 'The tension', big: true, children: <><L>Fear</L> and <L>joy</L>. NICU parents experience both, every day.</> }) },
+  { id: 'nicu', section: 'The NICU', planet: true, View: define({ k: 'The NICU', word: 'Neonatal Intensive Care Unit', say: '“nick-you”', children: <>The hospital unit where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
   { id: 'environment', section: 'The NICU', View: Environment },
   { id: 'wall', section: '01 · Research', planet: true, View: Wall },
 
-  { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn&apos;t tell us <L>how parents make sense of it</L>.</> }) },
-  { id: 'asked', section: '01 · Research', View: Asked },
+  { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn&apos;t tell us <L>how parents make sense of it all</L>.</> }) },
+  { id: 'asked', section: '01 · Research', steps: 3, View: Asked },
   { id: 'heard', section: '01 · Research', View: Heard },
   { id: 'telephone', section: '01 · Research', View: Telephone },
 
-  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Everything we heard came down to <L>three things</L>.</> }) },
+  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Our research pointed to <L>three needs</L>.</> }) },
   { id: 'pillars', section: '02 · The problem', tint: 'all', steps: 3, View: Pillars },
   { id: 'problem', section: '02 · The problem', tint: 'all', View: Problem },
   { id: 'compete', section: '02 · The problem', tint: 'all', View: Compete },
@@ -723,7 +928,7 @@ export const SLIDES = [
 
   { id: 'brainstorm', section: '04 · Ideation', planet: true, View: Brainstorm },
   { id: 'sort', section: '04 · Ideation', tint: 'all', View: Sort },
-  { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>The ideas we kept coming back to all did one thing: <L>turn her care into a story</L>.</> }) },
+  { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>Turn the pieces of a baby’s care into <L>a{' '}story</L>.</> }) },
 
   { id: 'film', section: '05 · The idea and the story layer', planet: true, bare: true, View: Film },
 
@@ -732,8 +937,10 @@ export const SLIDES = [
   { id: 'mom', section: '06 · Constraints', View: Mom },
   { id: 'modality', section: '06 · Constraints', View: Modality },
 
-  { id: 'board', section: '07 · The product', planet: true, View: Storyboard },
-  ...FEATURES.map((f) => ({ id: f.id, section: '07 · The product', feature: f.show, View: Feature(f) })),
+  { id: 'iterations', section: '07 · Previous iterations', planet: true, steps: ITER_MODE === 'focus' ? 4 : 1, View: Iterations },
+
+  { id: 'board', section: '08 · The product', planet: true, View: Storyboard },
+  ...FEATURES.map((f) => ({ id: f.id, section: '08 · The product', feature: f.show, View: Feature(f) })),
   { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
   { id: 'close', section: 'Mila’s Sky', View: Close },
 ]

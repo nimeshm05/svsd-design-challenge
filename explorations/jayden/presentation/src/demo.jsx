@@ -92,7 +92,7 @@ const BOARD = [
 export function Storyboard() {
   return (
     <div className="board">
-      <div className="rv k" style={{ '--d': 0 }}>07 · The product, along her stay</div>
+      <div className="rv k" style={{ '--d': 0 }}>08 · The product, along her stay</div>
       <h2 className="rv h" style={{ '--d': 1 }}>One family, from her first star to the end of her stay.</h2>
       <div className="board-line">
         <svg className="board-thread" viewBox="0 0 1000 20" preserveAspectRatio="none" aria-hidden="true"><path d="M0 10 C160 2 340 18 500 10 S840 2 1000 10" /></svg>
