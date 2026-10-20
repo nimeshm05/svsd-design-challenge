@@ -318,7 +318,7 @@ function Monitor({ children, screen }) {
   )
 }
 
-const FILM_GUESS = 300
+const FILM_GUESS = 240
 const fmt = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`
 
 export function DemoFilm({ active, thumb }) {
