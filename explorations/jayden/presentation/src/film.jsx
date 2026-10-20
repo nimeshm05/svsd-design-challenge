@@ -630,7 +630,7 @@ export function DemoFilm({ active, thumb }) {
         mo?.observe(d.body, { childList: true, subtree: true })
         ;[...(d?.querySelectorAll('.cv-actions .nav-btn') ?? [])].find((b) => b.textContent.trim() === 'Her sky')?.click()
       })
-      await wait(0.6); cap('At the end, it shows who their baby was and every moment they had together.'); await wait(4.2)
+      await wait(0.6); cap('At the end, their baby’s whole sky is there, with every moment and everyone who loved them.'); await wait(4.2)
       cap('It stays with them, for as long as they want it.'); await wait(3.8)
       cap(null); set({ pad: false }); await wait(1.4)
 
