@@ -1,0 +1,2031 @@
+/* Bedside current view. Sara's palette (index.css) plus a warm cream for today's forming star.
+   Minimal: a few large words read from the parent chair, low light, nothing that blinks. */
+.cv-page {
+  min-height: 100%; box-sizing: border-box; padding: 16px 16px 32px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px; background: #07090C;
+  --cream: #F3E3B5;
+}
+
+/* Prototype controls (outside the screen) */
+.cv-proto { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 13px; color: var(--muted); }
+.cv-proto-k { font-size: 12px; }
+.cv-seg { display: inline-flex; border: 1px solid var(--btn-border); border-radius: 8px; overflow: hidden; }
+.cv-seg button { border: 0; background: transparent; padding: 5px 10px; font-size: 13px; }
+.cv-seg button[aria-pressed='true'] { background: var(--text); color: var(--ink); }
+.cv-proto-btn { border: 1px solid var(--btn-border); background: transparent; border-radius: 8px; padding: 5px 10px; font-size: 13px; }
+
+/* The screen */
+.cv-screen {
+  box-sizing: border-box; width: min(1200px, 100%); aspect-ratio: 16 / 10; overflow: hidden;
+  display: flex; flex-direction: column; padding: 3.5% 5%;
+  border: 12px solid #1a1f24; border-radius: 22px;
+  background: radial-gradient(ellipse at 75% 45%, #18212b 0%, #0b0f14 60%);
+  color: #E6ECF0; transition: background .6s;
+}
+.cv-top { display: flex; justify-content: space-between; font-size: clamp(15px, 1.7vw, 21px); color: var(--muted); }
+.cv-clock { font-variant-numeric: tabular-nums; }
+
+.cv-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 4%; }
+.cv-words { display: flex; flex-direction: column; gap: clamp(14px, 2.4vw, 30px); }
+.cv-words p { margin: 0; }
+.cv-status { font-size: clamp(28px, 4.2vw, 54px); line-height: 1.15; font-weight: 500; color: #fff; letter-spacing: -0.01em; }
+.cv-change {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; text-align: left;
+  padding: 10px 16px 10px 14px; border-radius: 14px; border: 1px solid var(--btn-border); background: rgba(26, 33, 39, .7);
+  font-size: clamp(16px, 1.9vw, 24px);
+}
+.cv-change:hover { border-color: var(--text-3); }
+.cv-change-text { display: flex; flex-direction: column; gap: 2px; }
+.cv-change-k { font-size: .62em; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.cv-chev { font-size: 1.3em; line-height: 1; color: var(--muted); }
+.cv-line { font-size: clamp(16px, 1.9vw, 24px); color: var(--text-2); }
+.cv-line b { font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; }
+
+/* Today's forming star */
+.cv-star { width: 100%; max-height: 100%; display: block; }
+.cv-past line { stroke: var(--cream); stroke-opacity: .22; }
+.cv-past circle { fill: var(--cream); opacity: .7; }
+.cv-pending { stroke: var(--cream); stroke-opacity: .28; stroke-dasharray: 3 5; }
+.cv-neb { transform-box: fill-box; transform-origin: center; animation: cv-breathe 6s ease-in-out infinite; }
+@keyframes cv-breathe { 50% { transform: scale(1.08); } }
+.cv-motes circle { fill: var(--cream); opacity: .8; }
+.cv-motes { animation: cv-orbit 60s linear infinite; }
+@keyframes cv-orbit { to { transform: rotate(360deg); } }
+.cv-star.is-dim { opacity: .4; }
+
+/* Two buttons, large enough to tap without looking closely */
+.cv-actions { display: flex; justify-content: flex-end; gap: 12px; }
+.cv-btn {
+  display: inline-flex; align-items: center; gap: 10px; height: clamp(44px, 5vw, 56px); padding: 0 clamp(16px, 2vw, 24px);
+  border-radius: 999px; border: 1px solid var(--btn-border); background: rgba(26, 33, 39, .8); font-size: clamp(14px, 1.5vw, 18px);
+}
+.cv-btn.is-small { height: 38px; font-size: clamp(13px, 1.3vw, 15px); padding: 0 14px; gap: 8px; }
+.cv-btn.is-call { border-color: rgba(127, 178, 255, .55); background: rgba(127, 178, 255, .12); }
+.cv-btn-icon { display: grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; border: 1px solid currentColor; font-size: .85em; }
+
+/* Today so far. Shares only the header and the "Ask for her nurse" corner with home;
+   its own layout: a short list of the day (one line each) and, beside it, the selected item
+   shown visually. Text appears only for what a parent picks. */
+.cv-top-left { display: inline-flex; align-items: center; gap: 12px; }
+.cv-back { height: 34px; padding: 0 14px; border-radius: 17px; border: 1px solid var(--btn-border); background: rgba(26, 33, 39, .8);
+  font-size: clamp(13px, 1.3vw, 16px); color: var(--text); }
+
+.cv-day { min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+.cv-day-k { font-size: clamp(20px, 2.3vw, 30px); font-weight: 600; color: #fff; }
+.cv-list { --rail: 12px; position: relative; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.cv-list::before { content: ''; position: absolute; left: calc(var(--rail) + 4px); top: 18px; bottom: 18px; width: 2px; background: var(--line); }
+.cv-list-item {
+  position: relative; width: 100%; display: grid; grid-template-columns: 26px 7.8em 1fr auto; align-items: center; gap: 8px;
+  padding: 8px 10px 8px 4px; border: 1px solid transparent; border-radius: 12px; background: transparent; text-align: left;
+  font-size: clamp(14px, 1.45vw, 18px); color: var(--text-2);
+}
+.cv-list-item:hover { background: rgba(26, 33, 39, .55); }
+.cv-list-item.is-on { background: rgba(108, 182, 255, .1); border-color: rgba(108, 182, 255, .4); }
+.cv-list-t { font-size: .8em; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cv-list-title { color: #fff; font-weight: 500; }
+.is-later .cv-list-title, .is-waiting .cv-list-title { color: var(--text-2); font-weight: 400; }
+.is-next .cv-list-t { color: var(--blue); font-weight: 600; }
+.cv-list-now { position: relative; display: flex; align-items: center; height: 22px; margin: 2px 0; }
+.cv-list-now::after { content: ''; position: absolute; left: 34px; right: 0; top: 50%; height: 1px; background: rgba(255, 255, 255, .22); }
+.cv-list-now span { position: relative; z-index: 1; padding: 2px 9px; border-radius: 999px; background: #fff; color: #0b0f14; font-size: 11px; font-weight: 700; letter-spacing: .05em; }
+.cv-routine { margin: 4px 0 0; padding-left: 34px; font-size: 13px; color: var(--muted); }
+
+.cv-status-tag { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; border-radius: 5px; padding: 2px 6px; white-space: nowrap; }
+.cv-status-tag.decided { color: var(--blue); border: 1px solid rgba(127, 178, 255, .55); }
+.cv-status-tag.deciding { color: var(--cream); border: 1px dashed rgba(243, 227, 181, .6); }
+.cv-status-tag.is-big { align-self: flex-start; font-size: 12px; padding: 3px 9px; }
+
+/* The selected item, shown big on the right */
+.cv-detail-k { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.is-next .cv-detail-k { color: var(--blue); }
+.cv-list-now button { position: relative; z-index: 1; padding: 2px 9px; border-radius: 999px; border: 1px solid #fff; background: transparent;
+  color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .05em; }
+.cv-list-now button.is-on { background: #fff; color: #0b0f14; }
+
+.cv-screen .cv-term { font-size: .9em; color: #B9D4EA; }
+.cv-screen .cv-term span { color: var(--cream); font-weight: 600; margin-right: 6px; }
+.cv-screen .cv-term span::after { content: ':'; }
+.cv-screen .cv-you { color: var(--cream); }
+
+.cv-caption { height: clamp(110px, 13vw, 150px); overflow: hidden; display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
+.cv-caption .cv-detail-k { display: flex; align-items: center; gap: 8px; }
+.cv-caption-title { margin: 0; font-size: clamp(18px, 2vw, 26px); color: #fff; font-weight: 600; line-height: 1.25; }
+.cv-caption-text { margin: 0; font-size: clamp(13px, 1.35vw, 16px); color: var(--text-2); line-height: 1.4; }
+.cv-caption .cv-term { margin: 0; }
+.cv-day-side { align-self: center; }
+
+
+/* Coming up: shown, not picked */
+.cv-list-item.is-static { cursor: default; }
+.cv-list-item.is-static:hover { background: transparent; }
+.cv-list-sub { display: block; margin-top: 2px; font-size: .82em; font-weight: 400; color: var(--text-2); }
+
+/* Home C: the sky leads. The day's arc across the screen, then a few soft words. */
+.cv-homec { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+.cv-homec .cv-arc { width: 100%; }
+.cv-homec-words { flex: none; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.cv-homec .cv-arc { flex: none; }
+.cv-homec-next.is-hidden { visibility: hidden; }
+.cv-homec .cv-caption { height: clamp(84px, 9vw, 112px); justify-content: flex-start; align-items: center; padding-top: 0; }
+.cv-homec .cv-her-status { font-size: clamp(22px, 2.8vw, 36px); font-weight: 400; }
+.cv-homec .cv-caption-title { font-size: clamp(18px, 2.1vw, 27px); font-weight: 500; }
+.cv-homec .cv-detail-k { color: var(--cream); opacity: .8; letter-spacing: .14em; }
+.cv-homec-next { margin: 0; font-size: clamp(14px, 1.45vw, 18px); color: var(--muted); }
+.cv-homec-next b { color: var(--text-2); font-weight: 500; font-variant-numeric: tabular-nums; }
+.scan.is-bare { background: transparent; }
+.cv-arc { display: block; width: 100%; height: auto; overflow: visible; touch-action: none; cursor: grab; outline: none; }
+.cv-arc:active { cursor: grabbing; }
+.cv-arc:focus-visible { outline: 2px solid var(--cream); outline-offset: 4px; border-radius: 8px; }
+.cv-dust circle { fill: #fff; opacity: .12; animation: cv-twinkle 6s ease-in-out infinite; }
+@keyframes cv-twinkle { 50% { opacity: .35; } }
+.cv-arc-day { fill: none; stroke: var(--cream); stroke-opacity: .16; stroke-width: 1.2; }
+.cv-arc-lit { fill: none; stroke: var(--cream); stroke-opacity: .42; stroke-width: 1.4; }
+.cv-arc-ahead { fill: none; stroke: var(--cream); stroke-opacity: .14; stroke-width: 1.2; stroke-dasharray: 2 7; }
+.cv-arc-hour { fill: var(--muted); font-size: 14px; opacity: .7; }
+.cv-arc.is-line .cv-arc-hour { font-size: 11px; }
+.cv-arc.is-line .cv-arc-mark.change path { transform: scale(.75); transform-box: fill-box; transform-origin: center; }
+.cv-arc-mark { fill: var(--cream); transition: transform .3s; transform-box: fill-box; transform-origin: center; }
+.cv-arc-mark.care { opacity: .85; }
+.cv-arc-mark.change { animation: cv-glint 5s ease-in-out infinite; }
+@keyframes cv-glint { 50% { opacity: .65; } }
+.cv-arc-mark .is-ring { fill: none; stroke: var(--cream); stroke-width: 1.6; opacity: .8; }
+.cv-arc-mark.is-later { opacity: .22; animation: none; }
+.cv-arc-mark.is-on { transform: scale(1.45); }
+.cv-arc-glow { pointer-events: none; }
+.cv-arc-star { fill: #FFF8E6; pointer-events: none; }
+.cv-arc-ahead-label { fill: var(--cream); font-size: 15px; opacity: .75; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .cv-dust circle, .cv-arc-mark { animation: none; } }
+
+/* What's ahead: the same gentle language as the sky. No cards, no tags: paths of stars. */
+.cv-ahead { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.7fr 1fr; gap: 6%; align-items: center; }
+.cv-ahead-main { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+.cv-ahead-title { margin: 0 0 6px; font-size: clamp(22px, 2.6vw, 32px); font-weight: 400; color: #fff; }
+.cv-paths { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: clamp(14px, 2vw, 24px); }
+.cv-path-head { display: flex; align-items: baseline; gap: 12px; }
+.cv-path-head b { font-size: clamp(15px, 1.55vw, 19px); font-weight: 500; color: #fff; }
+.cv-path-status { font-size: 13px; color: var(--muted); }
+.cv-path-status.is-decided { color: var(--cream); }
+.cv-path-status.is-deciding { color: var(--cream); font-style: italic; }
+.cv-path-stars { list-style: none; margin: 6px 0 4px; padding: 0; display: grid; grid-template-columns: repeat(var(--n), 1fr); position: relative; }
+.cv-path-stars::before { content: ''; position: absolute; left: 14px; right: 14px; top: 14px; border-top: 1px dashed rgba(243, 227, 181, .28); }
+.cv-path-stars li { position: relative; display: flex; flex-direction: column; gap: 4px; }
+.cv-path-stars li:last-child { align-items: flex-end; text-align: right; }
+.cv-path-stars li:not(:first-child):not(:last-child) { align-items: center; text-align: center; }
+.cv-path-stars li > span { font-size: clamp(12px, 1.2vw, 14px); color: var(--muted); line-height: 1.3; }
+.cv-path-stars li.is-now > span { color: #fff; }
+.cv-path-stars li.is-done > span { color: var(--text-2); }
+.cv-path-stars em { display: block; font-size: .9em; color: var(--cream); }
+.cv-pstar { position: relative; z-index: 1; width: 28px; height: 28px; overflow: visible; }
+.cv-pstar path { fill: var(--cream); }
+.cv-pstar.is-done path { opacity: .75; }
+.cv-pstar.is-next path { fill: #0b0f14; stroke: rgba(243, 227, 181, .5); stroke-width: 1.2; }
+.cv-pstar.is-now path { fill: #FFF8E6; }
+.cv-pstar-glow { fill: var(--cream); opacity: .18; animation: cv-breathe 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.cv-path-plan { margin: 0; font-size: clamp(13px, 1.3vw, 16px); color: var(--text-2); line-height: 1.4; }
+.cv-path-plan span { color: var(--muted); }
+.cv-ahead-side { display: flex; flex-direction: column; gap: 12px; }
+.cv-coming { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.cv-coming li { position: relative; display: flex; flex-direction: column; gap: 1px; padding-left: 18px; font-size: clamp(13px, 1.3vw, 16px); }
+.cv-coming li::before { content: ''; position: absolute; left: 0; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--cream); }
+.cv-coming li.is-waiting::before { background: transparent; border: 1px dashed rgba(243, 227, 181, .6); box-sizing: border-box; }
+.cv-coming span { font-size: .8em; color: var(--muted); }
+.cv-coming b { color: #fff; font-weight: 500; }
+.cv-coming em { font-style: normal; font-size: .85em; color: var(--text-2); }
+.cv-ahead-note { margin: 4px 0 0; font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+/* The day view (Home B, and Home A's Today so far): a line of stars and a fixed caption on the
+   left, the day's list on the right. Same marks and warmth as the sky. */
+.cv-dayview { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.3fr 1fr; gap: 6%; align-items: center; }
+.cv-dayview-main { display: flex; flex-direction: column; gap: 6px; }
+.cv-dayview-caption { margin-top: 8px; height: clamp(120px, 13vw, 160px); overflow: hidden; display: flex; flex-direction: column; gap: 6px; justify-content: flex-start; }
+.cv-dayview .cv-detail-k { color: var(--cream); opacity: .8; letter-spacing: .14em; }
+.cv-dayview .cv-her-status { margin: 0; font-size: clamp(24px, 3vw, 38px); font-weight: 400; color: #fff; line-height: 1.2; }
+.cv-caption-title { margin: 0; font-size: clamp(19px, 2.2vw, 28px); color: #fff; font-weight: 500; line-height: 1.25; }
+.cv-caption-text { margin: 0; font-size: clamp(13px, 1.35vw, 16px); color: var(--text-2); line-height: 1.45; }
+.cv-day-side { align-self: center; }
+.cv-day-side .cv-day-k { font-weight: 400; }
+
+/* List marks: the same shapes as the star timeline */
+.cv-list::before { border-left: 1px dashed rgba(243, 227, 181, .25); background: none !important; width: 0 !important; }
+.cv-starmark { justify-self: center; width: 22px; height: 22px; overflow: visible; position: relative; z-index: 1; }
+.cv-starmark path { fill: var(--cream); }
+.cv-starmark .is-outline { fill: #0b0f14; stroke: rgba(243, 227, 181, .55); stroke-width: 1.2; }
+.cv-starmark circle { fill: #0b0f14; stroke: var(--cream); stroke-width: 1.6; }
+.cv-starmark .is-dashed { stroke: rgba(243, 227, 181, .55); stroke-dasharray: 2 2.5; stroke-width: 1.2; }
+.cv-starmark .cv-starmark-glow { fill: var(--cream); stroke: none; opacity: .2; }
+.cv-soft-status { font-size: .8em; color: var(--cream); opacity: .85; white-space: nowrap; }
+.cv-soft-status.is-deciding { font-style: italic; }
+.cv-list-item { font-size: clamp(13px, 1.35vw, 17px); }
+.cv-list-item.is-on { background: rgba(243, 227, 181, .08); border-color: rgba(243, 227, 181, .35); }
+.is-next .cv-list-t { color: var(--cream) !important; }
+.cv-list-now span, .cv-list-now button.is-on { background: var(--cream) !important; color: #0b0f14 !important; border-color: var(--cream) !important; }
+.cv-list-now button { border-color: rgba(243, 227, 181, .7) !important; color: var(--cream) !important; }
+.cv-list-now::after { background: rgba(243, 227, 181, .2) !important; }
+.cv-routine { color: var(--muted); }
+
+/* Warm accents everywhere: the nurse button and home links */
+.cv-btn.is-call { border-color: rgba(243, 227, 181, .5); background: rgba(243, 227, 181, .07); color: #F6EEDB; }
+.cv-change { border-color: rgba(243, 227, 181, .35); background: rgba(243, 227, 181, .05); }
+.cv-change-k { color: var(--cream); opacity: .8; }
+.cv-line b { color: #F6EEDB; }
+
+/* Home C's quiet ways out: her progress (the baby view) and her galaxy */
+.cv-actions { align-items: center; }
+.cv-actions-left { margin-right: auto; display: flex; gap: 10px; }
+.cv-btn.is-quiet { border-color: rgba(243, 227, 181, .22); background: transparent; color: var(--text-2); }
+.cv-btn.is-quiet:hover { border-color: rgba(243, 227, 181, .5); color: #F6EEDB; }
+.cv-btn-icon.is-svg { border: 0; border-radius: 0; fill: none; stroke: currentColor; stroke-width: 1.4; }
+
+/* Zooming out: today's arc shrinks into its star (sitting at "now", up and right of center),
+   then her galaxy opens around it. Zooming back in reverses it. */
+.cv-homec.is-zoom-out { animation: cv-zoom-out .75s cubic-bezier(.55, 0, .75, .3) forwards; transform-origin: 59% 24%; }
+.cv-homec.is-zoom-in { animation: cv-zoom-in .75s cubic-bezier(.22, 1, .36, 1) both; transform-origin: 59% 24%; }
+@keyframes cv-zoom-out { to { transform: scale(.06); opacity: 0; filter: blur(2px); } }
+@keyframes cv-zoom-in { from { transform: scale(.06); opacity: 0; filter: blur(2px); } }
+
+/* Her galaxy (Nimesh's prototype) fills the screen; the nurse button stays where it always is */
+.cv-screen { position: relative; }
+.cv-screen.is-galaxy .cv-top { visibility: hidden; }
+.cv-top, .cv-actions { position: relative; z-index: 1; }
+.cv-galaxy { position: absolute; inset: 0; z-index: 0; border-radius: 10px; overflow: hidden; background: #000; animation: cv-galaxy-in .9s ease-out both; }
+@keyframes cv-galaxy-in { from { opacity: 0; transform: scale(1.06); } }
+.cv-galaxy-back { position: absolute; z-index: 2; left: 18px; top: 16px; height: 38px; padding: 0 16px; border-radius: 19px;
+  border: 1px solid rgba(243, 227, 181, .4); background: rgba(11, 15, 20, .7); color: #F6EEDB; font-size: 15px; backdrop-filter: blur(6px); }
+@media (prefers-reduced-motion: reduce) { .cv-homec.is-zoom-out, .cv-homec.is-zoom-in, .cv-galaxy { animation-duration: .01s; } }
+
+/* Night: very dim, the same layout with less */
+.cv-screen.is-night { background: #030405; border-color: #0e1013; color: #6c7378; }
+.is-night .cv-top, .is-night .cv-line { color: #4d5459; }
+.is-night .cv-status { color: #8a9095; font-weight: 400; }
+.is-night .cv-line b { color: #8a9095; }
+.is-night .cv-btn { background: transparent; border-color: #23282d; color: #6c7378; }
+
+/* Sheets (opened by a tap) */
+.cv-scrim { position: fixed; inset: 0; background: rgba(5, 8, 11, .72); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.cv-sheet {
+  box-sizing: border-box; width: min(640px, 100%); max-height: calc(100vh - 32px); overflow: auto;
+  display: flex; flex-direction: column; gap: 12px; padding: 22px 24px; border-radius: 18px;
+  border: 1px solid var(--line); background: var(--sheet); font-size: 16px; line-height: 1.45; color: var(--text-2);
+}
+.cv-sheet p { margin: 0; }
+.cv-sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.cv-sheet-head h3 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.cv-close { height: 32px; padding: 0 14px; border-radius: 16px; border: 1px solid var(--btn-border); background: transparent; font-size: 13px; }
+.cv-sheet-lead { font-size: 22px; font-weight: 600; color: #fff; line-height: 1.3; }
+.cv-sheet-sec { border-top: 1px solid var(--line-soft); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.cv-k { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.cv-term { color: #B9D4EA; }
+.cv-term span { color: var(--blue); font-weight: 600; margin-right: 6px; }
+.cv-term span::after { content: ':'; }
+.cv-muted { font-size: 13px; color: var(--muted); }
+.cv-you { color: var(--cream); }
+.cv-open { align-self: flex-start; font-size: 14px; border: 1px dashed var(--dashed); border-radius: 6px; padding: 3px 8px; color: var(--text-3); }
+.cv-pill { align-self: flex-start; height: 38px; padding: 0 16px; border-radius: 19px; border: 1px solid var(--btn-border); background: var(--card); font-size: 14px; white-space: nowrap; }
+.cv-pill:hover { border-color: var(--text-3); }
+.cv-scan-info p { margin-top: 4px; font-size: 14px; }
+.cv-help { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+.cv-help b { color: #fff; font-weight: 600; }
+.cv-team { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.cv-team li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line-soft); }
+.cv-team li.is-primary { border-color: rgba(127, 178, 255, .5); }
+.cv-avatar { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--card-2); font-size: 13px; font-weight: 600; color: var(--text); }
+.cv-who { flex: 1; display: flex; flex-direction: column; font-size: 13px; color: var(--muted); }
+.cv-who b { font-size: 16px; color: #fff; font-weight: 600; }
+.cv-asked { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: 12px; background: rgba(127, 178, 255, .08); }
+.cv-help-btn { height: 52px; border-radius: 26px; border: 1px solid rgba(127, 178, 255, .6); background: rgba(127, 178, 255, .16); font-size: 17px; font-weight: 600; }
+
+/* Contact care team: an optional note, then a confirmation. Each step rises in softly. */
+.cv-compose, .cv-sent { display: flex; flex-direction: column; gap: 12px; animation: cv-step-in .35s ease-out both; }
+@keyframes cv-step-in { from { opacity: 0; transform: translateY(8px); } }
+.cv-compose-to { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(127, 178, 255, .5); }
+.cv-note { box-sizing: border-box; width: 100%; resize: none; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--btn-border);
+  background: var(--card); color: var(--text); font: inherit; line-height: 1.45; }
+.cv-note::placeholder { color: var(--muted); }
+.cv-note:focus { outline: none; border-color: rgba(127, 178, 255, .7); }
+.cv-prompts { display: flex; flex-wrap: wrap; gap: 8px; }
+.cv-prompt { white-space: normal; height: auto; min-height: 38px; padding: 8px 14px; text-align: left; line-height: 1.3;
+  animation: cv-step-in .35s ease-out both; animation-delay: calc(.12s + var(--i) * .07s); }
+.cv-prompt[aria-pressed="true"] { border-color: rgba(127, 178, 255, .7); background: rgba(127, 178, 255, .16); color: #fff; }
+.cv-compose-back { align-self: center; border: 0; background: none; font-size: 14px; color: var(--muted); padding: 4px 8px; }
+.cv-compose-back:hover { color: var(--text); }
+.cv-sent-note { font-style: italic; color: var(--text-3); }
+.cv-urgent { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--warm) 45%, transparent); background: color-mix(in srgb, var(--warm) 8%, transparent); color: var(--text); }
+.cv-urgent-icon { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  background: color-mix(in srgb, var(--warm) 25%, transparent); color: var(--warm); font-size: 13px; font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .cv-compose, .cv-sent, .cv-prompt { animation: none; } }
+
+/* "← Today" on top of Sara's sky */
+.cv-back-today { position: fixed; left: 16px; bottom: 16px; z-index: 20; height: 34px; padding: 0 14px; border-radius: 17px;
+  border: 1px solid var(--btn-border); background: var(--sheet); font-size: 13px; }
+
+/* Narrow windows: drop the fixed screen shape and stack */
+@media (max-width: 760px) {
+  .cv-screen { aspect-ratio: auto; padding: 20px; border-width: 6px; gap: 20px; }
+  .cv-body { grid-template-columns: 1fr; gap: 12px; }
+  .cv-star { max-height: 200px; }
+  .cv-actions { justify-content: stretch; }
+  .cv-btn { flex: 1; justify-content: center; }
+  .cv-dayview, .cv-ahead { grid-template-columns: 1fr; gap: 20px; }
+  .cv-ahead-side { padding-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cv-neb, .cv-motes { animation: none; }
+}
+
+/* ================= Two styles from the design board =================
+   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Fraunces (soft, upright) + Geist.
+   Confetti Constellations: playful. Sunshine stars, thick light-blue lines, confetti, Young Serif + Figtree.
+   Both on a black sky. Each style only sets tokens; the components read them. */
+.cv-page.theme-nursery {
+  --cream: #F3E3B5; --warm: #FFB38A; --line-sky: #F3E3B5; --glow: rgba(243, 227, 181, .35);
+  --font-display: "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
+}
+.cv-page.theme-confetti {
+  --cream: #FFD23F; --warm: #FF8FC8; --line-sky: #7CC0FF; --glow: rgba(255, 210, 63, .35);
+  --font-display: "Young Serif", Georgia, serif; --font-ui: "Figtree", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
+}
+.cv-page { background: #050506; }
+.cv-page .cv-screen { font-family: var(--font-ui); background: #000; }
+.theme-nursery .cv-screen {
+  background: radial-gradient(ellipse at 68% 28%, rgba(107, 91, 214, .16), transparent 55%),
+              radial-gradient(ellipse at 40% 62%, rgba(255, 179, 138, .06), transparent 50%), #000;
+}
+.theme-confetti .cv-screen { background: radial-gradient(ellipse at 60% 30%, rgba(58, 42, 143, .22), transparent 60%), #000; }
+.cv-page .cv-top-left, .cv-page .cv-day-k, .cv-page .cv-ahead-title, .cv-page .cv-path-head b {
+  font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; letter-spacing: 0;
+}
+.cv-page .cv-top-left { font-size: clamp(18px, 2vw, 26px); color: var(--cream); }
+.cv-page .cv-her-status { font-family: var(--font-ui); }
+.theme-confetti .cv-her-status, .theme-confetti .cv-caption-title { font-weight: 600; }
+.cv-page .cv-btn.is-call { border-color: color-mix(in srgb, var(--cream) 55%, transparent); background: transparent; color: #F6EEDB; }
+.theme-confetti .cv-btn.is-call { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; }
+.theme-confetti .cv-btn.is-call .cv-btn-icon { border-color: #0a0a0a; }
+.cv-page .cv-list::before { border-left-color: color-mix(in srgb, var(--line-sky) 35%, transparent); }
+.theme-confetti .cv-list::before { border-left: 3px solid color-mix(in srgb, var(--line-sky) 70%, transparent) !important; }
+.theme-confetti .cv-path-stars::before { border-top: 3px solid color-mix(in srgb, var(--line-sky) 70%, transparent); top: 13px; }
+.cv-page .cv-term span { color: var(--cream); }
+.cv-page .cv-galaxy-back { font-family: var(--font-ui); border-color: color-mix(in srgb, var(--cream) 45%, transparent); }
+
+/* Her whole stay (the galaxy), drawn in the chosen style */
+.cv-galaxy-art, .cv-galaxy-art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cv-galaxy-title { position: absolute; z-index: 2; left: 22px; top: 70px; display: flex; flex-direction: column; gap: 2px; pointer-events: none; }
+.cv-galaxy-title b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 32px); color: var(--cream); }
+.cv-galaxy-title span { font-size: 13px; color: var(--muted); }
+.cv-galaxy-head { display: flex; align-items: center; gap: 2px; }
+/* her stars and weeks, told softly: the numbers in starlight, the words quiet */
+.cv-galaxy-title .cv-gsum { margin: 0; font-size: 14px; line-height: 1.3; color: var(--text-2); }
+.cv-galaxy-title .cv-gsum b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(19px, 2vw, 24px);
+  color: var(--cream); text-shadow: 0 0 14px var(--glow); }
+/* ⓘ: a small mark, a full-size tap target */
+.cv-ginfo-btn { pointer-events: auto; display: grid; place-items: center; width: 44px; height: 44px; margin: -6px 0 -6px -4px; padding: 0;
+  border: 0; border-radius: 50%; background: none; color: var(--muted); font-size: 15px; font-family: var(--font-ui); cursor: pointer; transition: color .2s; }
+.cv-ginfo-btn .cv-btn-icon { font-style: normal; font-weight: 600; }
+.cv-ginfo-btn:hover, .cv-ginfo-btn[aria-expanded="true"] { color: var(--cream); }
+.cv-ginfo-btn:focus-visible { outline: 2px solid var(--cream); outline-offset: -4px; }
+.cv-galaxy:is(.is-panned, .is-leaving) .cv-ginfo-btn { pointer-events: none; }
+/* the tip, in the sheets' own style, under the title; a tap anywhere else closes it */
+.cv-ginfo-scrim { position: absolute; inset: 0; z-index: 3; }
+.cv-sheet.cv-ginfo { position: absolute; z-index: 4; left: 18px; top: 104px; width: min(360px, calc(100% - 36px)); padding: 16px 18px; gap: 10px;
+  font-size: 15px; animation: cv-step-in .25s ease-out both; }
+.cv-ginfo:focus { outline: none; }
+.cv-ginfo .cv-help { padding-left: 18px; }
+@media (prefers-reduced-motion: reduce) { .cv-sheet.cv-ginfo { animation: none; } }
+/* narrow windows stack the screen to its content, and her sky has none of its own: give it room */
+@media (max-width: 760px) { .cv-screen.is-galaxy { min-height: min(760px, 82vh); } }
+.cv-glabels.is-compact .cv-gweek span { display: none; }
+.cv-twinkle { animation: cv-twinkle 6s ease-in-out infinite; }
+.cv-breathe { transform-box: fill-box; transform-origin: center; animation: cv-breathe 5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .cv-twinkle, .cv-breathe { animation: none; } }
+
+/* The galaxy page has no body, so keep the nurse button at the bottom like every other page */
+.cv-screen.is-galaxy .cv-actions { margin-top: auto; }
+/* Confetti's soft paper grain, over the whole screen */
+.theme-confetti .cv-screen::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 3; border-radius: 10px; opacity: .14; mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .9 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Confetti: the day's path is a thick light-blue paper line */
+.cv-arc.is-confetti .cv-arc-day { stroke: var(--line-sky); stroke-opacity: .55; stroke-width: 4; stroke-linecap: round; }
+.cv-arc.is-confetti .cv-arc-lit { stroke: var(--line-sky); stroke-opacity: .95; stroke-width: 5; stroke-linecap: round; }
+.cv-arc.is-confetti .cv-arc-ahead { stroke: var(--line-sky); stroke-opacity: .35; stroke-width: 3; stroke-dasharray: 2 10; stroke-linecap: round; }
+.cv-arc.is-confetti.is-line .cv-arc-day { stroke-width: 3; }
+.cv-arc.is-confetti.is-line .cv-arc-lit { stroke-width: 3.5; }
+.cv-arc.is-confetti .cv-arc-mark.change { animation: none; }
+.cv-arc.is-confetti .cv-arc-hour { fill: #9AA3C7; }
+
+/* ================= Her sky, zoomable (after Nimesh): galaxy → week → day → moment ================= */
+.cv-galaxy-art { transition: opacity .5s ease; }
+.cv-galaxy-art.is-faded { opacity: 0; }
+.cv-galaxy-nav { position: absolute; z-index: 2; left: 18px; top: 16px; display: flex; gap: 10px; align-items: center; }
+.cv-galaxy-nav .cv-galaxy-back { position: static; }
+.cv-galaxy-step { display: inline-flex; gap: 6px; }
+.cv-galaxy-step button { width: 38px; height: 38px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--cream) 35%, transparent);
+  background: rgba(11, 15, 20, .7); color: #F6EEDB; font-size: 18px; line-height: 1; }
+.cv-galaxy-step button:disabled { opacity: .3; }
+
+/* Labels and hit targets, placed over the art after the camera lands */
+.cv-glabels { position: absolute; inset: 0; z-index: 1; animation: cv-fade-in .4s ease-out both; }
+@keyframes cv-fade-in { from { opacity: 0; } }
+.cv-ghit { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 0; background: transparent; cursor: pointer; }
+.cv-ghit:focus-visible, .cv-gday:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.cv-gleader { position: absolute; transform: translate(14px, -50%); border: 0; background: none; padding: 2px 0 2px 30px;
+  font-family: var(--font-ui); font-size: 13px; color: color-mix(in srgb, var(--cream) 80%, #fff); letter-spacing: .04em; cursor: pointer; white-space: nowrap; }
+.cv-gleader::before { content: ""; position: absolute; left: 0; top: 50%; width: 24px; border-top: 1px solid color-mix(in srgb, var(--cream) 45%, transparent); }
+.cv-gleader.is-left { transform: translate(calc(-100% - 14px), -50%); padding: 2px 30px 2px 0; }
+.cv-gleader.is-left::before { left: auto; right: 0; }
+.cv-gleader.is-warm { color: var(--warm); }
+.cv-gleader.is-warm::before { border-color: color-mix(in srgb, var(--warm) 60%, transparent); }
+.cv-gleader:hover { color: #fff; }
+.theme-nursery .cv-gleader { font-family: "Geist Mono", ui-monospace, monospace; font-size: 12px; text-transform: uppercase; }
+.theme-confetti .cv-gleader { font-weight: 600; font-size: 14px; }
+.theme-confetti .cv-gleader::before { border-top-width: 2px; }
+
+.cv-gday { position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 0; background: transparent; cursor: pointer; }
+.cv-gday-label { position: absolute; display: flex; flex-direction: column; align-items: center;
+  font-size: 12px; color: var(--muted); white-space: nowrap; pointer-events: none; }
+.cv-gday-label em { font-family: var(--font-display); font-style: var(--display-style); font-size: 15px; color: var(--cream); }
+.cv-gday.is-today .cv-gday-label span { color: var(--warm); }
+.cv-gday:hover .cv-gday-label span { color: #fff; }
+
+/* Panels on the right: the week's story, then the day's */
+.cv-gpanel { position: absolute; z-index: 2; right: 22px; top: 70px; bottom: 96px; width: min(360px, 38%); box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 12px; overflow: auto; padding: 4px 4px 4px 0; animation: cv-panel-in .45s ease-out both; }
+@keyframes cv-panel-in { from { opacity: 0; transform: translateX(12px); } }
+.cv-gpanel-k { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.theme-nursery .cv-gpanel-k { font-family: "Geist Mono", ui-monospace, monospace; letter-spacing: .08em; }
+.cv-gpanel-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
+.cv-gpanel-text { margin: 0; font-size: 15px; line-height: 1.5; color: var(--text-2); }
+.cv-gpanel ul, .cv-gpanel ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.cv-gpanel-firsts button, .cv-gpanel-moments button { width: 100%; text-align: left; display: flex; gap: 10px; align-items: baseline; padding: 7px 0;
+  border: 0; border-bottom: 1px solid rgba(255, 255, 255, .07); background: none; color: var(--text); font-size: 14px; cursor: pointer; }
+.cv-gpanel-firsts button:hover, .cv-gpanel-moments button:hover { color: var(--cream); }
+.cv-gpanel-firsts em { margin-left: auto; font-style: normal; font-size: 12px; color: var(--muted); }
+.cv-gplanet { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--cream); box-shadow: 0 0 0 2px #000, 0 0 0 3px var(--warm); align-self: center; }
+.theme-confetti .cv-gplanet { background: #3ECF7A; box-shadow: 0 0 0 2px #000, 0 0 0 3.5px #FFD23F; }
+.cv-gpanel-moments button span { flex: none; width: 70px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cv-gpanel-care { padding-top: 6px; font-size: 13px; color: var(--muted); }
+.cv-gpanel-hard { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 12px; background: rgba(200, 194, 255, .07); border: 1px solid rgba(200, 194, 255, .16); }
+.theme-confetti .cv-gpanel-hard { background: rgba(185, 214, 255, .08); border-color: rgba(124, 192, 255, .3); }
+.cv-gpanel-hard p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-2); }
+.cv-gpanel-days { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.cv-gpanel-days button { height: 30px; padding: 0 11px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, .14); background: none; color: var(--text-2); font-size: 12px; cursor: pointer; }
+.cv-gpanel-days button:hover { border-color: var(--cream); color: var(--cream); }
+.cv-gpanel-days button.is-today { border-color: color-mix(in srgb, var(--warm) 60%, transparent); color: var(--warm); }
+.cv-gpanel-facts { margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cv-gpanel-facts div { display: flex; flex-direction: column; gap: 2px; }
+.cv-gpanel-facts dt { font-size: 11px; color: var(--muted); }
+.cv-gpanel-facts dd { margin: 0; font-size: 14px; color: var(--text); }
+.cv-gmoment { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--cream) 30%, transparent);
+  background: rgba(255, 255, 255, .03); animation: cv-fade-in .3s ease-out both; }
+.cv-gmoment b { font-size: 17px; font-weight: 600; color: #fff; }
+.cv-gmoment p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-2); }
+.cv-gmoment-by { font-size: 12px; color: var(--muted); }
+.cv-gmoment-close { align-self: flex-start; margin-top: 4px; height: 30px; padding: 0 12px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, .16); background: none; color: var(--text-2); font-size: 12px; }
+
+/* The day's few things to know, numbered as on the day page */
+.cv-gthings { display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 14px; background: rgba(255, 255, 255, .04); }
+.cv-gpanel .cv-gthings ol { gap: 14px; }
+.cv-gthings li { display: flex; gap: 12px; align-items: flex-start; }
+.cv-gthings-num { flex: none; width: 26px; height: 26px; border-radius: 13px; background: var(--cream); color: #000; font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; }
+.cv-gthings-text { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.cv-gthings-text b { font-size: 15px; font-weight: 600; line-height: 1.3; color: var(--text); }
+.cv-gthings-text > span { font-size: 14px; line-height: 1.45; color: var(--text-2); }
+.cv-gthings-at { padding: 2px 0; border: 0; background: none; color: var(--warm); font-size: 13px; font-variant-numeric: tabular-nums; cursor: pointer;
+  text-decoration: underline dotted; text-underline-offset: 3px; transition: color .2s; }
+.cv-gthings-at:hover, .cv-gthings-at:focus-visible, .cv-gthings-at[aria-expanded="true"] { color: var(--cream); text-decoration-style: solid; }
+.cv-gthings-detail { align-self: stretch; margin-top: 6px; }
+.cv-gthings-img { margin: 4px 0 0; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; background: rgba(255, 255, 255, .05);
+  border: 1px dashed rgba(255, 255, 255, .14); display: flex; align-items: center; justify-content: center; }
+.cv-gthings-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cv-gthings-img figcaption { padding: 14px; font-size: 12px; line-height: 1.45; color: var(--muted); text-align: center; }
+.cv-gmoment-close { cursor: pointer; }
+.cv-gmoment-close:hover { border-color: var(--cream); color: var(--cream); }
+@media (prefers-reduced-motion: reduce) { .cv-gthings-detail { animation: none; } }
+
+/* The day: her star in a 24-hour ring */
+.cv-gday-scene { position: absolute; inset: 0; z-index: 1; opacity: 0; transform: scale(.92); transition: opacity .5s ease, transform .6s cubic-bezier(.22, 1, .36, 1); }
+.cv-gday-scene.is-in { opacity: 1; transform: none; }
+.cv-day-scene { width: 100%; height: 100%; display: block; }
+.cv-ring-hour { fill: var(--muted); font-size: 13px; font-family: var(--font-ui); }
+.theme-nursery .cv-ring-hour { font-family: "Geist Mono", ui-monospace, monospace; font-size: 11px; }
+.cv-ring-now-label { font-size: 13px; font-family: var(--font-ui); font-weight: 600; }
+.cv-moment { cursor: pointer; transition: transform .25s; transform-box: fill-box; transform-origin: center; }
+.cv-moment:hover, .cv-moment.is-on { transform: scale(1.15); }
+.cv-moment:focus-visible { outline: none; }
+.cv-moment:focus-visible circle:first-child { stroke: var(--cream); stroke-width: 1.5; }
+@media (prefers-reduced-motion: reduce) { .cv-gday-scene, .cv-glabels, .cv-gpanel { transition: none; animation: none; } }
+/* the panel's side of the sky darkens softly, so the panel reads without a box */
+.cv-galaxy.is-week::before, .cv-galaxy.is-day::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, transparent 32%, rgba(0, 0, 0, .55) 47%, rgba(0, 0, 0, .9) 60%, #000 72%); animation: cv-fade-in .6s ease-out both; }
+
+/* Her sky in depth: far dust drifts slowly, near motes are soft and out of focus */
+.cv-galaxy { touch-action: none; cursor: grab; user-select: none; }
+.cv-galaxy.is-dragging { cursor: grabbing; }
+.cv-galaxy.is-day { cursor: default; }
+.cv-glayer, .cv-glayer svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.cv-glayer { transition: opacity .5s ease; }
+.cv-glayer.is-faded { opacity: 0; }
+.cv-glayer.is-far { animation: cv-drift 60s ease-in-out infinite alternate; }
+.cv-glayer.is-near { filter: blur(2.5px); }
+@keyframes cv-drift { to { transform: translate(-14px, 8px); } }
+.cv-galaxy.is-dragging .cv-glabels { animation: none; }
+
+/* Week names: plain, readable labels, no leader lines */
+.cv-gweek { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: 6px 14px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, .14); background: rgba(8, 8, 16, .62);
+  backdrop-filter: blur(6px); color: #F6EEDB; cursor: pointer; white-space: nowrap; font-family: var(--font-ui); transition: border-color .2s, background .2s; }
+.cv-gweek b { font-size: 14px; font-weight: 600; color: var(--cream); }
+/* each week's caption: the screens' small body text (as in .cv-muted and the sky's summary), a step under its name */
+.cv-gweek span { margin-top: 2px; font-family: var(--font-ui); font-size: 13px; line-height: 1.3; color: var(--text-2); }
+.cv-gweek:hover { border-color: color-mix(in srgb, var(--cream) 60%, transparent); background: rgba(16, 14, 28, .8); }
+.cv-gweek.is-today { padding: 4px 12px; border-color: color-mix(in srgb, var(--warm) 55%, transparent); }
+.cv-gweek.is-today b { color: var(--warm); font-size: 13px; }
+.theme-nursery .cv-gweek b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 17px; }
+.theme-nursery .cv-gweek.is-today b { font-family: var(--font-ui); font-style: normal; font-weight: 600; font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { .cv-glayer.is-far { animation: none; } }
+.cv-galaxy-title { transition: opacity .3s; }
+.cv-galaxy.is-panned .cv-galaxy-title { opacity: 0; }
+.cv-galaxy-center { height: 38px; padding: 0 14px; border-radius: 19px; border: 1px solid color-mix(in srgb, var(--cream) 35%, transparent);
+  background: rgba(11, 15, 20, .7); color: #F6EEDB; font-size: 14px; font-family: var(--font-ui); animation: cv-fade-in .3s ease-out both; }
+
+/* Eyebrows: sentence case in both styles, never all caps */
+.cv-page .cv-gpanel-k, .cv-page .cv-detail-k, .cv-page .cv-k, .cv-page .cv-change-k, .cv-page .cv-sheet-head h3, .cv-page .cv-status-tag {
+  text-transform: none; letter-spacing: .01em; font-family: var(--font-ui); }
+.cv-page .cv-gpanel-k, .cv-page .cv-detail-k { font-size: 13px; font-weight: 500; }
+
+/* Planet names in her sky, and each star's gentle float */
+.cv-gfirst { position: absolute; transform: translate(-50%, -50%); border: 0; background: none; padding: 2px 6px; white-space: nowrap; cursor: pointer;
+  font-family: var(--font-display); font-style: var(--display-style); font-size: 14px; color: var(--cream); text-shadow: 0 0 8px #000, 0 0 3px #000; }
+.theme-confetti .cv-gfirst { font-size: 13px; color: #9EF0C0; }
+.cv-gfirst:hover { color: #fff; }
+.cv-float { animation: cv-float 7s ease-in-out infinite; }
+@keyframes cv-float { 50% { transform: translate(var(--fx, 0), var(--fy, -2.5px)); } }
+@media (prefers-reduced-motion: reduce) { .cv-float { animation: none; } }
+
+.cv-homec { position: relative; }
+.cv-galaxy { animation: cv-fade-in .4s ease-out both; }
+
+/* The galaxy's opening story, then a nudge to zoom out once more */
+.cv-gstory { position: absolute; z-index: 3; left: 0; right: 0; bottom: 110px; margin: 0; text-align: center; pointer-events: none;
+  font-size: clamp(15px, 1.7vw, 19px); color: var(--text-2); animation: cv-becoming 3.4s ease-out both; }
+.cv-gstory b { display: block; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.8vw, 32px); color: var(--cream); }
+.cv-ghint { position: absolute; z-index: 3; left: 22px; bottom: 26px; height: 38px; padding: 0 16px; border-radius: 19px;
+  border: 1px solid color-mix(in srgb, var(--cream) 45%, transparent); background: rgba(11, 15, 20, .75); color: var(--cream);
+  font-family: var(--font-ui); font-size: 14px; animation: cv-fade-in .5s ease-out both, cv-nudge 2.4s ease-in-out 1s 3; }
+@keyframes cv-nudge { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--cream) 12%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .cv-arc.is-gather-out .cv-arc-mark, .cv-arc.is-gather-in .cv-arc-mark, .cv-gstory, .cv-becoming { animation-duration: .01s; } }
+/* the footer sits over the galaxy: only its nurse button takes taps there */
+.cv-screen.is-galaxy .cv-actions { pointer-events: none; }
+.cv-screen.is-galaxy .cv-actions > * { pointer-events: auto; }
+
+/* Background stars drift a little, each layer its own way; now and then a shooting star */
+.cv-glayer.is-mid { animation: cv-drift-mid 45s ease-in-out infinite alternate; }
+@keyframes cv-drift-mid { to { transform: translate(10px, -7px); } }
+.cv-glayer.is-near { animation: cv-drift-near 30s ease-in-out infinite alternate; }
+@keyframes cv-drift-near { to { transform: translate(-18px, -10px); } }
+.cv-shoot { position: absolute; z-index: 1; width: 130px; height: 1.5px; pointer-events: none; border-radius: 2px; transform-origin: 0 50%;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--cream) 70%, #fff)); opacity: 0;
+  animation: cv-shoot 1.3s ease-out forwards; }
+@keyframes cv-shoot {
+  0% { opacity: 0; transform: rotate(var(--a)) translateX(0) scaleX(.3); }
+  15% { opacity: .75; }
+  100% { opacity: 0; transform: rotate(var(--a)) translateX(240px) scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) { .cv-glayer.is-mid, .cv-glayer.is-near { animation: none; } }
+/* a dimmer screen for a dark room */
+.theme-nursery .cv-screen {
+  background: radial-gradient(ellipse at 68% 28%, rgba(107, 91, 214, .08), transparent 55%),
+              radial-gradient(ellipse at 40% 62%, rgba(255, 179, 138, .03), transparent 50%), #000; }
+.theme-confetti .cv-screen { background: radial-gradient(ellipse at 60% 30%, rgba(58, 42, 143, .12), transparent 60%), #000; }
+.theme-confetti .cv-screen::after { opacity: .08; }
+
+/* Fraunces at its softest, so headings feel rounded and warm rather than bookish */
+.theme-nursery { font-variation-settings: "SOFT" 100, "opsz" 36; }
+.theme-nursery :is(.cv-top-left, .cv-galaxy-title b, .cv-gpanel-title, .cv-gweek b, .cv-gfirst, .cv-gstory b, .cv-becoming, .cv-gday-label em) { font-weight: 400; letter-spacing: -.005em; }
+
+/* The way into her sky: her sky in miniature */
+.cv-minisky { width: 34px; height: 23px; flex: none; margin: -4px 2px -4px -4px; overflow: visible; }
+.cv-minisky .is-today { animation: cv-breathe 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.cv-btn:hover .cv-minisky circle { opacity: 1; }
+.cv-galaxy { animation: cv-fade-in .9s ease-out both; }
+
+/* Home's sky in depth: three layers drifting at their own pace, leaning with the pointer */
+.cv-depth { position: absolute; inset: 0; z-index: 0; overflow: hidden; border-radius: 10px; pointer-events: none; animation: cv-fade-in 1s ease-out both; }
+.cv-depth-layer { position: absolute; inset: -30px; transition: translate .8s ease-out; }
+.cv-depth-layer svg { width: 100%; height: 100%; display: block; }
+.cv-depth-layer.is-far { translate: calc(var(--px, 0) * -6px) calc(var(--py, 0) * -4px); animation: cv-drift 60s ease-in-out infinite alternate; }
+.cv-depth-layer.is-mid { translate: calc(var(--px, 0) * -14px) calc(var(--py, 0) * -9px); animation: cv-drift-mid 40s ease-in-out infinite alternate; }
+.cv-depth-layer.is-near { translate: calc(var(--px, 0) * -30px) calc(var(--py, 0) * -20px); filter: blur(2.5px); animation: cv-drift-near 26s ease-in-out infinite alternate; }
+.cv-homec { z-index: 1; }
+/* today's star and the day's marks float a little */
+.cv-arc.is-arc:not(.is-gather-out):not(.is-gather-in) :is(.cv-arc-star, .cv-arc-glow) { animation: cv-float 6s ease-in-out infinite; --fy: -3px; }
+.cv-arc.is-arc:not(.is-gather-out):not(.is-gather-in) .cv-arc-mark:not(.is-later) { animation: cv-float 8s ease-in-out infinite; --fy: -2px; }
+.cv-minisky { width: 40px; height: 27px; }
+@media (prefers-reduced-motion: reduce) { .cv-depth-layer, .cv-arc.is-arc .cv-arc-star, .cv-arc.is-arc .cv-arc-glow, .cv-arc.is-arc .cv-arc-mark { animation: none; transition: none; } }
+.cv-minisky { width: 50px; height: 33px; margin: -10px 0 -10px -8px; }
+
+/* ================= Today becomes a star =================
+   The whole day swirls in to one point (where her sky keeps today's star) and fades; a star forms there
+   while warm motes rise in from below; then her sky fades in around it. Coming back reverses it. */
+.cv-galaxy { animation: none; }
+.cv-arc { overflow: visible; }
+.cv-arc-all { transform-box: view-box; }
+.cv-arc.is-gather-out .cv-arc-all { animation: cv-arc-gather 1.9s cubic-bezier(.5, 0, .75, .35) forwards; }
+.cv-arc.is-gather-in .cv-arc-all { animation: cv-arc-gather 1.5s cubic-bezier(.2, .65, .3, 1) .35s reverse both; }
+@keyframes cv-arc-gather { 0% { transform: none; opacity: 1; } 75% { opacity: .85; } 100% { transform: scale(.02) rotate(-35deg); opacity: 0; } }
+.cv-homec.is-zoom-out .cv-homec-words { transition: opacity .6s; opacity: 0; }
+.cv-homec.is-zoom-in .cv-homec-words { animation: cv-fade-in .7s 1.3s both; }
+.cv-forming { position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: 10px; overflow: hidden; }
+.cv-forming-art, .cv-forming-art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cv-forming.is-out .cv-form-star { transform-box: fill-box; transform-origin: center; animation: cv-form 2.2s cubic-bezier(.2, .7, .3, 1) 1.2s both; }
+@keyframes cv-form { 0% { transform: scale(.1); opacity: 0; } 40% { opacity: 1; } 100% { transform: none; opacity: 1; } }
+.cv-forming.is-in { animation: cv-fade-out .9s ease-in 1.1s forwards; }
+@keyframes cv-fade-out { to { opacity: 0; } }
+.cv-warm-mote { opacity: 0; animation: cv-mote-in 1.9s cubic-bezier(.4, 0, .6, 1) both; }
+@keyframes cv-mote-in { 0% { transform: translate(var(--sx), var(--sy)); opacity: 0; } 25% { opacity: .9; } 90% { opacity: .7; } 100% { transform: none; opacity: 0; } }
+.cv-orbit { transform-box: view-box; animation: cv-orbit 16s linear infinite; }
+@keyframes cv-orbit { to { transform: rotate(360deg); } }
+.cv-form-caption { position: absolute; left: 0; right: 0; bottom: 30%; margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  text-align: center; animation: cv-caption 3.4s ease-out .3s both; }
+.cv-form-caption b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(20px, 2.4vw, 28px); color: var(--cream); }
+.cv-form-caption span { font-size: clamp(13px, 1.4vw, 16px); color: var(--text-2); animation: cv-fade-in 1s 1.2s both; }
+@keyframes cv-caption { 0% { opacity: 0; transform: translateY(6px); } 18%, 82% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+
+/* her sky fades in around today's star, and away again */
+.cv-galaxy.is-arriving :is(.cv-glayer, .cv-gfade, .cv-gline, .cv-gpending, .cv-gstar:not(.is-today)) { animation: cv-fade-in 1.8s ease-out both; }
+.cv-galaxy.is-arriving .cv-gstar:not(.is-today) { animation-delay: .2s; }
+/* today's star formed in the middle; as her sky opens it glides to its own place in it */
+.cv-galaxy.is-arriving .cv-garrive { animation: cv-arrive 1.6s cubic-bezier(.45, 0, .3, 1) .15s both; }
+@keyframes cv-arrive { from { transform: translate(var(--ax), var(--ay)); } }
+@media (prefers-reduced-motion: reduce) { .cv-galaxy.is-arriving .cv-garrive { animation-duration: .01s; animation-delay: 0s; } }
+.cv-galaxy.is-leaving :is(.cv-glayer, .cv-gfade, .cv-gline, .cv-gpending, .cv-gstar:not(.is-today), .cv-shoot) { transition: opacity .9s ease-in; opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .cv-arc.is-gather-out .cv-arc-all, .cv-arc.is-gather-in .cv-arc-all, .cv-forming.is-out .cv-form-star, .cv-warm-mote, .cv-orbit, .cv-form-caption { animation-duration: .01s; animation-delay: 0s; }
+}
+
+/* ===== One continuous move, no cuts =====
+   Out: home's header and buttons fade first; the day swirls in (eased both ways) while the star forms;
+   home's background dust fades last, so at the handoff the screen holds only the star, and her sky
+   (which opens showing only that star) fades in around it. Back: the reverse. */
+.cv-galaxy { background: transparent; }
+.cv-screen.is-forming :is(.cv-top, .cv-actions) { transition: opacity .7s ease; opacity: 0; }
+.cv-screen.is-forming .cv-depth { transition: opacity 1.1s ease 2.2s; opacity: 0; }
+.cv-screen.is-unforming :is(.cv-top, .cv-actions) { animation: cv-fade-in .9s ease 1.4s both; }
+.cv-screen.is-unforming .cv-depth { animation: cv-fade-in 1.4s ease .4s both; }
+.cv-arc.is-gather-out .cv-arc-all { animation: cv-arc-gather 2.3s cubic-bezier(.45, 0, .55, 1) forwards; }
+.cv-arc.is-gather-in .cv-arc-all { animation: cv-arc-gather 1.8s cubic-bezier(.45, 0, .55, 1) .4s reverse both; }
+@keyframes cv-arc-gather { 0% { transform: none; opacity: 1; } 60% { opacity: .9; } 100% { transform: scale(.02) rotate(-35deg); opacity: 0; } }
+.cv-forming.is-out .cv-form-star { animation: cv-form 2s cubic-bezier(.25, .6, .3, 1) 1.3s both; }
+.cv-form-caption { animation: cv-caption 3s ease-out .3s both; }
+.cv-forming.is-in { animation: cv-fade-out 1s ease-in-out 1.2s forwards; }
+/* her today's star stays put (no float), so it is exactly where home left it */
+.cv-gstar.is-today .cv-float { animation: none; }
+/* the sky's own words and buttons arrive after it, and leave first */
+.cv-galaxy-title, .cv-galaxy-nav { animation: cv-fade-in .7s ease both; transition: opacity .5s ease; }
+.cv-galaxy.is-leaving :is(.cv-galaxy-title, .cv-galaxy-nav, .cv-glabels) { opacity: 0; pointer-events: none; }
+.cv-form-caption { animation: cv-caption 2.7s ease-out .75s both; }
+
+/* ===== The day retells itself =====
+   Each moment fades off the arc as it lifts; the path and hours fade like a trail; today's star forms
+   where her sky keeps it, growing for as long as moments are arriving. */
+.cv-arc.is-gather-out .cv-arc-all { animation: none; }
+.cv-arc.is-gather-out .cv-arc-mark[data-label] { animation: cv-hide .3s ease var(--lift) forwards; }
+@keyframes cv-hide { to { opacity: 0; } }
+.cv-arc.is-gather-out :is(.cv-arc-day, .cv-arc-lit, .cv-arc-ahead, .cv-arc-hour, .cv-arc-ahead-label, .cv-dust, .is-later, .cv-arc-glow, .cv-arc-star) {
+  transition: opacity 2.4s ease 1s; opacity: 0; }
+.cv-arc.is-gather-in .cv-arc-all { animation: cv-fade-in 1.3s ease .5s both; }
+.cv-arc.is-gather-in .cv-arc-mark[data-label] { animation: cv-pop .5s cubic-bezier(.2, .8, .3, 1.3) var(--back) both; }
+@keyframes cv-pop { from { opacity: 0; transform: scale(.3); } }
+.cv-forming { pointer-events: auto; cursor: pointer; }
+.cv-forming.is-in { pointer-events: none; }
+.cv-forming.is-out .cv-form-star { animation: cv-form var(--form, 2s) cubic-bezier(.3, .4, .4, 1) .6s both; }
+.cv-form-caption { animation: cv-caption 2.6s ease-out var(--cap, .75s) both; }
+.cv-screen.is-forming .cv-depth { transition: opacity 1.1s ease var(--end, 2.2s); opacity: 0; }
+
+.cv-lift { position: absolute; width: 0; height: 0; z-index: 1; animation: cv-lift 1.7s cubic-bezier(.45, .05, .35, 1) var(--d) both; }
+.cv-lift i { position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; background: var(--cream);
+  box-shadow: 0 0 10px 3px color-mix(in srgb, var(--cream) 45%, transparent); }
+.cv-lift.is-care i { width: 6px; height: 6px; left: -3px; top: -3px; opacity: .8; }
+.cv-lift.is-family i { background: var(--warm); box-shadow: 0 0 14px 5px color-mix(in srgb, var(--warm) 50%, transparent); }
+.cv-lift span { position: absolute; left: 12px; top: -26px; white-space: nowrap; font-size: 14px; color: #F6EEDB;
+  text-shadow: 0 0 8px #000; animation: cv-lift-label 1.7s ease var(--d) both; }
+.cv-lift.is-care span { font-size: 12px; color: var(--muted); }
+.cv-lift.is-family span { font-family: var(--font-display); font-style: var(--display-style); font-size: 16px; color: var(--warm); left: -60px; top: -34px; }
+@keyframes cv-lift {
+  0% { transform: none; opacity: 0; }
+  8% { opacity: 1; }
+  35% { transform: translate(calc(var(--tx) * .2), calc(var(--ty) * .2 - 30px)); }
+  88% { opacity: .9; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(.35); opacity: 0; }
+}
+@keyframes cv-lift-label { 0% { opacity: 0; } 14%, 46% { opacity: 1; } 68%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cv-lift, .cv-lift span { animation-duration: .01s; } }
+
+/* ===== Holding today's star: her, in the star's light ===== */
+.cv-homec-words.is-hidden { visibility: hidden; }
+.cv-held { position: absolute; left: 0; right: 0; top: 30%; bottom: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  pointer-events: none; animation: cv-held-in .45s cubic-bezier(.2, .8, .3, 1) both; transform-origin: 58% -20%; }
+@keyframes cv-held-in { from { opacity: 0; transform: scale(.7); } }
+.cv-held-lens { padding: 8px 40px; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--cream) 10%, transparent), transparent 75%); }
+.cv-held-cap { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: clamp(14px, 1.5vw, 17px); color: var(--text-2); text-align: center; }
+.cv-hold-hint { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+
+/* ===== Look up: a constellation that draws itself ===== */
+.cv-lookup { width: 34px; height: 24px; flex: none; margin: -4px 2px -4px -4px; overflow: visible; }
+.cv-lookup circle { fill: var(--cream); opacity: .85; }
+.cv-lookup-line { fill: none; stroke: var(--line-sky); stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; opacity: .7;
+  stroke-dasharray: 40; stroke-dashoffset: 40; animation: cv-draw 2.4s ease .6s forwards; }
+.theme-confetti .cv-lookup-line { stroke-width: 2.2; }
+.cv-lookup-next { stroke: var(--cream); stroke-width: 1; stroke-dasharray: 1.5 2.5; opacity: .55; }
+.cv-lookup-today { fill: var(--warm); transform-box: fill-box; transform-origin: center; animation: cv-breathe 3s ease-in-out infinite; }
+.cv-lookup-btn:hover .cv-lookup-line { animation: cv-draw 1.6s ease forwards; stroke-dashoffset: 40; }
+@keyframes cv-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .cv-lookup-line { animation: none; stroke-dashoffset: 0; } }
+.cv-held-lens { width: min(340px, 60%); box-sizing: border-box; } .cv-held-lens .scan { width: 100%; }
+.cv-homec.is-zoom-out, .cv-homec.is-zoom-in { animation: none; }
+
+/* Week labels: placed by code (left/top inline), always readable over the sky */
+.cv-gday-label { transform: translate(-50%, -50%); bottom: auto; text-shadow: 0 0 6px #000, 0 0 2px #000; }
+.cv-gday-label span { color: var(--text-2); }
+/* the panel's shade starts only where the panel does, so no star or label is dimmed */
+.cv-galaxy.is-week::before, .cv-galaxy.is-day::before { background: linear-gradient(90deg, transparent 56%, rgba(0, 0, 0, .85) 64%, #000 72%); }
+
+/* Planets on today's arc */
+.cv-arc-mark .is-planet-glow { fill: var(--cream); opacity: .12; stroke: none; }
+.cv-arc-mark.first { fill: none; }
+
+/* Touch screen: nothing depends on hover. Look up's constellation redraws itself now and then. */
+.cv-lookup-btn:hover .cv-lookup-line { animation: cv-redraw 12s ease .6s infinite; }
+.cv-lookup-line { animation: cv-redraw 12s ease .6s infinite; }
+@keyframes cv-redraw { 0% { stroke-dashoffset: 40; } 20%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 40; } }
+.cv-lift.is-first i { width: 12px; height: 12px; left: -6px; top: -6px; background: #EFDCAA; box-shadow: 0 0 0 2px #000, 0 0 0 3.5px var(--warm), 0 0 14px 4px color-mix(in srgb, var(--cream) 40%, transparent); }
+.theme-confetti .cv-lift.is-first i { background: #3ECF7A; box-shadow: 0 0 0 2px #000, 0 0 0 3.5px #FFD23F; }
+.cv-lift.is-first span { font-family: var(--font-display); font-style: var(--display-style); font-size: 16px; color: var(--cream); }
+
+/* a week's area: invisible until pressed, then a soft glow shows which week you touched */
+.cv-garea { position: absolute; border: 0; border-radius: 40%; background: transparent; cursor: pointer; transition: background .2s, box-shadow .2s; }
+.cv-garea:active, .cv-garea:focus-visible { background: radial-gradient(closest-side, color-mix(in srgb, var(--cream) 10%, transparent), transparent); outline: none; }
+.cv-gweek, .cv-gfirst, .cv-ghit { z-index: 1; }
+
+/* home: a darker room */
+.theme-nursery .cv-screen { background: radial-gradient(ellipse at 68% 28%, rgba(107, 91, 214, .035), transparent 55%), #000; }
+.theme-confetti .cv-screen { background: radial-gradient(ellipse at 60% 30%, rgba(58, 42, 143, .05), transparent 60%), #000; }
+.theme-confetti .cv-screen::after { opacity: .045; }
+.cv-dust circle { opacity: .07; }
+@keyframes cv-twinkle { 50% { opacity: .2; } }
+
+/* Scrubbing: today's star stays at now (dimmed); a soft ring marks the moment you're on */
+.cv-arc-now { transition: opacity .3s; }
+.cv-arc-now.is-away { opacity: .45; }
+.cv-arc-handle { pointer-events: none; }
+.cv-arc-handle-glow { fill: var(--cream); opacity: .1; }
+.cv-arc-handle-ring { fill: none; stroke: var(--cream); stroke-width: 1.6; opacity: .85; }
+.cv-arc.is-confetti .cv-arc-handle-ring { stroke: #FFD23F; stroke-width: 2.6; }
+.cv-arc-mark.is-on { transform: scale(1.25); }
+.cv-arc.is-gather-out .cv-arc-handle { opacity: 0; transition: opacity .4s; }
+
+/* Week names without a box: just the words, softly shadowed so the sky never swallows them */
+.cv-gweek, .cv-gweek:hover, .cv-gweek.is-today { border: 0; background: none; backdrop-filter: none; padding: 2px 4px;
+  text-shadow: 0 0 10px #000, 0 0 4px #000, 0 0 2px #000; }
+.cv-gweek:active b { color: #fff; }
+
+/* ===== The way back =====
+   0.15s: today's star leaves its place in her sky and travels to "now" on the arc (1.3s), where the
+   arc's own star takes over. 1.0s: the day's line draws itself from midnight to now. 1.45s: the
+   moments unfold out of the star to their places, latest first. 2.0s: home's words and buttons. */
+.cv-forming.is-in { animation: none; }
+.cv-forming.is-in .cv-form-star { transform-box: fill-box; transform-origin: center; animation: cv-travel 1.3s cubic-bezier(.45, 0, .3, 1) .15s forwards; }
+@keyframes cv-travel { 75% { opacity: 1; } 100% { transform: translate(var(--mx, 0), var(--my, 0)) scale(.6); opacity: 0; } }
+.cv-arc.is-gather-in .cv-arc-all { animation: none; }
+.cv-arc.is-gather-in .cv-arc-now { animation: cv-fade-in .45s ease 1.25s both; }
+.cv-arc.is-gather-in :is(.cv-arc-day, .cv-arc-lit) { stroke-dasharray: 1; animation: cv-draw-line 1.3s cubic-bezier(.4, 0, .2, 1) 1s both; }
+@keyframes cv-draw-line { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.cv-arc.is-gather-in .cv-arc-mark[data-label] { animation: cv-unfold .75s cubic-bezier(.2, .7, .3, 1) var(--back) both; }
+@keyframes cv-unfold { from { transform: translate(var(--fx), var(--fy)) scale(.3); opacity: 0; } }
+.cv-arc.is-gather-in :is(.cv-arc-hour, .cv-arc-ahead, .cv-arc-ahead-label, .cv-dust, .is-later) { animation: cv-fade-in .8s ease 1.9s both; }
+.cv-homec.is-zoom-in .cv-homec-words { animation: cv-fade-in .7s ease 2s both; }
+.cv-screen.is-unforming :is(.cv-top, .cv-actions) { animation: cv-fade-in .8s ease 2s both; }
+@media (prefers-reduced-motion: reduce) {
+  .cv-forming.is-in .cv-form-star, .cv-arc.is-gather-in :is(.cv-arc-now, .cv-arc-day, .cv-arc-lit, .cv-arc-mark, .cv-arc-hour, .cv-arc-ahead, .cv-arc-ahead-label, .cv-dust, .is-later) { animation-duration: .01s; animation-delay: 0s; }
+}
+
+/* Mila's stars, at the left end of the day's arc (mirroring "What's ahead ›" at the right) */
+.cv-arc-past { cursor: pointer; }
+.cv-arc-past-hit { fill: transparent; }
+.cv-arc-past:focus-visible { outline: none; }
+.cv-arc-past:focus-visible .cv-arc-past-hit { stroke: var(--cream); stroke-width: 1.5; }
+.cv-arc-ahead-label.is-past { text-anchor: start; }
+.cv-arc .cv-lookup circle { fill: var(--cream); }
+.cv-arc .cv-lookup-line { fill: none; stroke: var(--line-sky); stroke-width: 1.2; }
+.cv-arc.is-confetti .cv-lookup-line { stroke-width: 2.2; }
+.cv-arc .cv-lookup-next { stroke: var(--cream); }
+.cv-arc .cv-lookup-today { fill: var(--warm); }
+.cv-arc.is-gather-out .cv-arc-past { transition: opacity .6s; opacity: 0; }
+.cv-arc.is-gather-in .cv-arc-past { animation: cv-fade-in .8s ease 1.9s both; }
+
+/* The two ends of the day read as clear ways in: brighter and larger, past on the left, ahead on the right */
+.cv-arc.is-arc .cv-arc-ahead-label { font-size: 19px; opacity: 1; font-weight: 500; }
+.cv-arc.is-arc .cv-arc-past .cv-arc-ahead-label { font-size: 20px; }
+.cv-arc.is-arc .cv-arc-past-hit { fill: color-mix(in srgb, var(--cream) 6%, transparent); stroke: color-mix(in srgb, var(--cream) 30%, transparent); stroke-width: 1.2; }
+.cv-arc.is-arc .cv-arc-past .cv-lookup-line { stroke-width: 1.8; opacity: .95; }
+.cv-arc.is-confetti.is-arc .cv-arc-past .cv-lookup-line { stroke-width: 2.6; }
+.cv-arc.is-arc .cv-arc-past .cv-lookup circle { opacity: 1; }
+
+/* One caption for every moment: when, what she did, one line. Fixed height so nothing jumps while scrubbing. */
+.cv-cap { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; height: 128px; justify-content: flex-start; }
+.cv-cap .cv-detail-k { min-height: 1.2em; }
+.cv-cap-title { margin: 0; font-size: clamp(20px, 2.6vw, 30px); font-weight: 500; color: #F6EEDB; line-height: 1.25;
+  max-width: 30ch; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.theme-confetti .cv-cap-title { font-weight: 600; }
+.cv-cap-line { margin: 0; min-height: 1.4em; font-size: clamp(14px, 1.5vw, 17px); color: var(--text-2); max-width: 46ch; }
+.cv-cap-line b { color: #F6EEDB; font-weight: 500; }
+.cv-arc-mark.family { fill: none; }
+
+/* "Today" in her sky sits exactly where "Mila's stars" sits on home */
+.cv-today-btn { gap: 10px; }
+.cv-today-icon { font-size: 22px; line-height: 1; color: var(--cream); margin: -2px 2px 0 -2px; }
+.cv-today-btn.is-leaving { opacity: 0; transition: opacity .5s; pointer-events: none; }
+.cv-screen.is-galaxy .cv-today-btn { animation: cv-fade-in .7s ease 1.6s both; }
+/* in her sky, "Today" steps back: a ghost button, no outline until you reach for it, still 44px tall */
+.cv-screen.is-galaxy .cv-today-btn { height: 44px; padding: 0 14px 0 10px; gap: 6px; border-color: transparent; background: rgba(0, 0, 0, .3);
+  color: var(--muted); font-size: 14px; transition: color .2s, border-color .2s; }
+.cv-screen.is-galaxy .cv-today-btn .cv-today-icon { font-size: 18px; margin-top: -1px; opacity: .8; }
+.cv-screen.is-galaxy .cv-today-btn:is(:hover, :focus-visible) { border-color: color-mix(in srgb, var(--cream) 35%, transparent); color: #F6EEDB; }
+.cv-lookup-btn .cv-lookup { width: 34px; height: 24px; }
+.cv-galaxy.is-galaxy .cv-galaxy-title { top: 26px; }
+
+/* Night: home's layout, dimmed for a dark room */
+.cv-screen.is-night { background: #000; }
+.cv-screen.is-night .cv-depth { opacity: .5; }
+.is-night-home .cv-arc { opacity: .5; pointer-events: none; }
+.is-night-home .cv-cap .cv-detail-k { color: #6c7378; opacity: 1; }
+.is-night-home .cv-cap-title { color: #9aa0a4; font-weight: 400; }
+.is-night-home .cv-cap-line, .is-night-home .cv-cap-line b { color: #5f666b; }
+.cv-screen.is-night .cv-top-left, .cv-screen.is-night .cv-clock { color: #6c7378; }
+.cv-screen.is-night .cv-btn.is-call { background: transparent; border-color: #34393d; color: #a3a9ad; font-weight: 500; }
+.cv-screen.is-night .cv-btn.is-call .cv-btn-icon { border-color: #6c7378; }
+/* the caption arrives early and stays while the moments gather */
+.cv-form-caption { animation: cv-caption-long var(--capdur, 4s) ease-out var(--cap, .9s) both; }
+@keyframes cv-caption-long { 0% { opacity: 0; transform: translateY(6px); } 8%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.cv-form-caption span { animation: cv-fade-in 1s ease 1.8s both; }
+/* Night: one dim star where the day's arc would be */
+.cv-night-sky { width: 100%; display: block; aspect-ratio: 1000 / 250; }
+.cv-night-star { opacity: .5; }
+.cv-night-glow { transform-box: fill-box; transform-origin: center; animation: cv-breathe 8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .cv-night-glow { animation: none; } }
+
+/* Night: star, time, one line, centered in the screen */
+.is-night-home { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding-bottom: 40px; }
+.is-night-home .cv-night-sky { width: 160px; aspect-ratio: 200 / 120; margin-bottom: 18px; }
+.cv-night-time { margin: 0; font-family: var(--font-ui); font-size: clamp(48px, 7vw, 76px); font-weight: 400; letter-spacing: -.01em; color: #8a8f93; line-height: 1; }
+.cv-night-line { margin: 18px 0 0; font-size: clamp(16px, 1.9vw, 21px); color: #63696d; }
+.cv-screen.is-night .cv-top { visibility: hidden; }
+
+/* What's ahead: smaller, and a soft white so it doesn't read as an eyebrow */
+.cv-arc.is-arc .cv-arc-ahead-label { font-size: 15px; font-weight: 500; fill: #D9DDE0; opacity: .85; }
+
+/* ===== What's ahead, easy to scan ===== */
+.cv-top-title { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(22px, 2.6vw, 30px); color: #F6EEDB; margin-left: 4px; }
+.ah { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: clamp(16px, 2.6vw, 28px); padding-top: 6px; }
+.ah-k { margin: 0 0 10px; font-family: var(--font-ui); font-size: 13px; font-weight: 500; letter-spacing: .01em; color: var(--cream); }
+/* 1. when you can be there */
+.ah-when { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.ah-when li { display: flex; flex-direction: column; gap: 3px; padding: 14px 18px; border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--cream) 22%, transparent); background: color-mix(in srgb, var(--cream) 4%, transparent); }
+.ah-when-t { font-size: 14px; font-weight: 500; color: var(--cream); }
+.ah-when b { font-size: clamp(18px, 2vw, 22px); font-weight: 500; color: #F6EEDB; }
+.ah-when-note { font-size: 14px; color: var(--text-2); }
+/* 2. her paths: three cards, same shape */
+.ah-paths { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.ah-path { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 16px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, .08); }
+.ah-path-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ah-path-head b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(18px, 2vw, 22px); color: #F6EEDB; }
+.ah-status { font-size: 12px; padding: 2px 9px; border-radius: 999px; color: var(--text-2); border: 1px solid rgba(255, 255, 255, .14); white-space: nowrap; }
+.ah-status.is-deciding { color: var(--cream); border-color: color-mix(in srgb, var(--cream) 45%, transparent); }
+.ah-status.is-decided { color: #0b0b0b; background: var(--cream); border-color: var(--cream); }
+.ah-stars { list-style: none; margin: 0; padding: 0; display: flex; justify-content: space-between; position: relative; }
+.ah-stars::before { content: ''; position: absolute; left: 14px; right: 14px; top: 50%; border-top: 1px solid color-mix(in srgb, var(--line-sky) 40%, transparent); }
+.theme-confetti .ah-stars::before { border-top: 3px solid color-mix(in srgb, var(--line-sky) 60%, transparent); margin-top: -1px; }
+.ah-nownext { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ah-nownext dt { font-size: 12px; color: var(--muted); }
+.ah-nownext dd { margin: 0; font-size: 15px; color: #F6EEDB; }
+.ah-nownext div:last-child dd { color: var(--text-2); }
+.ah-nownext em { font-style: normal; color: var(--cream); font-size: 13px; }
+.ah-plan { margin: 0; font-size: 14px; line-height: 1.45; color: var(--text-2); }
+/* 3. waiting on a date */
+.ah-note { flex-basis: 100%; margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+@media (max-width: 760px) { .ah-paths { grid-template-columns: 1fr; } }
+/* What's ahead fits above the footer */
+.ah { gap: 16px; padding-top: 0; }
+.ah-k { margin-bottom: 8px; }
+.ah-when li { padding: 11px 16px; }
+.ah-path { padding: 12px 14px 14px; gap: 8px; }
+.ah-plan { font-size: 13.5px; }
+.cv-screen:has(.ah) .cv-actions { margin-top: 0; }
+
+/* tapping Mila's stars: "What's ahead" leaves at once */
+.cv-arc.is-gather-out .cv-arc-ahead-label { transition: opacity .25s ease; opacity: 0; }
+
+/* Moments that changed what's on her: a thin blue ring (the figure's "new" blue), and a blue scrub ring on them */
+.cv-arc-wired { fill: none; stroke: #6CB6FF; stroke-width: 1.4; opacity: .75; }
+.cv-arc.is-confetti .cv-arc-wired { stroke-width: 2; opacity: .9; paint-order: stroke; }
+.cv-arc-handle.is-wired .cv-arc-handle-ring { stroke: #6CB6FF; }
+.cv-arc-handle.is-wired .cv-arc-handle-glow { fill: #6CB6FF; opacity: .12; }
+.cv-arc-mark.change.is-on .cv-arc-wired { opacity: 0; }
+
+/* ===== What's ahead v2: no boxes, an agenda and three open columns, even rhythm down the page ===== */
+.ah { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: 0; padding: 4px 0 8px; }
+.ah-k { margin: 0 0 14px; font-family: var(--font-ui); font-size: 14px; font-weight: 500; letter-spacing: .01em; color: var(--muted); }
+.ah-agenda { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ah-agenda li { display: grid; grid-template-columns: 210px 1fr; gap: 20px; align-items: baseline; padding: 12px 0; border-top: 1px solid rgba(255, 255, 255, .08); }
+.ah-agenda li:last-child { border-bottom: 1px solid rgba(255, 255, 255, .08); }
+.ah-agenda-t { font-size: clamp(16px, 1.8vw, 19px); font-weight: 500; color: var(--cream); }
+.ah-agenda div { display: flex; flex-direction: column; gap: 2px; }
+.ah-agenda b { font-size: clamp(18px, 2vw, 22px); font-weight: 500; color: #F6EEDB; }
+.ah-agenda div span { font-size: 15px; color: var(--text-2); }
+.ah-cols { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+.ah-col { display: flex; flex-direction: column; gap: 6px; padding: 0 28px; border-left: 1px solid rgba(255, 255, 255, .08); }
+.ah-col:first-child { padding-left: 0; border-left: 0; }
+.ah-col:last-child { padding-right: 0; }
+.ah-col-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ah-col-area { font-size: 15px; color: var(--text-2); }
+.ah-col .ah-stars { margin: 6px 0 4px; }
+.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
+.ah-next { font-size: 15px; color: var(--text-2); }
+.ah-col .ah-plan { margin-top: 6px; font-size: 14px; color: var(--muted); line-height: 1.45; }
+@media (max-width: 760px) { .ah-cols { grid-template-columns: 1fr; gap: 20px; } .ah-col { padding: 0; border: 0; } .ah-agenda li { grid-template-columns: 1fr; gap: 2px; } }
+.ah { justify-content: flex-start; gap: 22px; padding: 2px 0 0; }
+.ah-k { margin-bottom: 8px; }
+.ah-agenda li { padding: 9px 0; }
+.ah-col .ah-stars { margin: 4px 0 2px; }
+.ah-now { font-size: clamp(20px, 2.3vw, 27px); }
+.ah-col .ah-plan { margin-top: 4px; font-size: 13.5px; }
+.cv-top:has(.cv-top-title) { margin-bottom: 4px; }
+.ah { gap: 26px; padding-top: 14px; }
+.ah-agenda div { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.ah-agenda li { padding: 11px 0; }
+.ah-agenda b { font-size: clamp(17px, 1.9vw, 20px); }
+/* Moments that changed what's on her: the star itself is soft blue (the figure's "new" color) */
+.cv-arc-mark .is-wired { fill: #8FC8FF; }
+.cv-lift.is-change i { background: #8FC8FF; box-shadow: 0 0 10px 3px rgba(143, 200, 255, .45); }
+.theme-confetti .cv-lift.is-change i { background: #C9A7FF; box-shadow: 0 0 10px 3px rgba(201, 167, 255, .45); }
+/* her figure, in the open space under the arc, only on moments that changed what's on her */
+.cv-her-fig { position: absolute; left: 50%; top: 13%; width: 230px; transform: translateX(-50%); pointer-events: none;
+  animation: cv-fade-in .4s ease both; }
+.cv-her-fig .scan { width: 100%; }
+/* the caption area holds her figure on wire moments: figure left, the same three lines right, same height */
+.cv-cap-text { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.cv-cap.is-wired { flex-direction: row; justify-content: center; align-items: center; gap: 28px; text-align: left; }
+.cv-cap.is-wired .cv-cap-text { align-items: flex-start; max-width: 420px; }
+.cv-her-fig { position: static; transform: none; width: 210px; flex: none; }
+/* her figure sits above the words (the words never move): centered in the open space under the arc */
+.cv-cap { position: relative; }
+.cv-cap.is-wired { flex-direction: column; gap: 6px; text-align: center; }
+.cv-cap.is-wired .cv-cap-text { align-items: center; max-width: none; }
+.cv-her-fig { position: absolute; left: 50%; bottom: calc(100% - 6px); transform: translateX(-50%); width: 190px; }
+.cv-her-fig { top: auto; }
+/* her figure turns when dragged */
+.cv-her-fig { pointer-events: auto; cursor: grab; touch-action: none; z-index: 3; }
+.cv-her-fig:active { cursor: grabbing; }
+.cv-her-fig-model { transform-style: preserve-3d; transition: transform .12s ease-out; will-change: transform; }
+
+/* Hierarchy on home: the center sentence first, its line second; name and clock quietly orient */
+.cv-page .cv-top-left { font-size: clamp(15px, 1.55vw, 19px); opacity: .85; }
+.cv-page .cv-clock { font-size: clamp(14px, 1.45vw, 18px); color: var(--muted); }
+.cv-cap { height: 150px; gap: 8px; }
+.cv-cap-title { font-size: clamp(26px, 3.5vw, 42px); line-height: 1.18; max-width: 26ch; }
+.cv-cap-line { font-size: clamp(15px, 1.65vw, 19px); }
+.cv-cap .cv-detail-k { font-size: clamp(13px, 1.3vw, 15px); }
+
+/* ===== Her, as a layered hologram ===== */
+.cv-her-fig { width: 260px; height: 170px; display: grid; place-items: center; cursor: grab; }
+.her3d { width: 240px; height: 150px; perspective: 520px; touch-action: none; }
+.her3d-stage { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .1s ease-out; }
+.her3d-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.her3d-bed { fill: color-mix(in srgb, var(--cream) 4%, transparent); stroke: color-mix(in srgb, var(--cream) 22%, transparent); stroke-width: 1; }
+.her3d-slice { fill: none; stroke: var(--cream); stroke-width: .9; }
+.theme-confetti .her3d-slice { stroke: #FFE79A; }
+.her3d-dev { fill: none; stroke: #B9C4CC; stroke-width: 1.4; stroke-linecap: round; opacity: .75; }
+.her3d-dev circle, .her3d-dev rect, .her3d-dev ellipse { fill: rgba(185, 196, 204, .25); }
+.her3d-dev.is-new { stroke: #6CB6FF; opacity: 1; stroke-width: 2; filter: drop-shadow(0 0 4px rgba(108, 182, 255, .8)); }
+.her3d-dev.is-new circle, .her3d-dev.is-new rect, .her3d-dev.is-new ellipse { fill: rgba(108, 182, 255, .35); }
+.her3d-dev.is-gone { stroke: #6CB6FF; opacity: .35; stroke-dasharray: 3 4; }
+.her3d-dev.is-gone circle, .her3d-dev.is-gone rect, .her3d-dev.is-gone ellipse { fill: none; }
+.cv-her-fig { height: 150px; } .her3d { transform: scale(.86); }
+
+/* the plain-English term under each moment */
+.cv-cap { height: 178px; }
+.cv-cap-term { margin: 2px 0 0; min-height: 1.3em; font-size: clamp(13px, 1.35vw, 15px); color: var(--muted); max-width: 52ch; }
+.cv-cap-term b { color: var(--text-2); font-weight: 600; }
+.ah-means { font-size: 13px; color: var(--muted); line-height: 1.35; }
+/* --ah-gap: the space between sections in What's ahead; --ah-gap-lg: one step up, for a section that starts a new group */
+.ah { --ah-gap: 18px; --ah-gap-lg: calc(var(--ah-gap) * 2); gap: var(--ah-gap); padding-top: 4px; }
+.ah-agenda li { padding: 9px 0; }
+.ah-col { gap: 5px; }
+
+/* ===== Her, in depth, from the sculpt image ===== */
+.cv-her-fig { width: 240px; height: 160px; }
+.her3d { width: 200px; height: 163px; transform: none; perspective: 560px; }
+.her3d-img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; user-select: none;
+  filter: saturate(.55) sepia(.18) brightness(.9); }
+.her3d-img:first-of-type { filter: saturate(.55) sepia(.18) brightness(.75) drop-shadow(0 0 10px color-mix(in srgb, var(--cream) 30%, transparent)); }
+.her3d-bed { position: absolute; inset: -6% -8%; border-radius: 22px; background: color-mix(in srgb, var(--cream) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cream) 18%, transparent); }
+.her3d .her3d-layer { overflow: visible; }
+.her3d .her3d-dev { stroke-width: .7; }
+.her3d .her3d-dev.is-new { stroke-width: 1; filter: drop-shadow(0 0 2px rgba(108, 182, 255, .9)); }
+.her3d { width: 176px; height: 143px; } .cv-her-fig { height: 140px; }
+
+/* Her as an outline: the contours carry their own color, so no photo filter; a soft glow on the stack */
+.her3d-img, .her3d-img:first-of-type { filter: none; }
+.her3d-stage { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cream) 22%, transparent)); }
+.her3d-bed { inset: -4% -6%; }
+/* the thin line from where a wire runs on the bed up to where it touches her */
+.her3d-post { position: absolute; width: 1px; margin-left: -.5px; transform-origin: top center; transform: rotateX(90deg);
+  background: currentColor; color: #B9C4CC; opacity: .7; }
+.her3d-post.is-new { color: #6CB6FF; opacity: 1; }
+.her3d-post.is-gone { opacity: .25; }
+
+/* ===== Her first day ===== */
+.fd { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; padding-bottom: 20px; animation: cv-fade-in .9s ease both; }
+.fd-star { margin-bottom: 6px; overflow: visible; }
+.fd-star-glow { transform-box: fill-box; transform-origin: center; animation: cv-breathe 6s ease-in-out infinite; }
+.fd-star-glow.is-inner { animation-duration: 4.5s; }
+.fd-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.6vw, 54px); line-height: 1.05; color: #F6EEDB; }
+.fd-title { margin: 0; font-size: clamp(24px, 3.2vw, 36px); font-weight: 500; line-height: 1.2; color: #F6EEDB; }
+.fd-title.is-serif { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; }
+.fd-line { margin: 0; max-width: 40ch; font-size: clamp(15px, 1.7vw, 19px); line-height: 1.45; color: var(--text-2); }
+.fd-size { margin: 8px 0 0; max-width: 42ch; font-size: clamp(14px, 1.55vw, 17px); color: var(--text-2); }
+.fd-size b { color: var(--cream); font-weight: 500; }
+.fd-who { margin: 14px 0 0; font-size: clamp(14px, 1.5vw, 16px); color: var(--muted); }
+.fd-k { margin: 14px 0 4px; font-size: 13px; color: var(--muted); }
+.fd-rested { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.fd-rested li { display: flex; align-items: baseline; gap: 14px; font-size: clamp(15px, 1.6vw, 18px); color: #F6EEDB; animation: cv-fade-in .8s ease both; }
+.fd-rested li:nth-child(2) { animation-delay: .5s; } .fd-rested li:nth-child(3) { animation-delay: 1s; }
+.fd-rested li span { width: 76px; flex: none; font-size: .82em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.fd-rested li::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--cream); flex: none; align-self: center; margin-right: -4px; }
+.fd-rested li.is-warm::before { background: var(--warm); box-shadow: 0 0 8px var(--warm); }
+/* the walkthrough */
+.fd-walk { gap: 10px; }
+.fd-model { height: 170px; display: grid; place-items: center; }
+.fd-model .her3d { transform: scale(1.15); }
+.fd-walk .fd-words { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 92px; }
+.fd-walk-nav { display: flex; align-items: center; gap: 22px; }
+.fd-dots { display: inline-flex; gap: 8px; }
+.fd-dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, .18); }
+.fd-dots i.is-past { background: color-mix(in srgb, var(--cream) 45%, transparent); }
+.fd-dots i.is-on { background: var(--cream); }
+.fd-next { height: 44px; padding: 0 26px; border-radius: 22px; border: 0; background: var(--cream); color: #111; font-size: 16px; font-weight: 600; cursor: pointer; }
+.fd-next.is-done { background: transparent; color: var(--cream); border: 1px solid color-mix(in srgb, var(--cream) 50%, transparent); }
+@media (prefers-reduced-motion: reduce) { .fd, .fd-star-glow, .fd-rested li { animation: none; } }
+.fd-size span { display: block; margin-top: 2px; color: var(--muted); }
+
+/* ===== The end of her stay ===== */
+.end { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding-bottom: 12px; animation: cv-fade-in 1s ease both; }
+.end-sky { width: min(640px, 92%); height: auto; overflow: visible; }
+.end-sky > g { animation: cv-fade-in .8s ease both; }
+.end-last { transform-box: fill-box; transform-origin: center; }
+.end-words { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.end-k { font-size: 13px; color: var(--cream); }
+.end-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(30px, 4.2vw, 48px); line-height: 1.08; color: #F6EEDB; }
+.end-line { margin: 0; max-width: 48ch; font-size: clamp(15px, 1.7vw, 19px); color: var(--text-2); }
+.end.is-not .end-title { font-size: clamp(28px, 3.8vw, 44px); }
+.end.is-not .end-line:last-child { margin-top: 8px; color: var(--muted); font-size: clamp(14px, 1.5vw, 16px); }
+.cv-proto .cv-seg button { white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .end, .end-sky > g { animation: none; } }
+
+/* ===== If she doesn't go home: the screen almost disappears ===== */
+.comfort { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding-bottom: 30px; animation: cv-fade-in 2s ease both; }
+.comfort-star { width: 120px; height: 120px; overflow: visible; }
+.comfort-glow { transform-box: fill-box; transform-origin: center; animation: cv-breathe 9s ease-in-out infinite; }
+.comfort-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(30px, 4vw, 44px); color: #d8d1c2; }
+.comfort-line { margin: 0; font-size: clamp(14px, 1.5vw, 16px); color: #6f6b65; }
+.cv-screen:has(.comfort) .cv-depth { opacity: .35; }
+.cv-screen:has(.comfort) .cv-btn.is-call { background: transparent; color: #a9a39a; border-color: #34363a; font-weight: 500; }
+.theme-confetti .cv-screen:has(.comfort) .cv-btn.is-call .cv-btn-icon { border-color: #6c7378; }
+.comfort-off { position: absolute; inset: 0; z-index: 4; border: 0; border-radius: 10px; background: #000; cursor: pointer; animation: cv-fade-in 1.2s ease both; }
+@media (prefers-reduced-motion: reduce) { .comfort, .comfort-glow, .comfort-off { animation: none; } }
+.cv-top[hidden] { display: flex; visibility: hidden; }
+
+/* ===== Her sky, as a record of her life ===== */
+.mem { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; animation: cv-fade-in 1.4s ease both; }
+.mem-sky { width: min(600px, 90%); }
+.mem-star { animation: cv-fade-in 1.2s ease both; }
+.mem-line { animation: cv-fade-in 2s ease both; }
+.mem-halo { transform-box: fill-box; transform-origin: center; animation: cv-breathe 4s ease-in-out infinite; }
+.mem-words { min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+.mem-line-in { animation: mem-in 1.4s ease both; }
+@keyframes mem-in { from { opacity: 0; transform: translateY(6px); } }
+.mem-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(28px, 3.8vw, 42px); color: #e8e0cf; }
+.mem-moment { margin: 0; max-width: 34ch; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(20px, 2.6vw, 28px); line-height: 1.3; color: #e8e0cf; }
+.mem-end { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.mem-sub { margin: 0; font-size: clamp(14px, 1.6vw, 17px); color: var(--text-2); }
+.mem-sub.is-quiet { color: #7a756e; font-size: clamp(13px, 1.4vw, 15px); }
+@media (prefers-reduced-motion: reduce) { .mem, .mem-star, .mem-line, .mem-halo, .mem-line-in { animation: none; } }
+.mem-next { height: 40px; padding: 0 20px; border-radius: 20px; border: 1px solid color-mix(in srgb, var(--cream) 35%, transparent); background: none; color: #d8d1c2;
+  font: 500 15px var(--font-ui); cursor: pointer; animation: cv-fade-in 1.2s ease both; }
+
+/* her story (walk) and the map of her life */
+.mem { gap: 14px; }
+.mem-step { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.mem-day { font-size: 13px; color: var(--cream); }
+.mem.is-map .mem-sky { width: min(480px, 70%); }
+.mem-map { display: flex; flex-direction: column; align-items: center; gap: 18px; opacity: 0; transition: opacity 1.6s ease; }
+.mem-map.is-in { opacity: 1; }
+.mem-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 28px; max-width: 760px; text-align: left; }
+.mem-list button { width: 100%; display: flex; align-items: baseline; gap: 10px; padding: 5px 8px; border: 0; border-radius: 8px; background: none; text-align: left;
+  font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(15px, 1.6vw, 18px); color: #ddd5c4; cursor: default; }
+.mem-list button i { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--cream); opacity: .6; transform: translateY(-2px); }
+.mem-list button.is-on { background: rgba(255, 255, 255, .04); color: #fff; }
+.mem-list button.is-on i { opacity: 1; box-shadow: 0 0 8px var(--cream); }
+.mem-map .mem-title { font-size: clamp(24px, 3.2vw, 34px); }
+@media (max-width: 760px) { .mem-list { grid-template-columns: 1fr; } }
+
+/* Her name opens who she is */
+.cv-name { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--cream) 35%, transparent); text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.cv-name:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; border-radius: 4px; }
+.cv-page .cv-sheet { background: #0c0c10; border-color: #24242c; }
+.cv-about { gap: 16px; }
+.cv-about-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: 30px; color: var(--cream); }
+.cv-about-age { margin: 0; font-size: 16px; color: var(--text-2); }
+.cv-about-age b { color: #F6EEDB; font-weight: 500; }
+.cv-about-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.cv-about-list li { display: flex; flex-direction: column; gap: 1px; padding-left: 16px; position: relative; }
+.cv-about-list li::before { content: ''; position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: var(--cream); }
+.cv-about-list.is-senses li::before { background: transparent; border: 1px solid var(--cream); }
+.cv-about-list span { font-size: 17px; color: #F6EEDB; line-height: 1.4; }
+.cv-about-list em { font-style: normal; font-size: 12.5px; color: var(--muted); }
+
+/* ===== From Sara: care team, What's ahead tabs, glossary, galaxy weeks ===== */
+/* ===== What's ahead: Tomorrow / This week ===== */
+/* tabs: a pill pair in the status-tag language (cream fill = selected) */
+.ah-tabs { align-self: center; display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--cream) 25%, transparent); }
+.ah-tabs button { height: 36px; padding: 0 18px; border-radius: 18px; border: 0; background: transparent;
+  font-family: var(--font-ui); font-size: 15px; font-weight: 500; color: var(--text-2); cursor: pointer; transition: background .2s, color .2s; }
+.ah-tabs button:hover { color: #F6EEDB; }
+.ah-tabs button[aria-selected="true"] { background: var(--cream); color: #0b0b0b; }
+.ah-tabs button:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+/* the panel keeps This week's layout exactly as it was */
+.ah-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: inherit; animation: cv-step-in .35s ease-out both; }
+
+/* Tomorrow: the primary view. Big times, bright words, room to breathe. */
+.ah-tomorrow { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 22px; }
+.ah-day { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ah-day li { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: baseline; padding: 14px 0;
+  border-top: 1px solid rgba(255, 255, 255, .08); animation: cv-step-in .35s ease-out both; animation-delay: calc(var(--i) * .05s); }
+.ah-day li:last-child { border-bottom: 1px solid rgba(255, 255, 255, .08); }
+.ah-day-t { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1;
+  color: var(--cream); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ah-day div { display: flex; flex-direction: column; gap: 3px; }
+.ah-day b { font-size: clamp(19px, 2.1vw, 24px); font-weight: 500; color: #F6EEDB; }
+.ah-day div span { font-size: 15px; color: var(--text-2); }
+
+/* Later this week: small, muted, one line per day */
+.ah-rest { display: flex; flex-direction: column; gap: 6px; opacity: .85; }
+.ah-rest-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.ah-rest .ah-k { margin: 0; font-size: 13px; }
+.ah-rest-link { border: 0; background: none; padding: 2px 0; font-size: 13px; color: var(--cream); cursor: pointer; }
+.ah-rest-link:hover { color: #fff; }
+.ah-rest ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.ah-rest li button { border: 0; background: none; padding: 2px 0; font-size: 13px; color: var(--muted); cursor: pointer; text-align: left; }
+.ah-rest li button b { font-weight: 500; color: var(--text-2); margin-right: 6px; }
+.ah-rest li button:hover, .ah-rest li button:hover b { color: #F6EEDB; }
+
+/* Finished: quieter, with a small "Done"; the time drops its cream so what's ahead leads */
+.ah-day li { transition: opacity .3s; }
+.ah-day li.is-done { padding: 10px 0; }
+.ah-day li.is-done .ah-day-t { color: var(--muted); font-size: clamp(18px, 2vw, 24px); }
+.ah-day li.is-done b { color: var(--text-2); font-size: clamp(16px, 1.7vw, 19px); }
+.ah-day li.is-done div > span { color: var(--muted); font-size: 14px; }
+.ah-day b { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.ah-done { display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .16); font-family: var(--font-ui); font-size: 12px; font-weight: 500; color: var(--text-2); }
+.ah-done span { color: var(--cream); }
+/* Happening now: a soft glow on the time and a white tag, like Today's "Now" */
+.ah-day li.is-now .ah-day-t { color: #FFF8E6; text-shadow: 0 0 14px color-mix(in srgb, var(--cream) 55%, transparent); }
+.ah-happening { padding: 2px 10px; border-radius: 999px; background: #fff; color: #0b0f14;
+  font-family: var(--font-ui); font-size: 11px; font-weight: 700; letter-spacing: .05em; }
+/* the "Now" line between what's done and what's ahead */
+.ah-day li.ah-day-now { display: flex; align-items: center; gap: 10px; height: 22px; padding: 0; border-top: 0; }
+.ah-day li.ah-day-now::after { content: ''; flex: 1; height: 1px; background: rgba(255, 255, 255, .22); }
+.ah-day li.ah-day-now span { padding: 2px 9px; border-radius: 999px; background: #fff; color: #0b0f14; font-size: 11px; font-weight: 700; letter-spacing: .05em; }
+.ah-day li.ah-day-now + li { border-top: 0; }
+@media (max-width: 760px) { .ah-day li { grid-template-columns: 1fr; gap: 2px; } }
+@media (prefers-reduced-motion: reduce) { .ah-panel, .ah-day li { animation: none; } }
+
+/* ===== This week: a seven-day calendar, and a major event's own page ===== */
+.ah-panel:has(.ah-ev) { overflow: auto; padding-right: 4px; }
+/* the Timeline never scrolls as a whole: it fills the panel, and only today's list scrolls inside */
+.ah-panel:has(.ah-wk) { overflow: hidden; }
+.ah-cal-sec:has(.ah-wk) { flex: 1; min-height: 0; padding-bottom: 12px; }
+.ah-cal-sec { display: flex; flex-direction: column; gap: 10px; }
+.ah-cal-sec .ah-k { margin: 0; }
+.ah-cal-scroll { overflow-x: auto; }
+.ah-cal { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(112px, 1fr)); gap: 8px; }
+.ah-cal-day { display: flex; flex-direction: column; gap: 8px; min-height: 150px; padding: 10px 10px 12px; border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .08); }
+.ah-cal-day.is-today { border-color: color-mix(in srgb, var(--cream) 55%, transparent); background: color-mix(in srgb, var(--cream) 6%, transparent); }
+.ah-cal-head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+.ah-cal-head b { font-size: 15px; font-weight: 600; color: #F6EEDB; }
+.ah-cal-day.is-today .ah-cal-head b { color: var(--cream); }
+.ah-cal-head span { font-size: 12px; color: var(--muted); }
+.ah-cal-day ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+/* routine: small and quiet */
+.ah-cal-routine { font-size: 12.5px; line-height: 1.3; color: var(--muted); }
+.ah-cal-routine span { display: block; font-size: 11.5px; color: color-mix(in srgb, var(--muted) 80%, transparent); font-variant-numeric: tabular-nums; }
+/* major events: a warm block, clearly something to open */
+.ah-cal-event { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin: 2px 0; padding: 9px 10px 8px;
+  border-radius: 10px; border: 1px solid color-mix(in srgb, var(--warm) 70%, transparent); border-left-width: 4px;
+  background: color-mix(in srgb, var(--warm) 16%, transparent); color: #fff; text-align: left; cursor: pointer;
+  transition: background .2s, transform .2s, box-shadow .2s; }
+.ah-cal-event:hover { background: color-mix(in srgb, var(--warm) 26%, transparent); transform: translateY(-1px);
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--warm) 70%, transparent); }
+.ah-cal-event:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.ah-cal-event-t { font-size: 12px; font-weight: 600; color: var(--warm); font-variant-numeric: tabular-nums; }
+.ah-cal-event b { font-size: 15px; font-weight: 600; line-height: 1.2; color: #FFF8E6; }
+.ah-cal-event-more { margin-top: 3px; font-size: 12px; color: color-mix(in srgb, var(--warm) 85%, #fff); }
+.ah-cal-waiting { margin-top: 2px; }
+
+/* What's ahead scrollbars: a slim, quiet pill in the screen's cream, no track (like ScrollArea's thumb) */
+.ah, .ah * { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--cream) 16%, transparent) transparent; }
+.ah *:hover { scrollbar-color: color-mix(in srgb, var(--cream) 30%, transparent) transparent; }
+@supports not (scrollbar-color: auto) {
+  .ah ::-webkit-scrollbar { width: 6px; height: 6px; }
+  .ah ::-webkit-scrollbar-track { background: transparent; }
+  .ah ::-webkit-scrollbar-thumb { border-radius: 3px; background: color-mix(in srgb, var(--cream) 16%, transparent); }
+  .ah ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--cream) 30%, transparent); }
+}
+
+/* Timeline: a week calendar. Today is a tall box with its full list on the left; the next six days are
+   equal compact boxes in a 3 × 2 grid on the right. Today matches the grid's height; its list scrolls inside. */
+.ah-wk { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); grid-template-rows: minmax(0, 1fr);
+  grid-template-areas: "today rest"; gap: 8px; }
+.ah-wk .ah-cal-day { min-width: 0; animation: cv-step-in .35s ease-out both; animation-delay: calc(var(--i, 0) * .05s); }
+.ah-wk-today { grid-area: today; min-height: 0; gap: 10px; }
+/* the list adds no height of its own (contain: size), so the row is sized by the grid and the list scrolls */
+.ah-wk-today .ah-sched-items { flex: 1 1 0; min-height: 0; overflow-y: auto; contain: size;
+  margin-inline: -8px; padding-inline: 8px; } /* room for the highlighted row's tint inside the scroll area */
+.ah-wk-today .ah-cal-head b { font-size: 17px; }
+.ah-wk-rest { grid-area: rest; min-width: 0; list-style: none; margin: 0; padding: 0; display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 8px; }
+/* fixed boxes; a day opened with "+N more" scrolls inside its own box if it runs long */
+.ah-wk-rest .ah-cal-day { min-height: 0; overflow-y: auto; }
+.ah-wk-rest .ah-cal-routine { min-width: 0; }
+.ah-wk-title { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text-2); }
+.ah-wk-rest .ah-cal-event { min-width: 0; padding: 7px 8px 6px; background: color-mix(in srgb, var(--warm) 24%, transparent); }
+.ah-wk-rest .ah-cal-event b { display: flex; align-items: flex-start; gap: 4px; width: 100%; min-width: 0; font-size: 13.5px; font-weight: 700; }
+.ah-wk-rest .ah-cal-event b .cv-pstar { margin-top: 2px; }
+/* a major event's name may take two lines before it truncates, so "Heart surgery" reads whole */
+.ah-wk-rest .ah-cal-event b > span { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere; }
+.ah-wk .cv-pstar { width: 13px; height: 13px; flex: none; }
+.ah-wk .cv-pstar path { fill: var(--warm); }
+.ah-wk .cv-pstar-glow { display: none; }
+.ah-wk-more { align-self: flex-start; margin-top: 2px; padding: 2px 0; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 600;
+  color: var(--text-2); cursor: pointer; }
+.ah-wk-more:hover { color: #F6EEDB; }
+.ah-wk-more:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 4px; }
+.ah-wk-empty { margin: 0; font-size: 12.5px; font-style: italic; color: var(--muted); }
+.ah-sched-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ah-sched-item, .ah-sched-major { display: grid; grid-template-columns: 88px 1fr auto; gap: 14px; align-items: baseline; }
+.ah-sched-item { padding: 6px 0; }
+.ah-sched-t { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ah-sched-what { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ah-sched-what b { font-size: 16px; font-weight: 500; color: var(--text-2); }
+.ah-sched-what > span { font-size: 13px; color: var(--muted); }
+.ah-sched-empty { margin: 0; padding: 6px 0; font-size: 14px; font-style: italic; color: var(--muted); }
+/* major events: a filled warm chip, bolder, with a marker, clearly something to open */
+.ah-sched-major { width: 100%; margin: 4px 0; padding: 10px 14px 10px 12px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--warm) 70%, transparent); border-left-width: 4px;
+  background: color-mix(in srgb, var(--warm) 22%, transparent); color: #fff; font: inherit; text-align: left; cursor: pointer;
+  transition: background .2s, transform .2s, box-shadow .2s; }
+.ah-sched-major:hover { background: color-mix(in srgb, var(--warm) 32%, transparent); transform: translateY(-1px);
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--warm) 70%, transparent); }
+.ah-sched-major:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.ah-sched-major .ah-sched-t { font-weight: 600; color: var(--warm); }
+.ah-sched-major .ah-sched-what b { display: flex; align-items: center; gap: 6px; font-size: 17px; font-weight: 700; color: #FFF8E6; }
+.ah-sched-major .ah-sched-what > span { color: color-mix(in srgb, var(--warm) 60%, #fff); }
+/* today, itemized: past entries quiet, the current or next one lit in cream, a "Now" line between */
+.ah-sched-items > li { transition: opacity .3s; }
+.ah-sched-item.is-past b, .ah-sched-item.is-past .ah-sched-t { color: var(--muted); font-weight: 400; }
+.ah-sched-items > li.is-past:has(.ah-sched-major) { opacity: .6; }
+.ah-wk-today .ah-sched-items .ah-sched-item.is-next { margin: 0 -8px; padding-inline: 8px; border-radius: 8px; background: color-mix(in srgb, var(--cream) 10%, transparent); }
+.ah-sched-item.is-next .ah-sched-t { color: var(--cream); font-weight: 600; }
+.ah-sched-item.is-next b { color: #FFF8E6; font-weight: 600; }
+.ah-sched-now { display: flex; align-items: center; gap: 10px; height: 18px; }
+.ah-sched-now::after { content: ''; flex: 1; height: 1px; background: rgba(255, 255, 255, .22); }
+.ah-sched-now span { padding: 1px 8px; border-radius: 999px; background: #fff; color: #0b0f14; font-size: 11px; font-weight: 700; letter-spacing: .05em; }
+.ah-sched-more { font-size: 13px; font-weight: 500; color: color-mix(in srgb, var(--warm) 85%, #fff); white-space: nowrap; }
+@media (max-width: 760px) {
+  /* the Timeline holds to the window: the screen fills it instead of growing with its content */
+  .cv-page:has(.ah-wk) { height: 100dvh; }
+  .cv-screen:has(.ah-wk) { flex: 1; min-height: 0; }
+  /* today takes only the room it needs (up to 40%), the six days get the rest */
+  .ah-wk { grid-template-columns: minmax(0, 1fr); grid-template-rows: fit-content(40%) minmax(0, 1fr); grid-template-areas: "today" "rest"; }
+  .ah-wk-today { overflow: hidden; }
+  .ah-wk-today .ah-sched-items { flex: 0 1 auto; contain: none; }
+  .ah-wk-rest .ah-cal-day { padding: 8px 8px 4px; gap: 4px; }
+  /* compact chips: time and title on one line */
+  .ah-wk-rest .ah-cal-routine { display: flex; gap: 4px; min-width: 0; }
+  .ah-wk-rest .ah-cal-routine > span:first-child { display: inline; flex: none; }
+  .ah-wk-rest .ah-cal-event { margin: 0; padding: 5px 6px; }
+  .ah-wk-rest .ah-cal-day ul { gap: 4px; }
+  .ah-wk-today { padding-bottom: 6px; gap: 4px; }
+  .ah-wk-today .ah-sched-item { padding: 3px 0; }
+}
+@media (prefers-reduced-motion: reduce) { .ah-wk .ah-cal-day { animation: none; } .ah-sched-major { transition: none; } .ah-sched-major:hover { transform: none; } }
+
+/* the event's page */
+.ah-ev { display: flex; flex-direction: column; gap: 14px; animation: cv-step-in .35s ease-out both; }
+.ah-ev-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ah-ev-top .cv-back:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.ah-review { font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px dashed color-mix(in srgb, var(--cream) 55%, transparent); color: var(--cream); }
+.ah-ev-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
+.ah-ev-text { display: flex; flex-direction: column; gap: 10px; }
+.ah-ev-text .ah-k { margin: 0; }
+.ah-ev-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.1; color: #F6EEDB; }
+.ah-ev-facts { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 10px 28px; }
+.ah-ev-facts dt { font-size: 12px; color: var(--muted); }
+.ah-ev-facts dd { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(20px, 2.2vw, 26px); color: var(--cream); }
+.ah-ev-note { margin: 0; font-size: 13px; color: var(--muted); }
+.ah-ev-sec { display: flex; flex-direction: column; gap: 6px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .08); }
+.ah-ev-sec h4 { margin: 0; font-size: 14px; font-weight: 500; color: var(--cream); }
+.ah-ev-sec p, .ah-ev-sec li { margin: 0; font-size: 15px; line-height: 1.5; color: var(--text-2); }
+.ah-ev-sec ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.ah-ev-ask { margin-top: 4px !important; padding: 10px 12px; border-radius: 12px; background: rgba(127, 178, 255, .08); color: var(--text) !important; }
+.ah-ev-fig { margin: 0; position: sticky; top: 0; display: flex; flex-direction: column; gap: 8px; }
+.ah-body3d { width: 100%; aspect-ratio: 4 / 5; max-height: 52vh; border-radius: 16px; cursor: grab; touch-action: none;
+  border: 1px solid rgba(255, 255, 255, .08);
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--cream) 7%, transparent), transparent 70%); }
+.ah-body3d:active { cursor: grabbing; }
+.ah-body3d:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.ah-body3d canvas { display: block; width: 100% !important; height: 100% !important; }
+.ah-ev-fig figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 14px; font-size: 13px; color: var(--muted); }
+.ah-ev-legend { display: inline-flex; align-items: center; gap: 8px; color: var(--text-2); }
+.ah-ev-legend i { width: 10px; height: 10px; border-radius: 50%; background: var(--warm); box-shadow: 0 0 8px var(--warm); }
+@media (max-width: 760px) { .ah-ev-grid { grid-template-columns: 1fr; } .ah-ev-fig { position: static; } }
+@media (prefers-reduced-motion: reduce) { .ah-ev { animation: none; } .ah-cal-event { transition: none; } .ah-cal-event:hover { transform: none; } }
+
+/* ===== Next Steps: waiting-on-a-date cards and tappable medical terms ===== */
+/* small cards in a row, thinner than the paths; more than fit scroll sideways and snap, the page never widens */
+.ah-wait { min-width: 0; margin-top: calc(var(--ah-gap-lg) - var(--ah-gap)); }
+.ah-wait .ah-k { margin: 0 0 8px; }
+.ah-wait-row { list-style: none; margin: 0; padding: 0 0 4px; display: flex; gap: 10px; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scroll-padding-inline: 0; scrollbar-width: none; }
+.ah-wait-row::-webkit-scrollbar { display: none; }
+.ah-wait-card { flex: 0 0 auto; width: clamp(180px, 46%, 260px); box-sizing: border-box; scroll-snap-align: start;
+  display: flex; flex-direction: column; gap: 2px; padding: 9px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, .02); }
+.ah-wait-title { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 15px; font-weight: 500; color: var(--text-2); }
+.ah-wait-note { font-size: 13px; line-height: 1.35; color: var(--muted); }
+@media (max-width: 760px) { .ah-wait-card { width: min(220px, 70%); } }
+
+/* a term that explains itself: the same words, a dotted cream underline says "tap me" */
+.gl-term { display: inline; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: inherit; cursor: pointer;
+  text-decoration: underline dotted color-mix(in srgb, var(--cream) 60%, transparent); text-decoration-thickness: 1.5px; text-underline-offset: .2em;
+  transition: text-decoration-color .2s, color .2s; }
+.gl-term:hover { color: #FFF8E6; text-decoration-color: var(--cream); }
+.gl-term:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 4px; }
+.gl-sheet { width: min(460px, 100%); animation: cv-step-in .25s ease-out both; }
+.gl-title { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
+.gl-stands { font-size: 13px; color: var(--cream); }
+.gl-body { font-size: 15px; line-height: 1.5; color: var(--text-2); }
+.gl-fig { margin: 2px 0 0; }
+.gl-fig img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; }
+.gl-review { align-self: flex-start; }
+@media (max-width: 760px) { .gl-scrim { place-items: end center; padding: 0; } .gl-sheet { width: 100%; border-radius: 18px 18px 0 0; } }
+@media (prefers-reduced-motion: reduce) { .gl-sheet { animation: none; } .gl-term { transition: none; } }
+
+/* ===== Next Steps: status beside the step, a pulsing current star, future steps you can peek at ===== */
+.ah-col-title { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.ah-col-title .ah-status { flex: none; }
+/* "Future": the quiet dashed pill (as in "for care-team review"), so it never reads as where she is */
+.ah-status.is-future { color: var(--muted); border-style: dashed; border-color: rgba(255, 255, 255, .22); }
+.ah-col-live, .ah-col-step { display: flex; flex-direction: column; gap: inherit; }
+.ah-col-step { animation: cv-step-in .35s ease-out both; }
+.ah-col-step.is-future .ah-now { color: var(--text-2); }
+/* stars as buttons: a 44px target around each 28px star, the path layout unchanged */
+.ah-star-btn { display: grid; place-items: center; margin: -8px; padding: 8px; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+.ah-star-btn:hover .cv-pstar.is-next path { stroke: var(--cream); }
+.ah-star-btn:focus-visible { outline: 2px solid var(--cream); outline-offset: -4px; }
+.cv-pstar-ring { fill: none; stroke: var(--cream); stroke-width: 1.4; opacity: .85; }
+.cv-pstar.is-selected.is-next path { fill: color-mix(in srgb, var(--cream) 22%, #0b0f14); stroke: var(--cream); }
+/* the current star breathes, slowly and only a little */
+.ah-stars .cv-pstar.is-now path { transform-box: fill-box; transform-origin: center; animation: ah-pulse 2.6s ease-in-out infinite; }
+@keyframes ah-pulse { 50% { transform: scale(1.06); opacity: .88; } }
+@media (prefers-reduced-motion: reduce) {
+  .ah-stars .cv-pstar.is-now path, .ah-stars .cv-pstar-glow, .ah-col-step { animation: none; }
+}
+
+/* ===== Home: one line for her status, terms in a popover, three levels of buttons ===== */
+.cv-cap { height: 104px; gap: 10px; width: 100%; }
+.cv-cap .cv-detail-k b { color: #F6EEDB; font-weight: 500; }
+.cv-one { width: 100%; max-width: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: clamp(24px, 3.2vw, 38px); line-height: 1.3; padding: 0 4px; }
+.cv-term-btn { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, var(--cream) 60%, transparent); text-decoration-thickness: 2px; text-underline-offset: 6px; }
+.cv-term-btn.is-open { color: var(--cream); }
+.cv-term-btn:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; border-radius: 4px; }
+.cv-pop { position: absolute; left: 50%; bottom: calc(100% - 6px); transform: translateX(-50%); z-index: 4; width: min(400px, 90vw); bottom: calc(100% + 6px);
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 16px 20px 18px; border-radius: 16px; text-align: center;
+  background: #0d0d11; border: 1px solid color-mix(in srgb, var(--cream) 28%, transparent); box-shadow: 0 18px 40px rgba(0, 0, 0, .6);
+  animation: cv-fade-in .2s ease both; }
+.cv-pop::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 12px; height: 12px; margin-left: -6px; transform: rotate(45deg);
+  background: #0d0d11; border-right: 1px solid color-mix(in srgb, var(--cream) 28%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--cream) 28%, transparent); }
+.cv-pop .cv-her-fig { position: static; transform: none; margin: -4px 0 4px; }
+.cv-pop-word { margin: 0; font-size: 19px; font-weight: 600; color: #F6EEDB; }
+.cv-pop-stands { margin: 0; font-size: 13px; color: var(--muted); }
+.cv-pop-means { margin: 0; font-size: 15.5px; line-height: 1.45; color: var(--text-2); }
+.theme-confetti .cv-pop { background: #101018; }
+
+/* care team: top right, secondary */
+.cv-top { align-items: center; }
+.cv-top-right { display: flex; align-items: center; gap: 18px; }
+.cv-page .cv-btn.is-call.is-top, .theme-confetti .cv-btn.is-call.is-top { height: 40px; padding: 0 16px; font-size: 15px; font-weight: 500;
+  background: transparent; color: #F6EEDB; border-color: color-mix(in srgb, var(--cream) 45%, transparent); }
+.theme-confetti .cv-btn.is-call.is-top .cv-btn-icon { border-color: currentColor; }
+/* at night the header goes dark, but her care team is still a tap away */
+.cv-screen.is-night .cv-top { visibility: visible; }
+.cv-screen.is-night .cv-top-left, .cv-screen.is-night .cv-clock { visibility: hidden; }
+
+/* What's ahead: bottom right, primary */
+.cv-btn.is-primary { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; gap: 10px; }
+.cv-btn.is-primary span { font-size: 1.2em; line-height: 1; }
+/* Mila's stars: bottom left, tertiary */
+.cv-btn.is-tertiary { border-color: transparent; background: transparent; color: var(--text-2); padding-left: 6px; }
+.cv-btn.is-tertiary:hover { color: #F6EEDB; }
+/* the arc's own "What's ahead" label gives way to the button */
+.cv-arc-ahead-label:not(.is-past) { display: none; }
+.cv-page .cv-screen.is-night .cv-btn.is-call.is-top { color: #a3a9ad; border-color: #34393d; }
+.cv-one { font-size: clamp(20px, 2.6vw, 30px); }
+
+/* ===== Monitor: smaller margins all round ===== */
+.cv-screen { padding: 2.2% 3%; border-width: 8px; }
+.cv-page { padding: 10px 10px 20px; gap: 10px; }
+
+/* in a week or a day of her sky, its own back button is the way out; "Today" waits until she's back at her whole sky */
+.cv-screen:has(.cv-galaxy.is-week) .cv-today-btn, .cv-screen:has(.cv-galaxy.is-day) .cv-today-btn { display: none; }
+
+/* ===== If she doesn't go home: her sky, kept ===== */
+.rem { position: absolute; inset: 0; z-index: 0; overflow: hidden; border-radius: 10px; display: grid; grid-template-columns: minmax(300px, 40%) 1fr;
+  align-items: center; padding: 3% 3% 9% 4%; gap: 2%; animation: cv-fade-in 1.6s ease both; }
+.rem-sky { grid-column: 2; grid-row: 1; width: 100%; height: 100%; max-height: 100%; position: relative; z-index: 1; overflow: visible; }
+.rem-star { opacity: 0; animation: rem-in 1.6s ease forwards; }
+.rem-line { opacity: 0; animation: rem-in 2.4s ease forwards; }
+@keyframes rem-in { to { opacity: 1; } }
+.rem-halo { transform-box: fill-box; transform-origin: center; animation: cv-breathe 4s ease-in-out infinite; }
+.rem-words { grid-column: 1; grid-row: 1; position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; opacity: 0; animation: rem-in 1.8s 4.2s ease forwards; }
+.rem-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.4vw, 52px); line-height: 1; color: var(--cream); }
+.rem-sub { margin: -4px 0 4px; font-size: 15px; color: var(--text-2); }
+.rem-sec { display: flex; flex-direction: column; gap: 6px; }
+.rem-k { font-size: 12.5px; color: var(--muted); }
+.rem-who, .rem-did { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.rem-who li { font-size: 15.5px; line-height: 1.4; color: #e8e0cf; }
+.rem-did button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 3px 8px; margin-left: -8px; border: 0; border-radius: 8px; background: none; text-align: left;
+  font: inherit; font-size: 15.5px; line-height: 1.35; color: #e8e0cf; cursor: pointer; }
+.rem-did button i { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--cream); opacity: .55; }
+.rem-did button.is-on { background: rgba(255, 255, 255, .05); color: #fff; }
+.rem-did button.is-on i { opacity: 1; box-shadow: 0 0 8px var(--cream); }
+.rem-end { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.rem-loved { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(20px, 2.2vw, 26px); color: var(--cream); }
+.rem-people { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); max-width: 40ch; }
+@media (prefers-reduced-motion: reduce) { .rem, .rem-star, .rem-line, .rem-words, .rem-halo { animation: none; opacity: 1; } }
+.cv-screen:has(.rem) .cv-actions { margin-top: auto; }
+/* the bar spans the screen; let taps through its empty part so Continue (under it) stays reachable */
+.cv-screen:has(.rem) .cv-actions { pointer-events: none; }
+.cv-screen:has(.rem) .cv-actions > * { pointer-events: auto; }
+.rem { padding: 2.5% 3% 11% 4%; }
+.rem-words { gap: 10px; }
+.rem-who li, .rem-did button { font-size: clamp(13.5px, 1.35vw, 15.5px); }
+.rem-did button { padding: 2px 8px; }
+/* her kept sky, with room to breathe */
+.rem-words { gap: 30px; max-width: 380px; }
+.rem-name { margin-bottom: -18px; }
+.rem-sub { margin: 0; }
+.rem-sec { gap: 10px; }
+.rem-who li { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(16px, 1.7vw, 20px); line-height: 1.4; color: #e8e0cf; }
+.rem-did { gap: 6px; }
+.rem-did button { padding: 4px 8px; }
+.rem-end { margin-top: 0; }
+/* her story, told one moment at a time (like going home), then everything at once */
+.rem.is-story { display: block; cursor: pointer; }
+.rem.is-story .rem-sky { position: absolute; left: 30%; right: 3%; top: 5%; bottom: 16%; width: auto; height: auto; }
+.rem-story { left: 4%; bottom: 92px; width: min(400px, 40%); cursor: default; }
+.rem-story .cv-story-text { font-size: clamp(15px, 1.5vw, 17px); line-height: 1.5; color: #e8e0cf; }
+/* hierarchy: the day sits apart as a label, the title leads, the words follow a step quieter */
+.rem-story .cv-story-k { margin-bottom: 8px; opacity: .7; }
+.rem-story .cv-story-text { color: #e8e0cf; opacity: .72; }
+.rem-story-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+.rem-story-foot .cv-story-dots { margin-top: 0; }
+.rem-continue { cursor: pointer; background: transparent; color: #F6EEDB; font: inherit; font-size: 14px; }
+.rem.is-end .rem-words { animation-delay: .4s; gap: 22px; max-width: 400px; }
+.rem.is-end .rem-name { margin-bottom: -8px; }
+.rem-who li { font-size: clamp(15px, 1.55vw, 18px); }
+.rem-did button span { flex: none; width: 52px; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rem-again { align-self: flex-start; cursor: pointer; background: transparent; color: var(--text-2); font: inherit; font-size: 13.5px; }
+.rem-halo { animation: cv-fade-in .8s ease both, cv-breathe 4s ease-in-out .8s infinite; }
+.rem-again { position: absolute; z-index: 2; top: 18px; right: 20px; animation: cv-fade-in .6s .6s ease both; }
+.rem.is-end .rem-words { gap: 18px; }
+/* the last page: her name, her story, and who loved her, each given room */
+.rem.is-end .rem-words { gap: 36px; }
+.rem.is-end .rem-name { margin-bottom: 0; }
+
+/* Embedded (the presentation's iPad frame): just the screen, filling the window */
+.cv-page.is-embed { padding: 0; gap: 0; height: 100vh; min-height: 0; overflow: hidden; }
+.cv-page.is-embed .cv-proto { display: none; }
+.cv-page.is-embed .cv-screen { width: 100vw; height: 100vh; aspect-ratio: auto; border: 0; border-radius: 0; }
+/* Her first day: fewer things at once. Her name and when, then, after a breath, how small she is */
+.fd-group { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.fd-group + .fd-group { margin-top: 30px; }
+.fd-born { margin: 0; font-size: clamp(14px, 1.5vw, 17px); color: var(--muted); }
+.fd-size { margin: 0; max-width: none; }
+.fd-size b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
+.fd-size span { display: block; margin-top: 0; font-size: clamp(15px, 1.6vw, 18px); color: var(--text-2); }
+.fd-size em { font-style: normal; font-size: clamp(13px, 1.35vw, 15px); color: var(--muted); }
+/* her name is the one big thing; her weight reads as a fact beneath it, in the plain type */
+.fd-size b { font-family: var(--font-ui); font-style: normal; font-weight: 500; font-size: clamp(17px, 1.8vw, 21px); letter-spacing: .01em; color: #F6EEDB; }
+.fd-group + .fd-group { margin-top: 26px; }
+/* Day 1, wide rather than stacked */
+.fd-star-row { position: relative; display: flex; justify-content: center; }
+.fd-star-note { position: absolute; left: calc(100% + 4px); top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 10px; white-space: nowrap; font-size: clamp(12.5px, 1.3vw, 14px); color: var(--muted); }
+.fd-star-note::before { content: ''; width: 28px; height: 1px; background: color-mix(in srgb, var(--cream) 35%, transparent); }
+.fd-facts { margin-top: 22px; display: flex; align-items: stretch; gap: 28px; }
+.fd-facts > div { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.fd-facts > i { width: 1px; background: color-mix(in srgb, var(--cream) 18%, transparent); }
+.fd-facts b { font-weight: 500; font-size: clamp(17px, 1.8vw, 21px); color: #F6EEDB; }
+.fd-facts span { font-size: clamp(13px, 1.4vw, 15px); color: var(--muted); }
+/* Day 1, stacked again, in smaller type so it reads as one quiet column */
+.fd-name { font-size: clamp(30px, 3.6vw, 44px); }
+.fd-born { font-size: clamp(12.5px, 1.3vw, 14.5px); }
+.fd-group { gap: 4px; }
+.fd-group + .fd-group { margin-top: 20px; }
+.fd-size b { font-size: clamp(15px, 1.5vw, 17px); }
+.fd-size span { font-size: clamp(13px, 1.35vw, 15px); }
+.fd-size em { font-size: clamp(12px, 1.2vw, 13.5px); }
+.fd-size span b { font-size: inherit; }
+/* ======================================================================================
+   Navigation system. One inset, two bars, one button spec, one icon set.
+   - Every page: a top bar (back + title on the left, the corner action on the right) and a
+     bottom bar (secondary actions left, the one primary action right), both on the same
+     inset from the screen edge, including her sky, a week, a day and the discharge mobile.
+   - "Back" is always top-left and always names where it goes: ‹ Today, ‹ Mila's stars, ‹ Week 2.
+   - Buttons: 36px tall (with an invisible 44px hit area), 14px medium label, 16px SVG icon,
+     6px icon-label gap. The icon side gets 3px less padding so the pair looks optically centred.
+   ====================================================================================== */
+.cv-page {
+  --edge-x: 40px; --edge-y: 32px; --nav-h: 36px; --nav-hit: 44px; --nav-gap: 8px;
+  --nav-border: color-mix(in srgb, var(--cream) 32%, transparent);
+  --nav-border-hi: color-mix(in srgb, var(--cream) 60%, transparent);
+}
+/* navigation scales with the screen (1176px wide at full size), so a small window is the same screen, smaller */
+.cv-page .cv-screen { padding: var(--edge-y) var(--edge-x); }
+
+/* the two bars */
+.cv-page .cv-top { min-height: var(--nav-h); align-items: center; margin: 0; }
+.cv-page .cv-top-left, .cv-page .cv-top-right { display: flex; align-items: center; gap: 16px; min-height: var(--nav-h); }
+.cv-page .cv-top-left .cv-top-title { margin: 0; line-height: 1; }
+.cv-page .cv-actions { min-height: var(--nav-h); align-items: center; gap: var(--nav-gap); margin-top: auto; }
+.cv-page .cv-actions-left { gap: var(--nav-gap); align-items: center; }
+
+/* overlays (her sky, the discharge mobile) sit on exactly the same bars */
+.cv-page .cv-galaxy-nav, .cv-page .nav-bar-top {
+  position: absolute; z-index: 3; left: var(--edge-x); top: var(--edge-y); height: var(--nav-h);
+  display: flex; align-items: center; gap: var(--nav-gap);
+}
+.cv-page .cv-galaxy-nav[hidden] { display: none; }
+/* (.nav-btn sets position: relative for its hit area, so the corner button needs the higher specificity) */
+.cv-page .nav-btn.cv-discharge-btn, .cv-page .cv-story-ctls {
+  position: absolute; z-index: 3; right: var(--edge-x); top: var(--edge-y); height: var(--nav-h); display: flex; align-items: center;
+}
+/* titles start one bar below the top bar */
+.cv-page .cv-galaxy-title, .cv-page .cv-galaxy.is-galaxy .cv-galaxy-title { left: var(--edge-x); top: calc(var(--edge-y) + var(--nav-h) + 22px); gap: 6px; }
+.cv-page .cv-discharge .cv-galaxy-title { top: calc(var(--edge-y) + var(--nav-h) + 22px); }
+.cv-page .cv-galaxy-head { gap: 4px; }
+.cv-page .cv-story { left: var(--edge-x); bottom: var(--edge-y); }
+.cv-page .cv-sheet.cv-ginfo { left: var(--edge-x); top: calc(var(--edge-y) + var(--nav-h) + 96px); }
+
+/* the button */
+.cv-page .nav-btn {
+  position: relative; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none;
+  height: var(--nav-h); padding: 0 14px; margin: 0; border-radius: 999px;
+  border: 1px solid var(--nav-border); background: rgba(8, 10, 14, .55); color: #F1EADB;
+  font-family: var(--font-ui); font-size: 14px; font-weight: 500; line-height: 1; letter-spacing: .005em; white-space: nowrap;
+  cursor: pointer; transition: border-color .2s, background-color .2s, color .2s, opacity .2s;
+}
+.cv-page .nav-btn > span { display: block; line-height: 1; padding-top: 1px; } /* cap-height centring */
+.cv-page .nav-btn:has(> svg:first-child) { padding-left: 11px; }
+.cv-page .nav-btn.is-trailing { padding-right: 11px; }
+/* smaller to look at, same to tap: the hit area stays 44px */
+.cv-page .nav-btn::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: var(--nav-hit); transform: translateY(-50%); }
+.cv-page .nav-btn:hover { border-color: var(--nav-border-hi); background: rgba(243, 227, 181, .06); color: #fff; }
+.cv-page .nav-btn:focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
+.cv-page .nav-btn:disabled { opacity: .32; cursor: default; pointer-events: none; }
+
+.cv-page .nav-btn.is-primary { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; }
+.cv-page .nav-btn.is-primary:hover { background: #fff3cf; border-color: #fff3cf; color: #000; }
+.cv-page .nav-btn.is-icon { width: var(--nav-h); padding: 0; }
+.cv-page .nav-step { display: inline-flex; gap: 4px; }
+
+.cv-page .nav-btn.is-icon::before { left: 50%; width: var(--nav-hit); transform: translate(-50%, -50%); }
+
+/* the info button by "Mila's stars": an icon-only quiet button */
+.cv-page .cv-ginfo-btn { width: 32px; height: 32px; margin: 0; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: var(--text-2); background: transparent; }
+.cv-page .cv-ginfo-btn:hover, .cv-page .cv-ginfo-btn[aria-expanded="true"] { color: var(--cream); background: rgba(243, 227, 181, .08); }
+
+/* theme 2 (confetti): same geometry, its own colours */
+.theme-confetti .nav-btn.is-call { background: var(--cream); border-color: var(--cream); color: #0a0a0a; font-weight: 600; }
+
+/* night and comfort care: same geometry, almost no light */
+.cv-screen.is-night .nav-btn, .cv-screen:has(.comfort) .nav-btn { background: transparent; border-color: #2c3135; color: #9aa0a4; font-weight: 500; }
+.cv-screen.is-night .nav-btn:hover, .cv-screen:has(.comfort) .nav-btn:hover { border-color: #4a5055; color: #c9ced1; }
+
+/* the event detail page in What's ahead: its back sits on the same bar height */
+.cv-page .ah-ev-top { min-height: var(--nav-h); display: flex; align-items: center; gap: 16px; }
+
+/* retire the old one-off controls where they might still render */
+.cv-page .cv-today-btn, .cv-page .cv-back-today { display: none; }
+
+/* ---- scale + icons ----
+   Every nav number scales with the window (full size at ~1230px wide, never below a readable floor),
+   so a small window shows the same screen, smaller, instead of oversized buttons on a tiny screen.
+   Icons: cropped viewBoxes, one optical height (--ic) against the label's cap height, 1.5px stroke. */
+.cv-page {
+  --edge-x: clamp(16px, 3.25vw, 40px); --edge-y: clamp(14px, 2.6vw, 32px);
+  --nav-h: clamp(28px, 2.95vw, 36px); --nav-gap: clamp(6px, .65vw, 8px);
+  --nav-fs: clamp(12px, 1.14vw, 14px); --nav-px: clamp(10px, 1.14vw, 14px);
+  --ic: clamp(10px, .98vw, 12px);
+}
+.cv-page .nav-btn { font-size: var(--nav-fs); padding: 0 var(--nav-px); gap: calc(var(--ic) * .58); }
+.cv-page .nav-btn > span { padding-top: 0; }
+@supports (text-box: trim-both cap alphabetic) {
+  .cv-page .nav-btn > span { text-box: trim-both cap alphabetic; } /* centre on the cap height, not the line box */
+}
+.cv-page .nav-btn:has(> svg:first-child) { padding-left: calc(var(--nav-px) - 2px); }
+.cv-page .nav-btn.is-trailing { padding-right: calc(var(--nav-px) - 2px); }
+.cv-page .nav-btn.is-icon, .cv-page .nav-btn.is-icon:has(> svg:first-child) { width: var(--nav-h); padding: 0; } /* beats the icon-side padding rule */
+/* a chevron's weight sits at its point: nudge each half a pixel toward its open side so it reads centred */
+.cv-page .nav-btn.is-icon .nav-ic.is-left { translate: .5px 0; }
+.cv-page .nav-btn.is-icon .nav-ic.is-right { translate: -.5px 0; }
+
+.nav-ic, .cv-page .nav-ic { height: var(--ic); width: auto; flex: none; display: block; overflow: visible;
+  fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.nav-ic * { vector-effect: non-scaling-stroke; }
+.cv-page .nav-ic.is-chev { height: calc(var(--ic) * .86); }               /* a chevron reads larger than its box */
+.cv-page .nav-btn.is-icon .nav-ic.is-chev { height: calc(var(--ic) * 1.05); }
+.cv-page .cv-ginfo-btn .nav-ic { height: calc(var(--ic) * 1.15); }
+/* the mini sky on "Mila's stars": same height as the other icons, its own colours */
+.cv-page .nav-btn .cv-lookup { height: calc(var(--ic) * 1.0); width: auto; margin: 0; overflow: visible; }
+/* Figtree (theme 2) sits its cap height ~0.6px higher than Geist: lift the icons to match */
+.theme-confetti .nav-btn > svg { translate: 0 -0.6px; }
+
+/* prototype bar: wrap, never push the page sideways */
+.cv-proto { max-width: 100%; justify-content: center; }
+.cv-proto .cv-seg { flex-wrap: wrap; max-width: 100%; }
+.cv-page { overflow-x: hidden; }
+.theme-confetti .nav-btn.is-icon .nav-ic.is-left { translate: .5px -.6px; }
+.theme-confetti .nav-btn.is-icon .nav-ic.is-right { translate: -.5px -.6px; }
+
+/* Day panel: plain description, then label/value metrics in two columns */
+
+.cv-page .cv-gfacts { margin: 0; display: flex; flex-direction: column; border-top: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-gfacts-row { display: grid; grid-template-columns: 112px 1fr; column-gap: 16px; align-items: baseline; padding: 9px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-gfacts dt { font-size: 13px; color: var(--muted); }
+.cv-page .cv-gfacts dd { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Breadcrumb (where you are, top-left) and pager (sideways, bottom-left) in her sky.
+   Up and sideways look different on purpose: slashes up top, named chevron buttons below. */
+.cv-page .nav-crumbs ol { list-style: none; margin: 0; padding: 0 6px; height: var(--nav-h); display: flex; align-items: center;
+  border: 1px solid var(--nav-border); border-radius: 999px; background: rgba(8, 10, 14, .55); }
+.cv-page .nav-crumbs li { display: flex; align-items: center; }
+.cv-page .nav-crumb { position: relative; display: flex; align-items: center; height: var(--nav-h); padding: 0 8px; margin: 0; border: 0; background: none;
+  font-family: var(--font-ui); font-size: var(--nav-fs); font-weight: 500; line-height: 1; color: var(--text-2); white-space: nowrap; cursor: pointer; }
+.cv-page button.nav-crumb::before { content: ''; position: absolute; inset: 50% 0 auto; height: var(--nav-hit); transform: translateY(-50%); }
+.cv-page button.nav-crumb:hover { color: #fff; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--cream) 50%, transparent); text-underline-offset: 4px; }
+.cv-page button.nav-crumb:focus-visible { outline: 2px solid var(--cream); outline-offset: -2px; border-radius: 999px; }
+.cv-page .nav-crumb.is-here { color: var(--cream); cursor: default; }
+.cv-page .nav-crumbs-sep { color: color-mix(in srgb, var(--cream) 30%, transparent); font-size: var(--nav-fs); line-height: 1; }
+
+.cv-page .nav-pager { position: absolute; z-index: 3; left: var(--edge-x); bottom: var(--edge-y); display: flex; gap: var(--nav-gap); }
+.cv-page .nav-pager .nav-btn:disabled { opacity: .3; }
+.cv-galaxy.is-leaving .nav-pager { opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+
+/* No visible scrollbars anywhere (scrolling, wheel and touch still work) */
+html, body, .cv-page, .cv-page * { scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+/* ---- Week and day panels: one spacing rhythm ----
+   title → 14px → description → 28px → section (heading → 10px → content) → 28px → section … */
+.cv-page .cv-gpanel {
+  right: var(--edge-x); top: var(--edge-y); bottom: var(--edge-y); width: min(380px, 36%);
+  display: flex; flex-direction: column; gap: 28px; padding: 6px 0 24px; overflow-y: auto;
+}
+.cv-page .cv-gpanel-title { margin: 0 0 -14px; line-height: 1.08; }          /* title sits 14px above its description */
+.cv-page .cv-gpanel-desc { display: flex; flex-direction: column; gap: 10px; }
+.cv-page .cv-gpanel-desc p { margin: 0; font-size: 15px; line-height: 1.4; color: var(--text-2); text-wrap: pretty; }
+.cv-page .cv-gsec { display: flex; flex-direction: column; gap: 10px; }
+.cv-page .cv-gsec-k { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-family: var(--font-ui); }
+.theme-nursery .cv-gsec-k { font-family: "Geist Mono", ui-monospace, monospace; font-weight: 500; letter-spacing: .08em; }
+
+/* rows shared by metrics, moments and firsts: label column, value column, hairline between rows */
+.cv-page .cv-gfacts, .cv-page .cv-grows { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0;
+  border-top: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-gfacts-row, .cv-page .cv-grows > li > button {
+  display: grid; grid-template-columns: 104px 1fr; column-gap: 16px; align-items: baseline; padding: 10px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-grows > li > button { width: 100%; margin: 0; border-top: 0; border-left: 0; border-right: 0; background: none; text-align: left; cursor: pointer; color: var(--text); font: inherit; }
+.cv-page .cv-grows > li > button:hover .cv-grows-v { color: var(--cream); }
+.cv-page .cv-grows > li > button:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 4px; }
+.cv-page .cv-gfacts dt, .cv-page .cv-grows-k { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cv-page .cv-gfacts dd, .cv-page .cv-grows-v { margin: 0; font-size: 14px; line-height: 1.35; color: var(--text); display: flex; flex-direction: column; gap: 4px; }
+.cv-page .cv-grows-v { flex-direction: row; align-items: center; gap: 8px; }
+.cv-page .cv-grows .cv-gplanet { flex: none; }
+
+/* a tappable time inside a paragraph */
+.cv-page .cv-gpanel-at { padding: 0; margin: 0; border: 0; background: none; font: inherit; color: var(--warm); font-variant-numeric: tabular-nums; cursor: pointer;
+  text-decoration: underline dotted; text-underline-offset: 3px; }
+.cv-page .cv-gpanel-at:hover, .cv-page .cv-gpanel-at[aria-expanded="true"] { color: var(--cream); text-decoration-style: solid; }
+
+/* a selected moment or an opened detail: one quiet card */
+.cv-page .cv-gmoment { gap: 8px; padding: 14px 16px; border-radius: 12px; }
+.cv-page .cv-gmoment-t { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cv-page .cv-gmoment b { font-size: 16px; }
+.cv-page .cv-gmoment p { line-height: 1.4; }
+
+/* week: day chips */
+.cv-page .cv-gpanel-days { margin-top: 0; gap: 6px; }
+
+/* ---- "Mila's stars" ⇄ "Close": one button, same place, morphs as her sky opens and closes ---- */
+.cv-page .cv-skyt { gap: calc(var(--ic) * .58); padding-left: calc(var(--nav-px) - 2px); }
+.cv-skyt-ic { position: relative; flex: none; height: var(--ic); width: calc(var(--ic) * 1.48); transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-skyt.is-open .cv-skyt-ic { width: calc(var(--ic) * .9); }
+.cv-skyt-ic > svg { position: absolute; top: 50%; left: 50%; transition: opacity .35s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-page .cv-skyt-ic .cv-lookup { height: var(--ic); width: auto; transform: translate(-50%, -50%); }
+.cv-page .cv-skyt-ic .nav-ic.is-x { height: calc(var(--ic) * .82); transform: translate(-50%, -50%) rotate(-90deg) scale(.6); opacity: 0; }
+.cv-skyt.is-open .cv-skyt-ic .cv-lookup { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
+.cv-skyt.is-open .cv-skyt-ic .nav-ic.is-x { opacity: 1; transform: translate(-50%, -50%) rotate(0) scale(1); }
+
+.cv-skyt-label { position: relative; display: block; height: 1em; width: var(--wa, auto); overflow: hidden; transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-skyt.is-open .cv-skyt-label { width: var(--wb, auto); }
+.cv-skyt-label > span { position: absolute; left: 0; top: 0; line-height: 1; white-space: nowrap; transition: opacity .3s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-skyt-label > span:last-child { opacity: 0; transform: translateY(40%); }
+.cv-skyt.is-open .cv-skyt-label > span:first-child { opacity: 0; transform: translateY(-40%); }
+.cv-skyt.is-open .cv-skyt-label > span:last-child { opacity: 1; transform: none; }
+.cv-skyt[aria-disabled="true"] { pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .cv-skyt *, .cv-skyt-ic, .cv-skyt-label { transition-duration: .01s !important; } }
+
+/* it stays put while today turns into a star and back; the rest of the footer fades as before */
+.cv-screen.is-forming .cv-actions, .cv-screen.is-unforming .cv-actions { opacity: 1; animation: none; }
+.cv-screen.is-forming .cv-actions > :not(.cv-actions-left) { opacity: 0; transition: opacity .7s ease; }
+.cv-screen.is-unforming .cv-actions > :not(.cv-actions-left) { animation: cv-fade-in .8s ease 2s both; }
+.cv-screen.is-galaxy .cv-actions { z-index: 4; }
+
+/* her sky: the title takes the top-left corner (no breadcrumb at the top level) */
+.cv-page .cv-galaxy.is-galaxy .cv-galaxy-title { top: var(--edge-y); }
+/* pager: bottom centre of the sky area (left of the side panel), clear of Close */
+.cv-page .nav-pager { left: calc((100% - min(380px, 36%) - var(--edge-x)) / 2); transform: translateX(-50%); }
+
+/* close buttons inside sheets and cards: same button, aligned to the end of their row / card */
+.cv-page .cv-sheet-head .nav-btn { flex: none; }
+.cv-page .cv-gmoment .nav-btn.is-close { align-self: flex-start; margin-top: 4px; }
+.cv-page .nav-ic.is-x { height: calc(var(--ic) * .82); }
+
+/* Dot pagination: bottom centre of the sky. The current dot stretches into a pill. */
+.cv-page .nav-dots { position: absolute; z-index: 3; bottom: var(--edge-y); left: calc((100% - min(380px, 36%) - var(--edge-x)) / 2); transform: translateX(-50%);
+  height: var(--nav-h); display: flex; align-items: center; gap: 2px; padding: 0 8px; border-radius: 999px; background: rgba(8, 10, 14, .45); }
+.cv-page .nav-dot { position: relative; display: grid; place-items: center; width: 20px; height: var(--nav-h); padding: 0; margin: 0; border: 0; background: none; cursor: pointer; }
+.cv-page .nav-dot::before { content: ''; position: absolute; inset: 50% auto auto 50%; width: 32px; height: var(--nav-hit); transform: translate(-50%, -50%); } /* easy to tap */
+.cv-page .nav-dot i { display: block; width: 6px; height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--cream) 35%, transparent);
+  transition: width .35s cubic-bezier(.22, 1, .36, 1), background-color .25s; }
+.cv-page .nav-dot:hover i { background: color-mix(in srgb, var(--cream) 70%, transparent); }
+.cv-page .nav-dot.is-on { width: 34px; }
+.cv-page .nav-dot.is-on i { width: 20px; background: var(--cream); }
+.cv-page .nav-dot:focus-visible { outline: none; }
+.cv-page .nav-dot:focus-visible i { outline: 2px solid var(--cream); outline-offset: 3px; }
+.cv-page .nav-dot { transition: width .35s cubic-bezier(.22, 1, .36, 1); }
+.cv-galaxy.is-leaving .nav-dots { opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+
+/* Moments: a row opens in place — the description sits under its title, in the value column */
+.cv-page .cv-grows > li { border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .cv-grows > li > button { border-bottom: 0; }
+.cv-page .cv-grows > li.is-open .cv-grows-v { color: var(--cream); }
+.cv-page .cv-grows-desc { margin: -4px 0 0 120px; padding: 0 0 12px; display: flex; flex-direction: column; gap: 6px; animation: cv-grows-in .3s ease both; }
+.cv-page .cv-grows-desc p { margin: 0; font-size: 14px; line-height: 1.4; color: var(--text-2); text-wrap: pretty; }
+.cv-page .cv-grows-by { font-size: 12px; color: var(--muted); }
+@keyframes cv-grows-in { from { opacity: 0; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .cv-page .cv-grows-desc { animation: none; } }
+/* dots: centred under the sky, but never closer to Close than a clear gap (Close ≈ 100px wide, dots ≈ 160px) */
+.cv-page .nav-dots { left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2), calc(var(--edge-x) + 100px + 24px + 80px)); }
+/* final rule: left edge = centred under the sky (minus half the dots), but never left of Close + a gap */
+.cv-page .nav-dots { transform: none; left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2 - 80px), calc(var(--edge-x) + 112px)); }
+.cv-page .nav-dot { width: clamp(13px, 1.6vw, 20px); }
+.cv-page .nav-dot.is-on { width: clamp(24px, 2.7vw, 34px); }
+.cv-page .nav-dot.is-on i { width: clamp(14px, 1.6vw, 20px); }
+.cv-page .nav-dots { padding: 0 clamp(4px, .65vw, 8px); left: max(calc((100% - min(380px, 36%) - var(--edge-x)) / 2 - 80px), calc(var(--edge-x) + clamp(96px, 9vw, 112px))); }
+/* dots: positioned by measurement (Galaxy.jsx); no transform, so `left` is the row's left edge */
+.cv-page .nav-dots { transform: none; }
+/* dots: centred on a fixed anchor (Galaxy.jsx), so the row never slides; only the active dot animates */
+.cv-page .nav-dots { transform: translateX(-50%); transition: none; }
+
+/* sections breathe more, and their headings read brighter */
+.cv-page .cv-gpanel { gap: 40px; }
+.cv-page .cv-gpanel-title { margin-bottom: -26px; }   /* keep the title 14px above its description */
+.cv-page .cv-gsec { gap: 12px; }
+.cv-page .cv-gsec-k { color: #ECE6DA; }
+/* panel descriptions: line height = 1.3 × font size */
+.cv-page .cv-gpanel-desc p, .cv-page .cv-grows-desc p { line-height: 1.3; }
+
+/* ======================= Care team: the people, nothing else ======================= */
+.cv-scrim.ts-scrim { background: rgba(3, 4, 7, .7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: cv-fade-in .25s ease both; }
+.cv-page .ts {
+  box-sizing: border-box; width: min(420px, 100%); max-height: min(640px, 92vh); overflow-y: auto;
+  padding: 24px 28px 12px; border-radius: 22px; background: #0b0c10;
+  border: 1px solid color-mix(in srgb, var(--cream) 12%, transparent);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .6); color: var(--text);
+  animation: ts-in .35s cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes ts-in { from { opacity: 0; transform: translateY(10px) scale(.985); } }
+.cv-page .ts-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; }
+.cv-page .ts-head .nav-btn { margin-right: -8px; }
+.cv-page .ts-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 28px; line-height: 1.1; color: var(--cream); }
+.cv-page .ts-list { list-style: none; margin: 0; padding: 0; }
+.cv-page .ts-list li { display: flex; flex-direction: column; gap: 4px; padding: 14px 0; border-top: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); }
+.cv-page .ts-list b { font-size: 16px; font-weight: 600; color: #fff; }
+.cv-page .ts-list span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
+@media (prefers-reduced-motion: reduce) { .cv-page .ts, .ts-scrim { animation: none; } }
+
+/* care team: people are tappable rows; asking and the confirmation share the sheet */
+.cv-page .ts { padding: 24px 28px 24px; }
+.cv-page .ts-body { display: flex; flex-direction: column; gap: 20px; animation: cv-fade-in .3s ease both; }
+.cv-page .ts-head { margin-bottom: 0; }
+.cv-page .ts-head.is-nav { margin: 0 -8px; }
+.cv-page .ts-head.is-nav .nav-btn { margin: 0; }
+.cv-page .ts-list { margin-top: -4px; }
+.cv-page .ts-list li { padding: 0; }
+.cv-page .ts-person { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cv-page .ts-list .ts-person span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
+
+.cv-page .ts-title-block { display: flex; flex-direction: column; gap: 6px; }
+.cv-page .ts-title-block.is-center { align-items: center; text-align: center; }
+.cv-page .ts-sub { margin: 0; font-size: 14px; line-height: 1.35; color: var(--text-2); text-wrap: pretty; }
+.cv-page .ts-sec { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.cv-page .ts-reasons { gap: 8px; }
+.cv-page .ts-reasons legend { padding: 0; margin-bottom: 10px; }
+.cv-page .ts-reason { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); font-size: 15px; line-height: 1.3; color: var(--text); transition: border-color .2s, background-color .2s; }
+.cv-page .ts-reason:hover { border-color: color-mix(in srgb, var(--cream) 30%, transparent); }
+.cv-page .ts-reason.is-on { border-color: color-mix(in srgb, var(--cream) 55%, transparent); background: color-mix(in srgb, var(--cream) 6%, transparent); }
+.cv-page .ts-reason input { position: absolute; opacity: 0; pointer-events: none; }
+.cv-page .ts-radio { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--cream) 45%, transparent); display: grid; place-items: center; }
+.cv-page .ts-reason.is-on .ts-radio { border-color: var(--cream); }
+.cv-page .ts-reason.is-on .ts-radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--cream); }
+.cv-page .ts-reason:has(input:focus-visible) { outline: 2px solid var(--cream); outline-offset: 2px; }
+.cv-page .ts-note { box-sizing: border-box; width: 100%; resize: none; padding: 12px 14px; border-radius: 12px; font: inherit; font-size: 15px; line-height: 1.35;
+  color: var(--text); background: transparent; border: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+.cv-page .ts-note::placeholder { color: var(--muted); }
+.cv-page .ts-note:focus { outline: none; border-color: color-mix(in srgb, var(--cream) 55%, transparent); }
+.cv-page .ts-cta { width: 100%; height: 44px; font-size: 15px; }
+.cv-page .ts-done { padding-top: 8px; }
+.cv-page .ts-check { align-self: center; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%;
+  background: color-mix(in srgb, var(--cream) 10%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--cream) 30%, transparent); }
+.cv-page .ts-check svg { width: 26px; height: 26px; fill: none; stroke: var(--cream); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 24; stroke-dashoffset: 24; animation: ts-draw .5s .15s cubic-bezier(.22, 1, .36, 1) forwards; }
+@keyframes ts-draw { to { stroke-dashoffset: 0; } }
+.cv-page .ts-sent-what { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 12px; text-align: center;
+  border: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); font-size: 14px; color: var(--text); }
+.cv-page .ts-sent-note { font-style: italic; color: var(--text-2); }
+@media (prefers-reduced-motion: reduce) { .cv-page .ts-body { animation: none; } .cv-page .ts-check svg { animation: none; stroke-dashoffset: 0; } }
+
+/* care team rows: who + availability on the left, Call on the right */
+.cv-page .ts-list li { display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 14px 0; }
+.cv-page .ts-person { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cv-page .ts-person b { font-size: 16px; font-weight: 600; color: #fff; }
+.cv-page .ts-person span { font-size: 14px; line-height: 1.3; color: var(--text-2); }
+.cv-page .ts-call { flex: none; }
+.cv-page .ts-call.is-calling { opacity: 1; border-color: var(--nav-border-hi); }
+.cv-page .ts-call.is-calling .nav-ic { animation: ts-ring 1s ease-in-out infinite; }
+.cv-page .ts-call.is-called { opacity: 1; color: var(--cream); border-color: color-mix(in srgb, var(--cream) 45%, transparent); }
+@keyframes ts-ring { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+@media (prefers-reduced-motion: reduce) { .cv-page .ts-call.is-calling .nav-ic { animation: none; } }
+.cv-page .ts > .ts-head { margin-bottom: 14px; }
+.cv-page .ts-list { margin-top: 0; }
+
+/* care team: photo, name, availability; one Call button at the bottom */
+.cv-page .ts-photo { flex: none; width: 44px; height: 44px; border-radius: 50%; object-fit: cover; display: block;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cream) 18%, transparent); background: #16141f; }
+.cv-page .ts-list li.is-later .ts-photo { opacity: .55; }
+.cv-page .ts-list li:first-child .ts-photo { box-shadow: 0 0 0 2px #0b0c10, 0 0 0 3.5px color-mix(in srgb, var(--warm, #ffb38a) 80%, transparent); }
+.cv-page .ts-list { margin-bottom: 20px; }
+.cv-page .ts-list li:last-child { border-bottom: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); }
+.cv-page .ts-call.ts-cta { width: 100%; height: 44px; }
+.cv-page .nav-btn.is-primary.ts-call.is-calling, .cv-page .nav-btn.is-primary.ts-call.is-called { opacity: 1; }
+/* a still picture of her (no turning) */
+.her3d.is-still { cursor: default; touch-action: auto; user-select: none; }
+
+/* Her picture in the design system's colours: cream for her and her wires, the warm accent
+   (copper in DS1, pink in DS2) for the thing being explained, a faint cream frame */
+.cv-page .her3d-dev { stroke: color-mix(in srgb, var(--cream) 55%, transparent); opacity: 1; }
+.cv-page .her3d-dev circle, .cv-page .her3d-dev rect, .cv-page .her3d-dev ellipse { fill: color-mix(in srgb, var(--cream) 18%, transparent); }
+.cv-page .her3d-dev.is-new, .cv-page .her3d .her3d-dev.is-new { stroke: var(--warm); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--warm) 70%, transparent)); }
+.cv-page .her3d-dev.is-new circle, .cv-page .her3d-dev.is-new rect, .cv-page .her3d-dev.is-new ellipse { fill: color-mix(in srgb, var(--warm) 35%, transparent); }
+.cv-page .her3d-dev.is-gone { stroke: color-mix(in srgb, var(--cream) 40%, transparent); }
+.cv-page .her3d-post { color: color-mix(in srgb, var(--cream) 55%, transparent); opacity: 1; }
+.cv-page .her3d-post.is-new { color: var(--warm); }
+.cv-page .her3d-bed { background: color-mix(in srgb, var(--cream) 3%, transparent); border-color: color-mix(in srgb, var(--cream) 14%, transparent); }
+.cv-page .her3d-stage { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cream) 14%, transparent)); }
+
+/* Every dot pagination looks like the week/day dots: 6px faded-cream dots ~20px apart,
+   the current one a 20px cream pill, on a faint dark capsule */
+.cv-page :is(.fd-dots, .cv-story-dots) { display: inline-flex; align-items: center; gap: 0; height: 28px; padding: 0 8px; border-radius: 999px; background: rgba(8, 10, 14, .45); }
+.cv-page :is(.fd-dots, .cv-story-dots) i { display: block; flex: none; width: 6px; height: 6px; margin: 0 7px; border-radius: 3px; opacity: 1;
+  background: color-mix(in srgb, var(--cream) 35%, transparent); transition: width .35s cubic-bezier(.22, 1, .36, 1), background-color .25s; }
+.cv-page :is(.fd-dots, .cv-story-dots) i.is-past { background: color-mix(in srgb, var(--cream) 35%, transparent); }
+.cv-page :is(.fd-dots, .cv-story-dots) i.is-on { width: 20px; background: var(--cream); }
+.cv-page .cv-story-dots { align-self: flex-start; margin-top: 10px; }
+
+/* "What's on her": the explanation is always two balanced lines; dots and Next sit on the bottom bar */
+.cv-page .fd-walk .fd-words { min-height: 0; }
+.cv-page .fd-walk .fd-line { max-width: 44ch; text-wrap: balance; line-height: 1.35;
+  min-height: calc(2lh); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.cv-page .fd-walk-nav { position: absolute; z-index: 2; left: var(--edge-x); right: var(--edge-x); bottom: var(--edge-y); height: var(--nav-h);
+  display: flex; align-items: center; justify-content: center; gap: 0; }
+.cv-page .fd-walk-nav .fd-next { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+/* standard button: the old one-off size and colours no longer apply */
+.cv-page .nav-btn.fd-next { height: var(--nav-h); padding: 0 var(--nav-px); border-radius: 999px; font-size: var(--nav-fs); }
+.cv-page .nav-btn.fd-next.is-trailing { padding-right: calc(var(--nav-px) - 2px); }
+.cv-page .nav-btn.fd-next.is-done { background: var(--cream); border-color: var(--cream); color: #0a0a0a; }
+.cv-page .fd.fd-walk { position: static; } /* so the bottom bar anchors to the screen, like every other bottom bar */
+
+/* "What's on her" → "Next": one centred button under the words, the dots under it (not a bottom bar) */
+.cv-page .fd.fd-walk { position: relative; }
+.cv-page .fd-walk-nav { position: static; left: auto; right: auto; bottom: auto; height: auto;
+  display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 18px; }
+.cv-page .fd-walk-nav .fd-next { position: static; transform: none; }
+
+/* morphing button (What's on her → Next → Done), same motion as "Mila's stars" → "Close" */
+.cv-page .mb { gap: 0; padding: 0 var(--nav-px); }
+.cv-page .mb-label { position: relative; display: block; height: 1em; overflow: hidden; transition: width .5s cubic-bezier(.22, 1, .36, 1); }
+.cv-page .mb-label > span { position: absolute; left: 0; top: 0; line-height: 1; white-space: nowrap; }
+.cv-page .mb-measure { visibility: hidden; position: absolute; }
+.cv-page .mb-in { animation: mb-in .5s cubic-bezier(.22, 1, .36, 1) both; }
+.cv-page .mb-out { animation: mb-out .35s ease both; }
+@keyframes mb-in { from { opacity: 0; transform: translateY(40%); } }
+@keyframes mb-out { to { opacity: 0; transform: translateY(-40%); } }
+.cv-page .mb-chev { display: flex; align-items: center; overflow: hidden; width: 0; margin-left: 0; opacity: 0;
+  transition: width .5s cubic-bezier(.22, 1, .36, 1), margin-left .5s cubic-bezier(.22, 1, .36, 1), opacity .35s ease; }
+.cv-page .mb.has-chev .mb-chev { width: calc(var(--ic) * .86 * 8 / 14 + 2px); margin-left: calc(var(--ic) * .58); opacity: 1; }
+.cv-page .mb.has-chev { padding-right: calc(var(--nav-px) - 2px); }
+/* dots above the button, only during the walkthrough */
+.cv-page .fd-walk-nav { flex-direction: column; gap: 14px; }
+.cv-page .fd-dots.is-hidden { display: none; }
+@media (prefers-reduced-motion: reduce) { .cv-page .mb-in, .cv-page .mb-out { animation: none; } .cv-page .mb-label, .cv-page .mb-chev { transition: none; } }
+
+/* "What's on her": her, front-facing and still, with what's on her marked where it touches her */
+.fd-model { height: 220px; }
+.bf { position: relative; height: 100%; aspect-ratio: 272 / 397; }
+.bf-img { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; pointer-events: none;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--cream) 12%, transparent)); }
+.bf-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.bf-dev { fill: color-mix(in srgb, var(--cream) 22%, transparent); stroke: color-mix(in srgb, var(--cream) 50%, transparent);
+  stroke-width: 1.2; vector-effect: non-scaling-stroke; transition: stroke .4s ease, fill .4s ease; }
+.bf-dev * { vector-effect: non-scaling-stroke; }
+.bf-wire { fill: none; stroke-linecap: round; opacity: .55; }
+.bf-dev.is-new { fill: color-mix(in srgb, var(--warm) 40%, transparent); stroke: var(--warm); stroke-width: 1.6;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--warm) 75%, transparent)); }
+.bf-dev.is-new .bf-wire { opacity: .9; }
+/* while one thing is lit, everything else on her steps back */
+.bf-dev { transition: stroke .4s ease, fill .4s ease, opacity .4s ease; }
+.bf:has(.bf-dev.is-new) .bf-dev:not(.is-new) { opacity: .25; }
+.bf-img { transition: opacity .4s ease; }
+.bf:has(.bf-dev.is-new) .bf-img { opacity: .45; }
+/* the dots and the button stay in one place on every step: pinned near the bottom of her story,
+   with the dots' room kept even when they're hidden, so "What's on her" → "Next" → "Done" never moves */
+.cv-page .fd { position: relative; padding-bottom: 132px; }
+.cv-page .fd-walk-nav { position: absolute; left: 0; right: 0; bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.cv-page .fd-dots.is-hidden { display: inline-flex; visibility: hidden; }
+.cv-page .cv-screen > .fd { align-self: stretch; }
+/* her story never grows the screen: the picture gives up height first, so the button can't be pushed */
+.cv-page .cv-screen > .fd { min-height: 0; padding-bottom: 112px; }
+.cv-page .fd-walk-nav { bottom: 24px; }
+.cv-page .fd-walk .fd-model { flex: 0 1 220px; height: auto; min-height: 120px; }
+.cv-page .fd-walk .fd-model .bf { height: 100%; max-height: 220px; }
+@media (max-width: 760px) { .cv-page .cv-screen:has(> .fd) { min-height: min(640px, 86vh); } }
+
+/* her story moves gently: whatever is new rises in, the words again on each step (keyed by step);
+   the dots and the button never animate, so they stay put */
+@keyframes fd-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.cv-page .fd > :not(.fd-walk-nav) { animation: fd-rise .6s cubic-bezier(.22, 1, .36, 1) both; }
+.cv-page .fd > :nth-child(2):not(.fd-walk-nav) { animation-delay: .06s; }
+.cv-page .fd > :nth-child(3):not(.fd-walk-nav) { animation-delay: .12s; }
+.cv-page .fd > :nth-child(4):not(.fd-walk-nav) { animation-delay: .18s; }
+.cv-page .fd-walk .fd-words { animation-duration: .45s; animation-delay: 0s; }
+.cv-page .fd-walk-nav { animation: none; }
+@media (prefers-reduced-motion: reduce) { .cv-page .fd > * { animation: none; } }
+
+/* the word popup's figure: the same front-facing her as the Day 1 walkthrough, still, so no drag */
+.cv-her-fig.is-front { height: 130px; margin-bottom: 4px; cursor: default; }
+.cv-her-fig.is-front .bf { height: 100%; }
