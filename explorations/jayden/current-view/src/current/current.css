@@ -1,3 +1,18 @@
+/* Body text in Aquavit too, at its true weights (400 is Regular). Geist where Aquavit isn't active. */
+@font-face { font-family: "Constellate Text"; font-weight: 1 349; src: local("Aquavit Light"), local("Aquavit-Light"); }
+@font-face { font-family: "Constellate Text"; font-weight: 350 449; src: local("Aquavit Regular"), local("Aquavit-Regular"); }
+@font-face { font-family: "Constellate Text"; font-weight: 450 549; src: local("Aquavit Medium"), local("Aquavit-Medium"); }
+@font-face { font-family: "Constellate Text"; font-weight: 550 649; src: local("Aquavit Semibold"), local("Aquavit-Semibold"); }
+@font-face { font-family: "Constellate Text"; font-weight: 650 1000; src: local("Aquavit Bold"), local("Aquavit-Bold"); }
+/* The display font: Aquavit (Adobe, active on Jayden's Mac), one cut heavier than each weight asks for, so the
+   weights tuned for Fraunces read clearly in Aquavit (300 is its Regular, 400 its Medium, 500 its Semibold).
+   Where Aquavit isn't active, these faces don't load and the stack falls back to Fraunces. */
+@font-face { font-family: "Constellate Display"; font-weight: 1 249; src: local("Aquavit Light"), local("Aquavit-Light"); }
+@font-face { font-family: "Constellate Display"; font-weight: 250 349; src: local("Aquavit Regular"), local("Aquavit-Regular"); }
+@font-face { font-family: "Constellate Display"; font-weight: 350 449; src: local("Aquavit Medium"), local("Aquavit-Medium"); }
+@font-face { font-family: "Constellate Display"; font-weight: 450 549; src: local("Aquavit Semibold"), local("Aquavit-Semibold"); }
+@font-face { font-family: "Constellate Display"; font-weight: 550 1000; src: local("Aquavit Bold"), local("Aquavit-Bold"); }
+
 /* Bedside current view. Sara's palette (index.css) plus a warm cream for today's forming star.
    Minimal: a few large words read from the parent chair, low light, nothing that blinks. */
 .cv-page {
@@ -339,7 +354,7 @@
    Both on a black sky. Each style only sets tokens; the components read them. */
 .cv-page.theme-nursery {
   --cream: #F3E3B5; --warm: #FFB38A; --line-sky: #F3E3B5; --glow: rgba(243, 227, 181, .35);
-  --font-display: "Aquavit", "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
+  --font-display: "Constellate Display", "Fraunces", Georgia, serif; --font-ui: "Constellate Text", "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
 }
 .cv-page.theme-confetti {
   --cream: #FFD23F; --warm: #FF8FC8; --line-sky: #7CC0FF; --glow: rgba(255, 210, 63, .35);
@@ -455,7 +470,7 @@
 @keyframes cv-panel-in { from { opacity: 0; transform: translateX(12px); } }
 .cv-gpanel-k { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .theme-nursery .cv-gpanel-k { font-family: "Geist Mono", ui-monospace, monospace; letter-spacing: .08em; }
-.cv-gpanel-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
+.cv-gpanel-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.18; color: var(--cream); }
 .cv-gpanel-text { margin: 0; font-size: 15px; line-height: 1.5; color: var(--text-2); }
 .cv-gpanel ul, .cv-gpanel ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .cv-gpanel-firsts button, .cv-gpanel-moments button { width: 100%; text-align: left; display: flex; gap: 10px; align-items: baseline; padding: 7px 0;
@@ -954,7 +969,7 @@
 .ah-col-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ah-col-area { font-size: 15px; color: var(--text-2); }
 .ah-col .ah-stars { margin: 6px 0 4px; }
-.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
+.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.23; color: #F6EEDB; }
 .ah-next { font-size: 15px; color: var(--text-2); }
 .ah-col .ah-plan { margin-top: 6px; font-size: 14px; color: var(--muted); line-height: 1.45; }
 @media (max-width: 760px) { .ah-cols { grid-template-columns: 1fr; gap: 20px; } .ah-col { padding: 0; border: 0; } .ah-agenda li { grid-template-columns: 1fr; gap: 2px; } }
@@ -1055,11 +1070,11 @@
 .fd-star { margin-bottom: 6px; overflow: visible; }
 .fd-star-glow { transform-box: fill-box; transform-origin: center; animation: cv-breathe 6s ease-in-out infinite; }
 .fd-star-glow.is-inner { animation-duration: 4.5s; }
-.fd-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.6vw, 54px); line-height: 1.05; color: #F6EEDB; }
+.fd-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.6vw, 54px); line-height: 1.17; color: #F6EEDB; }
 .fd-title { margin: 0; font-size: clamp(24px, 3.2vw, 36px); font-weight: 500; line-height: 1.2; color: #F6EEDB; }
 .fd-title.is-serif { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; }
 /* the walkthrough: each wire's name in the display font */
-.fd-words .fd-title { font-family: var(--font-display); font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; letter-spacing: -.01em; }
+.fd-words .fd-title { font-family: var(--font-display); font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; letter-spacing: 0; }
 .fd-line { margin: 0; max-width: 40ch; font-size: clamp(15px, 1.7vw, 19px); line-height: 1.45; color: var(--text-2); }
 .fd-size { margin: 8px 0 0; max-width: 42ch; font-size: clamp(14px, 1.55vw, 17px); color: var(--text-2); }
 .fd-size b { color: var(--cream); font-weight: 500; }
@@ -1093,7 +1108,7 @@
 .end-last { transform-box: fill-box; transform-origin: center; }
 .end-words { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .end-k { font-size: 13px; color: var(--cream); }
-.end-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(30px, 4.2vw, 48px); line-height: 1.08; color: #F6EEDB; }
+.end-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(30px, 4.2vw, 48px); line-height: 1.2; color: #F6EEDB; }
 .end-line { margin: 0; max-width: 48ch; font-size: clamp(15px, 1.7vw, 19px); color: var(--text-2); }
 .end.is-not .end-title { font-size: clamp(28px, 3.8vw, 44px); }
 .end.is-not .end-line:last-child { margin-top: 8px; color: var(--muted); font-size: clamp(14px, 1.5vw, 16px); }
@@ -1182,7 +1197,7 @@
 .ah-day li { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: baseline; padding: 14px 0;
   border-top: 1px solid rgba(255, 255, 255, .08); animation: cv-step-in .35s ease-out both; animation-delay: calc(var(--i) * .05s); }
 .ah-day li:last-child { border-bottom: 1px solid rgba(255, 255, 255, .08); }
-.ah-day-t { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1;
+.ah-day-t { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.8vw, 34px); line-height: 1.18;
   color: var(--cream); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ah-day div { display: flex; flex-direction: column; gap: 3px; }
 .ah-day b { font-size: clamp(19px, 2.1vw, 24px); font-weight: 500; color: #F6EEDB; }
@@ -1350,7 +1365,7 @@
 .ah-ev-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
 .ah-ev-text { display: flex; flex-direction: column; gap: 10px; }
 .ah-ev-text .ah-k { margin: 0; }
-.ah-ev-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.1; color: #F6EEDB; }
+.ah-ev-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.18; color: #F6EEDB; }
 .ah-ev-facts { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 10px 28px; }
 .ah-ev-facts dt { font-size: 12px; color: var(--muted); }
 .ah-ev-facts dd { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(20px, 2.2vw, 26px); color: var(--cream); }
@@ -1394,7 +1409,7 @@
 .gl-term:hover { color: #FFF8E6; text-decoration-color: var(--cream); }
 .gl-term:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 4px; }
 .gl-sheet { width: min(460px, 100%); animation: cv-step-in .25s ease-out both; }
-.gl-title { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
+.gl-title { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.6vw, 30px); line-height: 1.23; color: #F6EEDB; }
 .gl-stands { font-size: 13px; color: var(--cream); }
 .gl-body { font-size: 15px; line-height: 1.5; color: var(--text-2); }
 .gl-fig { margin: 2px 0 0; }
@@ -1481,7 +1496,7 @@
 @keyframes rem-in { to { opacity: 1; } }
 .rem-halo { transform-box: fill-box; transform-origin: center; animation: cv-breathe 4s ease-in-out infinite; }
 .rem-words { grid-column: 1; grid-row: 1; position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; opacity: 0; animation: rem-in 1.8s 4.2s ease forwards; }
-.rem-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.4vw, 52px); line-height: 1; color: var(--cream); }
+.rem-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.4vw, 52px); line-height: 1.12; color: var(--cream); }
 .rem-sub { margin: -4px 0 4px; font-size: 15px; color: var(--text-2); }
 .rem-sec { display: flex; flex-direction: column; gap: 6px; }
 .rem-k { font-size: 12.5px; color: var(--muted); }
@@ -1545,7 +1560,7 @@
 .fd-group + .fd-group { margin-top: 30px; }
 .fd-born { margin: 0; font-size: clamp(14px, 1.5vw, 17px); color: var(--muted); }
 .fd-size { margin: 0; max-width: none; }
-.fd-size b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
+.fd-size b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.18; color: var(--cream); }
 .fd-size span { display: block; margin-top: 0; font-size: clamp(15px, 1.6vw, 18px); color: var(--text-2); }
 .fd-size em { font-style: normal; font-size: clamp(13px, 1.35vw, 15px); color: var(--muted); }
 /* her name is the one big thing; her weight reads as a fact beneath it, in the plain type */
@@ -1854,7 +1869,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 @keyframes ts-in { from { opacity: 0; transform: translateY(10px) scale(.985); } }
 .cv-page .ts-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; }
 .cv-page .ts-head .nav-btn { margin-right: -8px; }
-.cv-page .ts-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 28px; line-height: 1.1; color: var(--cream); }
+.cv-page .ts-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 28px; line-height: 1.18; color: var(--cream); }
 .cv-page .ts-list { list-style: none; margin: 0; padding: 0; }
 .cv-page .ts-list li { display: flex; flex-direction: column; gap: 4px; padding: 14px 0; border-top: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); }
 .cv-page .ts-list b { font-size: 16px; font-weight: 600; color: #fff; }
@@ -2127,7 +2142,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .ah-col-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ah-col-area { font-size: 15px; color: var(--text-2); }
 .ah-col .ah-stars { margin: 6px 0 4px; }
-.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
+.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.23; color: #F6EEDB; }
 .ah-next { font-size: 15px; color: var(--text-2); }
 .ah-current { display: inline-flex; align-items: center; gap: 8px; }
 .ah-current i { width: 7px; height: 7px; border-radius: 50%; background: var(--cream); flex: none; }
@@ -2166,7 +2181,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .ah-day li { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: baseline; padding: 14px 0;
   border-top: 1px solid rgba(255, 255, 255, .08); animation: cv-step-in .35s ease-out both; animation-delay: calc(var(--i) * .05s); }
 .ah-day li:last-child { border-bottom: 1px solid rgba(255, 255, 255, .08); }
-.ah-day-t { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1;
+.ah-day-t { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.8vw, 34px); line-height: 1.18;
   color: var(--cream); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ah-day div { display: flex; flex-direction: column; gap: 3px; }
 .ah-day b { font-size: clamp(19px, 2.1vw, 24px); font-weight: 500; color: #F6EEDB; }
@@ -2335,7 +2350,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
   gap: clamp(20px, 3vw, 40px); align-items: start; }
 .ah-ev-text { max-height: 100%; overflow-y: auto; padding-right: 8px; padding-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
 .ah-ev-text .ah-k { margin: 0; }
-.ah-ev-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.1; color: #F6EEDB; }
+.ah-ev-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.18; color: #F6EEDB; }
 .ah-ev-facts { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 10px 28px; }
 .ah-ev-facts dt { font-size: 12px; color: var(--muted); }
 .ah-ev-facts dd { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(20px, 2.2vw, 26px); color: var(--cream); }
@@ -2405,6 +2420,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-pop-words { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .cv-pop-k { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .theme-nursery .cv-pop-k { font-family: "Geist Mono", ui-monospace, monospace; font-weight: 500; letter-spacing: .08em; }
-.cv-pop-word { margin: 2px 0 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 24px; line-height: 1.1; color: var(--cream); }
+.cv-pop-word { margin: 2px 0 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 24px; line-height: 1.18; color: var(--cream); }
 .cv-pop-stands { font-size: 12.5px; }
 .cv-pop-means { margin-top: 4px; font-size: 14.5px; line-height: 1.5; }
