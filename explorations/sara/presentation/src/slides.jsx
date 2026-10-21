@@ -442,7 +442,7 @@ function Mom() {
   return (
     <div className="center statement mom">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="p" className="statement-p">Picture a tired mom in the NICU, <L>anxious about her baby</L>.</R>
+      <R d={1} as="p" className="statement-p">Ideating interactions</R>
       <R d={3}><Shot src="./shots/modality-chat.png" pan={false} className="is-chat" alt="A teammate's message in our chat: imagining how a parent might interact with this from a hospital bed, by touch, remote control or gesture; imagining a tired mom on a bed who's anxious about her baby." /></R>
     </div>
   )
@@ -493,7 +493,7 @@ function Modality() {
   return (
     <div className="modes">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="h2" className="h">How would she interact with it?</R>
+      <R d={1} as="h2" className="h">How would parents interact with it?</R>
       <div className="cols">
         {MODES.map((x, k) => (
           <R key={x.k} d={2 + k * 0.6} className={`col mode ${x.chosen ? 'is-chosen' : ''}`}>
@@ -720,12 +720,12 @@ const CONSTRAINTS = [
     before: { src: './shots/parent previous.png', caption: 'Only highlights key moments from the hospital, lacking the memory of the baby itself', alt: '' },
     after: { src: './shots/parent new.png', caption: 'Highlights the unique characteristics of the baby, beyond the medical status', alt: '' } },
 ]
-// Steps: 0 the table · then per walkthrough row: lift, before, after · last: the table again (the last label home).
+// Steps: 0 the table · then per walkthrough row: lift, before, after. The last row's "after" ends the slide.
 // Going from one row's "after" to the next row's "lift" is one click: the label flies home, the table blinks
 // back in, then the next row lifts.
 const WALK = CONSTRAINTS.flatMap((x, k) => (x.before ? [k] : []))
 const PHASES = ['lift', 'before', 'after']
-const CONSTRAINT_STEPS = WALK.length * PHASES.length + 2
+const CONSTRAINT_STEPS = WALK.length * PHASES.length + 1
 const walkAt = (step) => (step < 1 || step > WALK.length * PHASES.length
   ? { row: -1, phase: 'rest' }
   : { row: WALK[Math.floor((step - 1) / PHASES.length)], phase: PHASES[(step - 1) % PHASES.length] })
