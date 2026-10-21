@@ -51,9 +51,9 @@ export const NARRATION = {
   modality: 'How would she interact with it? We designed for touch first, dim by default, with a night mode for the hours parents spend there in the dark.',
   solution: 'Our solution: Constellate. A baby’s care, made something parents can follow.',
   overview: [
-    'Constellate turns a baby’s chart into something parents can follow. Every day becomes a star, because parents live a NICU stay as moments, not numbers.',
-    'Every week becomes a constellation. There are no harsh metrics: nothing ranks a baby or compares them to anyone. As one parent told us, not all babies start out the same way.',
-    'And firsts become planets, moments to cherish, kept for good whatever happens. Here’s how it works, through one baby’s stay.',
+    'So we built Constellate: a bedside screen that turns a baby’s chart into something parents can follow. Every day becomes a star, shaped by what nurses already chart.',
+    'Every week becomes a constellation, so parents can see the whole stay at a glance.',
+    'And firsts become planets. Here’s how it works, through one baby’s stay.',
   ],
   stars: [
     'One idea runs through it. Every day of her stay becomes a star, shaped by what her nurses already chart.',

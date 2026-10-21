@@ -2011,3 +2011,4 @@ body:has(.panel) { overflow: auto; }
 .cx-card > * { transition: opacity .7s ease; }
 .cx.is-s2 .cx-card:not(.is-chosen) > * { opacity: .3; }
 .cx.is-s2 .cx-card:not(.is-chosen) { border-color: rgba(243, 227, 181, .06); }
+.ov-steps li { grid-template-columns: 18px 1fr; } .ov-steps i { grid-row: span 2; margin-top: 9px; } .ov-steps { gap: 14px; }

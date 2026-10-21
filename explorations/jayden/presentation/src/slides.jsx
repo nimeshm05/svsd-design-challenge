@@ -1256,22 +1256,18 @@ const CONCEPT = [
     'Moments to cherish', 'Kept for good, whatever happens.', ['They’re celebrating those little milestones that are actually a really big deal.', 'Lauren, Niko’s mom']],
 ]
 function Overview({ step = 0 }) {
-  // what it is, and why we chose it, side by side and equally weighted; the idea forms on the live screen beside them
-  const n = Math.min(step, CONCEPT.length - 1), q = CONCEPT[n][4]
+  // what it is, built a step at a time while the idea forms on the live screen beside it (the why is on the concepts slide)
   return (
     <div className="ov">
       <R d={0} className="k">Constellate</R>
       <R d={1} as="h2" className="ov-h">A bedside screen that turns a baby’s chart into <L>something parents can follow</L>.</R>
-      <div className="ov-pairs">
-        <span className="ov-head">What it is</span><span className="ov-head">Why we chose it</span>
-        {CONCEPT.map(([t, , why], k) => (
-          <div key={t} className={`ov-pair ${k === step ? 'is-on' : k < step ? 'is-past' : ''}`}>
-            <b>{t}</b><b className="ov-why-t">{why}.</b>
-          </div>
+      <ol className="ov-steps">
+        {CONCEPT.map(([t, d], k) => (
+          <li key={t} className={k === step ? 'is-on' : k < step ? 'is-past' : ''}>
+            <i aria-hidden="true" /><b>{t}</b><span>{d}</span>
+          </li>
         ))}
-      </div>
-      {q && <blockquote className="ov-q" key={n}><p>&ldquo;{q[0]}&rdquo;</p><cite>{q[1]}</cite></blockquote>}
-      {!q && <p className="ov-q-line" key={n}>{CONCEPT[n][3]}</p>}
+      </ol>
     </div>
   )
 }
