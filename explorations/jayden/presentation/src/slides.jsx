@@ -254,17 +254,25 @@ const PAINS = [
   { p: 'comprehension', qs: ['What is all of this on my baby?', 'What does that word mean?'], themes: [['Medical terminology', 'A whole new language'], ['Status of child', 'Is he okay today?'], ['Provider communication', 'A new nurse every shift']], pain: 'Parents have information, but not the whole picture.', q: '[Medical terminology] is a new language.' },
   { p: 'awareness', qs: ['What’s next, and who is caring for my baby tonight?', 'How are they doing right now?'], themes: [['Situational awareness', 'What’s happening right now'], ['Holistic awareness', 'How far he’s come, and what’s next']], pain: 'Time blurs, and the next moment is a surprise.', q: 'In the ICU, time just like, it doesn’t exist. It’s just a mash of time.' },
 ]
-// one pillar at a time, each with what a parent said
+// one pillar at a time, each card taking the last one's place; the next click brings what its parents ask beside it
 function Pillars({ step }) {
+  const at = Math.floor(step / 2), asks = step % 2 === 1
   return (
     <div className="pillars">
       <R d={0} className="k">Three needs</R>
       <div className="cols">
         {PAINS.map((x, k) => (
-          <div key={x.p} className={`col is-${x.p} ${step >= k ? 'is-in' : ''}`}>
+          <div key={x.p} className={`col is-${x.p} ${at === k ? 'is-in' : ''}`}>
             <span className="col-head"><Icon name={x.p} size={30} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</span>
             <p className="col-pain">{x.pain}</p>
             <ul className="col-themes">{x.themes.map(([t, eg]) => <li key={t}><b>{t}</b><span>{eg}</span></li>)}</ul>
+          </div>
+        ))}
+        {/* keyed on the pillar so it rises in fresh each time */}
+        {PAINS.filter((_, k) => asks && k === at).map((x) => (
+          <div key={x.p} className={`pillars-ask pa is-${x.p}`}>
+            <R d={0} className="pa-k"><span>Parents ask</span></R>
+            {x.qs.map((q, k) => <R key={q} d={1 + k * 2} as="p" className="pa-q">&ldquo;{q}&rdquo;</R>)}
           </div>
         ))}
       </div>
@@ -434,7 +442,7 @@ function Mom() {
   return (
     <div className="center statement mom">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="p" className="statement-p">Picture a tired mom in the NICU, <L>anxious about her baby</L>.</R>
+      <R d={1} as="p" className="statement-p">Ideating interactions</R>
       <R d={3}><Shot src="./shots/modality-chat.png" pan={false} className="is-chat" alt="A teammate's message in our chat: imagining how a parent might interact with this from a hospital bed, by touch, remote control or gesture; imagining a tired mom on a bed who's anxious about her baby." /></R>
     </div>
   )
@@ -485,7 +493,7 @@ function Modality() {
   return (
     <div className="modes">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="h2" className="h">How would she interact with it?</R>
+      <R d={1} as="h2" className="h">How would parents interact with it?</R>
       <div className="cols">
         {MODES.map((x, k) => (
           <R key={x.k} d={2 + k * 0.6} className={`col mode ${x.chosen ? 'is-chosen' : ''}`}>
@@ -712,12 +720,12 @@ const CONSTRAINTS = [
     before: { src: './shots/parent previous.png', caption: 'Only highlights key moments from the hospital, lacking the memory of the baby itself', alt: '' },
     after: { src: './shots/parent new.png', caption: 'Highlights the unique characteristics of the baby, beyond the medical status', alt: '' } },
 ]
-// Steps: 0 the table · then per walkthrough row: lift, before, after · last: the table again (the last label home).
+// Steps: 0 the table · then per walkthrough row: lift, before, after. The last row's "after" ends the slide.
 // Going from one row's "after" to the next row's "lift" is one click: the label flies home, the table blinks
 // back in, then the next row lifts.
 const WALK = CONSTRAINTS.flatMap((x, k) => (x.before ? [k] : []))
 const PHASES = ['lift', 'before', 'after']
-const CONSTRAINT_STEPS = WALK.length * PHASES.length + 2
+const CONSTRAINT_STEPS = WALK.length * PHASES.length + 1
 const walkAt = (step) => (step < 1 || step > WALK.length * PHASES.length
   ? { row: -1, phase: 'rest' }
   : { row: WALK[Math.floor((step - 1) / PHASES.length)], phase: PHASES[(step - 1) % PHASES.length] })
@@ -1188,17 +1196,6 @@ function Glance({ step = 0 }) {
   )
 }
 
-/* ---------- v2: each pillar, as the questions parents ask (big, one slide per pillar) ---------- */
-const PillarAsk = (p) => function PillarAskView() {
-  const x = PAINS.find((y) => y.p === p)
-  return (
-    <div className={`center pa is-${p}`}>
-      <R d={0} className="pa-k"><Icon name={p} size={22} color={PILLARS[p].color} />{PILLARS[p].name}<span>Parents ask</span></R>
-      {x.qs.map((q, k) => <R key={q} d={1 + k * 2} as="p" className="pa-q">&ldquo;{q}&rdquo;</R>)}
-    </div>
-  )
-}
-
 // after the competitive analysis, what it showed, in the pillar slides' design
 function Gap() {
   return (
@@ -1372,10 +1369,7 @@ export const SLIDES = [
   { id: 'voices', section: '02 · Research', View: Voices },
   { id: 'heard', section: '02 · Research', View: Heard },
   { id: 'wall', section: '02 · Research', View: Wall },
-  { id: 'pillars', section: '03 · The problem', planet: true, tint: 'all', steps: 3, View: Pillars },
-  { id: 'q-connection', section: '03 · The problem', tint: 'all', View: PillarAsk('connection') },
-  { id: 'q-comprehension', section: '03 · The problem', tint: 'all', View: PillarAsk('comprehension') },
-  { id: 'q-awareness', section: '03 · The problem', tint: 'all', View: PillarAsk('awareness') },
+  { id: 'pillars', section: '03 · The problem', planet: true, tint: 'all', steps: 6, View: Pillars },
   { id: 'compete', section: '03 · The problem', tint: 'all', View: Compete },
   { id: 'gap', section: '03 · The problem', tint: 'all', View: Gap },
   { id: 'hmw', section: '03 · The problem', tint: 'all', steps: 4, View: HMW },
