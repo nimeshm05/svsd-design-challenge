@@ -179,7 +179,7 @@ export const Stretch = (id) => function StretchView({ active, step = 0, thumb })
           <div className="ipad-screen">
             {thumb || !live
               ? <div className="ipad-thumb"><Icon name={f.p} size={44} color={P.color} /><span>{f.name}</span></div>
-              : <iframe ref={frame} title={`Mila's Sky: ${f.name}`} src={`./prototype/index.html?embed=1&chapter=${id === 'day1' ? 'born' : 'day'}`}
+              : <iframe ref={frame} title={`Constellate: ${f.name}`} src={`./prototype/index.html?embed=1&chapter=${id === 'day1' ? 'born' : 'day'}`}
                   onLoad={() => setTimeout(() => frame.current?.contentWindow?.postMessage({ type: 'mila:show', what: f.show }, '*'), 300)} />}
           </div>
           <i className="ipad-cam" aria-hidden="true" />
@@ -212,8 +212,45 @@ export const Feature = (f) => function FeatureView({ thumb }) {
     <div className="feat">
       <div className="rv feat-k" style={{ '--d': 0 }}><span>{f.k}</span><i className={`is-${f.p}`} />{TAG[f.p]}</div>
       <h2 className="rv feat-h" style={{ '--d': 1 }}>{f.title}</h2>
-      <p className="rv feat-p" style={{ '--d': 2 }}>{f.text}</p>
+      {f.before ? (
+        <div className="rv feat-vs" style={{ '--d': 2 }}>
+          <p className="feat-before"><b>Today</b>{f.before}</p>
+          <p className="feat-after"><b>With Constellate</b>{f.text}</p>
+        </div>
+      ) : <p className="rv feat-p" style={{ '--d': 2 }}>{f.text}</p>}
       <div className="feat-pad-spot">{thumb && <div className="ipad demo-pad is-thumb"><div className="ipad-screen"><div className="ipad-thumb"><Icon name={f.p === 'baby' ? 'moon' : f.p} size={44} /></div></div></div>}</div>
+    </div>
+  )
+}
+
+// One question parents ask, answered. With a clip, it opens on that moment (the parent, the bedside) with the
+// question over it; the next step shows the screen that answers it (the live prototype, see DemoPad), what
+// parents do today beside what they can do now. One slide does what the feature highlight and the demo film did.
+export const Answer = (f) => function AnswerView({ thumb, step = 0, active }) {
+  const vid = useRef(null)
+  const onClip = f.clip && step === 0
+  useEffect(() => {
+    const v = vid.current; if (!v) return
+    v.playbackRate = f.rate ?? 0.8
+    if (active && onClip) { v.currentTime = f.from ?? 0; v.play().catch(() => {}) } else v.pause()
+  }, [active, onClip])
+  return (
+    <div className={`ans ${onClip ? 'is-clip' : 'is-screen'}`}>
+      {f.clip && (
+        <div className="ans-clip" aria-hidden={!onClip}>
+          {!thumb && <video ref={vid} src={f.clip} muted playsInline loop preload="auto" />}
+          <p className="ans-clip-q" key={String(onClip)}><span className={`is-${f.p}`}><Icon name={f.p} size={14} />{TAG[f.p]}</span>&ldquo;{f.q}&rdquo;</p>
+        </div>
+      )}
+      <div className="ans-top">
+        <p className={`ans-q is-${f.p}`}><Icon name={f.p} size={14} />&ldquo;{f.q}&rdquo;</p>
+        <h2 className="ans-h">{f.title}</h2>
+        <div className="feat-vs">
+          <p className="feat-before"><b>Today</b>{f.before}</p>
+          <p className="feat-after"><b>With Constellate</b>{f.text}</p>
+        </div>
+      </div>
+      <div className="feat-pad-spot">{thumb && <div className="ipad demo-pad is-thumb"><div className="ipad-screen"><div className="ipad-thumb"><Icon name={f.p} size={44} /></div></div></div>}</div>
     </div>
   )
 }

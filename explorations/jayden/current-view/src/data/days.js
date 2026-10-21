@@ -454,6 +454,34 @@ const DAY_FIRSTS = {
   6: { h: 14.25, title: 'First hold', plain: 'You held her for the first time. She stayed warm and calm on your chest.' },
   14: { h: 15.4, title: 'First bottle', plain: 'She tried her first bottle and took a little before resting.' },
 }
+// Changes in her breathing help, by day of her stay.
+const STAY_CHANGES = {
+  5: { h: 10, title: 'Off the ventilator', plain: 'She moved from the ventilator to CPAP, a gentler kind of breathing help.', by: 'Respiratory therapist' },
+  17: { h: 4.5, hard: true, title: 'More breathing help for a while', plain: 'Her breathing needed more support overnight, so her team turned up her CPAP. She settled again by evening.', by: 'Her night nurse' },
+  21: { h: 9.5, title: 'Gentler breathing help', plain: 'She moved from CPAP to soft nose prongs that give a gentle flow of air.', by: 'Respiratory therapist' },
+}
+// Planned for next week, beyond what `week` writes out. Sample data.
+const PLANNED = {
+  30: [{ t: '10 a.m.', what: 'Eye exam' }],
+  32: [{ t: '1 p.m.', what: 'Family meeting' }],
+  33: [{ what: 'Breathing check' }],
+}
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+// The Timeline's schedule for any day of her stay, in `week`'s item shape: the days `week` writes out,
+// or else her usual care (rounds, care every 3 hours) plus, for days gone by, what happened (firsts and
+// breathing changes) and, for days ahead, what's planned. Nothing before she was born or past next week.
+export function scheduleFor(n) {
+  const written = week.find((d) => d.day === n)
+  if (written) return written.items
+  const t = week.find((d) => d.today), twd = WEEKDAYS.indexOf(t.short)
+  if (n < 1 || n > t.day + 13 - twd) return []
+  const wd = (((twd + n - t.day) % 7) + 7) % 7
+  const items = [{ t: wd === 0 || wd === 6 ? '8 a.m.' : '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }]
+  if (n > t.day) return [...items, ...(PLANNED[n] ?? [])]
+  if (n === 1) items.push({ what: 'The day she arrived' })
+  for (const x of [DAY_FIRSTS[n], STAY_CHANGES[n]]) if (x) items.push({ t: fmt(x.h), what: x.title })
+  return items
+}
 // The few things a parent most needs to know about a day, in order. A thing can open to more:
 // `at` is the hour it happened, `detail` what her nurse noted, `img` a photo slot for it.
 const DAY_THINGS = {
@@ -505,4 +533,21 @@ export function dayDetail(d) {
     : CALM_STORIES[d % CALM_STORIES.length]
   return { ...day, isToday, nowH, first: DAY_FIRSTS[d]?.title, story, supportLabel: SUPPORT_LABEL[day.support], moments: m,
     things: DAY_THINGS[d]?.map((x) => (x.at != null ? { ...x, t: fmt(x.at) } : x)) }
+}
+
+// a step back in week 7 (days 44-46) before she breathes on her own again.
+export const homeStay = {
+  today: 90,
+  firsts: { ...stay.firsts, 52: 'Open crib', 66: 'First bath', 79: 'Every feed by mouth' },
+  days: Array.from({ length: 90 }, (_, i) => {
+    const d = i + 1
+    return {
+      d,
+      week: Math.ceil(d / 7),
+      weight: d <= 23 ? stay.days[i].weight : stay.days[22].weight + (d - 23) * 20,
+      support: d <= 4 ? 'ventilator' : d <= 20 ? 'cpap' : d <= 37 ? 'high-flow' : d <= 43 ? 'low-flow' : d <= 46 ? 'high-flow' : 'room-air',
+      mood: d === 17 || d === 45 ? 'hard' : [16, 18, 44, 46].includes(d) ? 'mixed' : 'calm',
+      parent: d <= 23 ? stay.days[i].parent : 40 + ((d * 37) % 11) * 15,
+    }
+  }),
 }

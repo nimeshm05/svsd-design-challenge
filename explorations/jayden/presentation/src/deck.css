@@ -338,12 +338,10 @@ p.hmw-part { display: block; }
 
 /* so we listened: the headline, then who, then each person's card; one set of icons travels between them */
 .ivw { position: relative; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.ivw-k { margin-bottom: 14px; opacity: 0; transition: opacity .5s ease; }
 .ivw-head { transform: translateY(var(--drop, 0px)); transition: transform .6s var(--ease); }
 .ivw-head .statement-p { max-width: none; }
 .ivw.is-s1 .ivw-head { transform: translateY(calc(var(--drop, 0px) - 48px)); }
 .ivw.is-s2 .ivw-head { transform: none; }
-.ivw.is-s2 .ivw-k { opacity: .85; transition-delay: .35s; }
 
 .ivw-row { position: absolute; left: 0; right: 0; top: calc(50% + 8px); display: flex; align-items: center; justify-content: center; gap: 30px;
   opacity: 0; transform: translateY(10px); filter: blur(3px); transition: opacity .4s ease, transform .6s var(--ease), filter .4s ease; }
@@ -656,8 +654,7 @@ body:has(.panel) { overflow: auto; }
 @keyframes chip-in { from { opacity: 0; transform: translateY(16px) rotate(var(--r)) scale(.9); } to { opacity: 1; transform: rotate(var(--r)); } }
 @keyframes bob { 50% { transform: translateY(-5px) rotate(var(--r)); } }
 .is-static .brain-chip { opacity: 1; }
-.slide-sort.is-on, .slide-sort.is-next { transform: none; filter: none; }
-.is-on .floater { animation: float-in 1.5s calc(.2s + var(--n) * .05s) cubic-bezier(.45, 0, .2, 1) both; }
+.is-on .floater { animation: float-in 1.1s calc(.1s + var(--n) * .035s) cubic-bezier(.45, 0, .2, 1) both; }
 .is-on .floater { animation-name: float-from; }
 @keyframes float-from {
   0% { transform: translate(var(--fx), var(--fy)) rotate(var(--r)); opacity: 1; }
@@ -675,7 +672,6 @@ body:has(.panel) { overflow: auto; }
 /* the hand-off: as the map leaves, its chips vanish at once and the same chips are already there on the
    next slide, in the same spots, so they read as one set of notes sliding to their principles */
 .slide-brainstorm.is-past .brain-chip { animation: none !important; opacity: 0 !important; transition: none; }
-.slide-sort.is-on { opacity: 1; transition: transform 1s var(--ease), filter .7s ease; transition-delay: 0s; }
 
 /* the three pillars sit above the map as plain labels, not as a floating control */
 .brain-pillars { position: static; transform: none; display: flex; gap: 34px; padding: 0; margin: 4px 0 0; background: none; backdrop-filter: none; border: 0; box-shadow: none; }
@@ -1580,3 +1576,372 @@ body:has(.panel) { overflow: auto; }
 .dfilm-capk em { font-style: normal; text-transform: none; letter-spacing: .02em; font-family: var(--sans, inherit); color: rgba(246, 238, 219, .7); }
 .dfilm-capk em::before { content: "·"; margin: 0 8px 0 2px; color: rgba(246, 238, 219, .4); }
 .dfilm-mirror-box { transition: opacity 1s ease; } /* leaves with the clip, never in one frame */
+
+/* ===== v2: a NICU journey, today ===== */
+.jr { width: min(1100px, 100%); display: flex; flex-direction: column; gap: clamp(18px, 3vh, 34px); }
+.jr-line { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; position: relative; }
+.jr-line::before { content: ""; position: absolute; left: 4px; right: 4px; top: 4px; height: 1px; background: rgba(243, 227, 181, .18); }
+.jr-line li { position: relative; display: flex; flex-direction: column; gap: 10px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); opacity: .45; transition: opacity .5s, color .5s; }
+.jr-line li i { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.jr-line li i.is-connection { background: var(--connection); } .jr-line li i.is-comprehension { background: var(--comprehension); } .jr-line li i.is-awareness { background: var(--awareness); }
+.jr-line li.is-past { opacity: .7; }
+.jr-line li.is-on { opacity: 1; color: var(--cream); }
+.jr-line li.is-on i { box-shadow: 0 0 0 5px rgba(243, 227, 181, .14); }
+.jr-card { display: flex; flex-direction: column; gap: 14px; max-width: 62ch; animation: rise .8s var(--ease) both; }
+.jr-need { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+.jr-need.is-connection { color: var(--connection); } .jr-need.is-comprehension { color: var(--comprehension); } .jr-need.is-awareness { color: var(--awareness); }
+.jr-when { margin: 0; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 96; font-weight: 300; font-size: clamp(38px, 4.4vw, 66px); line-height: 1.05; color: var(--text); }
+.jr-what { margin: 0; font-size: clamp(17px, 1.6vw, 22px); line-height: 1.5; color: var(--text-2); }
+.jr-q { margin: 8px 0 0; padding-left: 18px; border-left: 2px solid rgba(243, 227, 181, .35); }
+.jr-q p { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(19px, 1.8vw, 26px); line-height: 1.4; color: var(--cream); }
+.jr-q cite { display: block; margin-top: 8px; font-style: normal; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+/* ===== v2: what parents are really asking ===== */
+.qs { width: min(1000px, 100%); display: flex; flex-direction: column; gap: 22px; }
+.qs-table { display: flex; flex-direction: column; }
+.qs-row { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid rgba(243, 227, 181, .12); align-items: baseline; }
+.qs-row.is-head { padding-top: 0; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.qs-q { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 400; font-size: clamp(20px, 2vw, 28px); color: var(--text); }
+.qs-q .icon { flex: none; }
+.qs-now { font-size: clamp(15px, 1.35vw, 18px); color: var(--text-2); }
+
+/* ===== v2: each feature, against today ===== */
+.feat-vs { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; max-width: 920px; text-align: left; }
+.feat-vs p { margin: 0; font-size: clamp(14px, 1.25vw, 17px); line-height: 1.45; }
+.feat-vs b { display: block; margin-bottom: 6px; font-family: var(--mono); font-weight: 500; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+.feat-before { color: var(--muted); } .feat-before b { color: var(--muted); }
+.feat-after { color: var(--text); } .feat-after b { color: var(--cream); }
+
+/* ===== narration captions (C to toggle): what we'd say over each slide, rising in as the film's do ===== */
+.deck-cc { position: absolute; z-index: 30; left: 50%; bottom: 74px; width: max-content; max-width: min(860px, 82vw); margin: 0; padding: 10px 18px;
+  border-radius: 12px; background: rgba(0, 0, 0, .62); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  text-align: center; font-size: clamp(15px, 1.3vw, 19px); line-height: 1.45; color: #F6EEDB; pointer-events: none;
+  animation: cc-in .7s .1s var(--ease) both; }
+@keyframes cc-in { from { opacity: 0; transform: translate(-50%, 8px); filter: blur(3px); } to { opacity: 1; transform: translate(-50%, 0); filter: none; } }
+
+/* ===== Meet Niko: Lauren and Niko, and who they are to us ===== */
+.niko2 { width: min(1100px, 100%); display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
+.niko2-photo img { display: block; width: 100%; max-height: 62vh; object-fit: cover; border-radius: 16px; box-shadow: 0 30px 80px rgba(0, 0, 0, .5); }
+.niko2-words { display: flex; flex-direction: column; gap: 16px; }
+.niko2-h { margin: 0; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 96; font-weight: 300; font-size: clamp(36px, 4.2vw, 62px); line-height: 1.08; color: var(--text); }
+.niko2-p { margin: 0; max-width: 40ch; font-size: clamp(16px, 1.5vw, 20px); line-height: 1.5; color: var(--text-2); }
+@media (max-width: 760px) { .niko2 { grid-template-columns: 1fr; } }
+.jr-date { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: -6px; }
+
+/* each pillar's themes from our affinity map, and what each looks like at the bedside */
+.col-themes { list-style: none; margin: 0 0 22px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.col-themes li { display: flex; flex-direction: column; gap: 2px; padding-left: 14px; border-left: 2px solid color-mix(in srgb, var(--c, var(--cream)) 55%, transparent); }
+.col-themes b { font-weight: 500; font-size: clamp(14px, 1.2vw, 16px); color: var(--text); }
+.col-themes span { font-size: clamp(12.5px, 1.05vw, 14px); color: var(--muted); }
+.pillars .col-pain { margin-bottom: 16px; }
+
+/* each pillar, as the questions parents ask: these come back, one by one, as the product's answers */
+.col-asks { display: flex; flex-direction: column; gap: 8px; padding-top: 14px; border-top: 1px solid rgba(243, 227, 181, .12); }
+.col-asks span { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--c, var(--muted)); }
+.col-asks p { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(15px, 1.35vw, 18px); line-height: 1.35; color: var(--text); }
+
+/* ===== answers: a moment and its question, then the screen that answers it ===== */
+.ans { position: relative; align-self: stretch; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 6px; }
+.ans-top { display: flex; flex-direction: column; align-items: center; transition: opacity .7s ease, transform .9s var(--ease); }
+.ans.is-clip .ans-top { opacity: 0; transform: translateY(12px); }
+.ans-q { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(16px, 1.5vw, 20px); }
+.ans-q.is-connection { color: var(--connection); } .ans-q.is-comprehension { color: var(--comprehension); } .ans-q.is-awareness { color: var(--awareness); }
+.ans-h { margin: 8px 0 0; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; font-size: clamp(28px, 3vw, 42px); line-height: 1.12; color: var(--text); }
+.ans .feat-vs { margin-top: 12px; }
+.ans-clip { position: absolute; inset: -6px 0 0; z-index: 3; border-radius: 18px; overflow: hidden; background: #000; transition: opacity .8s ease; }
+.ans.is-screen .ans-clip { opacity: 0; pointer-events: none; }
+.ans-clip video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ans-clip::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, .7), transparent 45%); }
+.ans-clip-q { position: absolute; z-index: 1; left: 0; right: 0; bottom: 7%; margin: 0 auto; max-width: 30ch; display: flex; flex-direction: column; align-items: center; gap: 12px;
+  font-family: var(--display); font-weight: 300; font-size: clamp(30px, 3.4vw, 54px); line-height: 1.15; color: #FFF8E6; text-shadow: 0 2px 24px rgba(0, 0, 0, .8); animation: rise 1.1s .4s var(--ease) both; }
+.ans-clip-q span { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.ans-clip-q span.is-connection { color: var(--connection); } .ans-clip-q span.is-comprehension { color: var(--comprehension); } .ans-clip-q span.is-awareness { color: var(--awareness); }
+
+/* the question a moment raises, top centre, in its pillar's colour: the thread back to the pillars */
+.dfilm-ask { position: absolute; z-index: 14; top: 7%; left: 50%; transform: translateX(-50%); width: max-content; max-width: 70vw; margin: 0; display: flex; flex-direction: column; align-items: center; gap: 10px;
+  text-align: center; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(24px, 2.4vw, 38px); line-height: 1.2; color: #FFF8E6; text-shadow: 0 2px 22px rgba(0, 0, 0, .85);
+  animation: cap-rise 1.1s .1s var(--ease) both; }
+.dfilm-ask span { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-style: normal; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.dfilm-ask.is-connection span { color: var(--connection); } .dfilm-ask.is-comprehension span { color: var(--comprehension); } .dfilm-ask.is-awareness span { color: var(--awareness); }
+.dfilm-ask.is-out { animation: cap-out .6s ease forwards; }
+
+/* ===== how Constellate shows progress: three builds over the live prototype ===== */
+.sc { align-self: flex-start; width: min(1100px, 100%); display: flex; flex-direction: column; gap: 16px; padding-top: 6px; }
+.sc-words { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.sc-words p { margin: 0; font-size: clamp(14px, 1.25vw, 17px); line-height: 1.45; color: var(--text-2); opacity: .3; transition: opacity .7s ease; }
+.sc-words p.is-on { opacity: 1; }
+.sc-words b { display: block; margin-bottom: 4px; font-family: var(--display); font-weight: 400; font-size: clamp(20px, 1.9vw, 26px); color: var(--text); }
+.sc-words p.is-on b { color: var(--cream); }
+
+/* Niko's journey: each moment beside its illustration */
+.jr-body { display: flex; gap: clamp(24px, 4vw, 56px); align-items: center; animation: rise .8s var(--ease) both; }
+.jr-img { flex: none; width: min(40%, 440px); max-height: 46vh; object-fit: contain; border-radius: 14px; box-shadow: 0 24px 60px rgba(0, 0, 0, .45); }
+.jr-body .jr-card { animation: none; }
+
+/* ===== boxes in the product's own language: a quiet dark panel, a hairline of cream, no accent bars ===== */
+.col, .ivw-card, .chat .bubble, .qs-table { background: #0d0d11; border: 1px solid color-mix(in srgb, var(--cream) 16%, transparent); border-radius: 16px; box-shadow: 0 18px 40px rgba(0, 0, 0, .35); }
+.col::before { content: none; }
+.ivw-card, .ivw-card.is-nurse { background: #0d0d11; }
+.col-themes { gap: 12px; }
+.col-themes li { padding-left: 0; border-left: 0; }
+.col-themes b { color: var(--cream); }
+.col-asks { border-top: 0; padding-top: 4px; }
+.jr-q { padding-left: 0; border-left: 0; }
+
+/* eyebrows and small labels in sentence case, not all caps */
+.k, .title-k, .facts dt, .research-tag, .flow-hd, .deep-name, .deep-feature span, .deep-k, .crow.is-head, .cwalk-tag, .ivw-id,
+.mode .col-head em, .sort-head span, .panel-section, .people span, .board-when, .stretch-pillar, .feat-k, .dfilm-call-k, .dfilm-card-k,
+.open-tag, .dfilm-say span, .dfilm-say.is-tag b, .big-k, .dfilm-capk, .dfilm-capq span, .jr-line li, .jr-need, .jr-q cite, .qs-row.is-head,
+.feat-vs b, .jr-date, .col-asks span, .ans-clip-q span, .dfilm-ask span, .cwalk-placeholder { text-transform: none; letter-spacing: .01em; }
+
+/* ===== every question, answered: question → the feature that answers it, a row per pillar ===== */
+.gl { width: min(1120px, 100%); display: flex; flex-direction: column; gap: 18px; }
+.gl-rows { display: flex; flex-direction: column; gap: 12px; }
+.gl-row { display: grid; grid-template-columns: 170px 1fr; gap: 20px; align-items: start; padding: 16px 20px; border-radius: 16px;
+  background: #0d0d11; border: 1px solid color-mix(in srgb, var(--cream) 16%, transparent);
+  opacity: .12; filter: blur(3px); transform: translateY(10px); transition: opacity .8s ease, filter .8s ease, transform .9s var(--ease); }
+.gl-row.is-in { opacity: 1; filter: none; transform: none; }
+.gl-pillar { display: inline-flex; align-items: center; gap: 8px; padding-top: 4px; font-family: var(--display); font-size: 20px; }
+.gl-row.is-connection .gl-pillar { color: var(--connection); } .gl-row.is-comprehension .gl-pillar { color: var(--comprehension); } .gl-row.is-awareness .gl-pillar { color: var(--awareness); }
+.gl-pairs { display: flex; flex-direction: column; gap: 10px; }
+.gl-pair { display: grid; grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr); align-items: center; gap: 12px; }
+.gl-q { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(16px, 1.45vw, 20px); line-height: 1.3; color: var(--text); }
+.gl-arrow { position: relative; height: 1px; background: color-mix(in srgb, var(--cream) 45%, transparent); }
+.gl-arrow::after { content: ""; position: absolute; right: -1px; top: -3.5px; width: 7px; height: 7px; border-top: 1px solid color-mix(in srgb, var(--cream) 70%, transparent); border-right: 1px solid color-mix(in srgb, var(--cream) 70%, transparent); transform: rotate(45deg); }
+.gl-a { margin: 0; font-size: clamp(13.5px, 1.15vw, 15.5px); line-height: 1.4; color: var(--text-2); }
+.gl-a b { display: block; font-weight: 500; font-size: clamp(15px, 1.3vw, 17.5px); color: var(--cream); }
+
+/* ===== full-screen slides: Niko's journey and the star idea fill the frame ===== */
+.slide.slide-journey, .slide.slide-stars { inset: -74px 0 -92px; padding: 0; }
+.jrf, .scf { position: absolute; inset: 0; overflow: hidden; background: #0b0b0e; }
+.jrf-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 40%; opacity: 0; transform: scale(1.04); transition: opacity 1.1s ease, transform 6s ease-out; }
+.jrf-img.is-on { opacity: 1; transform: scale(1); }
+.jrf-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8, 8, 12, .94) 0%, rgba(8, 8, 12, .82) 34%, rgba(8, 8, 12, .2) 62%, transparent 80%); }
+.jrf-text { position: absolute; left: clamp(28px, 6vw, 96px); top: 50%; transform: translateY(-55%); width: min(520px, 42vw); display: flex; flex-direction: column; gap: 12px; animation: rise .9s .2s var(--ease) both; }
+.jrf-k { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.jrf-text .jr-when { color: #FFF8E6; }
+.jrf-text .jr-what { color: rgba(246, 238, 219, .86); }
+.scf iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.scf-shade { position: absolute; left: 0; right: 0; top: 0; height: 38%; background: linear-gradient(180deg, rgba(0, 0, 0, .92), rgba(0, 0, 0, .6) 55%, transparent); pointer-events: none; }
+.scf-words { position: absolute; left: 0; right: 0; top: clamp(40px, 9vh, 90px); text-align: center; pointer-events: none; animation: rise .9s var(--ease) both; }
+.scf-k { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.scf-words h2 { margin: 10px 0 6px; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(40px, 5vw, 76px); line-height: 1.05; color: #FFF8E6; text-shadow: 0 2px 30px rgba(0, 0, 0, .8); }
+.scf-words p { margin: 0; font-size: clamp(16px, 1.5vw, 21px); color: rgba(246, 238, 219, .82); }
+
+/* ===== each pillar, as its questions ===== */
+.pa { gap: clamp(18px, 3vh, 30px); }
+.pa-k { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-size: clamp(22px, 2vw, 28px); }
+.pa.is-connection .pa-k { color: var(--connection); } .pa.is-comprehension .pa-k { color: var(--comprehension); } .pa.is-awareness .pa-k { color: var(--awareness); }
+.pa-k span { margin-left: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.pa-q { margin: 0; max-width: 22ch; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(36px, 4.4vw, 68px); line-height: 1.12; color: var(--text); }
+.pa.is-gap .pa-k { color: var(--cream); }
+.pa.is-gap .pa-q { max-width: 28ch; }
+
+/* ===== the opportunity's key ===== */
+.hmw-key { margin-top: clamp(26px, 5vh, 48px); display: flex; justify-content: center; flex-wrap: wrap; gap: 14px 28px; }
+.hmw-key span { display: inline-flex; align-items: baseline; gap: 8px; font-size: clamp(13px, 1.1vw, 15px); color: var(--text-2); }
+.hmw-key i { width: 9px; height: 9px; border-radius: 50%; transform: translateY(-1px); }
+.hmw-key b { font-weight: 500; }
+.hmw-key .is-connection i { background: var(--connection); } .hmw-key .is-connection b { color: var(--connection); }
+.hmw-key .is-comprehension i { background: var(--comprehension); } .hmw-key .is-comprehension b { color: var(--comprehension); }
+.hmw-key .is-awareness i { background: var(--awareness); } .hmw-key .is-awareness b { color: var(--awareness); }
+
+/* ===== Meet Mila ===== */
+.mila { gap: 18px; max-width: 900px; }
+.mila-h { margin: 0; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(36px, 4.4vw, 64px); line-height: 1.1; color: var(--text); }
+.mila-p { margin: 0; max-width: 44ch; font-size: clamp(17px, 1.6vw, 22px); line-height: 1.5; color: var(--text-2); }
+.mila-note { margin: 10px 0 0; max-width: 56ch; font-size: clamp(14px, 1.2vw, 16px); line-height: 1.5; color: var(--muted); font-style: italic; }
+
+/* ===== every problem → what we built: one pair at a time, its live screen on the right ===== */
+.slide-glance .gl { width: 52%; align-self: center; margin-right: auto; }
+.gl-row { display: block; opacity: 1; filter: none; transform: none; padding: 12px 16px; }
+.gl-pillar { display: flex; font-size: 16px; padding: 0 0 6px; }
+.gl-pair { grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr); padding: 6px 0; opacity: .32; transition: opacity .5s ease; }
+.gl-pair.is-past { opacity: .55; }
+.gl-pair.is-on { opacity: 1; }
+.gl-pair.is-on .gl-q { color: #FFF8E6; }
+.gl-q { font-size: clamp(14px, 1.2vw, 17px); }
+.gl-a { font-size: clamp(12px, 1vw, 14px); }
+.gl-a b { font-size: clamp(13.5px, 1.1vw, 15.5px); }
+.demo-pad-layer.is-side { left: 55%; right: 3%; top: 74px; bottom: 92px; align-items: center; }
+.demo-pad-layer.is-side .ipad.demo-pad { width: 100%; height: auto; max-width: none; }
+.dfilm-ask em { display: block; margin-top: 4px; font-family: var(--font, inherit); font-family: Geist, system-ui, sans-serif; font-style: normal; font-weight: 400; font-size: clamp(13px, 1.1vw, 16px); color: rgba(246, 238, 219, .66); text-shadow: 0 1px 12px rgba(0, 0, 0, .9); }
+/* the film is presenter-paced now: its scrub bar stays out of the way */
+.dfilm .dfc { display: none; }
+
+/* the film's illustrations, in place of clips: full frame, a slow push in */
+.foot-still { width: 100%; height: 100%; object-fit: cover; display: block; animation: still-push 16s ease-out both; transform-origin: 50% 45%; }
+@keyframes still-push { from { transform: scale(1.0); } to { transform: scale(1.09); } }
+/* light paper illustrations: shade the top and bottom so the question and caption stay readable */
+.foot-box:has(.foot-still) .foot-grade { opacity: 1 !important; background: linear-gradient(180deg, rgba(6, 6, 10, .78) 0%, rgba(6, 6, 10, .25) 26%, transparent 42%, transparent 60%, rgba(6, 6, 10, .35) 76%, rgba(6, 6, 10, .82) 100%); }
+
+/* Niko's journey at any screen shape: the drawing whole (contain), right-aligned; a blurred, dimmed copy fills the rest */
+.jrf-bg { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; filter: blur(34px) brightness(.45) saturate(.9); opacity: 0; transition: opacity 1.1s ease; }
+.jrf-bg.is-on { opacity: 1; }
+.jrf-img { object-fit: contain; object-position: right center; transform: none; transition: opacity 1.1s ease; }
+.jrf-img.is-on { transform: none; }
+.jrf-shade { background: linear-gradient(90deg, rgba(8, 8, 12, .92) 0%, rgba(8, 8, 12, .78) 30%, rgba(8, 8, 12, .15) 55%, transparent 70%); }
+@media (max-aspect-ratio: 4/3) { .jrf-img { object-position: center 30%; } .jrf-text { top: auto; bottom: 120px; transform: none; width: min(560px, 86vw); } .jrf-shade { background: linear-gradient(0deg, rgba(8, 8, 12, .94) 0%, rgba(8, 8, 12, .7) 40%, transparent 70%); } }
+/* the timeline across the top of Niko's journey */
+.jrf-line { position: absolute; z-index: 2; left: clamp(28px, 6vw, 96px); right: clamp(28px, 6vw, 96px); top: clamp(28px, 6vh, 56px); }
+.jrf-line li { color: rgba(246, 238, 219, .6); text-shadow: 0 1px 10px rgba(0, 0, 0, .8); }
+.jrf-line li.is-on { color: #FFF8E6; }
+.jrf-line::before { background: rgba(255, 248, 230, .3); }
+/* full-screen slides really are full screen (the deck caps slide content at 1180px elsewhere) */
+.jrf, .scf { max-width: none !important; width: auto; }
+
+/* ===== Niko's journey, like a picture-book page: words left, the drawing whole and framed right, the timeline below ===== */
+.nj { width: min(1240px, 100%); max-width: none !important; height: 100%; display: flex; flex-direction: column; justify-content: center; gap: clamp(22px, 4vh, 40px); }
+.nj-page { display: grid; grid-template-columns: minmax(260px, .78fr) minmax(0, 1.22fr); gap: clamp(28px, 4vw, 64px); align-items: center; }
+.nj-text { display: flex; flex-direction: column; gap: 12px; animation: rise .8s .1s var(--ease) both; }
+.nj-k { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.nj-date { font-family: var(--mono); font-size: 12px; color: var(--cream); }
+.nj-title { margin: 0; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 96; font-weight: 300; font-size: clamp(36px, 3.8vw, 58px); line-height: 1.05; color: var(--text); }
+.nj-what { margin: 0; font-size: clamp(16px, 1.4vw, 19px); line-height: 1.55; color: var(--text-2); }
+.nj-q { margin: 6px 0 0; }
+.nj-q p { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.4; color: var(--cream); }
+.nj-q cite { display: block; margin-top: 6px; font-style: normal; font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.nj-art { position: relative; margin: 0; aspect-ratio: 3 / 2; max-height: 62vh; width: 100%; justify-self: end; border-radius: 14px; overflow: hidden; background: #f3ece0; box-shadow: 0 30px 80px rgba(0, 0, 0, .55), 0 0 0 1px rgba(243, 227, 181, .12); }
+.nj-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity .9s ease; }
+.nj-art img.is-on { opacity: 1; }
+.nj-line { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.nj-line::before { content: ""; position: absolute; left: 4px; right: 4px; top: 4px; height: 1px; background: rgba(243, 227, 181, .2); }
+.nj-line li { position: relative; display: flex; flex-direction: column; gap: 10px; font-family: var(--mono); font-size: 12px; color: var(--muted); opacity: .5; transition: opacity .5s, color .5s; }
+.nj-line li i { width: 9px; height: 9px; border-radius: 50%; background: rgba(243, 227, 181, .45); }
+.nj-line li.is-past { opacity: .75; }
+.nj-line li.is-on { opacity: 1; color: var(--cream); }
+.nj-line li.is-on i { background: var(--cream); box-shadow: 0 0 0 5px rgba(243, 227, 181, .14), 0 0 12px rgba(243, 227, 181, .6); }
+@media (max-width: 860px) { .nj-page { grid-template-columns: 1fr; } .nj-art { order: -1; max-height: 40vh; } }
+.hmw-key { min-height: 1.6em; }
+.hmw-key-on { animation: rise .7s var(--ease) both; }
+
+/* the feature a chapter shows, named like a product: top left, quiet */
+.dfilm-feat { position: absolute; z-index: 14; left: clamp(20px, 3.5vw, 56px); top: clamp(20px, 4vh, 44px); margin: 0; display: flex; flex-direction: column; gap: 4px; animation: cap-rise .9s .2s var(--ease) both; }
+.dfilm-feat span { font-family: var(--mono); font-size: 11.5px; color: rgba(246, 238, 219, .6); }
+.dfilm-feat b { display: inline-flex; align-items: center; gap: 9px; font-family: var(--display); font-weight: 400; font-size: clamp(22px, 2vw, 30px); color: #FFF8E6; text-shadow: 0 2px 18px rgba(0, 0, 0, .8); }
+.dfilm-feat.is-out { animation: cap-out .5s ease forwards; }
+.dfilm-feat.is-out { transform: none; }
+.dfilm-feat { animation: feat-in .9s .2s var(--ease) both; }
+.dfilm-feat.is-out { animation: feat-out .5s ease forwards; }
+@keyframes feat-in { from { opacity: 0; transform: translateY(8px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes feat-out { to { opacity: 0; filter: blur(3px); } }
+
+/* ===== the six features, as one constellation ===== */
+.rc { gap: 14px; width: min(1100px, 100%); }
+.rc-h { margin: 0; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(34px, 3.8vw, 56px); color: var(--text); }
+.rc-art { width: 100%; height: auto; overflow: visible; }
+.rc-line { fill: none; stroke: rgba(243, 227, 181, .4); stroke-width: 1.3; stroke-dasharray: 1100; stroke-dashoffset: 1100; }
+.is-on .rc-line { animation: rc-draw 2.6s .6s ease forwards; }
+@keyframes rc-draw { to { stroke-dashoffset: 0; } }
+.rc-pt { opacity: 0; }
+.is-on .rc-pt { animation: appear .6s calc(.6s + var(--k) * .35s) ease forwards; }
+.rc-star { fill: #FFF8E6; filter: drop-shadow(0 0 8px rgba(255, 248, 230, .9)); }
+.rc-glow { opacity: .22; } .rc-glow.is-connection { fill: var(--connection); } .rc-glow.is-comprehension { fill: var(--comprehension); } .rc-glow.is-awareness { fill: var(--awareness); }
+.rc-name { text-anchor: middle; font-family: var(--display); font-size: 17px; fill: var(--text); }
+.rc-p { margin: 0; max-width: 52ch; font-size: clamp(15px, 1.35vw, 18px); line-height: 1.5; color: var(--text-2); }
+
+/* ===== film chapters: the problem as one held card, centred; then the screen; then our thinking ===== */
+.dfilm-ask { top: 50%; transform: translate(-50%, -50%); max-width: min(900px, 80vw); gap: 14px; font-size: clamp(32px, 3.6vw, 56px); line-height: 1.15; padding: 34px 44px; border-radius: 20px;
+  background: rgba(6, 6, 10, .72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: ask-in .9s var(--ease) both; }
+.dfilm-ask em { font-size: clamp(15px, 1.35vw, 19px); margin-top: 2px; }
+.dfilm-ask.is-out { animation: ask-out .5s ease forwards; }
+@keyframes ask-in { from { opacity: 0; transform: translate(-50%, calc(-50% + 12px)); filter: blur(4px); } to { opacity: 1; transform: translate(-50%, -50%); filter: none; } }
+@keyframes ask-out { to { opacity: 0; transform: translate(-50%, -50%); filter: blur(4px); } }
+.dfilm-when { position: absolute; z-index: 15; left: 50%; top: calc(50% - min(180px, 22vh)); transform: translateX(-50%); margin: 0; font-family: var(--mono); font-size: 12.5px; color: rgba(246, 238, 219, .75); animation: appear .6s ease both; opacity: 0; }
+.dfilm-why { position: absolute; z-index: 14; left: 50%; bottom: 9%; transform: translateX(-50%); width: max-content; max-width: min(820px, 76vw); margin: 0; padding: 16px 22px; border-radius: 14px;
+  background: #0d0d11; border: 1px solid color-mix(in srgb, var(--cream) 22%, transparent); box-shadow: 0 18px 40px rgba(0, 0, 0, .5);
+  text-align: left; font-family: var(--display); font-weight: 300; font-size: clamp(18px, 1.7vw, 24px); line-height: 1.35; color: #FFF8E6; animation: cap-rise .9s .1s var(--ease) both; }
+.dfilm-why span { display: block; margin-bottom: 6px; font-family: var(--mono); font-size: 11.5px; color: var(--cream); opacity: .75; }
+.dfilm-why.is-out { animation: cap-out .5s ease forwards; }
+
+/* ===== what Constellate is, with the live product beside it ===== */
+.slide-overview .ov { width: 48%; margin-right: auto; display: flex; flex-direction: column; gap: 18px; }
+.ov-h { margin: 0; font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(32px, 3.4vw, 52px); line-height: 1.12; color: var(--text); }
+.ov-p { margin: 0; max-width: 42ch; font-size: clamp(15px, 1.35vw, 18px); line-height: 1.55; color: var(--text-2); }
+
+/* slide 19: what it is, then the idea, one step at a time beside the live screen */
+.ov-steps { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.ov-steps li { display: grid; grid-template-columns: 18px 1fr; column-gap: 12px; opacity: .3; transition: opacity .6s ease; }
+.ov-steps li.is-past { opacity: .55; }
+.ov-steps li.is-on { opacity: 1; }
+.ov-steps i { grid-row: span 2; width: 10px; height: 10px; margin-top: 9px; border-radius: 50%; background: rgba(243, 227, 181, .5); }
+.ov-steps li.is-on i { background: #FFF8E6; box-shadow: 0 0 12px rgba(255, 248, 230, .8); }
+.ov-steps b { font-family: var(--display); font-weight: 400; font-size: clamp(20px, 1.9vw, 26px); color: var(--text); }
+.ov-steps li.is-on b { color: var(--cream); }
+.ov-steps span { font-size: clamp(14px, 1.2vw, 16px); line-height: 1.5; color: var(--text-2); }
+
+.foot.foot-mila { animation: fade 1.6s ease both; } /* the film eases in on Mila */
+
+/* problem cards without a box: the picture dims and softens behind the words instead */
+.dfilm-ask { background: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 0; border-radius: 0; text-shadow: 0 2px 30px rgba(0, 0, 0, .95), 0 0 2px rgba(0, 0, 0, .6); }
+.dfilm-ask em { text-shadow: 0 1px 16px rgba(0, 0, 0, .95); color: rgba(246, 238, 219, .82); }
+.dfilm .foot-wrap, .dfilm .dfilm-cam { transition: filter .9s ease, opacity 1s ease; }
+.dfilm.has-ask .foot-wrap, .dfilm.has-ask .dfilm-cam { filter: brightness(.32) blur(3px) saturate(.85); }
+.dfilm-when { text-shadow: 0 1px 14px rgba(0, 0, 0, .95); }
+/* captions over the drawings: a soft shadow band, not a box */
+.dfilm-cap { text-shadow: 0 2px 22px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .7); }
+/* "why we built it this way": no box either; a soft band along the bottom keeps every caption readable */
+.dfilm-why { background: none; border: 0; box-shadow: none; padding: 0; text-align: center; text-shadow: 0 2px 24px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .7); }
+.dfilm-why span { color: var(--cream); opacity: .9; }
+.dfilm::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 34%; z-index: 13; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(4, 4, 8, .45) 45%, rgba(4, 4, 8, .82)); }
+
+/* Niko's journey: what each moment took out of them, above the facts */
+.nj-felt { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(19px, 1.7vw, 24px); line-height: 1.35; color: var(--cream); }
+
+/* ===== in their words: one voice at a time ===== */
+.vo { gap: clamp(22px, 4vh, 40px); }
+.vo-q { margin: 0; max-width: 24ch; animation: rise 1s var(--ease) both; }
+.vo-q p { margin: 0; font-family: var(--display); font-style: italic; font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 300; font-size: clamp(34px, 4.2vw, 64px); line-height: 1.15; color: var(--text); }
+.vo-q cite { display: block; margin-top: 20px; font-style: normal; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.vo-dots { display: flex; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.vo-dots li { width: 6px; height: 6px; border-radius: 50%; background: rgba(243, 227, 181, .2); transition: background .4s; }
+.vo-dots li.is-past { background: rgba(243, 227, 181, .45); }
+.vo-dots li.is-on { background: var(--cream); }
+/* Voices: the quote's measure in its own size, so it doesn't wrap a word per line */
+.vo-q { max-width: none; width: min(1000px, 90%); }
+.vo-q p { max-width: 30ch; margin: 0 auto; font-size: clamp(30px, 3.4vw, 52px); }
+
+/* ===== in their words: three voices, one screen ===== */
+.vo2 { width: min(1120px, 100%); display: flex; flex-direction: column; gap: 22px; }
+.vo2-grid { display: grid; grid-template-columns: 1.3fr 1fr; grid-template-rows: auto auto; gap: 22px 40px; align-items: start; }
+.vo2-q { margin: 0; }
+.vo2-q.is-lead { grid-row: span 2; }
+.vo2-q p { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(22px, 2.2vw, 32px); line-height: 1.3; color: var(--text); }
+.vo2-q.is-lead p { font-size: clamp(32px, 3.4vw, 52px); line-height: 1.15; }
+.vo2-q cite { display: block; margin-top: 12px; font-style: normal; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+/* each scene's result: what the parent got done, with our reasoning small beneath; no box */
+.dfilm-result { position: absolute; z-index: 14; left: 50%; bottom: 8%; transform: translateX(-50%); width: max-content; max-width: min(900px, 80vw); text-align: center; animation: cap-rise .9s .1s var(--ease) both; }
+.dfilm-result.is-out { animation: cap-out .5s ease forwards; }
+.dfilm-result-t { margin: 0; display: inline-flex; align-items: baseline; gap: 12px; font-family: var(--display); font-weight: 400; font-size: clamp(24px, 2.4vw, 36px); line-height: 1.25; color: #FFF8E6; text-shadow: 0 2px 26px rgba(0, 0, 0, .95), 0 0 3px rgba(0, 0, 0, .7); }
+.dfilm-result-t span { color: var(--cream); font-size: .8em; }
+.dfilm-result-w { margin: 12px auto 0; max-width: 60ch; font-size: clamp(13px, 1.1vw, 15.5px); line-height: 1.5; color: rgba(246, 238, 219, .78); text-shadow: 0 1px 14px rgba(0, 0, 0, .95); }
+.dfilm-result-w b { margin-right: 8px; font-family: var(--mono); font-weight: 400; font-size: 11.5px; color: var(--cream); }
+.dfilm.has-result .dfilm-cam, .dfilm.has-result .foot-wrap { filter: brightness(.5) saturate(.9); }
+
+/* the stay, down the right of the film */
+.dfilm-tl { position: absolute; z-index: 15; right: clamp(16px, 2.4vw, 40px); top: 50%; transform: translateY(-50%); margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 22px; }
+.dfilm-tl::before { content: ""; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 1px; background: rgba(243, 227, 181, .22); }
+.dfilm-tl li { position: relative; display: grid; grid-template-columns: 10px auto; column-gap: 12px; opacity: .45; transition: opacity .5s ease; }
+.dfilm-tl li.is-past { opacity: .65; }
+.dfilm-tl li.is-on { opacity: 1; }
+.dfilm-tl li.is-alt { margin-top: 10px; }
+.dfilm-tl i { grid-row: span 2; width: 9px; height: 9px; margin-top: 4px; border-radius: 50%; background: rgba(243, 227, 181, .5); }
+.dfilm-tl li.is-on i { background: #FFF8E6; box-shadow: 0 0 0 4px rgba(243, 227, 181, .14), 0 0 10px rgba(255, 248, 230, .7); }
+.dfilm-tl b { font-family: var(--mono); font-weight: 400; font-size: 11.5px; color: var(--cream); }
+.dfilm-tl span { font-size: 13px; color: rgba(246, 238, 219, .8); text-shadow: 0 1px 10px rgba(0, 0, 0, .9); }
+.dfilm-tl li.is-alt { margin-top: 18px; } .dfilm-tl li.is-alt span { font-style: italic; }
+
+/* brainstorm and sort on one slide: the map, then → hides its chips at once (the same chips are already
+   in the columns, flying from their spots on the map) while the rest of the map fades away */
+.ideate { display: grid; align-items: center; }
+.ideate > * { grid-area: 1 / 1; width: 100%; min-width: 0; }
+.ideate .brain { transition: opacity .6s ease; }
+.slide-brainstorm.is-step-1 .brain { opacity: 0; }
+.slide-brainstorm.is-step-1 .brain-chip { animation: none !important; opacity: 0 !important; }
+.slide-brainstorm .sort .rv { animation: none; opacity: 0; }
+.slide-brainstorm.is-on.is-step-1 .sort .rv { animation: rise 1s var(--ease) both; animation-delay: calc(.1s + var(--d) * .13s); }
+.slide-brainstorm .sort .floater { animation: none; opacity: 0; }
+.slide-brainstorm.is-on.is-step-1 .sort .floater { animation: float-from 1.1s calc(.1s + var(--n) * .035s) cubic-bezier(.45, 0, .2, 1) both; }
+.is-static .ideate .sort { visibility: hidden; }
