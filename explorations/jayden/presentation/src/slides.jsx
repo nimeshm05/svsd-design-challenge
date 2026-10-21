@@ -186,8 +186,7 @@ function Asked({ step, active, thumb }) {
   }, [active, step])
   return (
     <div ref={host} className={`ivw is-s${step} ${jump ? 'is-jump' : ''}`} style={pos ? { '--drop': `${pos.drop}px` } : undefined}>
-      <span className="k ivw-k">Who we talked to</span>
-      <div ref={head} className="ivw-head"><R d={0} as="p" className="statement-p">So we listened.</R></div>
+      <div ref={head} className="ivw-head"><R d={0} as="p" className="statement-p">We listened.</R></div>
       <div className="ivw-row">
         <span className="ivw-count"><b>4</b>interviews</span>
         <i className="ivw-rule" />
@@ -251,15 +250,15 @@ function Telephone() {
 
 /* ---------- 02 · The problem ---------- */
 const PAINS = [
-  { p: 'connection', qs: ['How can I feel close to my baby before I can hold them?', 'What happened while I was away?'], themes: [['Bonding', 'Weeks before a first hold'], ['Emotions', 'Fear and hope, every day'], ['Parent guilt', 'When they can’t be there']], pain: 'Parents can’t bond the way they expected, and guilt fills the gap.', q: 'I didn’t have the luxury of having my baby right away and like putting him on my chest.' },
+  { p: 'connection', qs: ['How can I feel close to my baby before I can hold them?', 'What happened while I was away?'], themes: [['Bonding', 'Weeks before a first hold'], ['Emotions', 'Fear and hope, every day'], ['Parent guilt', 'For the situation, and when they can’t be there']], pain: 'Parents can’t bond the way they expected, and guilt fills the gap.', q: 'I didn’t have the luxury of having my baby right away and like putting him on my chest.' },
   { p: 'comprehension', qs: ['What is all of this on my baby?', 'What does that word mean?'], themes: [['Medical terminology', 'A whole new language'], ['Status of child', 'Is he okay today?'], ['Provider communication', 'A new nurse every shift']], pain: 'Parents have information, but not the whole picture.', q: '[Medical terminology] is a new language.' },
-  { p: 'awareness', qs: ['What’s next, and who is caring for my baby tonight?', 'How are they doing right now?'], themes: [['Situational awareness', 'What’s happening right now'], ['Holistic awareness', 'How far he’s come, and what’s next']], pain: 'Time disappears, and the next moment is a surprise.', q: 'In the ICU, time just like, it doesn’t exist. It’s just a mash of time.' },
+  { p: 'awareness', qs: ['What’s next, and who is caring for my baby tonight?', 'How are they doing right now?'], themes: [['Situational awareness', 'What’s happening right now'], ['Holistic awareness', 'How far he’s come, and what’s next']], pain: 'Time blurs, and the next moment is a surprise.', q: 'In the ICU, time just like, it doesn’t exist. It’s just a mash of time.' },
 ]
 // one pillar at a time, each with what a parent said
 function Pillars({ step }) {
   return (
     <div className="pillars">
-      <R d={0} className="k">The three pillars</R>
+      <R d={0} className="k">Three needs</R>
       <div className="cols">
         {PAINS.map((x, k) => (
           <div key={x.p} className={`col is-${x.p} ${step >= k ? 'is-in' : ''}`}>
@@ -419,12 +418,23 @@ function Brainstorm({ active }) {
   )
 }
 
+// brainstorm and sort as one slide: the affinity map first, then → sends its chips to their principles.
+// Both layers are stacked in place; each keeps its own logic, switched on by the step.
+function Ideation({ active, step }) {
+  return (
+    <div className="ideate">
+      <Brainstorm active={active && step === 0} />
+      <Sort active={active && step === 1} />
+    </div>
+  )
+}
+
 // the moment the question came up, as it was said in our team chat
 function Mom() {
   return (
     <div className="center statement mom">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="p" className="statement-p">Picture a tired mom in a hospital bed, <L>anxious about her baby</L>.</R>
+      <R d={1} as="p" className="statement-p">Picture a tired mom in the NICU, <L>anxious about her baby</L>.</R>
       <R d={3}><Shot src="./shots/modality-chat.png" pan={false} className="is-chat" alt="A teammate's message in our chat: imagining how a parent might interact with this from a hospital bed, by touch, remote control or gesture; imagining a tired mom on a bed who's anxious about her baby." /></R>
     </div>
   )
@@ -468,14 +478,14 @@ const Sketch = ({ kind }) => (
 )
 const MODES = [
   { k: 'Touch', t: 'One tap, big targets, nothing hidden behind hover.', chosen: true },
-  { k: 'Remote control', t: 'For a parent who can’t reach the screen from bed.' },
+  { k: 'Remote control', t: 'If the monitor can’t be accessed directly.' },
   { k: 'Gesture', t: 'No touching at all, near an incubator.' },
 ]
 function Modality() {
   return (
     <div className="modes">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="h2" className="h">How would she reach it?</R>
+      <R d={1} as="h2" className="h">How would she interact with it?</R>
       <div className="cols">
         {MODES.map((x, k) => (
           <R key={x.k} d={2 + k * 0.6} className={`col mode ${x.chosen ? 'is-chosen' : ''}`}>
@@ -1054,8 +1064,8 @@ function Close() {
 // Niko's real story, from his family's public fundraiser and our interview with his mom, Lauren. Only what we
 // know: anything we haven't confirmed with Lauren stays out. Quotes are Lauren's, from our interview with her.
 const JOURNEY = [
-  { when: 'Nov 14, 2025', title: 'An emergency birth', felt: 'Lauren is recovering from major surgery, and still can’t hold her son.', p: 'connection', img: './shots/niko-1.webp', what: 'Lauren has an emergency C-section. Niko arrives a little over two months early.', q: 'I didn’t have the luxury of having my baby right away and putting him on my chest.', who: 'Lauren, Niko’s mom' },
-  { when: 'The first days', title: 'Two hospitals', felt: 'Healing from surgery in one place, while her newborn is cared for in another.', p: 'connection', img: './shots/niko-2.webp', what: 'Niko is born at one hospital, but his care is in another hospital’s NICU. From the start, his family’s life moves there.', q: 'They’re hooked up to leads, they’re hooked up to pulse ox… ensuring that these itty-bitty babies are gonna survive.', who: 'Lauren, Niko’s mom' },
+  { when: 'Nov 14, 2025', title: 'An emergency birth', felt: 'Lauren underwent an emergency surgery, and Niko was taken to the NICU immediately.', p: 'connection', img: './shots/niko-1.webp', what: 'Lauren has an emergency C-section. Niko arrives a little over two months early.', q: 'I didn’t have the luxury of having my baby right away and putting him on my chest.', who: 'Lauren, Niko’s mom' },
+  { when: 'The first days', title: 'Two hospitals', felt: 'Recovering from surgery in one place, while her newborn is cared for in another.', p: 'connection', img: './shots/niko-2.webp', what: 'Niko is born at one hospital, but his care is in another hospital’s NICU. From the start, his family’s life moves there.', q: 'They’re hooked up to leads, they’re hooked up to pulse ox… ensuring that these itty-bitty babies are gonna survive.', who: 'Lauren, Niko’s mom' },
   { when: 'His diagnoses', title: 'A new language', felt: 'Complex conditions, explained in words they’d never heard, while they were exhausted and scared.', p: 'comprehension', img: './shots/niko-3.webp', what: 'Niko has Tetralogy of Fallot, a rare heart condition, and esophageal atresia: his esophagus isn’t connected to his stomach. Two conditions, two specialist teams.', q: 'Medical terminology is a new language. Ask all the dumb questions, because it’s most important to understand your child’s care.', who: 'Lauren, Niko’s mom' },
   { when: 'Every day', title: 'Round-the-clock care', felt: 'Long days and nights at his bedside, until the hours blur together.', p: 'awareness', img: './shots/niko-4.webp', what: 'Life is centered on the NICU. Scott and Lauren take time away from work to be by his side, day after day.', q: 'How is it already 6 p.m.? How is it already time for the shift change? You have no sense of time at all.', who: 'Lauren, Niko’s mom' },
   { when: 'Outside the unit', title: 'The weight of it all', felt: 'Bills, work, insurance, and the guilt of every hour they can’t be with him.', p: 'awareness', img: './shots/niko-5.webp', what: 'Daily costs, and the worry of keeping their health insurance, follow them home. They can’t always be at his bedside.', q: 'Where the mom and dad are having to work full-time… the NICU experience itself would be almost impossible.', who: 'Lauren, Niko’s mom' },
@@ -1086,11 +1096,11 @@ const TAGS = { connection: 'Connection', comprehension: 'Comprehension', awarene
 
 /* ---------- v2: the needs, as the questions parents actually ask ---------- */
 const QUESTIONS = [
-  ['What happened while I was away?', 'Call the desk, ask whoever is on shift', 'connection'],
-  ['What does that word mean?', 'Google it later, or nod and stay confused', 'comprehension'],
-  ['What’s next? When are rounds?', 'Wait, or miss them', 'awareness'],
-  ['Who is caring for her tonight?', 'Ask at the desk', 'awareness'],
-  ['Is she getting better?', 'Piece it together from memory', 'connection'],
+  ['What happened while I was away?', 'Ask whoever is on shift, check medical charts', 'connection'],
+  ['What does that word mean?', 'Google it later, ask a nurse, or stay confused', 'comprehension'],
+  ['What’s next in her care plan?', 'Wait, remember from morning rounds, or miss them', 'awareness'],
+  ['Who is caring for her?', 'Check the nurse note after the shift, try to remember names and roles during rounds', 'awareness'],
+  ['Is she getting better?', 'Piece it together from memory and staggered communication', 'connection'],
 ]
 function Questions() {
   return (
@@ -1100,7 +1110,7 @@ function Questions() {
         <R d={1} className="qs-row is-head" role="row"><span role="columnheader">Parents ask</span><span role="columnheader">Today, they…</span></R>
         {QUESTIONS.map(([q, now, p], k) => (
           <R key={q} d={2 + k} className="qs-row" role="row">
-            <span role="cell" className="qs-q"><i className={`is-${p}`} />{q}</span><span role="cell" className="qs-now">{now}</span>
+            <span role="cell" className="qs-q"><Icon name={p} size={24} color={PILLARS[p].color} />{q}</span><span role="cell" className="qs-now">{now}</span>
           </R>
         ))}
       </div>
@@ -1305,7 +1315,7 @@ export const SLIDES = [
   { id: 'compete', section: '03 · The problem', tint: 'all', View: Compete },
   { id: 'gap', section: '03 · The problem', tint: 'all', View: Gap },
   { id: 'hmw', section: '03 · The problem', tint: 'all', steps: 4, View: HMW },
-  { id: 'brainstorm', section: '03 · Ideation', planet: true, View: Brainstorm },
+  { id: 'brainstorm', section: '03 · Ideation', planet: true, steps: 2, View: Ideation },
   { id: 'mom', section: '04 · Modality', planet: true, View: Mom },
   { id: 'modality', section: '04 · Modality', View: Modality },
   { id: 'k-open', section: '04 · Constraints', View: KOpen },

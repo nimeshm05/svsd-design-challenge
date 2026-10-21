@@ -338,12 +338,10 @@ p.hmw-part { display: block; }
 
 /* so we listened: the headline, then who, then each person's card; one set of icons travels between them */
 .ivw { position: relative; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.ivw-k { margin-bottom: 14px; opacity: 0; transition: opacity .5s ease; }
 .ivw-head { transform: translateY(var(--drop, 0px)); transition: transform .6s var(--ease); }
 .ivw-head .statement-p { max-width: none; }
 .ivw.is-s1 .ivw-head { transform: translateY(calc(var(--drop, 0px) - 48px)); }
 .ivw.is-s2 .ivw-head { transform: none; }
-.ivw.is-s2 .ivw-k { opacity: .85; transition-delay: .35s; }
 
 .ivw-row { position: absolute; left: 0; right: 0; top: calc(50% + 8px); display: flex; align-items: center; justify-content: center; gap: 30px;
   opacity: 0; transform: translateY(10px); filter: blur(3px); transition: opacity .4s ease, transform .6s var(--ease), filter .4s ease; }
@@ -656,8 +654,7 @@ body:has(.panel) { overflow: auto; }
 @keyframes chip-in { from { opacity: 0; transform: translateY(16px) rotate(var(--r)) scale(.9); } to { opacity: 1; transform: rotate(var(--r)); } }
 @keyframes bob { 50% { transform: translateY(-5px) rotate(var(--r)); } }
 .is-static .brain-chip { opacity: 1; }
-.slide-sort.is-on, .slide-sort.is-next { transform: none; filter: none; }
-.is-on .floater { animation: float-in 1.5s calc(.2s + var(--n) * .05s) cubic-bezier(.45, 0, .2, 1) both; }
+.is-on .floater { animation: float-in 1.1s calc(.1s + var(--n) * .035s) cubic-bezier(.45, 0, .2, 1) both; }
 .is-on .floater { animation-name: float-from; }
 @keyframes float-from {
   0% { transform: translate(var(--fx), var(--fy)) rotate(var(--r)); opacity: 1; }
@@ -675,7 +672,6 @@ body:has(.panel) { overflow: auto; }
 /* the hand-off: as the map leaves, its chips vanish at once and the same chips are already there on the
    next slide, in the same spots, so they read as one set of notes sliding to their principles */
 .slide-brainstorm.is-past .brain-chip { animation: none !important; opacity: 0 !important; transition: none; }
-.slide-sort.is-on { opacity: 1; transition: transform 1s var(--ease), filter .7s ease; transition-delay: 0s; }
 
 /* the three pillars sit above the map as plain labels, not as a floating control */
 .brain-pillars { position: static; transform: none; display: flex; gap: 34px; padding: 0; margin: 4px 0 0; background: none; backdrop-filter: none; border: 0; box-shadow: none; }
@@ -1605,9 +1601,8 @@ body:has(.panel) { overflow: auto; }
 .qs-table { display: flex; flex-direction: column; }
 .qs-row { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid rgba(243, 227, 181, .12); align-items: baseline; }
 .qs-row.is-head { padding-top: 0; font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-.qs-q { display: flex; align-items: baseline; gap: 12px; font-family: var(--display); font-weight: 400; font-size: clamp(20px, 2vw, 28px); color: var(--text); }
-.qs-q i { flex: none; width: 8px; height: 8px; border-radius: 50%; transform: translateY(-3px); }
-.qs-q i.is-connection { background: var(--connection); } .qs-q i.is-comprehension { background: var(--comprehension); } .qs-q i.is-awareness { background: var(--awareness); }
+.qs-q { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 400; font-size: clamp(20px, 2vw, 28px); color: var(--text); }
+.qs-q .icon { flex: none; }
 .qs-now { font-size: clamp(15px, 1.35vw, 18px); color: var(--text-2); }
 
 /* ===== v2: each feature, against today ===== */
@@ -1937,3 +1932,16 @@ body:has(.panel) { overflow: auto; }
 .dfilm-tl b { font-family: var(--mono); font-weight: 400; font-size: 11.5px; color: var(--cream); }
 .dfilm-tl span { font-size: 13px; color: rgba(246, 238, 219, .8); text-shadow: 0 1px 10px rgba(0, 0, 0, .9); }
 .dfilm-tl li.is-alt { margin-top: 18px; } .dfilm-tl li.is-alt span { font-style: italic; }
+
+/* brainstorm and sort on one slide: the map, then → hides its chips at once (the same chips are already
+   in the columns, flying from their spots on the map) while the rest of the map fades away */
+.ideate { display: grid; align-items: center; }
+.ideate > * { grid-area: 1 / 1; width: 100%; min-width: 0; }
+.ideate .brain { transition: opacity .6s ease; }
+.slide-brainstorm.is-step-1 .brain { opacity: 0; }
+.slide-brainstorm.is-step-1 .brain-chip { animation: none !important; opacity: 0 !important; }
+.slide-brainstorm .sort .rv { animation: none; opacity: 0; }
+.slide-brainstorm.is-on.is-step-1 .sort .rv { animation: rise 1s var(--ease) both; animation-delay: calc(.1s + var(--d) * .13s); }
+.slide-brainstorm .sort .floater { animation: none; opacity: 0; }
+.slide-brainstorm.is-on.is-step-1 .sort .floater { animation: float-from 1.1s calc(.1s + var(--n) * .035s) cubic-bezier(.45, 0, .2, 1) both; }
+.is-static .ideate .sort { visibility: hidden; }
