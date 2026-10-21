@@ -1,0 +1,251 @@
+/* Phone: the 390×844 "Star · phone" frame, stretched to the device width */
+
+.m-screen {
+  position: fixed; inset: 0; overflow: hidden;
+  background: var(--sky-phone); color: var(--text);
+}
+
+/* ---------- Sky ---------- */
+/* The sky art is drawn for a 390px screen, so it stays centred at that width. */
+.m-sky { position: absolute; top: 0; left: 50%; width: 390px; height: 844px; margin-left: -195px; }
+.m-sky span { position: absolute; }
+.m-sky svg { position: absolute; inset: 0; }
+.m-sky-title { position: absolute; left: 20px; top: 18px; font-size: 13px; font-weight: 600; color: var(--text-2); letter-spacing: 0.02em; }
+
+.m-day-marker {
+  position: absolute; left: calc(50% + 123px); top: 56px; width: 72px; height: 72px; margin: -36px 0 0 -36px;
+  padding: 0; border: none; background: transparent; display: flex; align-items: center; justify-content: center;
+}
+.m-day-marker .ring-outer { position: absolute; inset: 0; border-radius: 36px; border: 1px dashed #FFFFFF; opacity: 0.6; }
+.m-day-marker .ring-inner {
+  position: absolute; inset: 18px; border-radius: 18px; border: 2px solid #FFFFFF;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+.is-planet .m-day-marker .ring-inner { border-color: var(--gold); }
+
+.m-tooltip {
+  position: absolute; left: 20px; right: 20px; top: 110px; background: var(--sheet); border: 1px solid var(--line);
+  border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;
+}
+.m-tooltip-title { font-size: 16px; font-weight: 700; }
+.m-tooltip-sub { font-size: 14px; color: var(--text-3); }
+
+.m-scrim {
+  position: absolute; left: 0; right: 0; top: 0; height: 104px; border: none; padding: 0; margin: 0;
+  background: rgba(10, 10, 10, 0.25);
+}
+.m-close-hint { position: absolute; left: 20px; top: 40px; font-size: 12px; color: var(--muted); pointer-events: none; }
+
+/* ---------- Sheet ---------- */
+.m-sheet {
+  position: absolute; left: 0; right: 0; top: 96px; bottom: 0; background: var(--sheet); color: var(--text);
+  border-radius: 24px 24px 0 0; border-top: 1px solid var(--accent);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.6);
+}
+/* Sideways chip rows scroll without a visible bar too */
+.m-device-chips::-webkit-scrollbar, .m-filter-chips::-webkit-scrollbar { display: none; }
+.m-header {
+  position: sticky; top: 0; z-index: 3; background: var(--sheet); padding: 8px 16px 12px 20px;
+  border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px;
+}
+.m-grabber { align-self: center; width: 40px; height: 5px; border-radius: 3px; background: var(--btn-border); }
+.m-header-row { display: flex; align-items: center; gap: 12px; }
+.m-title { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.m-title h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.m-subtitle { font-size: 13px; color: var(--muted); }
+.m-close {
+  width: 44px; height: 44px; border: none; border-radius: 22px; background: var(--text);
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+
+.m-body { padding: 16px 20px calc(32px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 22px; }
+
+.m-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.m-nav-days { display: flex; gap: 8px; }
+.m-tag {
+  display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px dashed var(--dashed);
+  border-radius: 14px; font-size: 12px; color: var(--text-2); white-space: nowrap;
+}
+.m-pill {
+  height: 40px; padding: 0 12px; border: 1px solid var(--btn-border); border-radius: 20px;
+  background: var(--sheet); font-size: 14px; color: var(--text); white-space: nowrap;
+}
+.m-pill-xs { height: 32px; padding: 0 10px; border-radius: 16px; font-size: 12px; }
+.m-pill-sm { font-size: 13px; flex: none; }
+.m-pill-strong { border-color: var(--text); font-weight: 600; }
+.m-link {
+  height: 36px; padding: 0 2px; border: none; background: transparent; font-size: 14px; font-weight: 600;
+  color: var(--text); text-decoration: underline; text-underline-offset: 3px;
+}
+.m-link-sm { height: 32px; padding: 0 4px; font-size: 13px; }
+
+.m-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.m-row.baseline { align-items: baseline; }
+.m-col { display: flex; flex-direction: column; gap: 3px; }
+.m-gap4 { gap: 4px; }
+.m-grow { flex: 1; min-width: 0; }
+
+/* ---------- Milestone (planet days, adapted from the desktop planet frame) ---------- */
+.m-milestone {
+  background: #1F1B15; border: 1px solid #5A4A2A; border-radius: 18px; padding: 18px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.m-milestone-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: -4px -4px 0; }
+.m-milestone-tag {
+  height: 28px; padding: 0 10px; border: 1px solid var(--gold); border-radius: 14px; font-size: 12px;
+  font-weight: 600; color: var(--gold); display: flex; align-items: center; white-space: nowrap;
+}
+.m-milestone-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--gold); }
+.m-milestone h3 { margin: 0; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.015em; color: #FFFFFF; }
+.m-milestone p { margin: 0; font-size: 16px; line-height: 1.5; color: #E4DCCB; }
+.m-milestone-meta { font-size: 13px; color: #B9AE98; }
+.m-milestone-actions { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.m-btn-gold {
+  height: 48px; border: none; border-radius: 24px; background: var(--gold); color: #1A1408; font-size: 15px; font-weight: 700;
+}
+.m-btn-gold-outline {
+  height: 48px; border: 1px solid #5A4A2A; border-radius: 24px; background: transparent; color: var(--gold);
+  font-size: 15px; font-weight: 600;
+}
+.m-divider { display: flex; align-items: center; gap: 12px; margin-bottom: -8px; }
+.m-divider .eyebrow { flex: none; }
+.m-rule { flex: 1; height: 1px; background: var(--line); }
+
+/* ---------- Sections ---------- */
+.m-how { display: flex; flex-direction: column; gap: 8px; }
+.m-headline { margin: 0; font-size: 27px; line-height: 1.18; font-weight: 700; letter-spacing: -0.01em; }
+.m-headline.is-secondary { font-size: 21px; line-height: 1.25; letter-spacing: 0; }
+.m-summary { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-2); }
+.m-summary-by { font-size: 13px; color: var(--muted); }
+
+.m-card { background: var(--card); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+.m-things { gap: 14px; }
+.m-things ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.m-things li { display: flex; gap: 12px; align-items: flex-start; }
+.m-num {
+  width: 26px; height: 26px; border-radius: 13px; background: var(--text); color: var(--ink); font-size: 13px;
+  font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none;
+}
+.m-thing-title { font-size: 16px; font-weight: 600; line-height: 1.3; }
+.m-thing-body { font-size: 15px; color: var(--text-3); line-height: 1.4; }
+
+.m-label { font-size: 13px; font-weight: 600; color: var(--text-2); }
+.m-label-lg { font-size: 14px; font-weight: 600; }
+.m-hint { font-size: 12px; color: var(--muted); }
+
+.m-device-chips { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px; scrollbar-width: none; }
+.m-device-chips .device-chip { height: 36px; padding: 0 12px; flex: none; white-space: nowrap; }
+.m-device-info { background: #11171B; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; }
+.m-device-title { font-size: 14px; font-weight: 600; }
+.m-device-route { font-family: var(--mono); font-size: 11px; color: #9DC9F0; text-align: right; }
+.m-device-text { font-size: 13px; color: #C9D6DD; line-height: 1.4; }
+
+.m-her-day { gap: 12px; }
+.m-day-parts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.m-day-part { background: var(--card-2); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; }
+.m-day-part.is-highlight { box-shadow: inset 0 0 0 1.5px var(--blue); }
+.m-day-part-name { font-size: 14px; font-weight: 600; }
+.m-day-part-hours { font-size: 11px; color: var(--muted); }
+.m-day-part-text { font-size: 13px; line-height: 1.35; color: var(--text-2); }
+.m-coming-up { display: flex; flex-direction: column; gap: 4px; padding-top: 4px; font-size: 15px; line-height: 1.45; }
+.m-coming-up-label { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--blue); }
+
+/* ---------- Her 24 hours ---------- */
+.m-hours { padding: 14px 16px; gap: 10px; }
+.m-shifts { display: flex; gap: 4px; }
+.m-shift {
+  min-width: 64px; height: 44px; padding: 0 8px; border: 1px solid transparent; border-radius: 10px;
+  color: var(--text-2); font-size: 13px; font-weight: 600; text-align: left;
+  display: flex; flex-direction: column; justify-content: center; gap: 1px;
+}
+.m-shift.is-selected { border-color: var(--blue); background: var(--text); color: var(--ink); font-weight: 700; }
+.m-shift-hours { font-size: 10px; font-weight: 500; color: var(--muted); }
+.m-shift.is-selected .m-shift-hours { color: inherit; }
+.m-mark-line { margin: 0 9px; }
+.m-mark-line .mark-line-rule { left: -9px; right: -9px; }
+.m-shift-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); padding-top: 4px; }
+.m-shift-summary { font-size: 13px; color: var(--text-3); padding: 6px 0 4px; }
+.m-shift-row { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line-row); }
+.m-shift-title { font-size: 14px; font-weight: 600; }
+.m-col2 { display: flex; flex-direction: column; gap: 2px; }
+.m-time { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.m-by { font-size: 12px; color: var(--muted); }
+
+/* ---------- Nurse ---------- */
+.m-nurse { display: flex; align-items: center; gap: 12px; }
+.m-nurse-avatar {
+  width: 44px; height: 44px; border-radius: 22px; background: var(--text); color: var(--ink);
+  display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; flex: none;
+}
+.m-nurse-name { font-size: 16px; font-weight: 600; }
+.m-nurse-sub { font-size: 13px; color: var(--text-3); }
+
+/* ---------- More detail ---------- */
+.m-more-head { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; border-top: 1px solid var(--line); }
+.m-more-head h3 { margin: 12px 0 0; font-size: 20px; font-weight: 700; }
+.m-more-head div { font-size: 14px; color: var(--muted); }
+
+.m-accs { display: flex; flex-direction: column; gap: 10px; }
+.m-acc-box { border: 1px solid var(--line); border-radius: 14px; background: var(--sheet); overflow: hidden; }
+.m-acc {
+  width: 100%; min-height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 16px; border: none; border-radius: 0; background: transparent;
+  text-align: left; color: var(--text); scroll-margin-top: 100px;
+}
+.m-acc-box.is-open .m-acc { border-bottom: 1px solid var(--line-row); }
+.m-acc-body { padding: 12px 16px 16px; }
+.m-acc-body > .m-team { background: none; padding: 0; border-radius: 0; }
+.m-acc-text { display: flex; flex-direction: column; gap: 2px; }
+.m-acc-title { font-size: 16px; font-weight: 600; }
+.m-acc-sub { font-size: 13px; color: var(--muted); }
+.m-acc-label { font-size: 13px; font-weight: 600; flex: none; }
+
+.m-team { border-radius: 14px; padding: 14px 16px; }
+.m-team-shift { display: contents; }
+.m-shift-label { font-size: 12px; font-weight: 600; color: var(--muted); }
+.m-shift-label.is-spaced { padding-top: 6px; }
+.m-team-person { font-size: 15px; }
+.m-team-person b { font-weight: 600; }
+.m-team-person span { color: var(--muted); }
+
+.m-log { display: flex; flex-direction: column; gap: 10px; }
+.m-filter-chips { display: flex; gap: 6px; overflow-x: auto; margin: 0 -20px; padding: 0 20px 4px; scrollbar-width: none; }
+.m-filter-chip {
+  height: 36px; padding: 0 12px; border: 1px solid var(--btn-border); border-radius: 18px; background: var(--sheet);
+  color: var(--text); font-size: 13px; flex: none; white-space: nowrap;
+}
+.m-filter-chip.is-selected { border-color: var(--text); background: var(--text); color: var(--ink); }
+.m-log-row { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line-row); }
+.m-log-title { font-size: 15px; font-weight: 600; }
+.m-log-plain { font-size: 14px; color: var(--text-3); line-height: 1.4; }
+.m-mono-sm { font-size: 11px; }
+.m-log-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.m-type-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.04em; padding: 2px 6px; border: 1px solid var(--dashed);
+  border-radius: 4px; color: var(--text-2);
+}
+
+.m-meds { display: flex; flex-direction: column; gap: 8px; }
+.m-med { background: var(--card); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.m-med-name { font-size: 15px; font-weight: 600; }
+.m-med-when { font-size: 12px; color: var(--muted); }
+.m-med-why { font-size: 14px; color: var(--text-3); }
+
+.m-notes { display: flex; flex-direction: column; gap: 10px; }
+.m-note { background: var(--note-bg); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+.m-note-meta { font-size: 12px; color: var(--muted); }
+.m-note-text { font-size: 14px; line-height: 1.45; }
+.m-notes textarea {
+  font-family: inherit; font-size: 16px; padding: 12px; border: 1px solid var(--btn-border); border-radius: 10px;
+  resize: none; background: var(--input-bg); color: var(--text);
+}
+.m-btn-solid { height: 48px; border: none; border-radius: 24px; background: var(--text); color: var(--ink); font-size: 15px; font-weight: 600; }
+.m-btn-dashed { height: 48px; border: 1px dashed var(--dashed); border-radius: 24px; background: var(--sheet); color: var(--text); font-size: 14px; }
+
+.m-footer {
+  display: flex; flex-direction: column; gap: 10px; padding-top: 12px; border-top: 1px solid var(--line);
+  font-size: 12px; line-height: 1.45; color: var(--muted);
+}
+.m-footer-actions { display: flex; gap: 8px; }
+.m-footer-actions .m-pill { height: 44px; border-radius: 22px; }

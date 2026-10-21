@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bedside Story v3: current view</title>
+<style>
+  :root { --ink: #1f1f1f; --mute: #6b6b6b; --line: #c9c9c9; --fill: #f2f2f2; --bg: #fafafa; --note: #2f6fd6; --accent: #3d7fd9; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 12px 26px; align-items: center; padding: 12px 20px;
+    border-bottom: 1px dashed var(--line); background: #fff; }
+  .controls h1 { font-size: 15px; margin: 0; }
+  .group { display: flex; gap: 6px; align-items: center; }
+  .group > span { color: var(--mute); font-size: 13px; margin-right: 4px; }
+  .seg { border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 4px 10px; font-size: 13px; }
+  .seg[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .seg:disabled { opacity: .35; cursor: default; }
+  .hint { color: var(--note); font-size: 12px; }
+
+  .stage { padding: 28px 20px 48px; display: flex; flex-direction: column; align-items: center; }
+  .label { font-size: 12px; color: var(--mute); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 8px; align-self: center; }
+
+  .display { width: min(1040px, calc(100vw - 40px)); aspect-ratio: 16 / 10; border: 12px solid #3a3a3a; border-radius: 16px;
+    background: #fff; overflow: hidden; position: relative; transition: background .3s; }
+  .screen { position: absolute; inset: 0; padding: 3.5% 4%; display: flex; flex-direction: column; }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line);
+    padding-bottom: 10px; margin-bottom: 14px; }
+  .topline .who { font-size: clamp(18px, 2.6vw, 28px); font-weight: 600; }
+  .topline .meta { color: var(--mute); font-size: 13px; text-align: right; }
+  .dots { display: flex; gap: 6px; justify-content: center; margin-top: auto; padding-top: 10px; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+  .dots i.on { background: var(--ink); }
+  .box { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+  .kicker { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--mute); margin-bottom: 6px; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; border: 1px solid currentColor;
+    border-radius: 4px; padding: 0 5px; margin-right: 6px; vertical-align: 1px; }
+  .tag.new { color: var(--accent); }
+  .tag.removed { border-style: dashed; color: var(--mute); }
+
+
+  /* Current view: a calm night-sky theme so today's forming star belongs */
+  .display.skyview { background: #0b1530; border-color: #2a2f3a; color: #dfe9f5; --mute: #8ea3bf; --line: rgba(223, 233, 245, .14); }
+  .skyview .topline .meta { line-height: 1.5; }
+  .skyview .kicker { color: #8ea3bf; }
+  .skyview .dots i { background: rgba(223, 233, 245, .2); }
+  .skyview .dots i.on { background: #dfe9f5; }
+  .nowtop { display: grid; grid-template-columns: 1fr 240px; gap: 24px; align-items: start; }
+  .latest .text { font-size: clamp(19px, 2.6vw, 30px); line-height: 1.35; margin: 4px 0 8px; font-weight: 500; }
+  .term { text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 5px; text-decoration-color: #6fd3ff; }
+  .decode { font-size: 14px; color: #b9d4ea; margin-bottom: 6px; }
+  .decode b { color: #6fd3ff; font-weight: 600; }
+  .skyview .confirmed { color: #8ea3bf; }
+  .see { margin-top: 10px; border: 1px solid rgba(223, 233, 245, .5); background: transparent; color: inherit; border-radius: 999px; padding: 7px 16px; font-size: 14px; }
+  .see:hover { background: #dfe9f5; color: #0b1530; }
+  .forming svg { width: 100%; display: block; }
+  .forming .past line { stroke: #f3e3b5; stroke-opacity: .25; }
+  .forming .past circle { fill: #f3e3b5; opacity: .75; }
+  .forming .pending { stroke: #f3e3b5; stroke-opacity: .3; stroke-dasharray: 3 4; }
+  .forming .neb { animation: breathe 4s ease-in-out infinite; transform-origin: 200px 70px; }
+  @keyframes breathe { 50% { transform: scale(1.12); } }
+  .forming .cap { font-size: 12px; color: #8ea3bf; text-align: right; }
+  .forming .cap b { display: block; color: #f3e3b5; font-weight: 600; font-size: 13px; }
+  .arcwrap { position: relative; margin-top: 0; }
+  .arc { width: 100%; display: block; overflow: visible; }
+  .arc .done { fill: none; stroke: #dfe9f5; stroke-opacity: .55; stroke-width: 2; }
+  .arc .ahead { fill: none; stroke: #dfe9f5; stroke-opacity: .18; stroke-width: 2; stroke-dasharray: 4 6; }
+  .arc .care text { fill: #8ea3bf; font-size: 13px; }
+  .arc .care.past circle { fill: #dfe9f5; opacity: .8; }
+  .arc .care.later circle { fill: none; stroke: #dfe9f5; stroke-opacity: .35; }
+  .arc .care.next circle { fill: #6fd3ff; }
+  .arc .care.next text { fill: #6fd3ff; font-weight: 600; }
+  .arc .halo { fill: #6fd3ff; opacity: .18; animation: halo 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes halo { 50% { opacity: .35; transform: scale(1.3); } }
+  .arc .ev text { font-size: 13px; }
+  .arc .ev line { stroke-width: 1; stroke-opacity: .5; }
+  .arc .ev.moment text, .arc .ev.moment path { fill: #f3e3b5; } .arc .ev.moment line { stroke: #f3e3b5; }
+  .arc .ev.update text, .arc .ev.update path { fill: #6fd3ff; } .arc .ev.update line { stroke: #6fd3ff; }
+  .arc .nowmark circle { fill: #fff; } .arc .nowmark text { fill: #fff; font-size: 12px; font-weight: 600; letter-spacing: .05em; }
+  .callout { position: absolute; top: 47%; width: 40%; min-width: 230px; border: 1px solid rgba(111, 211, 255, .35); border-radius: 10px;
+    padding: 10px 12px; background: rgba(8, 20, 48, .85); font-size: 14px; }
+  .callout .kicker { color: #6fd3ff; margin-bottom: 3px; }
+  .callout .what { font-size: 14px; font-weight: 600; }
+  .callout .you { color: #f3e3b5; margin-top: 3px; }
+  .callout .why, .callout .then { color: #8ea3bf; font-size: 12px; margin-top: 4px; }
+  .nowfoot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding-top: 8px; }
+  .nowfoot .dots { margin: 0; padding: 0; }
+  .quiet { border: 0; background: none; color: var(--mute); font-size: 13px; text-decoration: underline; padding: 0; }
+  .back { border: 1px solid var(--line); background: #fff; border-radius: 6px; font-size: 13px; padding: 3px 10px; margin-right: 12px; vertical-align: 4px; }
+
+  /* Today */
+  .home { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; flex: 1; min-height: 0; }
+  .summary { font-size: clamp(15px, 2vw, 22px); line-height: 1.5; margin: 0 0 10px; }
+  .confirmed { font-size: 12px; color: var(--mute); }
+  .changes { list-style: none; margin: 0; padding: 0; }
+  .changes li { padding: 7px 0; border-top: 1px solid var(--fill); font-size: 14px; }
+  .changes li:first-child { border-top: 0; }
+  .strip { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 16px; }
+  .strip .big { font-size: 18px; font-weight: 600; }
+  .strip .empty { border-style: dashed; color: var(--mute); font-size: 13px; display: flex; align-items: center; }
+
+  /* 3D setup */
+  .setup { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 250px; gap: 14px; }
+  .view3d { position: relative; border-radius: 10px; background: #040b1f; overflow: hidden; min-height: 0; }
+  .view3d canvas { display: block; }
+  .no3d { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: #9fc4e6; font-size: 14px; padding: 20px; }
+  .lbl { font-size: 12px; color: #dff6ff; background: rgba(4, 14, 40, .78); border: 1px solid rgba(111, 211, 255, .45); border-radius: 6px;
+    padding: 2px 8px; white-space: nowrap; pointer-events: auto; cursor: pointer; box-shadow: 0 0 12px rgba(111, 211, 255, .25); }
+  .lbl .tag.new { color: #6fd3ff; }
+  .lbl.removed { border-style: dashed; color: #8aa3c2; }
+  .lbl.on { background: #e3f7ff; color: #04122a; border-color: #e3f7ff; box-shadow: 0 0 18px rgba(160, 230, 255, .8); }
+  .lbl.on .tag { color: #04122a; }
+  .legend3d { list-style: none; margin: 0; padding: 0; overflow: auto; font-size: 13px; }
+  .legend3d li { padding: 8px 10px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; }
+  .legend3d li.on { border-color: var(--ink); background: #fff; }
+  .legend3d li b { font-weight: 600; display: block; }
+  .legend3d li span { color: var(--mute); font-size: 12px; }
+  .legend3d li.removed { opacity: .55; }
+  .legend3d li.head { cursor: default; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--mute); padding-bottom: 0; }
+  .legend3d li.rest { cursor: default; color: var(--mute); font-size: 12px; border-top: 1px solid var(--fill); border-radius: 0; margin-top: 6px; }
+  .caption { position: absolute; left: 12px; right: 12px; bottom: 10px; font-size: 14px; color: #dff6ff;
+    background: rgba(4, 14, 40, .8); border: 1px solid rgba(111, 211, 255, .3);
+    border-radius: 8px; padding: 8px 12px; display: flex; gap: 10px; align-items: baseline; }
+  .caption b { white-space: nowrap; }
+  .gesture { position: absolute; top: 10px; left: 12px; font-size: 11px; color: #6fa8d6; }
+
+  /* Team */
+  .team { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .card { display: flex; gap: 10px; align-items: flex-start; }
+  .avatar { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--fill); border: 1px solid var(--line);
+    display: grid; place-items: center; font-size: 13px; font-weight: 600; }
+  .card .n { font-weight: 600; font-size: 14px; }
+  .card .r, .card .l { font-size: 12px; }
+  .card .r { color: var(--mute); }
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .plans .open { border-style: dashed; }
+
+  /* Night + away */
+  .display.night { background: #0b0b0c; border-color: #161616; }
+  .night-view { color: #6e6e6e; justify-content: center; align-items: center; text-align: center; gap: 14px; }
+  .night-view .clock { font-size: clamp(40px, 7vw, 76px); font-weight: 300; color: #8a8a8a; }
+  .away-view { justify-content: center; align-items: center; text-align: center; gap: 8px; color: var(--mute); }
+  .away-view strong { color: var(--ink); font-size: 22px; }
+
+  @media (max-width: 720px) {
+    .display { aspect-ratio: auto; height: auto; min-height: 640px; }
+    .display .screen { position: relative; }
+    .forming { max-width: 240px; justify-self: end; }
+    .display:has(.setup) { height: 720px; }
+    .home, .strip, .team, .plans, .setup, .nowtop { grid-template-columns: 1fr; }
+    .callout { position: static; width: auto; margin-top: 8px; }
+    .setup { grid-template-rows: 1fr auto; }
+    .legend3d { max-height: 180px; }
+  }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+
+<div class="controls">
+  <h1>Bedside Story v3 · monitor</h1>
+  <div class="group" id="screens"><span>View</span></div>
+  <div class="group" id="modes"><span>Mode</span></div>
+  <div class="group" id="days"><span>Day type</span></div>
+  <div class="group" id="tour"><span>Show</span></div>
+</div>
+
+<div class="stage">
+  <p class="label">Bedside display · beside the parent chair · view-only</p>
+  <div class="display" id="display"></div>
+</div>
+
+<!-- The 3D view lives outside render() so it isn't rebuilt on every change. -->
+<div id="view3d" class="view3d" hidden>
+  <div class="no3d" id="loading3d">Loading the 3D view…</div>
+  <div class="gesture">Sketch only: drag to turn. The real screen turns slowly by itself.</div>
+  <div class="caption" id="caption"></div>
+</div>
+
+<script src="data.js?v=5"></script>
+<script type="module">
+
+
+const B = window.BABY;
+const state = { screen: "now", mode: "day", dayType: "steady", focus: "new", active: 0 };
+const SCREENS = [["now", "Current view"], ["home", "Today's chapter"], ["team", "Care team"]];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const $ = id => document.getElementById(id);
+
+/* ---------------- Equipment shown in 3D ---------------- */
+function items() {
+  const t = state.dayType;
+  return [
+    t === "harder"
+      ? { id: "cpap", name: "CPAP mask", plain: "A small mask gives steady air pressure to help her breathe.", status: "new" }
+      : { id: "cannula", name: "Nasal cannula", plain: "Soft prongs in her nose give a gentle flow of air.", status: t === "steady" ? "new" : "same" },
+    { id: "tube", name: "Feeding tube", plain: "A thin tube through her nose carries milk straight to her tummy.", status: "same" },
+    { id: "leads", name: "Heart monitor stickers", plain: "Three soft stickers on her chest count her heartbeat and breathing.", status: "same" },
+    { id: "temp", name: "Temperature sensor", plain: "A small patch on her belly lets the incubator keep her warm.", status: "same" },
+    { id: "pulseox", name: "Pulse oximeter", plain: "A soft wrap on her foot shines a gentle light to measure oxygen. It doesn't hurt.", status: "same" },
+    t === "steady" ? { id: "iv", name: "IV line", plain: "Removed today. All her milk now goes through the feeding tube.", status: "removed" }
+      : t === "harder" ? { id: "iv", name: "IV line", plain: "A thin line in her hand for fluids.", status: "same" } : null,
+    { id: "monitor", name: "Bedside monitor", plain: "Shows her numbers to the nurses. All the wires end here.", status: "same" },
+  ].filter(Boolean);
+}
+
+/* ---------------- 3D: loaded only when opened ---------------- */
+let three = null, loading3d = false;
+async function load3d() {
+  if (three || loading3d) return;
+  loading3d = true;
+  try {
+    const m = await import("./scene3d.js");
+    three = m.create({ state, items, esc, $, syncButtons });
+  } catch (e) {
+    console.warn("3D view failed to load", e);
+    $("loading3d").textContent = "The 3D view couldn't load. Her setup is listed on the right.";
+    three = { applyState() {}, size() {}, select() {}, resetTour() {} };
+  }
+  render();
+}
+function open3d(itemId) {
+  state.screen = "setup";
+  state.focus = itemId ? "new" : "all";
+  const list = state.focus === "new" ? items().filter(i => i.status !== "same") : items();
+  state.active = Math.max(0, list.findIndex(i => i.id === itemId));
+  three?.resetTour();
+  render();
+}
+
+/* ---------------- Screens ---------------- */
+const topline = t => `<div class="topline"><div class="who">${esc(B.name)} · Day ${B.day}</div><div class="meta">${esc(t)}<br>Corrected age ${esc(B.correctedAge)}</div></div>`;
+const dots = () => `<div class="dots">${SCREENS.map(([v]) => `<i class="${v === state.screen ? "on" : ""}"></i>`).join("")}</div>`;
+
+// Current view: today's status. Today is a star still forming; tonight it joins her sky.
+const hourLabel = h => { const hh = h % 24, ap = hh < 12 ? "a.m." : "p.m."; return `${hh % 12 || 12} ${ap}`; };
+// The day is drawn as an arc, like a star's path across the sky: midnight to midnight.
+const ARC = { p0: [40, 150], p1: [500, -30], p2: [960, 150] };
+function arcPt(t) {
+  const u = 1 - t;
+  return [0, 1].map(i => u * u * ARC.p0[i] + 2 * u * t * ARC.p1[i] + t * t * ARC.p2[i]);
+}
+const arcPath = (t0, t1) => Array.from({ length: 61 }, (_, k) => arcPt(t0 + (t1 - t0) * k / 60).map(v => v.toFixed(1)).join(",")).join(" ");
+
+function dayArc(n) {
+  const tNow = B.clock.h / 24, nextH = B.careHours.find(h => h > B.clock.h) ?? 24;
+  const care = [...B.careHours, 24].map(h => {
+    const [x, y] = arcPt(h / 24), past = h <= B.clock.h, next = h === nextH;
+    return `<g class="care ${past ? "past" : next ? "next" : "later"}">
+      ${next ? `<circle class="halo" cx="${x}" cy="${y}" r="16"/>` : ""}
+      <circle cx="${x}" cy="${y}" r="${next ? 7 : past ? 4.5 : 3.5}"/>
+      <text x="${x}" y="${y + 26}" text-anchor="middle">${hourLabel(h)}</text></g>`;
+  }).join("");
+  const events = n.events.map((e, i) => {
+    const [x, y] = arcPt(e.h / 24), ly = y - (i % 2 ? 40 : 22);
+    return `<g class="ev ${e.kind}"><line x1="${x}" y1="${y - 6}" x2="${x}" y2="${ly + 4}"/>
+      <path d="M${x} ${y - 6}l3 6-3 6-3-6z"/><text x="${x}" y="${ly}" text-anchor="middle">${esc(e.text)}</text></g>`;
+  }).join("");
+  const [nx, ny] = arcPt(tNow);
+  const [cx] = arcPt(nextH / 24), s = n.soon[0], s2 = n.soon[1];
+  const left = Math.min(58, Math.max(2, cx / 10 - 20)); // sit the card inside the arc, under the next care point
+  return `<div class="arcwrap">
+    <svg class="arc" viewBox="0 0 1000 215" role="img" aria-label="Today's care times from midnight to midnight">
+      <polyline class="done" points="${arcPath(0, tNow)}"/><polyline class="ahead" points="${arcPath(tNow, 1)}"/>
+      ${care}${events}
+      <g class="nowmark"><circle cx="${nx}" cy="${ny}" r="3"/><text x="${nx}" y="${ny - 14}" text-anchor="middle">Now</text></g>
+    </svg>
+    <div class="callout" style="left:${left}%">
+      <div class="kicker">Next care · ${esc(s.when)}</div>
+      <div class="what">${esc(s.what)}</div>
+      ${s.you ? `<div class="you">${esc(s.you)}</div>` : ""}
+      <div class="why">${esc(B.nextCare.why)}</div>
+      ${s2 ? `<div class="then">Then: ${esc(s2.when)} · ${esc(s2.what)}</div>` : ""}
+    </div></div>`;
+}
+
+// Today's star gathers light from moments that already happened: care times and the day's events.
+// It only ever grows; a hard day still becomes a star.
+function formingStar(n) {
+  const light = B.careHours.filter(h => h <= B.clock.h).length + n.events.filter(e => e.h <= B.clock.h).length * 2;
+  const glow = Math.min(1, .25 + light / 14), r = 10 + glow * 16;
+  const sky = [[22, 92], [48, 60], [80, 78], [104, 40], [134, 58], [160, 30]]; // earlier days, already stars
+  const links = sky.slice(1).map((p, i) => `<line x1="${sky[i][0]}" y1="${sky[i][1]}" x2="${p[0]}" y2="${p[1]}"/>`).join("");
+  const stars = sky.map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${i === sky.length - 1 ? 2.6 : 1.8}"/>`).join("");
+  return `<div class="forming">
+    <svg viewBox="0 0 230 120" aria-hidden="true">
+      <defs><radialGradient id="neb"><stop offset="0" stop-color="#fff6dc" stop-opacity="${glow}"/>
+        <stop offset=".35" stop-color="#f3e3b5" stop-opacity="${glow * .55}"/><stop offset="1" stop-color="#f3e3b5" stop-opacity="0"/></radialGradient></defs>
+      <g class="past">${links}${stars}</g>
+      <line class="pending" x1="160" y1="30" x2="200" y2="70"/>
+      <circle class="neb" cx="200" cy="70" r="${r}" fill="url(#neb)"/>
+    </svg>
+    <div class="cap"><b>Day ${B.day} is still forming</b><span>It joins her sky tonight.</span></div>
+  </div>`;
+}
+
+function decorate(text, terms) {
+  let out = esc(text);
+  terms.forEach(t => { out = out.replace(new RegExp(`(${t.term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "i"), `<span class="term">$1</span>`); });
+  return out;
+}
+
+function now() {
+  const n = B.now[state.dayType], l = n.latest;
+  const decode = l.terms.map(t => `<div class="decode"><b>${esc(t.term[0].toUpperCase() + t.term.slice(1))}:</b> ${esc(t.plain)}</div>`).join("");
+  return `<div class="topline"><div class="who">${esc(B.name)} · Day ${B.day}</div>
+      <div class="meta">${esc(B.clock.label)}<br>${esc(B.shift.now)} is her nurse until ${esc(B.shift.until)}, then ${esc(B.shift.next)}</div></div>
+    <div class="nowtop">
+      <section class="latest">
+        <div class="kicker">Latest update on her${l.time ? ` · ${esc(l.time)}` : ""}</div>
+        <p class="text">${decorate(l.text, l.terms)}</p>
+        ${decode}
+        <div class="confirmed">Checked by ${esc(l.by)}</div>
+        ${l.item ? `<button class="see" data-open3d="${l.item}">See it on her <span aria-hidden="true">→</span></button>` : ""}
+      </section>
+      ${formingStar(n)}
+    </div>
+    ${dayArc(n)}
+    <div class="nowfoot"><button class="quiet" data-open3d="">See her whole setup</button>${dots()}</div>`;
+}
+
+function home() {
+  const c = B.chapters[state.dayType];
+  const changes = c.changes.length
+    ? c.changes.map(x => `<li><span class="tag ${x.kind}">${x.kind === "new" ? "NEW" : "REMOVED"}</span>${esc(x.text)}</li>`).join("")
+    : `<li style="color:var(--mute)">No changes since yesterday</li>`;
+  const milestone = c.milestone ? `<div class="box"><div class="kicker">Today's moment</div><div class="big">${esc(c.milestone)}</div></div>`
+    : `<div class="box empty">No milestone today. That's okay.</div>`;
+  return `${topline("Today's chapter")}<div class="home">
+      <div><div class="kicker">Today</div><p class="summary">${esc(c.summary)}</p><div class="confirmed">Checked by ${esc(c.confirmedBy)} · ${esc(c.confirmedAt)}</div></div>
+      <div class="box"><div class="kicker">What changed since yesterday</div><ul class="changes">${changes}</ul></div></div>
+    <div class="strip">${milestone}<div class="box"><div class="kicker">Next care time</div><div class="big">${esc(B.nextCare.time)}</div>
+      <div style="font-size:13px">${esc(B.nextCare.what)}. ${esc(B.nextCare.why)}</div></div></div>${dots()}`;
+}
+const setup = () => `<div class="topline"><div class="who"><button class="back" data-back>← Back</button>${esc(B.name)}'s setup</div>
+  <div class="meta">${state.focus === "new" ? "What's new on her" : "Everything attached to her"}</div></div>
+  <div class="setup"><div id="slot3d" style="display:contents"></div><ul class="legend3d"></ul></div>`;
+function team() {
+  const cards = B.team.map(t => `<div class="box card"><div class="avatar">${esc(t.initials)}</div><div><div class="n">${esc(t.name)}</div><div class="r">${esc(t.role)}</div><div class="l">${esc(t.line)}</div></div></div>`).join("");
+  const plans = B.plans.map(p => state.dayType === "harder" && p.specialty === "Breathing" ? { ...p, plan: "Stay on CPAP while she rests", open: true, note: "Next step to be talked through at rounds" } : p)
+    .map(p => `<div class="box ${p.open ? "open" : ""}"><div class="kicker">${esc(p.specialty)}</div><div style="font-size:14px">${esc(p.plan)}</div>${p.open ? `<div style="font-size:12px;margin-top:4px">◌ Still open: ${esc(p.note)}</div>` : ""}</div>`).join("");
+  return `${topline("Today's care team")}<div class="team">${cards}</div><div class="kicker" style="margin-top:14px">Current plans</div><div class="plans">${plans}</div>${dots()}`;
+}
+const night = () => `<div class="screen night-view"><div class="clock">1:12 a.m.</div><div style="font-size:18px">Next care · ${esc(B.nextCare.nightTime)}</div><div>${esc(B.name)} is resting.</div></div>`;
+const away = () => `<div class="screen away-view"><strong>${esc(B.room)}</strong><div>The family is away right now.</div><div>Updates are on their phone.</div></div>`;
+
+// Before the 3D code loads, the side list is still useful on its own.
+function legendFallback() {
+  const leg = document.querySelector(".legend3d"); if (!leg || three) return;
+  const list = state.focus === "new" ? items().filter(i => i.status !== "same") : items();
+  leg.innerHTML = list.map(i => `<li class="${i.status}"><b>${i.status !== "same" ? `<span class="tag ${i.status}">${i.status === "new" ? "NEW" : "REMOVED"}</span>` : ""}${esc(i.name)}</b><span>${esc(i.plain)}</span></li>`).join("");
+}
+
+function render() {
+  const d = $("display"), host = $("view3d");
+  d.classList.toggle("night", state.mode === "night");
+  d.classList.toggle("skyview", state.mode === "day" && state.screen === "now");
+  document.body.appendChild(host); host.hidden = true; // park the 3D view before the screen is rebuilt
+  d.innerHTML = state.mode === "night" ? night() : state.mode === "away" ? away()
+    : `<div class="screen">${{ now, home, setup, team }[state.screen]()}</div>`;
+  const slot = $("slot3d");
+  if (slot) {
+    slot.replaceWith(host); host.hidden = false;
+    if (three) { three.size(); three.applyState(); } else { legendFallback(); load3d(); }
+  }
+  syncButtons();
+}
+function syncButtons() {
+  for (const [id, key] of [["screens", "screen"], ["modes", "mode"], ["days", "dayType"], ["tour", "focus"]])
+    document.querySelectorAll(`#${id} .seg`).forEach(b => {
+      b.setAttribute("aria-pressed", String(b.dataset.v) === String(state[key]));
+      if (id === "screens") b.disabled = state.mode !== "day";
+      if (id === "tour") b.disabled = state.screen !== "setup" || state.mode !== "day";
+    });
+}
+function segs(id, opts, key) {
+  opts.forEach(([v, l]) => {
+    const b = document.createElement("button"); b.className = "seg"; b.textContent = l; b.dataset.v = v;
+    b.onclick = () => { state[key] = v; if (key === "dayType" || key === "focus") state.active = 0; three?.resetTour(); render(); };
+    $(id).appendChild(b);
+  });
+}
+segs("screens", SCREENS, "screen");
+segs("modes", [["day", "Day"], ["night", "Night"], ["away", "Away"]], "mode");
+segs("days", [["steady", "Change today"], ["harder", "Harder day"], ["quiet", "Quiet day"]], "dayType");
+segs("tour", [["new", "What's new"], ["all", "Everything"]], "focus");
+document.addEventListener("click", e => {
+  const li = e.target.closest(".legend3d li[data-id]"); if (li) return three?.select(li.dataset.id);
+  const o = e.target.closest("[data-open3d]"); if (o) return open3d(o.dataset.open3d);
+  if (e.target.closest("[data-back]")) { state.screen = "now"; render(); }
+});
+render();
+</script>
+</body>
+</html>

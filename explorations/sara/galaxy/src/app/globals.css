@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+/* landscape screens put panels on the right; must match focusRect() in lib/view.ts */
+@custom-variant wide (@media (min-aspect-ratio: 11/10));
+
+/* ---------- design tokens ---------- */
+:root {
+  /* space */
+  --space: #05060a;
+  --space-raise: #0b0d16;
+  /* nebula */
+  --indigo: #2b2f7a;
+  --violet: #6b5bd6;
+  --periwinkle: #a9a4ff;
+  /* life + the parent */
+  --ember: #ff6a3d;
+  --copper: #ffb38a;
+  --core: #f3eeff;
+  /* text (all ≥ 4.5:1 on --space and on the scrim) */
+  --ink: #f3eeff;
+  --ink-2: #c9c4e8; /* 11.9:1 on --space */
+  --ink-3: #9a95c2; /* 6.9:1 on --space */
+  --hair: rgba(169, 164, 255, 0.28);
+  --scrim: rgba(5, 6, 10, 0.72);
+
+  --ease-camera: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-ui: cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@theme inline {
+  --color-space: var(--space);
+  --color-space-raise: var(--space-raise);
+  --color-indigo: var(--indigo);
+  --color-violet: var(--violet);
+  --color-periwinkle: var(--periwinkle);
+  --color-ember: var(--ember);
+  --color-copper: var(--copper);
+  --color-core: var(--core);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-hair: var(--hair);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument);
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--space);
+  color: var(--ink);
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* observatory annotation: tiny uppercase mono */
+.obs {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.serif {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-weight: 400;
+}
+.serif-i {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+/* soft scrim behind text over bright nebula */
+.scrim-top {
+  background: linear-gradient(to bottom, rgba(5, 6, 10, 0.86) 0%, rgba(5, 6, 10, 0.55) 60%, rgba(5, 6, 10, 0) 100%);
+}
+.scrim-bottom {
+  background: linear-gradient(to top, rgba(5, 6, 10, 0.92) 0%, rgba(5, 6, 10, 0.7) 55%, rgba(5, 6, 10, 0) 100%);
+}
+
+.glass {
+  background: rgba(11, 13, 22, 0.96);
+  backdrop-filter: blur(22px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid rgba(169, 164, 255, 0.12);
+}
+
+.term {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(255, 179, 138, 0.7);
+  text-underline-offset: 3px;
+  color: var(--copper);
+}
+
+:focus-visible {
+  outline: 1px solid var(--copper);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 160ms !important;
+  }
+}
+
+.panel {
+  background: linear-gradient(to top, rgba(5, 6, 10, 0.95) 0%, rgba(5, 6, 10, 0.88) 72%, rgba(5, 6, 10, 0) 100%);
+}
+@media (min-aspect-ratio: 11/10) {
+  .panel {
+    background: linear-gradient(to left, rgba(5, 6, 10, 0.93) 62%, rgba(5, 6, 10, 0) 100%);
+    padding-left: 72px;
+  }
+}
+
+.moment-hit:hover,
+.moment-hit:focus-visible {
+  box-shadow: 0 0 0 1px rgba(255, 179, 138, 0.6);
+}
