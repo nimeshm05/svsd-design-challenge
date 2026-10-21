@@ -253,12 +253,20 @@ function Big({ b }) {
 // celebrated); then her star and her name.
 const FIN_PTS = [[90, 330], [170, 280], [250, 300], [330, 230], [410, 260], [490, 190], [570, 220], [650, 160], [730, 200], [810, 140], [890, 170]]
 const FIN_PLANETS = [3, 6, 9]
+const FIN_FIELD = Array.from({ length: 90 }, (_, k) => { const h = (n) => { const v = Math.sin(k * 127.1 + n * 311.7) * 43758.5453; return v - Math.floor(v) }; return [h(1) * 100, h(2) * 100, 0.5 + h(3) * 1.1, 2.5 + h(4) * 4] })
 const FIN_WORDS = ['', 'Every baby’s life is a story.', 'In the NICU, it gets lost in charts, numbers and alarms.', 'Constellate keeps it, and celebrates every day of it.', '']
 function Finale({ stage, sky }) {
   return (
     <div className={`fin is-s${stage} ${sky ? 'has-sky' : ''}`} aria-hidden="true">
       {/* "Constellate keeps it": Mila's own sky, as the product draws it */}
-      {sky && <div className="fin-sky" dangerouslySetInnerHTML={{ __html: sky }} />}
+      {sky && (
+        <div className="fin-sky">
+          {/* a field of small stars and a few shooting stars behind her sky, which floats a little */}
+          <div className="fin-field">{FIN_FIELD.map(([x, y, z, tw], k) => <i key={k} style={{ left: `${x}%`, top: `${y}%`, '--z': z, '--tw': `${tw}s`, '--k': k }} />)}</div>
+          {[0, 1, 2].map((k) => <b key={k} className={`fin-shoot is-${k}`} />)}
+          <div className="fin-float" dangerouslySetInnerHTML={{ __html: sky }} />
+        </div>
+      )}
       <p className="fin-words" key={stage}>{FIN_WORDS[stage]}</p>
       <svg className="fin-art" viewBox="0 0 980 420">
         {/* her story: a constellation, drawn day by day */}
@@ -398,7 +406,7 @@ export function DemoFilm({ active, thumb }) {
   const screen = useRef(null)
   const [ready, setReady] = useState(false)
   const [run, setRun] = useState(0)
-  const blank = { born: false, open: 0, foot: null, say: null, talk: false, wipe: 0, hl: null, big: null, lift: null, lit: null, fin: 0, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false, mirror: null, ask: null, feat: null, why: null, result: null, tl: -1, altEnd: false, pip: null, skyArt: null }
+  const blank = { born: false, open: 0, foot: null, say: null, talk: false, wipe: 0, hl: null, big: null, lift: null, lit: null, fin: 0, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false, mirror: null, ask: null, feat: null, why: null, result: null, tl: -1, altEnd: false, skyArt: null }
   const [v, setV] = useState({ ...blank, t: 0 })
   const set = (patch) => setV((x) => ({ ...x, ...patch }))
   const [playing, setPlaying] = useState(true)
@@ -655,18 +663,22 @@ export function DemoFilm({ active, thumb }) {
 
       // ── 5 · Day 90: going home (plays through on its own, paced to its captions)
       mark('Going home')
-      feat('Going home', 'connection'); set({ pad: false, tint: 'dawn', foot: { id: 'home', at: R.clock } }); await show('home', 0.6)
+      feat('Going home', 'connection'); set({ pad: false, tint: 'dawn', foot: { id: 'home', at: R.clock } })
       cap('Three months later, it’s finally time. Mila is going home.'); await wait(3.8)
-      cap(null); set({ pad: true, foot: null }); await wait(0.7)
-      cap('Before they leave, her screen tells her whole stay one last time, star by star.'); await wait(1.2)
-      for (let n = 0; n < 40 && find('.cv-story'); n++) { await flick('.cv-story'); await wait(0.12) }
-      for (let n = 0; n < 40 && !find('.cv-discharge.is-mobile'); n++) await wait(0.2) // until the mobile is whole
-      cap('Her sky becomes a mobile: a model of her whole stay, theirs to take home.')
-      await swipe('.cv-mobile', 300, 0, 1.4)
-      await tap('.cv-takehome-btn'); await wait(1.8)
-      look('splitL'); set({ pip: { id: 'mobile', at: R.clock } }); cap('Now it hangs over her crib at home.'); await wait(5.5)
+      // her story plays on its own, a little quicker than at the bedside, so no card is skipped or flashed past
+      if (frame.current?.contentWindow) frame.current.contentWindow.__storyPace = 0.45
+      await show('home', 0.2); cap(null); set({ pad: true, foot: null }); await wait(0.8)
+      cap('Before they leave, her screen tells her whole stay one last time, star by star.')
+      for (let n = 0; n < 160 && find('.cv-discharge.is-intro'); n++) await wait(0.25) // until the story is told
+      cap('Then her stars lift off her sky, and gather into a mobile: a model of her whole stay.')
+      for (let n = 0; n < 60 && !find('.cv-discharge.is-mobile'); n++) await wait(0.25) // the stars fly onto its strands
+      await wait(1.6)
+      cap('Theirs to take home.'); await tap('.cv-takehome-btn'); await wait(1.6)
+      cap(null); set({ foot: { id: 'mobile', at: R.clock } }); await wait(1.4) // the real one, over her crib, dissolving in
+      cap('Now it hangs over her crib at home.'); await wait(4.5)
       await gate()
-      cap(null); look('center'); feat(null); set({ tint: null, pip: null }); await wait(0.6)
+      cap(null); feat(null); set({ tint: null, foot: null })
+      if (frame.current?.contentWindow) frame.current.contentWindow.__storyPace = 1
 
       // ── If she doesn't go home
       mark('If she doesn’t'); set({ altEnd: true })
@@ -709,7 +721,6 @@ export function DemoFilm({ active, thumb }) {
   const ry = zoomed ? L.ry * 0.35 : L.ry, rx = zoomed ? 0 : L.rx
   const cam = `translate(${(0.5 - fx) * sw * scale + L.ox * window.innerWidth}px, ${(0.5 - fy) * sh * scale}px) scale(${scale}) rotateY(${ry}deg) rotateX(${rx}deg)`
   const feet = useFade(v.foot, (f) => f.at, 1100)
-  const pips = useFade(v.pip, (f) => f.at, 900)
   const bigs = useFade(v.big, (b) => String(b.t) + (b.sub ?? ''), 900)
   const asks = useFade(v.ask, (a) => a.q, 800)
   const feats = useFade(v.feat, (x) => x.name, 700)
@@ -769,11 +780,6 @@ export function DemoFilm({ active, thumb }) {
       {!thumb && <Mirror clock={clock} at={v.mirror ?? null} frame={<iframe ref={mframe} title="" tabIndex={-1} src="./prototype/index.html?embed=1&chapter=day" />} />}
       {v.born && <Born />}
       {v.talk && <Talk />}
-      {pips.map(({ k, v: f, out }) => (
-        <div key={k} className={`dfilm-pip ${out ? 'is-out' : ''}`}>
-          <Footage src={CLIPS[f.id].src} from={CLIPS[f.id].from} until={CLIPS[f.id].until} rate={CLIPS[f.id].rate} clock={clock} at={f.at} className="foot-pip" />
-        </div>
-      ))}
       {v.fin > 0 && <Finale stage={v.fin} sky={v.skyArt} />}
       {bigs.map(({ k, v: b, out }) => <div key={k} className={`big-wrap ${out ? 'is-out' : ''}`}><Big b={b} /></div>)}
       {v.lift && (
@@ -792,7 +798,7 @@ export function DemoFilm({ active, thumb }) {
       )}
       {v.scene && <div key={v.scene} className="dfilm-scene"><Scene kind={v.scene} /></div>}
       {feats.map(({ k, v: x, out }) => <p key={k} className={`dfilm-feat is-${x.p} ${out ? 'is-out' : ''}`}><span>Feature</span><b><StarGlyph size={16} color={PILLAR[x.p].color} />{x.name}</b></p>)}
-      {v.tl >= 0 && !v.fin && !v.altEnd && !v.pip && (
+      {v.tl >= 0 && !v.fin && !v.altEnd && (
         <ol className="dfilm-tl" aria-label="Her stay">
           {STAY.map(([day, what], k) => (
             <li key={what} className={`${k === v.tl ? 'is-on' : k < v.tl ? 'is-past' : ''} `}>

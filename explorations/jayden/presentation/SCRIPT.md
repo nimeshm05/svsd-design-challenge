@@ -154,7 +154,8 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 - Three months later, it’s finally time. Mila is going home.
 - Before they leave, her screen tells her whole stay one last time, star by star.
-- Her sky becomes a mobile: a model of her whole stay, theirs to take home.
+- Then her stars lift off her sky, and gather into a mobile: a model of her whole stay.
+- Theirs to take home.
 - Now it hangs over her crib at home.
 
 **If she doesn't go home**
