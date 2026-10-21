@@ -1248,12 +1248,16 @@ function Recap() {
 
 /* ---------- v2: what Constellate is, beside the product itself ---------- */
 const CONCEPT = [
-  ['Every day becomes a star.', 'Shaped by what nurses already chart: the care, the changes, the moments family was there.'],
-  ['Every week, a constellation.', 'Her whole stay at a glance, so the days stop blurring together.'],
-  ['Her firsts are planets.', 'First touch, first hold, first bottle. The hard days stay too: stars never disappear.'],
+  ['Every day becomes a star.', 'Shaped by what nurses already chart: the care, the changes, the moments family was there.',
+    'A story, not a chart', 'Parents live their baby’s stay as moments, not numbers.', null],
+  ['Every week, a constellation.', 'The whole stay at a glance, so the days stop blurring together.',
+    'No harsh metrics', 'Nothing ranks a baby or compares them to anyone.', ['Not all babies start out the same way.', 'Former PICU parent']],
+  ['Firsts are planets.', 'First touch, first hold, first bottle. The hard days stay too: stars never disappear.',
+    'Moments to cherish', 'Kept for good, whatever happens.', ['They’re celebrating those little milestones that are actually a really big deal.', 'Lauren, Niko’s mom']],
 ]
 function Overview({ step = 0 }) {
-  // what it is, then the idea that runs through it, built a step at a time beside the live screen
+  // what it is, then the idea forming on the live screen beside it; each step says what it does, and why we chose it
+  const n = Math.min(step, CONCEPT.length - 1), [, , why, whyText, q] = CONCEPT[n]
   return (
     <div className="ov">
       <R d={0} className="k">Constellate</R>
@@ -1261,10 +1265,14 @@ function Overview({ step = 0 }) {
       <ol className="ov-steps">
         {CONCEPT.map(([t, d], k) => (
           <li key={t} className={k === step ? 'is-on' : k < step ? 'is-past' : ''}>
-            <i aria-hidden="true" /><b>{t}</b><span>{d}</span>
+            <i aria-hidden="true" /><b>{t}</b>
           </li>
         ))}
       </ol>
+      <div className="ov-why" key={n}>
+        <span>Why: {why}</span>
+        {q ? <blockquote><p>&ldquo;{q[0]}&rdquo;</p><cite>{q[1]}</cite></blockquote> : <p>{whyText}</p>}
+      </div>
     </div>
   )
 }
@@ -1347,7 +1355,6 @@ export const SLIDES = [
   { id: 'insight', section: '05 · The insight', View: statement({ k: 'The insight', big: true, children: <>Everything parents need is <L>already in their baby’s chart</L>. It just never reaches them in a form they can use.</> }) },
   { id: 'solution', section: '06 · Constellate', planet: true, View: SolutionCover },
   { id: 'overview', section: '06 · Constellate', steps: 3, feature: ['sky', 'openWeek', 'day6'], padSide: true, View: Overview },
-  { id: 'why-stars', section: '06 · Constellate', View: WhyStars },
   { id: 'demo', section: '07 · One stay, question by question', planet: true, bare: true, View: DemoFilm },
   { id: 'recap', section: '07 · Constellate', View: Recap },
   { id: 'close', section: 'Constellate', View: Close },

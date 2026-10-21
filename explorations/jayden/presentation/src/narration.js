@@ -46,9 +46,9 @@ export const NARRATION = {
   modality: 'How would she interact with it? We designed for touch first, dim by default, with a night mode for the hours parents spend there in the dark.',
   solution: 'Our solution: Constellate. A baby’s care, made something parents can follow.',
   overview: [
-    'So we built Constellate: a bedside screen that turns a baby’s chart into something parents can follow. One idea runs through it: every day becomes a star, shaped by what nurses already chart.',
-    'Every week becomes a constellation, so parents can see her whole stay at a glance.',
-    'And her firsts become planets. Here’s how it works, through one baby’s stay.',
+    'Constellate turns a baby’s chart into something parents can follow. Every day becomes a star, because parents live a NICU stay as moments, not numbers.',
+    'Every week becomes a constellation. There are no harsh metrics: nothing ranks a baby or compares them to anyone. As one parent told us, not all babies start out the same way.',
+    'And firsts become planets, moments to cherish, kept for good whatever happens. Here’s how it works, through one baby’s stay.',
   ],
   stars: [
     'One idea runs through it. Every day of her stay becomes a star, shaped by what her nurses already chart.',
@@ -63,7 +63,6 @@ export const NARRATION = {
     'What’s next, and who is caring for her tonight? Her week, where parents fit in, and her care team.',
     'How is she doing right now? At night, the screen rests when she does: the time, her next care, one quiet line.',
   ],
-  'why-stars': 'Why constellations? Because parents live a NICU stay as moments, not numbers. Nothing here ranks or compares a baby: as one parent told us, not all babies start out the same way. And the moments worth cherishing, the firsts, become planets that never disappear.',
   recap: 'Six answers, one bedside screen. Each answers a question parents asked us, from the chart, with nothing new for nurses to write.',
   'f-live': 'This is the real prototype. You’re welcome to tap through it.',
   close: 'Every star is hers to keep. Thank you.',

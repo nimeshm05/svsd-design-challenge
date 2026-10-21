@@ -1969,3 +1969,12 @@ body:has(.panel) { overflow: auto; }
 .ws-col cite { display: block; margin-top: 6px; font-style: normal; font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
 /* room under the monitor for the caption band, so captions never sit on the screen */
 .dfilm .dfilm-cam { inset: 0 0 190px 0; }
+
+/* the concept slide: each step's reason, beneath the steps */
+.ov-why { margin-top: 6px; padding-top: 16px; border-top: 1px solid rgba(243, 227, 181, .14); display: flex; flex-direction: column; gap: 6px; animation: rise .7s var(--ease) both; }
+.ov-why span { font-family: var(--mono); font-size: 12px; color: var(--cream); }
+.ov-why > p { margin: 0; font-size: clamp(15px, 1.3vw, 18px); line-height: 1.5; color: var(--text); }
+.ov-why blockquote { margin: 4px 0 0; }
+.ov-why blockquote p { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(15px, 1.3vw, 18px); color: var(--text-2); }
+.ov-why cite { display: block; margin-top: 4px; font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.ov-steps li { grid-template-columns: 18px 1fr; } .ov-steps i { grid-row: auto; margin-top: 11px; } .ov-steps { gap: 10px; }
