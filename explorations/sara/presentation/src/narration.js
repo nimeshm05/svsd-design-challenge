@@ -60,7 +60,7 @@ export const NARRATION = {
     'What’s next, and who is caring for her tonight? Her week, where parents fit in, and her care team.',
     'How is she doing right now? At night, the screen rests when she does: the time, her next care, one quiet line.',
   ],
-  recap: 'To recap: six answers, one bedside screen. Each answers a question parents asked us, directly from the chart, with nothing new for users to write.',
+  recap: 'To recap: six answers, one bedside screen. Each answers a question parents asked us, directly from the chart, with nothing new for nurses to write.',
   'f-live': 'This is the real prototype. You’re welcome to tap through it.',
   close: 'Every star is theirs to keep. Thank you.',
 }
