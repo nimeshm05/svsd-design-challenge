@@ -550,7 +550,7 @@ export function DemoFilm({ active, thumb }) {
     // a quiet place-and-time label, top left
     const tag = (t) => set({ say: t ? { t, side: 'tag' } : null })
     // the spotlight, with a gentle push toward it
-    const lit = (sel, z = 1.22) => {
+    const lit = (sel, z = 1.22) => { return // spotlight off: the film shows the screens as parents see them, with no dimming in and out
       if (!sel) return set({ lit: null, cam: { fx: 0.5, fy: 0.5, s: 1 } })
       const r = at(sel, 0); if (!r) return
       const cam = { fx: 0.5, fy: 0.5, s: 1 } // the monitor holds its size and place; the spotlight does the pointing
@@ -611,8 +611,11 @@ export function DemoFilm({ active, thumb }) {
       await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.3)
       lit('.cv-cap', 1); await line('She slides back through Mila’s day, hour by hour, and finds every moment her nurses noted.', 'connection')
       lit(null); await drag('.cv-arc-mark[data-kind="family"]', '.cv-arc-now', () => post({ type: 'mila:show', what: 'today' }))
-      feat('Words in a tap', 'comprehension'); await tap('.cv-term-btn'); await wait(0.4)
-      lit('.cv-pop', 1); await line('One word keeps coming up. She taps it, and sees what it means, on Mila’s own body.', 'comprehension')
+      feat('Words in a tap', 'comprehension')
+      doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); await wait(0.3) // no popover open yet
+      await line('One word on her screen she’s never heard before: CPAP.', 'comprehension')
+      await tap('.cv-term-btn'); await wait(0.5) // she taps the word, and only then does it open
+      await line('She taps it, and sees what it means, on Mila’s own body.', 'comprehension')
       await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })))
       await result('She catches up on everything she missed before rounds, without calling the desk.', 'It all comes from notes nurses already write, so there’s nothing new for them to do.')
 
