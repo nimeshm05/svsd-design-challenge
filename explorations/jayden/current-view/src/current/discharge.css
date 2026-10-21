@@ -59,3 +59,11 @@
 /* take her sky home: bottom center, once the mobile is whole */
 .cv-takehome { position: absolute; z-index: 3; left: 50%; bottom: 7%; transform: translateX(-50%); animation: cv-fade-in .8s .4s ease both; }
 .cv-takehome-done { margin: 0; padding: 10px 18px; border-radius: 999px; background: rgba(243, 227, 181, .1); border: 1px solid rgba(243, 227, 181, .35); color: var(--cream); font-size: 15px; animation: cv-fade-in .6s ease both; }
+
+/* the story's words dissolve from one moment to the next; the card, its bar and its button hold still */
+.cv-story { animation: cv-story-in .7s cubic-bezier(.22, 1, .36, 1) both; }
+.cv-story-stack { display: grid; }
+.cv-story-words { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 6px; align-self: end; animation: cv-words-in .45s ease both; }
+.cv-story-words.is-leaving { animation: cv-words-out .4s ease both; pointer-events: none; }
+@keyframes cv-words-in { from { opacity: 0; } }
+@keyframes cv-words-out { to { opacity: 0; } }

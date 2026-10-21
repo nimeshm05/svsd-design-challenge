@@ -250,9 +250,10 @@ export const today = {
     moments: 4, // moments today: each adds light to today's star
   },
   harder: {
-    status: 'Resting on her CPAP mask, after a long night.',
+    status: 'Resting, after a long night.',
     // one line on the home screen: [words] in brackets are clinical terms, tappable for what they mean
-    statusOne: 'Resting on her [CPAP] mask after a long night',
+    // (her CPAP mask is found earlier in the day, at 4:15 a.m., by going back through it)
+    statusOne: 'Resting quietly after a long night',
     statusTerm: { word: 'CPAP', means: 'a small mask that gives steady air pressure so her lungs stay open' },
     changes: [
       {

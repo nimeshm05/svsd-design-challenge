@@ -110,7 +110,7 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 **1 · Dad, 4:20 a.m. — what is all of this?**
 
-- This is Mila. She was born thirteen weeks early, at 880 grams. She’s inspired by the families we met.
+- This is Mila. She was born thirteen weeks early, at 880 grams. She’s inspired by the families we met, like Niko.
 - It’s 4:20 in the morning. Her dad has just arrived at the NICU, while Mom recovers from surgery.
 - *(scenario picture)* Her doctor and nurse explain everything at once: the breathing tube, the wires, the monitors.
 - *(question card · Day 1 · 4:20 a.m.)* “What is all of this on her?”
@@ -123,8 +123,8 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 - *(scenario picture)* On the third day, Mom is finally well enough to come up. She’s missed everything so far.
 - *(question card · Day 3)* “What happened while I was away?”
-- She slides back through Mila’s day, hour by hour, and finds every moment her nurses noted.
-- One word on her screen she’s never heard before: CPAP.
+- She drags back through Mila’s day, hour by hour, through every moment her nurses noted.
+- At 4:15 that morning, a word she’s never heard before: CPAP.
 - She taps it, and sees what it means, on Mila’s own body.
 - *(result)* ✓ Mom can catch up on everything she missed before rounds, without having to ask anyone.
   *(why)* It all comes from notes nurses already write, so there are no new tasks for them either.
@@ -132,10 +132,11 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 **3 · That night — who's with her, and what's next**
 
 - *(scenario picture)* Before she leaves for the night, the worries turn to what comes next.
-- *(question card · Day 3)* “What’s next, and who is caring for her tonight?”
-- First, who’s with Mila tonight: Marcus, her night nurse, with a way to reach him.
-- Then the week ahead: rounds tomorrow at 10, and what’s planned for her care.
-- And Next Steps: what each part of her care is working toward.
+- *(question card · Day 3)* “Who’s caring for her tonight, and what’s next?”
+- Parents told us the doctors and nurses blur together. Here, Mom easily sees who’s caring for Mila tonight, and how to reach them.
+- Life in the NICU gets overwhelming: surgeries are scheduled and moved, and parents end up managing all the information themselves.
+- The timeline gives her the overview: rounds tomorrow at 10, and what’s planned for Mila’s care.
+- And Next Steps shows what each part of her care is working toward, so the plan is always clear.
 - *(result)* ✓ Mom knows who’s caring for Mila tonight, and plans to join rounds tomorrow at 10 a.m.
   *(why)* We show what’s planned, never predictions: no medical claims, just what’s coming and who’s there.
 
@@ -143,16 +144,16 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 - *(scenario picture)* Three weeks in, on a quiet morning at the bedside, Mom wonders about the first week she missed.
 - *(question card · Day 23 · three weeks in)* “What did I miss that first week?”
-- It’s 9:40 in the morning. Mila is wearing the sleepsuit Mom brought from home.
 - Each day of Mila’s stay is a star. Today’s joins the rest.
 - She opens the first week, the one she spent recovering upstairs.
+- And she gets to know her daughter: the little things her nurses noticed, like how Mila loved to grab Dad’s thumb.
 - And there it is: the day Dad first held her, recorded as it happened.
-- *(result)* ✓ She sees the week she missed, moment by moment, and the first time her baby was held.
+- *(result)* ✓ She sees the week she missed, gets to know who Mila is, and finds the first time she was held.
   *(why)* Progress without charts or percentiles. Firsts are planets, worth celebrating.
 
 **5 · Day 90 — going home (plays on its own)**
 
-- Three months later, it’s finally time. Mila is going home.
+- It’s been a long three months, with many ups and downs. Today is the day they’ve been waiting for: Mila is going home.
 - Before they leave, her screen tells her whole stay one last time, star by star.
 - Then her stars lift off her sky, and gather into a mobile: a tangible model of her whole stay.
 - Theirs to take home.
@@ -161,10 +162,10 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 **If she doesn't go home**
 
 - *(title card)* But not every baby gets to go home like Mila.
-- Some families leave the NICU without their baby.
+- Some families have to say goodbye in the NICU.
 - *(title card)* Even a short life is a whole story. Every day of it matters.
-- So Constellate never assumes how a stay will end.
-- When the family is ready, they can keep the baby’s sky: who they were, and every day they had together.
+- For them, Constellate becomes a gentle memorial: a place that holds every day they shared.
+- Whenever they’re ready, they can open their baby’s sky again: who they were, the little things they loved, and every day they had together.
 - *(result)* ✓ Who she was, and every moment they had, kept for as long as they want.
   *(why)* Nothing assumes an outcome. It opens only when the family chooses. It celebrates her life as a person, not a patient.
 

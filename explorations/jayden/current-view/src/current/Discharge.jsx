@@ -258,6 +258,14 @@ export function Discharge({ theme, onBack }) {
   const bar = useRef(null) // the story's progress bar, filled each frame from the same clock that moves it on
   const phaseRef = useRef('intro') // survives a style change, so the mobile doesn't replay its story
   const [story, setStory] = useState({ phase: 'intro', step: 0 })
+  const [leaving, setLeaving] = useState(null) // the story step whose words are dissolving away
+  const shownStep = useRef(0)
+  useEffect(() => {
+    if (story.phase !== 'intro' || story.step === shownStep.current) return undefined
+    setLeaving(shownStep.current); shownStep.current = story.step
+    const t = setTimeout(() => setLeaving(null), 450)
+    return () => clearTimeout(t)
+  }, [story])
   const [took, setTook] = useState(false) // "Take home your stars": once pressed, it's on its way
   // TODO: the take-home flow (keeping her stars). A placeholder until it's designed.
   const onTakeHome = () => {}
@@ -331,7 +339,7 @@ export function Discharge({ theme, onBack }) {
       stepAt = now
       // days up to this one light in order, a beat apart; this step's own star last. Later days go dark.
       const fresh = sky.stars.filter((s) => s.userData.d <= D && s.userData.onAt === Infinity)
-      const gap = reduce ? 0 : Math.min(110, 1200 / fresh.length) // a long jump between days lights a little faster
+      const gap = reduce ? 0 : Math.min(110, 1200 / fresh.length) * (window.__storyPace ?? 1) // a long jump between days lights a little faster
       fresh.forEach((s, j) => (s.userData.onAt = now + j * gap))
       sky.stars.forEach((s) => { if (s.userData.d > D) s.userData.onAt = Infinity })
       stepAt += fresh.length > 1 ? (fresh.length - 1) * gap : 0
@@ -516,15 +524,12 @@ export function Discharge({ theme, onBack }) {
       <div className="nav-bar-top"><NavBack label="Mila's stars" onClick={onBack} /></div>
 
       {story.phase === 'intro' && (
-        <div className="cv-story" key={story.step} aria-live="polite" onClick={() => ctl.current?.next()}>
-          <span className="cv-story-k">{cur.k}</span>
-          <h3 className="cv-story-title">{cur.title}</h3>
-          <p className="cv-story-text">{cur.text}</p>
-          {cur.facts && (
-            <dl className="cv-story-facts">
-              {cur.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
-            </dl>
-          )}
+        <div className="cv-story" aria-live="polite" onClick={() => ctl.current?.next()}>
+          {/* one card stays put; only its words dissolve from one moment to the next */}
+          <div className="cv-story-stack">
+            {leaving != null && leaving !== story.step && <StoryWords key={`out-${leaving}`} s={STEPS[leaving]} className="is-leaving" />}
+            <StoryWords key={story.step} s={cur} />
+          </div>
           {story.step === 0 && <span className="cv-story-hint">Tap to go on</span>}
           <div className="cv-story-foot">
             <div className="cv-story-bar" ref={bar} aria-hidden="true">
@@ -551,6 +556,22 @@ export function Discharge({ theme, onBack }) {
           ? <button type="button" className="cv-story-ctl" onClick={() => ctl.current?.replay()}>Replay</button>
           : <button type="button" className="cv-story-ctl" onClick={() => ctl.current?.skip()}>Skip to mobile</button>}
       </div>
+    </div>
+  )
+}
+
+// a story moment's words: when, what, and (on her first day) the facts of her birth
+function StoryWords({ s, className = '' }) {
+  return (
+    <div className={`cv-story-words ${className}`} aria-hidden={className ? true : undefined}>
+      <span className="cv-story-k">{s.k}</span>
+      <h3 className="cv-story-title">{s.title}</h3>
+      <p className="cv-story-text">{s.text}</p>
+      {s.facts && (
+        <dl className="cv-story-facts">
+          {s.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
+      )}
     </div>
   )
 }
