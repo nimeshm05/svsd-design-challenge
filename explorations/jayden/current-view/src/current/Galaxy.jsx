@@ -485,9 +485,26 @@ function Sec({ title, children, className = '' }) {
   )
 }
 
+// Rows of the week's days: the day, then a mark and a few words; tap one to open that day.
+// Without the day column (`days={false}`), the words take the whole row.
+function DayRows({ rows, mark, onDay, days = true }) {
+  return (
+    <ul className={`cv-grows ${days ? '' : 'is-undated'}`}>
+      {rows.map(({ d, text }, i) => (
+        <li key={`${d}-${i}`}>
+          <button type="button" onClick={() => onDay(d)}>
+            {days && <span className="cv-grows-k">Day {d}</span>}<span className="cv-grows-v">{mark}{text}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 function WeekPanel({ w, onDay }) {
   const info = weekInfo[w - 1]
-  const firsts = daysOf(w).filter((d) => stay.firsts[d.d])
+  const firsts = daysOf(w).filter((d) => stay.firsts[d.d]).map((d) => ({ d: d.d, text: stay.firsts[d.d] }))
+  const about = stay.about[w] ?? []
   return (
     <aside className="cv-gpanel" aria-label={`Week ${w}`}>
       <h3 className="cv-gpanel-title">{info.title}</h3>
@@ -495,15 +512,12 @@ function WeekPanel({ w, onDay }) {
       {info.hard && <Sec title="What changed"><div className="cv-gpanel-desc"><p>{info.hard}</p></div></Sec>}
       {firsts.length > 0 && (
         <Sec title="Firsts">
-          <ul className="cv-grows">
-            {firsts.map((d) => (
-              <li key={d.d}>
-                <button type="button" onClick={() => onDay(d.d)}>
-                  <span className="cv-grows-k">Day {d.d}</span><span className="cv-grows-v"><span className="cv-gplanet" aria-hidden="true" />{stay.firsts[d.d]}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <DayRows rows={firsts} mark={<span className="cv-gplanet" aria-hidden="true" />} onDay={onDay} />
+        </Sec>
+      )}
+      {about.length > 0 && (
+        <Sec title="About Mila">
+          <DayRows rows={about} onDay={onDay} days={false} />
         </Sec>
       )}
     </aside>

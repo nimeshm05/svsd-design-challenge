@@ -1533,7 +1533,7 @@
 .rem-again { position: absolute; z-index: 2; top: 18px; right: 20px; animation: cv-fade-in .6s .6s ease both; }
 .rem.is-end .rem-words { gap: 18px; }
 /* the last page: her name, her story, and who loved her, each given room */
-.rem.is-end .rem-words { gap: 36px; }
+.rem.is-end .rem-words { gap: 28px; }
 .rem.is-end .rem-name { margin-bottom: 0; }
 
 /* Embedded (the presentation's iPad frame): just the screen, filling the window */
@@ -1746,7 +1746,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .cv-gfacts dd, .cv-page .cv-grows-v { margin: 0; font-size: 14px; line-height: 1.35; color: var(--text); display: flex; flex-direction: column; gap: 4px; }
 .cv-page .cv-grows-v { flex-direction: row; align-items: center; gap: 8px; }
 .cv-page .cv-grows .cv-gplanet { flex: none; }
-
+.cv-page .cv-grows.is-undated, .cv-page .cv-grows.is-undated > li, .cv-page .cv-grows.is-undated > li > button { border: 0; }
+.cv-page .cv-grows.is-undated > li > button { grid-template-columns: 1fr; }
 /* a tappable time inside a paragraph */
 .cv-page .cv-gpanel-at { padding: 0; margin: 0; border: 0; background: none; font: inherit; color: var(--warm); font-variant-numeric: tabular-nums; cursor: pointer;
   text-decoration: underline dotted; text-underline-offset: 3px; }

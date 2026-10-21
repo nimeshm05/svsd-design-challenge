@@ -17,8 +17,8 @@ The neonatal intensive care unit, or the NICU, is the hospital unit where babies
 ## 4. 01 · Niko’s journey — A NICU journey, today: six moments (builds)
 1. Lauren had an emergency C-section, and Niko arrived more than two months early. Niko had to be transported to the NICU immediately, and Lauren was not able to hold or see him.
 2. She was healing in one place, while her newborn was cared for in another, and she felt guilty for not being there with him.
-3. Then came the explanations for Niko’s complex conditions, communicated with words they’ve never heard, all while they were exhausted and scared.
-4. Every day centered on the NICU. Long days and nights at his bedside, until the hours blurred together, and it was hard to tell whether he was making any progress.
+3. The doctors explained Niko’s complex conditions, but the words were full of medical jargon, which was hard to understand in their exhausted and fearful state.
+4. Every day centered around the NICU. With long days and nights spent at the bedside, the hours blurred together, and it was hard to tell whether he was making any progress.
 5. Outside the unit, bills, work, and insurance followed them home, on top of every hour they couldn’t be with him.
 
 ## 5. 02 · Research — So we listened: 4 interviews
@@ -40,7 +40,7 @@ And it isn’t only their families. Our secondary research showed the same: the 
 
 ## 9. 03 · The problem — Three needs (builds)
 1. It comes down to three needs. Connection: parents can’t bond the way they expected, and guilt fills the gap.
-2. In their own words, connection sounds like this: how can I feel close to my baby before I can hold them? And what happened while I was away?
+2. In their own words, connection can sound like: how can I feel close to my baby before I can hold them? And what happened while I was away?
 3. Comprehension: they have information, but not the whole picture.
 4. It sounds like: what is all of this on my baby? And what does that word mean?
 5. Awareness: time becomes a blur, and the next moment feels like a surprise.
@@ -102,7 +102,7 @@ Within those constraints, there was one key insight: everything parents need to 
 Our solution: Constellate. A baby’s care, made something parents can follow.
 
 ## 21. 06 · Constellate — Constellate in one line
-1. So we built Constellate: a bedside screen that turns a baby’s chart into something parents can follow. Every day becomes a star, shaped by what nurses already chart.
+1. Constellate is a bedside screen that turns a baby’s chart into a story that parents can follow. Each day becomes a star, detailed by what nurses already record.
 2. Every week becomes a constellation, so parents can see the whole stay at a glance.
 3. And firsts become planets. Here’s how it works, through one baby’s stay.
 
@@ -110,14 +110,14 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 **1 · Dad, 4:20 a.m. — what is all of this?**
 
-- This is Mila. She was born thirteen weeks early, at 880 grams. She’s built from the families we met.
+- This is Mila. She was born thirteen weeks early, at 880 grams. She’s inspired by the families we met.
 - It’s 4:20 in the morning. Her dad has just arrived at the NICU, while Mom recovers from surgery.
 - *(scenario picture)* Her doctor and nurse explain everything at once: the breathing tube, the wires, the monitors.
 - *(question card · Day 1 · 4:20 a.m.)* “What is all of this on her?”
-- At her bedside, the screen starts with her: her name, and how small she is.
-- Then it walks him through each device on her, one at a time, in plain words.
-- *(result)* ✓ He understands everything on her in a minute, without stopping a nurse.
-  *(why)* Parents can’t miss anything, but all at once is too much. So it’s complete, one thing at a time.
+- At her bedside, the screen opens with who she is: her name, her time of birth, and her current weight.
+- Then it walks him through each device on her, one at a time, lit on her body avatar, in one plain sentence.
+- *(result)* ✓ He understands everything on her quickly, without needing to stop a nurse.
+  *(why)* Parents can’t miss anything, but all at once is too much. So it’s explained, one thing at a time.
 
 **2 · Mom's first visit — catching up**
 
@@ -126,17 +126,17 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 - She slides back through Mila’s day, hour by hour, and finds every moment her nurses noted.
 - One word on her screen she’s never heard before: CPAP.
 - She taps it, and sees what it means, on Mila’s own body.
-- *(result)* ✓ She catches up on everything she missed before rounds, without calling the desk.
-  *(why)* It all comes from notes nurses already write, so there’s nothing new for them to do.
+- *(result)* ✓ Mom can catch up on everything she missed before rounds, without having to ask anyone.
+  *(why)* It all comes from notes nurses already write, so there are no new tasks for them either.
 
 **3 · That night — who's with her, and what's next**
 
 - *(scenario picture)* Before she leaves for the night, the worries turn to what comes next.
 - *(question card · Day 3)* “What’s next, and who is caring for her tonight?”
 - First, who’s with Mila tonight: Marcus, her night nurse, with a way to reach him.
-- Then the week ahead: rounds tomorrow at 10, and what’s planned.
+- Then the week ahead: rounds tomorrow at 10, and what’s planned for her care.
 - And Next Steps: what each part of her care is working toward.
-- *(result)* ✓ She knows who’s on tonight, and plans to join rounds tomorrow at 10.
+- *(result)* ✓ Mom knows who’s caring for Mila tonight, and plans to join rounds tomorrow at 10 a.m.
   *(why)* We show what’s planned, never predictions: no medical claims, just what’s coming and who’s there.
 
 **4 · Day 23 — looking back at the week she missed**
@@ -146,7 +146,7 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 - It’s 9:40 in the morning. Mila is wearing the sleepsuit Mom brought from home.
 - Each day of Mila’s stay is a star. Today’s joins the rest.
 - She opens the first week, the one she spent recovering upstairs.
-- And there it is: the day Dad first held her, kept as it happened.
+- And there it is: the day Dad first held her, recorded as it happened.
 - *(result)* ✓ She sees the week she missed, moment by moment, and the first time her baby was held.
   *(why)* Progress without charts or percentiles. Firsts are planets, worth celebrating.
 
@@ -154,7 +154,7 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 - Three months later, it’s finally time. Mila is going home.
 - Before they leave, her screen tells her whole stay one last time, star by star.
-- Then her stars lift off her sky, and gather into a mobile: a model of her whole stay.
+- Then her stars lift off her sky, and gather into a mobile: a tangible model of her whole stay.
 - Theirs to take home.
 - Now it hangs over her crib at home.
 
@@ -162,11 +162,11 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 - *(title card)* But not every baby gets to go home like Mila.
 - Some families leave the NICU without their baby.
-- *(title card)* Even a short life is a whole story. Every day of it mattered.
+- *(title card)* Even a short life is a whole story. Every day of it matters.
 - So Constellate never assumes how a stay will end.
 - When the family is ready, they can keep the baby’s sky: who they were, and every day they had together.
-- *(result)* ✓ Who she was, and every moment they had, kept for as long as they want it.
-  *(why)* Nothing assumes an outcome. It opens only when the family chooses.
+- *(result)* ✓ Who she was, and every moment they had, kept for as long as they want.
+  *(why)* Nothing assumes an outcome. It opens only when the family chooses. It celebrates her life as a person, not a patient.
 
 **Closing**
 

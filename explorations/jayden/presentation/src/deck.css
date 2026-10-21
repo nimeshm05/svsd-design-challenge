@@ -637,7 +637,7 @@ body:has(.panel) { overflow: auto; }
 .mx-cell { display: flex; flex-direction: column; gap: 8px; }
 .mx-cell b { font-weight: 500; font-size: 14.5px; line-height: 1.35; color: var(--text); }
 .mx-take { padding: 9px 11px; border-radius: 9px; border: 1px solid var(--line); background: rgba(0, 0, 0, .35); font-size: 13.5px; line-height: 1.4; color: var(--text-2); }
-.mx-cell.is-none { align-items: flex-start; padding-left: 4px; font-size: 18px; color: var(--muted); }
+.mx-cell.is-none { align-items: center; font-size: 18px; color: var(--muted); }
 /* chapters flow on, side by side, so the whole story fits on a screen or two */
 .panel-flow { display: flex; flex-wrap: wrap; gap: 26px 40px; padding-top: 18px; }
 .panel-group { padding-top: 0; }
@@ -1496,7 +1496,8 @@ body:has(.panel) { overflow: auto; }
 .day-sky-star { fill: rgba(243, 227, 181, .14); }
 .day-sky-star.is-lit { fill: #F3E3B5; opacity: 0; animation: fade .4s calc(1.4s + var(--k) * .07s) ease forwards; }
 .day-sky-star.is-today { fill: #FFF8E6; filter: drop-shadow(0 0 10px rgba(255, 248, 230, .95)); }
-.big-art .day-sky { margin: 0 0 6px; }
+.big-art { display: flex; justify-content: center; } /* her stars are wider than the box: spill evenly, centred on the words */
+.big-art .day-sky { margin: 0 0 6px; flex: none; translate: 11% 0; } /* only 23 of 30 are lit, so nudge right to centre the lit ones */
 
 /* ===== The nurse's words: slower ===== */
 .talk-b { animation: talk-in .7s calc(.4s + var(--k) * 1.55s) cubic-bezier(.2, .9, .3, 1.2) both, talk-blur 2s 11.6s ease both; }
@@ -1882,7 +1883,8 @@ body:has(.panel) { overflow: auto; }
 /* problem cards without a box: the picture dims and softens behind the words instead */
 .dfilm-ask { background: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 0; border-radius: 0; text-shadow: 0 2px 30px rgba(0, 0, 0, .95), 0 0 2px rgba(0, 0, 0, .6); }
 .dfilm-ask em { text-shadow: 0 1px 16px rgba(0, 0, 0, .95); color: rgba(246, 238, 219, .82); }
-.dfilm .foot-wrap, .dfilm .dfilm-cam { transition: filter .9s ease, opacity 1s ease; }
+.dfilm .foot-wrap { transition: filter .9s ease, opacity 1s ease; }
+.dfilm .dfilm-cam { transition: transform 2.4s cubic-bezier(.45, 0, .25, 1), filter .9s ease, opacity 1s ease; } /* keep the camera's glide */
 .dfilm.has-ask .foot-wrap, .dfilm.has-ask .dfilm-cam { filter: brightness(.32) blur(3px) saturate(.85); }
 .dfilm-when { text-shadow: 0 1px 14px rgba(0, 0, 0, .95); }
 /* captions over the drawings: a soft shadow band, not a box */

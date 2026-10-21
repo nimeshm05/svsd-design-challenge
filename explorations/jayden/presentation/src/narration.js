@@ -7,8 +7,8 @@ export const NARRATION = {
   journey: [
     'Lauren had an emergency C-section, and Niko arrived more than two months early. Niko had to be transported to the NICU immediately, and Lauren was not able to hold or see him.',
     'She was healing in one place, while her newborn was cared for in another, and she felt guilty for not being there with him.',
-    'Then came the explanations for Niko’s complex conditions, communicated with words they’ve never heard, all while they were exhausted and scared.',
-    'Every day centered on the NICU. Long days and nights at his bedside, until the hours blurred together, and it was hard to tell whether he was making any progress.',
+    'The doctors explained Niko’s complex conditions, but the words were full of medical jargon, which was hard to understand in their exhausted and fearful state.',
+    'Every day centered around the NICU. With long days and nights spent at the bedside, the hours blurred together, and it was hard to tell whether he was making any progress.',
     'Outside the unit, bills, work, and insurance followed them home, on top of every hour they couldn’t be with him.',
   ],
   wall: 'And it isn’t only their families. Our secondary research showed the same: the NICU shapes how babies grow, how nurses work, and how parents cope.',
@@ -17,7 +17,7 @@ export const NARRATION = {
   heard: 'Across those conversations, the same thing came up: parents get the pieces, but they’re left to put them together on their own.',
   pillars: [
     'It comes down to three needs. Connection: parents can’t bond the way they expected, and guilt fills the gap.',
-    'In their own words, connection sounds like this: how can I feel close to my baby before I can hold them? And what happened while I was away?',
+    'In their own words, connection can sound like: how can I feel close to my baby before I can hold them? And what happened while I was away?',
     'Comprehension: they have information, but not the whole picture.',
     'It sounds like: what is all of this on my baby? And what does that word mean?',
     'Awareness: time becomes a blur, and the next moment feels like a surprise.',
@@ -50,7 +50,7 @@ export const NARRATION = {
   modality: 'How does the physical space impact the interactions? We designed for touch first, dim by default, with a night mode for the hours spent in the dark.',
   solution: 'Our solution: Constellate. A baby’s care, made something parents can follow.',
   overview: [
-    'So we built Constellate: a bedside screen that turns a baby’s chart into something parents can follow. Every day becomes a star, shaped by what nurses already chart.',
+    'Constellate is a bedside screen that turns a baby’s chart into a story that parents can follow. Each day becomes a star, detailed by what nurses already record.',
     'Every week becomes a constellation, so parents can see the whole stay at a glance.',
     'And firsts become planets. Here’s how it works, through one baby’s stay.',
   ],
