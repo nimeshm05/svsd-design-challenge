@@ -1,13 +1,15 @@
-/* The display font: Aquavit (Adobe, active on Jayden's Mac), one cut heavier than each weight asks for, so the
-   weights tuned for Fraunces read clearly in Aquavit (300 is its Regular, 400 its Medium, 500 its Semibold).
-   Where Aquavit isn't active, these faces don't load and the stack falls back to Fraunces. */
-@font-face { font-family: "Constellate Display"; font-weight: 1 249; src: local("Aquavit Light"), local("Aquavit-Light"); }
-@font-face { font-family: "Constellate Display"; font-weight: 250 349; src: local("Aquavit Regular"), local("Aquavit-Regular"); }
-@font-face { font-family: "Constellate Display"; font-weight: 350 449; src: local("Aquavit Medium"), local("Aquavit-Medium"); }
-@font-face { font-family: "Constellate Display"; font-weight: 450 549; src: local("Aquavit Semibold"), local("Aquavit-Semibold"); }
-@font-face { font-family: "Constellate Display"; font-weight: 550 1000; src: local("Aquavit Bold"), local("Aquavit-Bold"); }
+/* The display font: Matrix II (Adobe, active on Jayden's Mac), one cut lighter than the weight Fraunces used
+   (300 and 400 are its Book; 500 its Regular; 600 and up its Bold). Real italics, for quotes.
+   Where Matrix II isn't active, these faces don't load and the stack falls back to Fraunces. */
+@font-face { font-family: "Constellate Display"; font-weight: 1 449; src: local("MatrixIIOT-Book"), local("Matrix II OT Book"); }
+@font-face { font-family: "Constellate Display"; font-weight: 450 549; src: local("MatrixIIOT-Reg"), local("Matrix II OT Reg"); }
+@font-face { font-family: "Constellate Display"; font-weight: 550 749; src: local("MatrixIIOT-Bold"), local("Matrix II OT Bold"); }
+@font-face { font-family: "Constellate Display"; font-weight: 750 1000; src: local("MatrixIIOT-ExtraBold"), local("Matrix II OT Extra Bold"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 1 449; src: local("MatrixIIOT-BookItalic"), local("Matrix II OT Book Italic"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 450 649; src: local("MatrixIIOT-RegItalic"), local("Matrix II OT Reg Italic"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 650 1000; src: local("MatrixIIOT-BoldItalic"), local("Matrix II OT Bold Italic"); }
 
-/* Mila's Sky case study, in design system 1 (Night Nursery): black sky, warm cream, Aquavit + Geist (Aquavit is an Adobe font, active on Jayden's Mac; elsewhere it falls back to Fraunces).
+/* Mila's Sky case study, in design system 1 (Night Nursery): black sky, warm cream, Matrix II + Geist (Matrix II is an Adobe font, active on Jayden's Mac; elsewhere it falls back to Fraunces).
    The three pillars each have a color: Connection (gold), Comprehension (blue), Awareness (lilac). */
 :root {
   --cream: #F3E3B5; --warm: #FFB38A; --ink: #000;

@@ -112,7 +112,7 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 - This is Mila. She was born thirteen weeks early, at 880 grams. She’s inspired by the families we met, like Niko.
 - It’s 4:20 in the morning. Her dad has just arrived at the NICU, while Mom recovers from surgery.
-- *(scenario picture)* Her doctor and nurse explain everything at once: the breathing tube, the wires, the monitors. It’s too much to take in. Then they’re called away, and he’s alone again, asking the same question.
+- *(scenario picture)* Her doctor and nurse explain everything at once: the breathing tube, the wires, the monitors.
 - *(question card · Day 1 · 4:20 a.m.)* “What is all of this on her?”
 - At her bedside, the screen opens with who she is: her name, her time of birth, and her current weight.
 - Then it walks him through each device on her, one at a time, lit on her body avatar, in one plain sentence.
@@ -123,7 +123,7 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 - *(scenario picture)* On the third day, Mom is finally well enough to come up. She’s missed everything so far.
 - *(question card · Day 3)* “What happened while I was away?”
-- She drags back through Mila’s day, hour by hour, through every moment her nurses noted.
+- She taps back through Mila’s day, moment by moment, through everything her nurses noted.
 - At 4:15 that morning, a word she’s never heard before: CPAP.
 - She taps it, and sees what it means, on Mila’s own body.
 - *(result)* ✓ Mom can catch up on everything she missed before rounds, without having to ask anyone.

@@ -4,14 +4,16 @@
 @font-face { font-family: "Constellate Text"; font-weight: 450 549; src: local("Aquavit Medium"), local("Aquavit-Medium"); }
 @font-face { font-family: "Constellate Text"; font-weight: 550 649; src: local("Aquavit Semibold"), local("Aquavit-Semibold"); }
 @font-face { font-family: "Constellate Text"; font-weight: 650 1000; src: local("Aquavit Bold"), local("Aquavit-Bold"); }
-/* The display font: Aquavit (Adobe, active on Jayden's Mac), one cut heavier than each weight asks for, so the
-   weights tuned for Fraunces read clearly in Aquavit (300 is its Regular, 400 its Medium, 500 its Semibold).
-   Where Aquavit isn't active, these faces don't load and the stack falls back to Fraunces. */
-@font-face { font-family: "Constellate Display"; font-weight: 1 249; src: local("Aquavit Light"), local("Aquavit-Light"); }
-@font-face { font-family: "Constellate Display"; font-weight: 250 349; src: local("Aquavit Regular"), local("Aquavit-Regular"); }
-@font-face { font-family: "Constellate Display"; font-weight: 350 449; src: local("Aquavit Medium"), local("Aquavit-Medium"); }
-@font-face { font-family: "Constellate Display"; font-weight: 450 549; src: local("Aquavit Semibold"), local("Aquavit-Semibold"); }
-@font-face { font-family: "Constellate Display"; font-weight: 550 1000; src: local("Aquavit Bold"), local("Aquavit-Bold"); }
+/* The display font: Matrix II (Adobe, active on Jayden's Mac), one cut lighter than the weight Fraunces used
+   (300 and 400 are its Book; 500 its Regular; 600 and up its Bold). Real italics, for quotes.
+   Where Matrix II isn't active, these faces don't load and the stack falls back to Fraunces. */
+@font-face { font-family: "Constellate Display"; font-weight: 1 449; src: local("MatrixIIOT-Book"), local("Matrix II OT Book"); }
+@font-face { font-family: "Constellate Display"; font-weight: 450 549; src: local("MatrixIIOT-Reg"), local("Matrix II OT Reg"); }
+@font-face { font-family: "Constellate Display"; font-weight: 550 749; src: local("MatrixIIOT-Bold"), local("Matrix II OT Bold"); }
+@font-face { font-family: "Constellate Display"; font-weight: 750 1000; src: local("MatrixIIOT-ExtraBold"), local("Matrix II OT Extra Bold"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 1 449; src: local("MatrixIIOT-BookItalic"), local("Matrix II OT Book Italic"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 450 649; src: local("MatrixIIOT-RegItalic"), local("Matrix II OT Reg Italic"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 650 1000; src: local("MatrixIIOT-BoldItalic"), local("Matrix II OT Bold Italic"); }
 
 /* Bedside current view. Sara's palette (index.css) plus a warm cream for today's forming star.
    Minimal: a few large words read from the parent chair, low light, nothing that blinks. */
@@ -349,7 +351,7 @@
 }
 
 /* ================= Two styles from the design board =================
-   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Aquavit (an Adobe font, active on Jayden's Mac; Fraunces where it isn't) + Geist.
+   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Matrix II for titles, Aquavit for text (Adobe fonts, active on Jayden's Mac; Fraunces and Geist where they aren't).
    Confetti Constellations: playful. Sunshine stars, thick light-blue lines, confetti, Young Serif + Figtree.
    Both on a black sky. Each style only sets tokens; the components read them. */
 .cv-page.theme-nursery {

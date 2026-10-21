@@ -557,15 +557,6 @@ export function DemoFilm({ active, thumb }) {
       }
       ev('pointerup', x0 + dx, y0 + dy); set({ touch: { x: (x0 + dx) / W, y: (y0 + dy) / H, s: 'lift' } }); await wait(0.4); set({ touch: null })
     }
-    // glide back through today, hour by hour, smoothly (her screen follows; no finger drawn)
-    const glide = async (to, sec = 4) => {
-      const from = Number(find('.cv-arc')?.getAttribute('aria-valuemax')) || 14.17, n = Math.round(sec * 30)
-      for (let k = 1; k <= n; k++) {
-        const t = k / n, e = t * t * (3 - 2 * t)
-        post({ type: 'mila:hour', h: from + (to - from) * e }); await wait(sec / n)
-      }
-      post({ type: 'mila:hour', h: to })
-    }
     // a moment of her stay: its title card, then its sketch (the scenario clip's place)
     const moment = async (card, kind, cap, s = 3.8) => {
       set({ pad: false, spot: null, call: null, ex: null, card }); await wait(2.4)
@@ -617,12 +608,13 @@ export function DemoFilm({ active, thumb }) {
       // (held), the screen doing the work (every tap shown), then the result, what they didn't have to do, with
       // our reasoning in a small line beneath it.
       const line = async (t, k = null) => { cap(t, k); await wait(0.6); await gate() } // held until →
-      const scene = async ({ when, name, p, q, still, say }) => {
+      const scene = async ({ when, name, p, q, still, say, then }) => {
         cap(null); res(null); lit(null); set({ pad: false, foot: still ? { id: still, at: R.clock } : null })
         feat(name, p)
         if (say) { cap(say); await wait(0.9); await gate(); cap(null) } // the scenario, told over its picture, clear
-        ask(q, p); set({ when }); await wait(0.9); await gate() // then the question it raises, over the dimmed picture
-        ask(null); set({ when: null })
+        ask(q, p); set({ when }); if (then) cap(then) // then the question it raises, over the dimmed picture (and what led to it)
+        await wait(0.9); await gate()
+        ask(null); set({ when: null }); cap(null)
       }
       const result = async (t, w) => { cap(null); lit(null); res(t, w); await wait(0.8); await gate(); res(null) }
 
@@ -633,7 +625,8 @@ export function DemoFilm({ active, thumb }) {
       cap(null); set({ foot: { id: 'dad', at: R.clock } }); await wait(1)
       await line('It’s 4:20 in the morning. Her dad has just arrived at the NICU, while Mom recovers from surgery.')
       await scene({ when: 'Day 1 · 4:20 a.m.', name: 'First screen', p: 'comprehension', q: 'What is all of this on her?', still: 'explain',
-        say: 'Her doctor and nurse explain everything at once: the breathing tube, the wires, the monitors. It’s too much to take in. Then they’re called away, and he’s alone again, asking the same question.' })
+        say: 'Her doctor and nurse explain everything at once: the breathing tube, the wires, the monitors.',
+        then: 'It’s too much to take in. Then they’re called away, and he’s alone again, asking the same question.' })
       set({ pad: true, foot: null }); await wait(0.8)
       lit('.fd-star', 1); await line('At her bedside, the screen opens with who she is: her name, her time of birth, and her current weight.', 'connection')
       lit(null); await chapter('story', 0.2); feat('What’s on them', 'comprehension')
@@ -650,8 +643,9 @@ export function DemoFilm({ active, thumb }) {
         say: 'On the third day, Mom is finally well enough to come up. She’s missed everything so far.' })
       set({ pad: true, foot: null }); await wait(0.8)
       // she drags back through the day, hour by hour, until she reaches a word she doesn't know
-      cap('She drags back through Mila’s day, hour by hour, through every moment her nurses noted.', 'connection')
-      await glide(4.25, 4.5); await wait(0.6); await gate()
+      cap('She taps back through Mila’s day, moment by moment, through everything her nurses noted.', 'connection')
+      for (const h of [12, 9, 4.25]) { await tap(`.cv-arc-mark[data-h="${h}"]`, () => post({ type: 'mila:hour', h })); await wait(0.9) } // one moment, then the next
+      await gate()
       feat('Words in a tap', 'comprehension')
       doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); await wait(0.3) // no popover open yet
       await line('At 4:15 that morning, a word she’s never heard before: CPAP.', 'comprehension')
@@ -702,9 +696,11 @@ export function DemoFilm({ active, thumb }) {
       await result('She sees the week she missed: who Mila was becoming, how she was doing each day, and the first time she was held.', 'Progress without charts or percentiles. Firsts are planets, worth celebrating.')
 
       // ── 5 · Day 90: going home (plays through on its own, paced to its captions)
-      mark('Going home'); R.auto = R.clock >= R.target // presses wait until it has played (not while ← replays to a line)
+      mark('Going home')
       feat('Going home', 'connection'); set({ pad: false, tint: 'dawn', foot: { id: 'home', at: R.clock } })
-      cap('It’s been a long three months, with many ups and downs. Today is the day they’ve been waiting for: Mila is going home.'); await wait(4.6)
+      cap('It’s been a long three months, with many ups and downs. Today is the day they’ve been waiting for: Mila is going home.'); await wait(0.9)
+      await gate() // its cover holds until →; from there it plays through on its own
+      R.auto = R.clock >= R.target // presses wait until it has played (not while ← replays to a line)
       // her story plays on its own, a little quicker than at the bedside, so no card is skipped or flashed past
       if (frame.current?.contentWindow) frame.current.contentWindow.__storyPace = 0.6
       await show('home', 0.2); cap(null); set({ pad: true, foot: null }); await wait(0.8)
