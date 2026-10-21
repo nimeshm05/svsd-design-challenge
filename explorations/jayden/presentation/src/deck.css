@@ -2115,3 +2115,16 @@ body:has(.panel) { overflow: auto; }
 /* the film's scenario pictures hold still: no slow push in */
 .foot-still { animation: none; transform: none; }
 .wm-o { width: .66em; height: .66em; vertical-align: -.06em; stroke: currentColor; stroke-width: .6; stroke-linejoin: round; }
+.wm-o { stroke: none; }
+
+/* ===== The closing slides ===== */
+.cl-h { margin: 0; font-family: var(--display); font-weight: 300; font-size: clamp(30px, 3.2vw, 50px); line-height: 1.25; color: var(--text); text-align: center; }
+.cl-answers { gap: clamp(28px, 6vh, 64px); width: min(1100px, 100%); }
+.slide-c-keep { padding: 0; }
+.cl-sky { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 14vh; }
+.cl-sky-art { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; animation: fade 2s ease both; }
+.cl-sky .cl-h { position: relative; z-index: 1; text-shadow: 0 2px 30px rgba(0, 0, 0, .9); }
+.slide-c-story .fin, .slide-c-lost .fin { background: transparent; }
+.cl-answers > * { width: 100%; }
+.cl-answers .rc-art { width: 100%; max-height: 46vh; }
+.slide-c-keep > .cl-sky { max-width: none; width: 100%; }

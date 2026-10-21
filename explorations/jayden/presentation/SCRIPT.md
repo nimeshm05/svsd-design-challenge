@@ -168,18 +168,22 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 - For them, Constellate becomes a gentle memorial: a place that holds every day they shared.
 - Whenever they’re ready, they can open their baby’s sky again: who they were, the little things they loved, and every day they had together.
 
-**Closing**
+## 23. 08 · Closing — Every baby’s life is a story
 
-- Every baby’s stay is a story, and parents need to be able to follow it.
-- But in the NICU, it’s scattered across charts, numbers, alarms and shift changes, and parents piece it together on their own.
-- Constellate turns the chart nurses already keep into answers to the questions parents ask most, with nothing new for nurses to write.
-- And it keeps every day of it, one star at a time, however the stay ends.
-- Constellate: so parents can understand their baby’s care, stay close to it, and know what’s next. Thank you.
+Every baby’s stay is a story, and parents need to be able to follow it.
 
-## 23. 07 · Constellate
+## 24. 08 · Closing — Lost in the NICU
 
-To recap: six answers, one bedside screen. Each answers a question parents asked us, directly from the chart, with nothing new for nurses to write.
+But in the NICU, it’s scattered across charts, numbers, alarms and shift changes, and parents piece it together on their own.
 
-## 24. Constellate — Every star is hers to keep
+## 25. 08 · Closing — Turned into answers: six stars
 
-Every star is theirs to keep. Thank you.
+Constellate turns the chart nurses already keep into six answers to the questions parents ask most, right at the bedside, with nothing new for nurses to write.
+
+## 26. 08 · Closing — And keeps every day: her sky
+
+And it keeps every day of it, one star at a time, however the stay ends.
+
+## 27. Constellate — Constellate, thank you
+
+Constellate: so parents can understand their baby’s care, stay close to it, and know what’s next. Every star is theirs to keep. Thank you.

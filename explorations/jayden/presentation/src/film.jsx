@@ -265,7 +265,7 @@ const FIN_ANS = [
   ['What’s next, and who’s with my baby tonight?', 'The plan ahead, and tonight’s nurse'],
   ['Is my baby getting better?', 'The whole stay at a glance, firsts and all'],
 ]
-function Finale({ stage, sky }) {
+export function Finale({ stage, sky }) {
   return (
     <div className={`fin ${FIN_CLS[stage]} ${sky ? 'has-sky' : ''}`} aria-hidden="true">
       {/* "Constellate keeps it": Mila's own sky, as the product draws it */}
@@ -735,17 +735,7 @@ export function DemoFilm({ active, thumb }) {
       await wait(0.6); await gate()
       cap(null); feat(null); set({ pad: false }); await wait(1)
 
-      // ── closing
-      mark('Closing')
-      { // her kept sky, just as the screen drew it, for "Constellate keeps it"
-        const far = doc()?.querySelector('.cv-depth-layer.is-far svg'), kept = doc()?.querySelector('.rem-sky')
-        if (kept) set({ skyArt: (far ? far.outerHTML.replace('<svg', '<svg class="fin-sky-far" preserveAspectRatio="xMidYMid slice"') : '') + kept.outerHTML })
-      }
-      set({ fin: 1 }); cap('Every baby’s stay is a story, and parents need to be able to follow it.'); await wait(1.4); await gate()
-      set({ fin: 2 }); cap('But in the NICU, it’s scattered across charts, numbers, alarms and shift changes, and parents piece it together on their own.'); await wait(1.4); await gate()
-      set({ fin: 3 }); cap('Constellate turns the chart nurses already keep into answers to the questions parents ask most, with nothing new for nurses to write.'); await wait(1.4); await gate()
-      set({ fin: 4 }); cap('And it keeps every day of it, one star at a time, however the stay ends.'); await wait(1.4); await gate()
-      set({ fin: 5 }); cap('Constellate: so parents can understand their baby’s care, stay close to it, and know what’s next. Thank you.'); await wait(1.4); await gate()
+      // (the closing is its own slides now, after the film)
       setLen(R.clock); set({ done: true })
     }
     script().catch((e) => { if (e?.message !== 'stop') console.error('film script stopped:', e) })

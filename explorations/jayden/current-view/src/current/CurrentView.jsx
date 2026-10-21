@@ -28,6 +28,7 @@ const CHAPTERS = [['born', '1 · Mila is born'], ['story', '2 · Her story begin
 // ?chapter=<id> opens on that chapter, and a parent page can switch chapters with postMessage.
 const Q = new URLSearchParams(window.location.search)
 const EMBED = Q.get('embed') === '1'
+const ART = Q.get('art') === '1' // just her sky, nothing else on screen: the presentation shows it as a picture
 
 export function CurrentView({ onSky }) {
   const kind = 'harder' // Mila is a complex baby: her day is shown as it really goes, setbacks included
@@ -90,6 +91,7 @@ export function CurrentView({ onSky }) {
   }
   useEffect(() => {
     if (Q.get('chapter')) goChapter(Q.get('chapter'))
+    if (ART) { goChapter('day'); setTimeout(toSky, 50) } // straight to her whole sky
     // the presentation can also ask for one feature at a time (mila:show)
     const later = (f, ms = 350) => setTimeout(f, ms)
     const skyAt = { current: 0 } // when her sky was last asked for, so a later step doesn't restart it
@@ -199,7 +201,7 @@ export function CurrentView({ onSky }) {
   }, [])
 
   return (
-    <div className={`cv-page theme-${theme} ${EMBED ? 'is-embed' : ''}`}>
+    <div className={`cv-page theme-${theme} ${EMBED ? 'is-embed' : ''} ${ART ? 'is-art' : ''}`}>
       {/* Prototype controls: not part of the bedside screen */}
       <div className="cv-proto" role="toolbar" aria-label="Prototype controls">
         <span className="cv-proto-k">Prototype</span>

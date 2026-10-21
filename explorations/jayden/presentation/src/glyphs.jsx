@@ -7,11 +7,11 @@ export function StarGlyph({ size = 22, color = 'currentColor', className = '' })
   )
 }
 
-// The name, with its "o" as an eight-point star (four long points, four short): set in the line like a letter, at the size of the text around it
+// The name, with its "o" as a soft eight-point star (four long points, four short, curved like the product's stars): set in the line like a letter, at the size of the text around it
 export function Wordmark({ className = '' }) {
   return (
     <span className={`wordmark ${className}`} role="img" aria-label="Constellate">
-      <span aria-hidden="true">c<svg className="wm-o" viewBox="-12 -12 24 24"><path d="M0.00 -11.00L0.73 -1.76L4.38 -4.38L1.76 -0.73L11.00 0.00L1.76 0.73L4.38 4.38L0.73 1.76L0.00 11.00L-0.73 1.76L-4.38 4.38L-1.76 0.73L-11.00 0.00L-1.76 -0.73L-4.38 -4.38L-0.73 -1.76Z" /></svg>nstellate</span>
+      <span aria-hidden="true">c<svg className="wm-o" viewBox="-12 -12 24 24"><path d="M0.00 -11.00Q1.03 -2.49 4.67 -4.67Q2.49 -1.03 11.00 0.00Q2.49 1.03 4.67 4.67Q1.03 2.49 0.00 11.00Q-1.03 2.49 -4.67 4.67Q-2.49 1.03 -11.00 0.00Q-2.49 -1.03 -4.67 -4.67Q-1.03 -2.49 0.00 -11.00Z" /></svg>nstellate</span>
     </span>
   )
 }

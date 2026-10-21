@@ -2417,3 +2417,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-pop-word { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 24px; line-height: 1.18; color: var(--cream); }
 .cv-pop-stands { font-size: 12.5px; }
 .cv-pop-means { margin-top: 4px; font-size: 14.5px; line-height: 1.5; }
+
+/* Just her sky (?art=1): the star layers, her constellations and the shooting stars, with nothing else on screen */
+.cv-page.is-art .cv-screen > :not(.cv-galaxy), .cv-page.is-art .cv-galaxy > :is(.cv-glabels, .cv-galaxy-title, .cv-galaxy-nav) { display: none !important; }
+.cv-page.is-art, .cv-page.is-art .cv-screen { background: transparent; }

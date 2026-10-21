@@ -73,7 +73,10 @@ export const NARRATION = {
     'What’s next, and who is caring for her tonight? Her week, where parents fit in, and her care team.',
     'How is she doing right now? At night, the screen rests when she does: the time, her next care, one quiet line.',
   ],
-  recap: 'To recap: six answers, one bedside screen. Each answers a question parents asked us, directly from the chart, with nothing new for nurses to write.',
   'f-live': 'This is the real prototype. You’re welcome to tap through it.',
-  close: 'Every star is theirs to keep. Thank you.',
+  'c-story': 'Every baby’s stay is a story, and parents need to be able to follow it.',
+  'c-lost': 'But in the NICU, it’s scattered across charts, numbers, alarms and shift changes, and parents piece it together on their own.',
+  'c-answers': 'Constellate turns the chart nurses already keep into six answers to the questions parents ask most, right at the bedside, with nothing new for nurses to write.',
+  'c-keep': 'And it keeps every day of it, one star at a time, however the stay ends.',
+  'c-name': 'Constellate: so parents can understand their baby’s care, stay close to it, and know what’s next. Every star is theirs to keep. Thank you.',
 }
