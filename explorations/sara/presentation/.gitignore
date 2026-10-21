@@ -1,4 +1,4 @@
 node_modules
 dist
-# built from ../current-view by `npm run proto` (runs before dev and build)
+# built from prototype-src (a copy of Jayden's current-view) by `npm run proto` (runs before dev and build)
 public/prototype

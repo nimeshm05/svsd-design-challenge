@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { glossary, GLOSSARY_PLACEHOLDER } from '../data/glossary.js'
+import { GlossaryBaby } from './GlossaryBaby.jsx'
 
 // A medical term a parent can tap to see what it means. Terms without a glossary body render as plain text.
 // The explanation opens in the app's sheet (cv-scrim + cv-sheet), portaled to the page so an animated
@@ -58,7 +59,9 @@ function GlossarySheet({ term, entry, onClose }) {
         {entry.stands && <p className="gl-stands">{entry.stands}</p>}
         <p className="gl-body">{entry.body}</p>
         <figure className="gl-fig">
-          <img src={entry.image ?? GLOSSARY_PLACEHOLDER} alt={entry.image ? `Illustration: ${term}` : `Illustration of ${term}, coming soon`} />
+          {entry.scene
+            ? <GlossaryBaby scene={entry.scene} />
+            : <img src={GLOSSARY_PLACEHOLDER} alt={`Illustration of ${term}, coming soon`} />}
         </figure>
         <span className="ah-review gl-review">Placeholder content · for care-team review</span>
       </div>
