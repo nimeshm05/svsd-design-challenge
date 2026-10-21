@@ -2024,3 +2024,56 @@ body:has(.panel) { overflow: auto; }
 .dfilm .dfilm-cam { inset: 44px 0 150px 0; } /* the monitor sits a little lower, still clear of the caption band */
 /* no dimming behind each result: the screen stays as it is */
 .dfilm.has-result .dfilm-cam, .dfilm.has-result .foot-wrap { filter: none; }
+
+/* ===== Captions in Fraunces, always on ===== */
+.deck-cc, .dfilm-cap { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 24; font-weight: 350; letter-spacing: .005em; }
+
+/* ===== Closing: "Constellate keeps it" over Mila's own sky ===== */
+.fin-sky { position: absolute; inset: 0; opacity: 0; transition: opacity 1.8s ease; pointer-events: none; }
+.fin-sky svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.fin.has-sky.is-keep .fin-sky, .fin.has-sky.is-s4 .fin-sky { opacity: 1; }
+.fin.has-sky.is-s4 .fin-sky { opacity: .35; }
+.fin.has-sky.is-keep .fin-art, .fin.has-sky.is-s4 .fin-art { opacity: 0; transition: opacity 1.2s ease; }
+.fin-words { z-index: 2; }
+
+/* ===== Concepts: sketched by hand, like the modality sketches ===== */
+.cx-card .cx-sketch { margin-bottom: 4px; }
+.cx-card .sk.is-ray { stroke-dasharray: 3 6; }
+.fin-sky .rem-sky { inset: 8% 6% 14%; width: 88%; height: 78%; }
+.fin-sky .fin-sky-far { opacity: .6; }
+
+/* "Constellate keeps it": her sky floats a little, over a field of stars, with a shooting star now and then */
+.fin-float { position: absolute; inset: 0; animation: fin-float 9s ease-in-out infinite; }
+@keyframes fin-float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-14px) rotate(.4deg); } }
+.fin-field { position: absolute; inset: 0; }
+.fin-field i { position: absolute; width: calc(2px * var(--z)); height: calc(2px * var(--z)); border-radius: 50%; background: #FFF3D6; box-shadow: 0 0 5px rgba(255, 243, 214, .7);
+  opacity: .5; animation: fin-twinkle var(--tw) ease-in-out infinite; animation-delay: calc(var(--k) * -.37s); }
+@keyframes fin-twinkle { 0%, 100% { opacity: .18; } 50% { opacity: .75; } }
+.fin-shoot { position: absolute; width: 130px; height: 1.5px; border-radius: 2px; transform-origin: 0 50%; pointer-events: none; opacity: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--cream) 70%, #fff)); animation: fin-shoot 10s ease-out infinite; }
+/* like the product's own: the streak lies along its path, bright head first, and grows as it goes (1.3 s of each cycle) */
+@keyframes fin-shoot {
+  0% { opacity: 0; transform: rotate(var(--a)) translateX(0) scaleX(.3); }
+  2% { opacity: .75; }
+  13%, 100% { opacity: 0; transform: rotate(var(--a)) translateX(240px) scaleX(1); }
+}
+.fin-shoot.is-0 { left: 10%; top: 12%; --a: 24deg; animation-delay: 1.5s; }
+.fin-shoot.is-1 { left: 58%; top: 9%; --a: 34deg; animation-delay: 5s; animation-duration: 11s; }
+.fin-shoot.is-2 { left: 28%; top: 58%; --a: 20deg; animation-delay: 8.5s; animation-duration: 12s; }
+.fin-sky .fin-float .rem-sky { position: absolute; inset: 8% 6% 14%; width: 88%; height: 78%; }
+
+/* Closing, what parents get: the noise clears and the questions they asked come back, answered */
+.fin.is-ans .fin-art { opacity: .16; filter: blur(1px); transition: opacity 1.2s ease, filter 1.2s ease; }
+.fin-ans { position: absolute; z-index: 2; left: 50%; top: 54%; transform: translate(-50%, -50%); width: min(880px, 86vw); }
+.fin-ans ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.fin-ans li { display: grid; grid-template-columns: 28px minmax(0, 1fr) minmax(0, 1fr); align-items: baseline; column-gap: 18px; padding: 14px 20px; border-radius: 14px;
+  background: rgba(13, 13, 17, .72); border: 1px solid color-mix(in srgb, var(--cream) 14%, transparent);
+  opacity: 0; transform: translateY(10px); animation: fin-ans-in .8s calc(.5s + var(--k) * .35s) var(--ease) forwards; }
+@keyframes fin-ans-in { to { opacity: 1; transform: none; } }
+.fin-ans-tick { color: var(--cream); font-size: 16px; }
+.fin-ans b { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 48; font-weight: 400; font-size: clamp(17px, 1.5vw, 22px); color: var(--text); }
+.fin-ans li > span:last-child { font-size: clamp(14px, 1.15vw, 17px); color: var(--text-2); }
+.fin-ans-foot { margin: 22px 0 0; text-align: center; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--cream); opacity: 0;
+  animation: fin-ans-foot .8s 2.6s ease forwards; }
+@keyframes fin-ans-foot { to { opacity: .9; } }
+@media (max-width: 760px) { .fin-ans li { grid-template-columns: 22px 1fr; } .fin-ans li > span:last-child { grid-column: 2; } }

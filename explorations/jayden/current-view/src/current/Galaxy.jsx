@@ -753,7 +753,7 @@ export function Galaxy({ theme, onBack, exit = 0 }) {
     if (!d.moved) {
       if (Math.hypot(dx, dy) < 6) return
       d.moved = true
-      host.current.setPointerCapture(d.id)
+      try { host.current.setPointerCapture(d.id) } catch { /* a pointer the browser isn't tracking (the demo's own drag) */ }
       host.current.classList.add('is-dragging')
     }
     if (view.level === 'day') return
