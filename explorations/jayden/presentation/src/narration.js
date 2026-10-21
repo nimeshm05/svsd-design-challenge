@@ -6,10 +6,10 @@ export const NARRATION = {
   nicu: 'The neonatal intensive care unit, or the NICU, is the hospital unit where babies born too early or too sick are cared for, often for several weeks or months.',
   journey: [
     'Lauren had an emergency C-section, and Niko arrived more than two months early. Niko had to be transported to the NICU immediately, and Lauren was not able to hold or see him.',
-    'She was healing in one place, while her newborn was cared for in another.',
+    'She was healing in one place, while her newborn was cared for in another, and she felt guilty for not being there with him.',
     'Then came the explanations for Niko’s complex conditions, communicated with words they’ve never heard, all while they were exhausted and scared.',
-    'Every day centered on the NICU. Long days and nights at his bedside, until the hours blurred together.',
-    'Outside the unit, bills, work, and insurance followed them home, on top of the guilt of this situation and every hour they couldn’t be with him.',
+    'Every day centered on the NICU. Long days and nights at his bedside, until the hours blurred together, and it was hard to tell whether he was making any progress.',
+    'Outside the unit, bills, work, and insurance followed them home, on top of every hour they couldn’t be with him.',
   ],
   wall: 'And it isn’t only their families. Our secondary research showed the same: the NICU shapes how babies grow, how nurses work, and how parents cope.',
   asked: ['Niko’s story is one we heard first-hand.', 'Including Lauren, we interviewed two parents,', 'and two former NICU nurses.'],

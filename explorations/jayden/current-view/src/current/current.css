@@ -1058,6 +1058,8 @@
 .fd-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.6vw, 54px); line-height: 1.05; color: #F6EEDB; }
 .fd-title { margin: 0; font-size: clamp(24px, 3.2vw, 36px); font-weight: 500; line-height: 1.2; color: #F6EEDB; }
 .fd-title.is-serif { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; }
+/* the walkthrough: each wire's name in Fraunces */
+.fd-words .fd-title { font-family: "Fraunces", Georgia, serif; font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; letter-spacing: -.01em; }
 .fd-line { margin: 0; max-width: 40ch; font-size: clamp(15px, 1.7vw, 19px); line-height: 1.45; color: var(--text-2); }
 .fd-size { margin: 8px 0 0; max-width: 42ch; font-size: clamp(14px, 1.55vw, 17px); color: var(--text-2); }
 .fd-size b { color: var(--cream); font-weight: 500; }

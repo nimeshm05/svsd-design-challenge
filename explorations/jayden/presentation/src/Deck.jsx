@@ -19,9 +19,7 @@ const STEPS = (k) => SLIDES[k].steps ?? 1
 export function Deck() {
   const [at, setAt] = useState(() => ({ i: fromHash(), step: 0 }))
   const { i, step } = at
-  // narration captions along the bottom (C hides or shows them); remembered in this browser only
-  const [cc, setCc] = useState(() => { try { return localStorage.getItem('deck-cc') !== 'off' } catch { return true } })
-  useEffect(() => { try { localStorage.setItem('deck-cc', cc ? 'on' : 'off') } catch { /* private window */ } }, [cc])
+  // narration captions along the bottom stay on for every slide
   const go = useCallback((n) => setAt({ i: Math.min(N - 1, Math.max(0, n)), step: 0 }), [])
   const next = useCallback(() => setAt(({ i, step }) => (step < STEPS(i) - 1 ? { i, step: step + 1 } : i < N - 1 ? { i: i + 1, step: 0 } : { i, step })), [])
   const prev = useCallback(() => setAt(({ i, step }) => (step > 0 ? { i, step: step - 1 } : i > 0 ? { i: i - 1, step: STEPS(i - 1) - 1 } : { i, step })), [])
@@ -51,7 +49,6 @@ export function Deck() {
       if (e.key === 'Home') go(0)
       if (e.key === 'End') go(N - 1)
       if (e.key === 'o' || e.key === 'O') openPanel()
-      if (e.key === 'c' || e.key === 'C') setCc((v) => !v)
     }
     const hash = () => { const n = fromHash(); setAt((a) => (a.i === n ? a : { i: n, step: 0 })) }
     window.addEventListener('keydown', key)
@@ -80,7 +77,7 @@ export function Deck() {
 
       {(() => {
         const n = NARRATION[s.id], line = Array.isArray(n) ? n[Math.min(step, n.length - 1)] : n
-        return cc && line && (!s.bare || s.cc) && <p key={`${s.id}-${line}`} className="deck-cc">{line}</p>
+        return line && (!s.bare || s.cc) && <p key={`${s.id}-${line}`} className="deck-cc">{line}</p>
       })()}
 
       <footer className="deck-foot">
