@@ -2129,14 +2129,15 @@ body:has(.panel) { overflow: auto; }
 .cl-answers .rc-art { width: 100%; max-height: 46vh; }
 .slide-c-keep > .cl-sky { max-width: none; width: 100%; }
 
-/* The wordmark: lowercase, then a sticker star: a soft five-point star with a dashed cut line around it */
+/* The wordmark: lowercase, then two of the product's sparkles, a large one and a small one above it */
 .wordmark { display: inline-flex; align-items: flex-start; }
-.wm-star { flex: none; width: .56em; height: .56em; margin: -.06em 0 0 .08em; overflow: visible; filter: drop-shadow(0 0 .08em rgba(255, 248, 230, .4)); }
-.wm-fill { fill: currentColor; }
-.wm-cut { fill: none; stroke: currentColor; stroke-width: 1.1; stroke-linecap: round; stroke-dasharray: 2.6 2.2; opacity: .85; }
+.wm-star { flex: none; width: .5em; height: .6em; margin: -.08em 0 0 .06em; overflow: visible; fill: currentColor; filter: drop-shadow(0 0 .1em rgba(255, 248, 230, .55)); }
+.wm-small { opacity: .85; }
 
 /* slides 23 and 24: the drawn story in a centered frame, under the deck's header like any slide */
 .cl-drawn { position: relative; width: min(1100px, 100%); height: min(72vh, 640px); }
 .cl-drawn .fin { position: absolute; inset: 0; z-index: auto; background: transparent; }
 .cl-drawn .fin-words { top: 6%; font-size: clamp(30px, 3.2vw, 50px); }
 .cl-drawn .fin-art { margin-top: 10vh; }
+/* slide 26: her sky behind everything, edge to edge (past the stage's top and bottom margins) */
+.slide-c-keep .cl-sky { inset: -74px 0 -92px; padding-top: calc(74px + 14vh); }

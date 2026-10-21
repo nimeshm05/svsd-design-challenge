@@ -5,8 +5,7 @@ import { NARRATION } from './narration.js'
 
 // The case study as a website you present from. One idea at a time; → / space / the › button to go on.
 // Behind every slide, the night sky drifts a little further with each step, its color warming to the
-// pillar being told, and along the bottom her constellation grows: one star per slide, a planet for each
-// chapter's opening. The story of the product, told in the product's own language.
+// pillar being told. Nothing else on screen but the slide, its caption and the name (← → and space move on; O opens the overview).
 const N = SLIDES.length
 const fromHash = () => {
   const n = parseInt(window.location.hash.slice(1), 10)
@@ -62,7 +61,6 @@ export function Deck() {
       <Sky />
       <header className="deck-top">
         <span className="deck-mark"><Wordmark /></span>
-        <span className="deck-where"><span key={s.section} className="deck-section">{s.section}</span><button type="button" className="deck-panel-btn" onClick={openPanel} title="Story overview (O)">Overview ↗</button><span className="deck-count">{String(i + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}</span></span>
       </header>
 
       <main className="deck-stage">
@@ -77,13 +75,6 @@ export function Deck() {
 
       {(!s.bare || s.cc) && <Caption key={`${s.id}-${step}`} id={s.id} step={step} />}
 
-      <footer className="deck-foot">
-        <Progress i={i} go={go} />
-        <span className="deck-arrows">
-          <button type="button" onClick={back} disabled={i === 0 && step === 0} aria-label="Previous">‹</button>
-          <button type="button" onClick={fwd} disabled={i === N - 1 && step === STEPS(i) - 1} aria-label="Next">›</button>
-        </span>
-      </footer>
     </div>
   )
 }
@@ -117,38 +108,6 @@ function Sky() {
       <div className="stars stars-near" />
       <div className="shoot" />
     </div>
-  )
-}
-
-/* ---------- Her constellation: one star per slide ---------- */
-const PW = 520, PH = 54
-const PTS = SLIDES.map((S, k) => {
-  const x = 12 + (k / (N - 1)) * (PW - 24)
-  const y = PH / 2 + Math.sin(k * 1.35) * 14 + Math.sin(k * 3.1) * 4
-  return [x, y]
-})
-function Progress({ i, go }) {
-  return (
-    <nav className="prog" aria-label="Slides">
-      <svg viewBox={`0 0 ${PW} ${PH}`} width={PW} height={PH}>
-        <polyline className="prog-path" points={PTS.map((p) => p.join(',')).join(' ')} />
-        <polyline className="prog-lit" points={PTS.slice(0, i + 1).map((p) => p.join(',')).join(' ')} />
-        {PTS.map(([x, y], k) => {
-          const planet = SLIDES[k].planet
-          const state = k === i ? 'is-now' : k < i ? 'is-past' : 'is-ahead'
-          return (
-            <g key={k} className={`prog-pt ${state}`} transform={`translate(${x} ${y})`} onClick={() => go(k)}>
-              <title>{SLIDES[k].section}</title>
-              <circle r="11" className="prog-hit" />
-              {k === i && <circle r="10" className="prog-glow" />}
-              {planet
-                ? <g transform="rotate(-18)"><ellipse rx="7.5" ry="2.3" className="prog-ring" /><circle r="3.4" className="prog-body" /></g>
-                : <path d="M0 -5L1.2 -1.2L5 0L1.2 1.2L0 5L-1.2 1.2L-5 0L-1.2 -1.2Z" className="prog-star" />}
-            </g>
-          )
-        })}
-      </svg>
-    </nav>
   )
 }
 
