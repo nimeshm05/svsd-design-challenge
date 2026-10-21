@@ -92,7 +92,11 @@ export function CurrentView({ onSky }) {
     if (Q.get('chapter')) goChapter(Q.get('chapter'))
     // the presentation can also ask for one feature at a time (mila:show)
     const later = (f, ms = 350) => setTimeout(f, ms)
+    const skyAt = { current: 0 } // when her sky was last asked for, so a later step doesn't restart it
+    const CLOCK = { ...today.clock } // the film can move today's clock (Day 23 is shown in the morning); any other screen puts it back
     const SHOW = {
+      // Day 23 in the morning: a different hour and a different moment from Day 3's afternoon
+      morning: () => { Object.assign(today.clock, { label: '9:40 a.m.', h: 9.67 }); goChapter('day'); setCH(9.4) },
       first: () => goChapter('born'),
       walk: () => { goChapter('story'); later(() => setWalk(1)) },
       today: () => { goChapter('day'); setCH(today.clock.h) },
@@ -100,12 +104,12 @@ export function CurrentView({ onSky }) {
       family: () => { goChapter('day'); later(() => setCH(d.saved[0].h)) },
       ahead: () => { goChapter('day'); later(() => setPage('ahead')) },
       night: () => { goChapter('day'); later(() => setNight(true)) },
-      sky: () => goChapter('sky'),
+      sky: () => { skyAt.current = Date.now(); goChapter('sky') },
       // these pick up from wherever her sky already is, so one step leads into the next without starting over
       openWeek: () => {
         const go = () => { const w = document.querySelector('.cv-gweek'); if (w) w.click(); return !!w }
         if (go()) return
-        if (!document.querySelector('.cv-galaxy')) goChapter('sky')
+        if (!document.querySelector('.cv-galaxy') && Date.now() - skyAt.current > 12000) SHOW.sky() // her sky isn't already on its way
         const t0 = Date.now(), id = setInterval(() => { if (go() || Date.now() - t0 > 15000) clearInterval(id) }, 300)
       },
       day6: () => { // her first week's planet day: the first time she was held
@@ -128,7 +132,7 @@ export function CurrentView({ onSky }) {
     }
     const on = (e) => {
       if (e.data?.type === 'mila:chapter') goChapter(e.data.chapter)
-      if (e.data?.type === 'mila:show') SHOW[e.data.what]?.()
+      if (e.data?.type === 'mila:show') { if (e.data.what !== 'morning') Object.assign(today.clock, CLOCK); SHOW[e.data.what]?.() }
       if (e.data?.type === 'mila:day') setDayLabel(e.data.day ?? null) // a film can show the same screen on another day
     }
     window.addEventListener('message', on)

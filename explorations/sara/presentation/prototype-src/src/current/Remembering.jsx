@@ -17,6 +17,9 @@ const STORY = [
   { d: 23, k: 'Day 23', title: 'Her own clothes', text: 'Her nurse dressed her in the soft sleepsuit you brought from home. She slept in it all afternoon.' },
 ]
 
+// At the end, a few things about who she was, from the same notes as About Mila in her weeks
+const ABOUT = [stay.about[1][0], stay.about[1][1], { d: 19, text: 'Mila opened her eyes when Mom sang' }]
+
 export function Remembering({ theme }) {
   const c = theme === 'confetti'
   const [step, setStep] = useState(0) // a moment of her story; past the last, everything at once
@@ -70,6 +73,12 @@ export function Remembering({ theme }) {
       ) : (
         <div className="rem-words">
           <p className="rem-name">Mila</p>
+          <section className="rem-sec">
+            <span className="rem-k">About Mila</span>
+            <ul className="rem-who">
+              {ABOUT.map((a) => <li key={a.text}>{a.text}</li>)}
+            </ul>
+          </section>
           <section className="rem-sec">
             <span className="rem-k">Her story</span>
             <ul className="rem-did">
