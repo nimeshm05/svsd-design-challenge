@@ -1,10 +1,10 @@
-/* Mila's Sky case study, in design system 1 (Night Nursery): black sky, warm cream, Fraunces + Geist.
+/* Mila's Sky case study, in design system 1 (Night Nursery): black sky, warm cream, Aquavit + Geist (Aquavit is an Adobe font, active on Jayden's Mac; elsewhere it falls back to Fraunces).
    The three pillars each have a color: Connection (gold), Comprehension (blue), Awareness (lilac). */
 :root {
   --cream: #F3E3B5; --warm: #FFB38A; --ink: #000;
   --text: #F6EEDB; --text-2: #C9C2B3; --muted: #8C877E; --line: rgba(243, 227, 181, .16);
   --connection: #F5CF6E; --comprehension: #8FC8FF; --awareness: #C3A8FF;
-  --display: "Fraunces", Georgia, serif; --ui: "Geist", "Helvetica Neue", Arial, sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
+  --display: "Aquavit", "Fraunces", Georgia, serif; --ui: "Geist", "Helvetica Neue", Arial, sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
   --ease: cubic-bezier(.2, .7, .2, 1);
 }
 * { box-sizing: border-box; }
@@ -2027,7 +2027,7 @@ body:has(.panel) { overflow: auto; }
 /* no dimming behind each result: the screen stays as it is */
 .dfilm.has-result .dfilm-cam, .dfilm.has-result .foot-wrap { filter: none; }
 
-/* ===== Captions in Fraunces, always on ===== */
+/* ===== Captions in the display font, always on ===== */
 .deck-cc, .dfilm-cap { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 24; font-weight: 350; letter-spacing: .005em; }
 
 /* ===== Closing: "Constellate keeps it" over Mila's own sky ===== */

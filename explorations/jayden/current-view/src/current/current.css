@@ -334,12 +334,12 @@
 }
 
 /* ================= Two styles from the design board =================
-   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Fraunces (soft, upright) + Geist.
+   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Aquavit (an Adobe font, active on Jayden's Mac; Fraunces where it isn't) + Geist.
    Confetti Constellations: playful. Sunshine stars, thick light-blue lines, confetti, Young Serif + Figtree.
    Both on a black sky. Each style only sets tokens; the components read them. */
 .cv-page.theme-nursery {
   --cream: #F3E3B5; --warm: #FFB38A; --line-sky: #F3E3B5; --glow: rgba(243, 227, 181, .35);
-  --font-display: "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
+  --font-display: "Aquavit", "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
 }
 .cv-page.theme-confetti {
   --cream: #FFD23F; --warm: #FF8FC8; --line-sky: #7CC0FF; --glow: rgba(255, 210, 63, .35);
@@ -1058,8 +1058,8 @@
 .fd-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.6vw, 54px); line-height: 1.05; color: #F6EEDB; }
 .fd-title { margin: 0; font-size: clamp(24px, 3.2vw, 36px); font-weight: 500; line-height: 1.2; color: #F6EEDB; }
 .fd-title.is-serif { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; }
-/* the walkthrough: each wire's name in Fraunces */
-.fd-words .fd-title { font-family: "Fraunces", Georgia, serif; font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; letter-spacing: -.01em; }
+/* the walkthrough: each wire's name in the display font */
+.fd-words .fd-title { font-family: var(--font-display); font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; letter-spacing: -.01em; }
 .fd-line { margin: 0; max-width: 40ch; font-size: clamp(15px, 1.7vw, 19px); line-height: 1.45; color: var(--text-2); }
 .fd-size { margin: 8px 0 0; max-width: 42ch; font-size: clamp(14px, 1.55vw, 17px); color: var(--text-2); }
 .fd-size b { color: var(--cream); font-weight: 500; }
