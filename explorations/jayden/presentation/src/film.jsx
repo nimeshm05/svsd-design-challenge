@@ -386,8 +386,8 @@ function useFade(value, keyOf, ms = 900) {
 
 // the stay, down the right of the film: where each scene sits in it
 const STAY = [
-  ['Day 1', 'First night', 'Day 1'], ['Day 3', 'Mom’s first visit', 'Mom'], ['Day 3', 'Planning tomorrow', 'What’s ahead'],
-  ['Day 23', 'Looking back', 'Looking back'], ['Day 90', 'Going home', 'Going home'],
+  ['Day 1', 'First night', ['Day 1']], ['Day 3', 'Mom catches up', ['Mom', 'What’s ahead']],
+  ['Day 23', 'Looking back', ['Looking back']], ['Day 90', 'Going home', ['Going home']],
 ]
 
 export function DemoFilm({ active, thumb }) {
@@ -453,7 +453,7 @@ export function DemoFilm({ active, thumb }) {
       }
       step()
     })
-    const mark = (label) => { setMarks((m) => (m.some((x) => x.label === label) ? m : [...m, { t: R.clock, label }])); const n = STAY.findIndex((x) => x[2] === label); if (n >= 0) set({ tl: n }) }
+    const mark = (label) => { setMarks((m) => (m.some((x) => x.label === label) ? m : [...m, { t: R.clock, label }])); const n = STAY.findIndex((x) => x[2].includes(label)); if (n >= 0) set({ tl: n }) }
     // the presenter's pace: the film holds at every line until → (a press made mid-transition is kept for the next line)
     const gate = () => new Promise((ok, no) => {
       if (R.dead) return no(new Error('stop'))
@@ -532,8 +532,10 @@ export function DemoFilm({ active, thumb }) {
       set({ card: null }); await wait(0.5)
       if (kind) { set({ scene: kind, cap }); await wait(s); set({ scene: null, cap: null }) }
     }
-    const show = async (what, settle = 1.2) => { post({ type: 'mila:show', what }); await wait(settle) }
-    const chapter = async (c, settle = 1.2) => { post({ type: 'mila:chapter', chapter: c }); await wait(settle) }
+    // a change of screen dips the monitor to dark and back, so it never jumps from one screen to the next
+    const dip = async (msg, settle) => { set({ blink: true }); await wait(0.35); post(msg); await wait(settle); set({ blink: false }); await wait(0.35) }
+    const show = (what, settle = 1.2) => dip({ type: 'mila:show', what }, settle)
+    const chapter = (c, settle = 1.2) => dip({ type: 'mila:chapter', chapter: c }, settle)
     const pad = async (cap) => { set({ pad: true, cap: cap ?? null }); await wait(1.2) }
     const sky = (d) => [...d.querySelectorAll('.nav-btn, button')].find((b) => /Mila.s stars/.test(b.textContent)) ?? d.querySelector('.cv-skyt')
 
@@ -720,6 +722,7 @@ export function DemoFilm({ active, thumb }) {
           {!thumb && <iframe ref={frame} title="Constellate bedside display, in the demo" src="./prototype/index.html?embed=1&chapter=born" onLoad={() => setTimeout(() => setReady(true), 400)} />}
           {thumb && <div className="ipad-thumb"><StarGlyph size={44} color="#F3E3B5" /><span>Demo</span></div>}
           {/* the spotlight: the screen falls a little darker around what we're looking at */}
+          <div className={`dfilm-blink ${v.blink ? 'is-on' : ''}`} aria-hidden="true" />
           <div className={`dfilm-lit ${v.lit ? 'is-on' : ''}`} style={v.lit ? { '--cx': `${v.lit.cx * 100}%`, '--cy': `${v.lit.cy * 100}%`, '--rx': `${v.lit.rx * 100}%`, '--ry': `${v.lit.ry * 100}%` } : undefined} />
           <div className={`dfilm-spot ${v.spot ? 'is-on' : ''}`} style={v.spot ? { left: `${v.spot.x * 100}%`, top: `${v.spot.y * 100}%`, width: `${v.spot.w * 100}%`, height: `${v.spot.h * 100}%` } : undefined} />
           {v.touch && <span className={`dfilm-touch is-${v.touch.s}`} style={{ left: `${v.touch.x * 100}%`, top: `${v.touch.y * 100}%` }} />}

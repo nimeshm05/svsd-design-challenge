@@ -1299,6 +1299,30 @@ function SolutionCover() {
   )
 }
 
+/* ---------- v2: why constellations: the decision behind the idea ---------- */
+const WHY_STARS = [
+  ['A story, not a chart.', 'Parents live their baby’s stay as moments, not numbers. Stars gather those moments into something they can follow and remember.', null],
+  ['No harsh metrics.', 'Nothing ranks a baby, or compares them to anyone. A star is shaped by their own days, never by a percentile.', ['Not all babies start out the same way, or go through the same things.', 'Former PICU parent']],
+  ['Moments to cherish.', 'Firsts become planets, worth celebrating. And stars never disappear, so the sky holds whatever ending a family faces.', ['They’re celebrating those little milestones that are actually a really big deal.', 'Lauren, Niko’s mom']],
+]
+function WhyStars() {
+  return (
+    <div className="ws">
+      <R d={0} className="k">Why constellations</R>
+      <div className="ws-grid">
+        {WHY_STARS.map(([t, d, q], k) => (
+          <R key={t} d={1 + k * 2} className="ws-col">
+            <StarGlyph size={20} color="#FFF8E6" />
+            <h3>{t}</h3>
+            <p>{d}</p>
+            {q && <blockquote><p>&ldquo;{q[0]}&rdquo;</p><cite>{q[1]}</cite></blockquote>}
+          </R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export const SLIDES = [
   { id: 'title', section: 'Constellate', planet: true, View: Title },
   { id: 'niko', section: 'Niko', View: Niko },
@@ -1323,6 +1347,7 @@ export const SLIDES = [
   { id: 'insight', section: '05 · The insight', View: statement({ k: 'The insight', big: true, children: <>Everything parents need is <L>already in their baby’s chart</L>. It just never reaches them in a form they can use.</> }) },
   { id: 'solution', section: '06 · Constellate', planet: true, View: SolutionCover },
   { id: 'overview', section: '06 · Constellate', steps: 3, feature: ['sky', 'openWeek', 'day6'], padSide: true, View: Overview },
+  { id: 'why-stars', section: '06 · Constellate', View: WhyStars },
   { id: 'demo', section: '07 · One stay, question by question', planet: true, bare: true, View: DemoFilm },
   { id: 'recap', section: '07 · Constellate', View: Recap },
   { id: 'close', section: 'Constellate', View: Close },
