@@ -2,7 +2,7 @@
 // A slide with builds has one line per step; past the last line, the last one stays. The demo film has its own.
 export const NARRATION = {
   title: {
-    every: 9000,
+    every: 8500,
     timed: [
       'Hi! We’re Jayden, Nimesh, and Sara. We’re currently masters students studying Human Centered Design and Engineering at the University of Washington in Seattle.',
       'And today, we’ll be presenting on Constellate - a bedside screen for parents of babies in the NICU.',
@@ -22,7 +22,7 @@ export const NARRATION = {
   voices: 'Lauren told us she felt whiplashed: told one thing by one team, then something completely different the next day. Like a game of telephone. The nurses also addressed the communication gap: “We tell them everything, but sometimes it’s too much.”',
   heard: 'Across those conversations, the same thing came up: parents get the pieces, but they’re left to put them together on their own.',
   pillars: [
-    'It comes down to three needs. Connection: parents can’t bond the way they expected, and guilt fills the gap.',
+    'It comes down to 3 needs. First is connection: parents can’t bond the way they expect, and guilt fills the gap.',
     'In their own words, connection can sound like: how can I feel close to my baby before I can hold them? And what happened while I was away?',
     'Comprehension: they have information, but not the whole picture.',
     'It sounds like: what is all of this on my baby? And what does that word mean?',
