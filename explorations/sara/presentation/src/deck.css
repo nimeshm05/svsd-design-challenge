@@ -403,6 +403,13 @@ p.hmw-part { display: block; }
 .pillars .cols { margin-top: 10px; }
 .pillars .col { opacity: .06; filter: blur(4px); transform: translateY(14px); transition: opacity .9s ease, filter .9s ease, transform 1s var(--ease); }
 .pillars .col.is-in { opacity: 1; filter: none; transform: none; }
+.pillars .col { grid-column: 1; grid-row: 1; opacity: 0; transition-duration: .4s; }
+.is-static .pillars .col:not(.is-in) { opacity: 0 !important; }
+.pillars .col.is-in { transition-duration: .9s, .9s, 1s; transition-delay: .3s; }
+/* the pillar's questions, in the two columns to the right of its card */
+.pillars-ask { grid-column: 2 / 4; grid-row: 1; align-self: center; display: flex; flex-direction: column; padding-left: clamp(48px, 7vw, 120px); translate: 0 -28px; }
+.pillars-ask .pa-k span { margin-left: 0; }
+.pillars-ask .pa-q { max-width: 24ch; font-size: clamp(26px, 2.8vw, 42px); }
 .pillars .col-pain { font-family: var(--display); font-variation-settings: "SOFT" 100; font-size: clamp(20px, 1.9vw, 26px); line-height: 1.3; }
 
 /* the idea: a day's moments gather into a star */
