@@ -313,6 +313,21 @@ export const ahead = {
         plan: 'In her incubator until she can keep herself warm.',
         who: 'Her nurses and baby doctors', review: 'Checked every day',
       },
+      {
+        area: 'Pulse oximetry', steps: ['Pulse oximeter', 'Spot checks', 'Off the oxygen monitor'], at: 0, status: 'waiting',
+        plan: 'The soft wrap on her foot stays on while she needs breathing help.',
+        who: 'Her nurses and breathing team', review: 'Checked every day',
+      },
+      {
+        area: 'IV lines', steps: ['Central line', 'IV line', 'No IV needed'], at: 2, status: 'decided',
+        plan: 'Her IV came out today. All her milk now goes through her feeding tube.',
+        who: 'Her nurses and baby doctors', review: 'Agreed at rounds',
+      },
+      {
+        area: 'Mechanical ventilator', steps: ['Ventilator', 'Coming off the ventilator', 'Off the ventilator'], at: 2, status: 'decided',
+        plan: 'She no longer needs the ventilator. Her breathing help now comes through her nose.',
+        who: 'Breathing team', review: 'Agreed at rounds',
+      },
     ],
     checks: [{ what: 'Eye exam', note: 'Date not set yet' }, { what: 'Hearing screen', note: 'Before she goes to a new unit' }],
     coming: [
@@ -335,6 +350,21 @@ export const ahead = {
         area: 'Staying warm', steps: ['Incubator', 'Open crib'], at: 0, status: 'waiting',
         plan: 'In her incubator until she can keep herself warm.',
         who: 'Her nurses and baby doctors', review: 'Checked every day',
+      },
+      {
+        area: 'Pulse oximetry', steps: ['Pulse oximeter', 'Spot checks', 'Off the oxygen monitor'], at: 0, status: 'waiting',
+        plan: 'The soft wrap on her foot stays on while she needs breathing help.',
+        who: 'Her nurses and breathing team', review: 'Checked every day',
+      },
+      {
+        area: 'IV lines', steps: ['Central line', 'IV line', 'No IV needed'], at: 2, status: 'decided',
+        plan: 'She doesn’t have an IV right now. All her milk goes through her feeding tube.',
+        who: 'Her nurses and baby doctors', review: 'Agreed at rounds',
+      },
+      {
+        area: 'Mechanical ventilator', steps: ['Ventilator', 'Coming off the ventilator', 'Off the ventilator'], at: 2, status: 'decided',
+        plan: 'She doesn’t need the ventilator. Her breathing help comes through her CPAP mask.',
+        who: 'Breathing team', review: 'Agreed at rounds',
       },
     ],
     checks: [{ what: 'Eye exam', note: 'Date not set yet' }, { what: 'Hearing screen', note: 'Before she goes to a new unit' }],
@@ -373,19 +403,25 @@ export const tomorrow = {
 // major events (surgeries, procedures) open their own page. Days are named by weekday and her day count.
 // `every`: a recurring task, every N hours from midnight. Today's box lists each one; other days show `what`.
 export const week = [
+  { name: 'Sunday', short: 'Sun', day: 21, items: [
+    { t: '8 a.m.', what: 'Rounds' }, { t: '9:30 a.m.', what: 'Gentler breathing help' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+  ] },
+  { name: 'Monday', short: 'Mon', day: 22, items: [
+    { t: '7 a.m.', what: 'Rounds' }, { t: '6 p.m.', what: 'Bath time' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+  ] },
   { name: 'Tuesday', short: 'Tue', day: 23, today: true, items: [
     { t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }, { t: '7 p.m.', what: 'Marcus takes over' },
   ] },
   { name: 'Wednesday', short: 'Wed', day: 24, items: [
-    { t: '3 a.m.', what: 'IV insertion' }, { t: '7 a.m.', what: 'Rounds' },
-    { t: '10 a.m.', what: 'Heart surgery', event: 'heart-surgery' },
-    { t: '2 p.m.', what: 'Surgeon talks with you' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+    { t: '7 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Thursday', short: 'Thu', day: 25, items: [
     { t: '7 a.m.', what: 'Rounds' }, { t: '1 p.m.', what: 'Family meeting' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Friday', short: 'Fri', day: 26, items: [
-    { t: '7 a.m.', what: 'Rounds' }, { what: 'Breathing check' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
+    { t: '3 a.m.', what: 'IV insertion' }, { t: '7 a.m.', what: 'Rounds' },
+    { t: '10 a.m.', what: 'Heart surgery', event: 'heart-surgery' },
+    { t: '2 p.m.', what: 'Surgeon talks with you' }, { what: 'Breathing check' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 },
   ] },
   { name: 'Saturday', short: 'Sat', day: 27, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
   { name: 'Sunday', short: 'Sun', day: 28, items: [{ t: '8 a.m.', what: 'Rounds' }, { what: 'Care every 3 hours', label: 'Care time', every: 3 }] },
@@ -397,7 +433,7 @@ export const week = [
 export const events = {
   'heart-surgery': {
     name: 'Heart surgery',
-    when: 'Tomorrow, Wednesday · Day 24',
+    when: 'Friday · Day 26',
     time: '10 a.m.',
     target: 'heart',
     targetLabel: 'Her heart',
@@ -423,6 +459,32 @@ export const stay = {
   today: 23,
   weeks: ['Hello, small one', 'Finding a rhythm', 'More help breathing', 'This week'],
   firsts: { 4: 'First touch', 6: 'First hold', 14: 'First bottle', 23: 'Her own clothes' },
+  // About Mila, by week: little things her family and nurses noticed about who she is, each on the day it was seen
+  about: {
+    1: [
+      { d: 3, text: 'Mila rested best with soft jazz' },
+      { d: 4, text: 'Mila loved to grab Dad’s thumb' },
+      { d: 6, text: 'Mila settled fastest on your chest' },
+      { d: 7, text: 'Mila always winked' },
+    ],
+    2: [
+      { d: 9, text: 'Mila stretched her arms up after every nap' },
+      { d: 11, text: 'Mila calmed to the sound of your voice' },
+      { d: 12, text: 'Mila liked her feet tucked in snug' },
+      { d: 14, text: 'Mila sucked her fingers before feeds' },
+    ],
+    3: [
+      { d: 15, text: 'Mila liked a hand resting on her head' },
+      { d: 18, text: 'Mila slept curled up like a little bean' },
+      { d: 19, text: 'Mila opened her eyes when you sang' },
+      { d: 21, text: 'Mila frowned at loud noises' },
+    ],
+    4: [
+      { d: 22, text: 'Mila held on to the edge of her blanket' },
+      { d: 23, text: 'Mila wriggled when her sleepsuit went on' },
+      { d: 23, text: 'Mila gave the biggest tiny yawns' },
+    ],
+  },
   days: Array.from({ length: 23 }, (_, i) => {
     const d = i + 1
     return {

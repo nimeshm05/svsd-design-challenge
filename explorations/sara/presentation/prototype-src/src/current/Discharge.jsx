@@ -79,7 +79,8 @@ const STEPS = [
 // How long each slide stays before the story moves on, in ms: the one place to tune its pace.
 // byDay sets a single slide by its day (e.g. { 17: 5200 }); otherwise first, last, or default.
 const TIMING = { default: 2800, first: 3600, last: 2600, byDay: {} }
-const READ = (i) => TIMING.byDay[STEPS[i].d] ?? (i === 0 ? TIMING.first : i === STEPS.length - 1 ? TIMING.last : TIMING.default)
+// a presentation can set window.__storyPace (below 1 reads faster) to play the whole story in a shorter film
+const READ = (i) => (TIMING.byDay[STEPS[i].d] ?? (i === 0 ? TIMING.first : i === STEPS.length - 1 ? TIMING.last : TIMING.default)) * (window.__storyPace ?? 1)
 const FLY = 2.2 // s each star takes to reach its strand
 const LANDED = (WEEKS - 1) * 0.14 + 6 * 0.03 + FLY // s, when the last star reaches its strand
 const CONVERGE = LANDED + 0.7 // s, until the mobile is whole
@@ -536,6 +537,7 @@ export function Discharge({ theme, onBack }) {
       {story.phase === 'mobile' && (
         <div className="cv-galaxy-title">
           <b>Mila&apos;s mobile</b>
+          <span>{WEEKS} weeks of her stars, one strand for each · drag to turn it</span>
         </div>
       )}
       {story.phase === 'mobile' && (
