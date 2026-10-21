@@ -384,10 +384,10 @@ function useFade(value, keyOf, ms = 900) {
   return list
 }
 
-// the stay, down the right of the film: where each scene sits in it (the last is the other ending, apart)
+// the stay, down the right of the film: where each scene sits in it
 const STAY = [
   ['Day 1', 'First night', 'Day 1'], ['Day 3', 'Mom’s first visit', 'Mom'], ['Day 3', 'Planning tomorrow', 'What’s ahead'],
-  ['Day 90', 'Her last day', 'Last day'], ['', 'If she doesn’t go home', 'If she doesn’t'],
+  ['Day 23', 'Looking back', 'Looking back'], ['Day 90', 'Going home', 'Going home'],
 ]
 
 export function DemoFilm({ active, thumb }) {
@@ -396,7 +396,7 @@ export function DemoFilm({ active, thumb }) {
   const screen = useRef(null)
   const [ready, setReady] = useState(false)
   const [run, setRun] = useState(0)
-  const blank = { born: false, open: 0, foot: null, say: null, talk: false, wipe: 0, hl: null, big: null, lift: null, lit: null, fin: 0, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false, mirror: null, ask: null, feat: null, why: null, result: null, tl: -1 }
+  const blank = { born: false, open: 0, foot: null, say: null, talk: false, wipe: 0, hl: null, big: null, lift: null, lit: null, fin: 0, scene: null, cap: null, cam: { fx: 0.5, fy: 0.5, s: 1 }, look: 'hero', tint: null, spot: null, call: null, ex: null, touch: null, pad: false, card: null, dim: false, close: 0, done: false, mirror: null, ask: null, feat: null, why: null, result: null, tl: -1, altEnd: false }
   const [v, setV] = useState({ ...blank, t: 0 })
   const set = (patch) => setV((x) => ({ ...x, ...patch }))
   const [playing, setPlaying] = useState(true)
@@ -623,23 +623,28 @@ export function DemoFilm({ active, thumb }) {
       doc()?.querySelector('.ts-scrim')?.click()
       await result('She knows rounds are at 10 tomorrow and plans to join them, and she knows who’s on tonight.', 'We show what’s planned, never predictions: no medical claims, just what’s coming and who’s there.')
 
-      // ── 4 · Her last day: how far she's come, then home
-      mark('Last day')
-      await show('today', 0.2); day(90)
-      await scene({ when: 'Day 90 · three months later', name: 'Their stars', p: 'connection', q: 'How far has she come?' })
-      set({ pad: true, tint: 'dawn' }); look('sky'); await wait(0.6)
+      // ── 4 · Day 23: looking back at the week she missed
+      mark('Looking back')
+      await show('today', 0.2); day(23)
+      await scene({ when: 'Day 23 · three weeks in', name: 'Their stars', p: 'connection', q: 'What did I miss that first week?' })
+      set({ pad: true }); look('sky'); await wait(0.6)
       await tap(sky); await line('Every day of her stay becomes a star.')
       for (let n = 0; n < 40 && !find('.cv-gweek'); n++) await wait(0.25) // until her sky has opened
       await swipe('.cv-galaxy', -260, 30, 1.6)
       await tap('.cv-gweek'); await wait(0.4)
+      await line('Mom opens the first week, the one she was recovering upstairs.')
       const six = (d) => d.querySelector('.cv-gday[aria-label^="Day 6"]') ?? d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]')
       await tap(six); await wait(0.4)
-      lit((d) => d.querySelector('.cv-gpanel'), 1); await line('Even the day Dad first held her, kept as it happened.', 'connection')
-      await result('Three months, at a glance: how far she’s come.', 'Progress without charts or percentiles. Her firsts are planets, worth celebrating.')
+      lit((d) => d.querySelector('.cv-gpanel'), 1); await line('There’s the day Dad first held her, kept as it happened.', 'connection')
+      await result('She sees the week she missed, moment by moment, and the first time her baby was held.', 'Progress without charts or percentiles. Her firsts are planets, worth celebrating.')
       look('center')
-      feat('Going home', 'connection'); set({ pad: false, foot: { id: 'home', at: R.clock } }); await show('home', 0.6)
-      await line('And then, Mila goes home.')
+
+      // ── 5 · Day 90: going home
+      mark('Going home')
+      feat('Going home', 'connection'); set({ pad: false, tint: 'dawn', foot: { id: 'home', at: R.clock } }); await show('home', 0.6)
+      await line('Three months later, Mila goes home.')
       cap(null); set({ pad: true, foot: null }); await wait(0.6)
+      await line('Before they leave, her screen retells her whole stay, star by star.')
       for (let n = 0; n < 40 && find('.cv-story'); n++) { await flick('.cv-story'); await wait(0.3) }
       for (let n = 0; n < 40 && !find('.cv-discharge.is-mobile'); n++) await wait(0.25) // until the mobile is whole
       await swipe('.cv-mobile', 300, 0, 1.8)
@@ -649,7 +654,7 @@ export function DemoFilm({ active, thumb }) {
       cap(null); feat(null); set({ tint: null, foot: null })
 
       // ── If she doesn't go home
-      mark('If she doesn’t')
+      mark('If she doesn’t'); set({ altEnd: true })
       await show('notStart', 0.1)
       cap(null); res(null); feat(null); set({ pad: false, foot: null })
       big({ t: 'But not every baby gets to go home like Mila.', art: 'sky' }); await wait(1.2); await gate()
@@ -759,10 +764,10 @@ export function DemoFilm({ active, thumb }) {
       )}
       {v.scene && <div key={v.scene} className="dfilm-scene"><Scene kind={v.scene} /></div>}
       {feats.map(({ k, v: x, out }) => <p key={k} className={`dfilm-feat is-${x.p} ${out ? 'is-out' : ''}`}><span>Feature</span><b><StarGlyph size={16} color={PILLAR[x.p].color} />{x.name}</b></p>)}
-      {v.tl >= 0 && !v.fin && (
+      {v.tl >= 0 && !v.fin && !v.altEnd && (
         <ol className="dfilm-tl" aria-label="Her stay">
           {STAY.map(([day, what], k) => (
-            <li key={what} className={`${k === v.tl ? 'is-on' : k < v.tl ? 'is-past' : ''} ${k === STAY.length - 1 ? 'is-alt' : ''}`}>
+            <li key={what} className={`${k === v.tl ? 'is-on' : k < v.tl ? 'is-past' : ''} `}>
               <i aria-hidden="true" /><b>{day}</b><span>{what}</span>
             </li>
           ))}
