@@ -254,10 +254,20 @@ function Big({ b }) {
 const FIN_PTS = [[90, 330], [170, 280], [250, 300], [330, 230], [410, 260], [490, 190], [570, 220], [650, 160], [730, 200], [810, 140], [890, 170]]
 const FIN_PLANETS = [3, 6, 9]
 const FIN_FIELD = Array.from({ length: 90 }, (_, k) => { const h = (n) => { const v = Math.sin(k * 127.1 + n * 311.7) * 43758.5453; return v - Math.floor(v) }; return [h(1) * 100, h(2) * 100, 0.5 + h(3) * 1.1, 2.5 + h(4) * 4] })
-const FIN_WORDS = ['', 'Every baby’s life is a story.', 'In the NICU, it gets lost in charts, numbers and alarms.', 'Constellate keeps it, and celebrates every day of it.', '']
+const FIN_WORDS = ['', 'Every baby’s life is a story.', 'In the NICU, it gets lost in charts, numbers and alarms.', 'Constellate turns it into answers, right at the bedside.', 'And keeps every day of it.', '']
+// the steps as the drawing knows them: her story; lost in the clinical; cleared, with what parents get; her kept sky; the name
+const FIN_CLS = ['', 'is-s1', 'is-s2', 'is-s3 is-ans', 'is-s3 is-keep', 'is-s4']
+// what parents get done with it: the demo's questions, each with its answer
+const FIN_ANS = [
+  ['What is all of this on my baby?', 'Every device, one at a time, in plain words'],
+  ['What happened while I was away?', 'Every moment nurses noted, hour by hour'],
+  ['What does that word mean?', 'One tap, shown on their own baby'],
+  ['What’s next, and who’s with my baby tonight?', 'The plan ahead, and tonight’s nurse'],
+  ['Is my baby getting better?', 'The whole stay at a glance, firsts and all'],
+]
 function Finale({ stage, sky }) {
   return (
-    <div className={`fin is-s${stage} ${sky ? 'has-sky' : ''}`} aria-hidden="true">
+    <div className={`fin ${FIN_CLS[stage]} ${sky ? 'has-sky' : ''}`} aria-hidden="true">
       {/* "Constellate keeps it": Mila's own sky, as the product draws it */}
       {sky && (
         <div className="fin-sky">
@@ -268,6 +278,12 @@ function Finale({ stage, sky }) {
         </div>
       )}
       <p className="fin-words" key={stage}>{FIN_WORDS[stage]}</p>
+      {stage === 3 && (
+        <div className="fin-ans">
+          <ul>{FIN_ANS.map(([q, a], k) => <li key={q} style={{ '--k': k }}><span className="fin-ans-tick" aria-hidden="true">✓</span><b>&ldquo;{q}&rdquo;</b><span>{a}</span></li>)}</ul>
+          <p className="fin-ans-foot">From the chart nurses already keep. Nothing new for them to write.</p>
+        </div>
+      )}
       <svg className="fin-art" viewBox="0 0 980 420">
         {/* her story: a constellation, drawn day by day */}
         <polyline className="fin-path" points={FIN_PTS.map((p) => p.join(',')).join(' ')} />
@@ -707,10 +723,11 @@ export function DemoFilm({ active, thumb }) {
         const far = doc()?.querySelector('.cv-depth-layer.is-far svg'), kept = doc()?.querySelector('.rem-sky')
         if (kept) set({ skyArt: (far ? far.outerHTML.replace('<svg', '<svg class="fin-sky-far" preserveAspectRatio="xMidYMid slice"') : '') + kept.outerHTML })
       }
-      set({ fin: 1 }); cap('Every baby’s life is a story, however long their stay.'); await wait(1.4); await gate()
-      set({ fin: 2 }); cap('But in the NICU, that story gets lost in charts, numbers and alarms.'); await wait(1.4); await gate()
-      set({ fin: 3 }); cap('Constellate keeps it, one star for every day, and celebrates every day of it.'); await wait(1.4); await gate()
-      set({ fin: 4 }); cap('This is Constellate: every baby’s story, one day at a time. Thank you.'); await wait(1.4); await gate()
+      set({ fin: 1 }); cap('Every baby’s stay is a story, and parents need to be able to follow it.'); await wait(1.4); await gate()
+      set({ fin: 2 }); cap('But in the NICU, it’s scattered across charts, numbers, alarms and shift changes, and parents piece it together on their own.'); await wait(1.4); await gate()
+      set({ fin: 3 }); cap('Constellate turns the chart nurses already keep into answers to the questions parents ask most, with nothing new for nurses to write.'); await wait(1.4); await gate()
+      set({ fin: 4 }); cap('And it keeps every day of it, one star at a time, however the stay ends.'); await wait(1.4); await gate()
+      set({ fin: 5 }); cap('Constellate: so parents can understand their baby’s care, stay close to it, and know what’s next. Thank you.'); await wait(1.4); await gate()
       setLen(R.clock); set({ done: true })
     }
     script().catch((e) => { if (e?.message !== 'stop') console.error('film script stopped:', e) })

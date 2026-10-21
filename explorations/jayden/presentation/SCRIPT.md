@@ -170,10 +170,11 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 **Closing**
 
-- Every baby’s life is a story, however long their stay.
-- But in the NICU, that story gets lost in charts, numbers and alarms.
-- Constellate keeps it, one star for every day, and celebrates every day of it.
-- This is Constellate: every baby’s story, one day at a time. Thank you.
+- Every baby’s stay is a story, and parents need to be able to follow it.
+- But in the NICU, it’s scattered across charts, numbers, alarms and shift changes, and parents piece it together on their own.
+- Constellate turns the chart nurses already keep into answers to the questions parents ask most, with nothing new for nurses to write.
+- And it keeps every day of it, one star at a time, however the stay ends.
+- Constellate: so parents can understand their baby’s care, stay close to it, and know what’s next. Thank you.
 
 ## 23. 07 · Constellate
 

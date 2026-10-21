@@ -2031,9 +2031,9 @@ body:has(.panel) { overflow: auto; }
 /* ===== Closing: "Constellate keeps it" over Mila's own sky ===== */
 .fin-sky { position: absolute; inset: 0; opacity: 0; transition: opacity 1.8s ease; pointer-events: none; }
 .fin-sky svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.fin.has-sky.is-s3 .fin-sky, .fin.has-sky.is-s4 .fin-sky { opacity: 1; }
+.fin.has-sky.is-keep .fin-sky, .fin.has-sky.is-s4 .fin-sky { opacity: 1; }
 .fin.has-sky.is-s4 .fin-sky { opacity: .35; }
-.fin.has-sky.is-s3 .fin-art, .fin.has-sky.is-s4 .fin-art { opacity: 0; transition: opacity 1.2s ease; }
+.fin.has-sky.is-keep .fin-art, .fin.has-sky.is-s4 .fin-art { opacity: 0; transition: opacity 1.2s ease; }
 .fin-words { z-index: 2; }
 
 /* ===== Concepts: sketched by hand, like the modality sketches ===== */
@@ -2056,3 +2056,19 @@ body:has(.panel) { overflow: auto; }
 .fin-shoot.is-2 { left: 30%; top: 62%; animation-delay: 6s; animation-duration: 9.5s; }
 @keyframes fin-shoot { 0% { opacity: 0; translate: 0 0; } 3% { opacity: 1; } 12% { opacity: 0; translate: 240px 108px; } 100% { opacity: 0; translate: 240px 108px; } }
 .fin-sky .fin-float .rem-sky { position: absolute; inset: 8% 6% 14%; width: 88%; height: 78%; }
+
+/* Closing, what parents get: the noise clears and the questions they asked come back, answered */
+.fin.is-ans .fin-art { opacity: .16; filter: blur(1px); transition: opacity 1.2s ease, filter 1.2s ease; }
+.fin-ans { position: absolute; z-index: 2; left: 50%; top: 54%; transform: translate(-50%, -50%); width: min(880px, 86vw); }
+.fin-ans ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.fin-ans li { display: grid; grid-template-columns: 28px minmax(0, 1fr) minmax(0, 1fr); align-items: baseline; column-gap: 18px; padding: 14px 20px; border-radius: 14px;
+  background: rgba(13, 13, 17, .72); border: 1px solid color-mix(in srgb, var(--cream) 14%, transparent);
+  opacity: 0; transform: translateY(10px); animation: fin-ans-in .8s calc(.5s + var(--k) * .35s) var(--ease) forwards; }
+@keyframes fin-ans-in { to { opacity: 1; transform: none; } }
+.fin-ans-tick { color: var(--cream); font-size: 16px; }
+.fin-ans b { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 48; font-weight: 400; font-size: clamp(17px, 1.5vw, 22px); color: var(--text); }
+.fin-ans li > span:last-child { font-size: clamp(14px, 1.15vw, 17px); color: var(--text-2); }
+.fin-ans-foot { margin: 22px 0 0; text-align: center; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--cream); opacity: 0;
+  animation: fin-ans-foot .8s 2.6s ease forwards; }
+@keyframes fin-ans-foot { to { opacity: .9; } }
+@media (max-width: 760px) { .fin-ans li { grid-template-columns: 22px 1fr; } .fin-ans li > span:last-child { grid-column: 2; } }
