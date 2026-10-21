@@ -453,11 +453,15 @@ export function DemoFilm({ active, thumb }) {
       const tt = Math.round(R.clock * 10) / 10
       if (tt !== shown) { shown = tt; set({ t: tt, seeking: R.clock < R.target }) }
     }, 16)
+    // the next turn of the page's event loop, without a timer's minimum delay (replays to a line run through hundreds of these)
+    const ch = new MessageChannel(), queue = []
+    ch.port1.onmessage = () => queue.shift()?.()
+    const soon = (f) => { queue.push(f); ch.port2.postMessage(0) }
     const wait = (sec) => new Promise((ok, no) => {
       const end = R.clock + sec
       const step = () => {
         if (R.dead) return no(new Error('stop'))
-        if (R.clock < R.target) { R.clock = Math.min(end, R.target); return R.timers.push(setTimeout(R.clock >= end ? ok : step, 30)) }
+        if (R.clock < R.target) { R.clock = Math.min(end, R.target); return soon(R.clock >= end ? ok : step) } // replaying to a line: as fast as the page allows
         if (R.clock >= end - 0.001) return ok()
         R.timers.push(setTimeout(step, 16))
       }
@@ -476,6 +480,7 @@ export function DemoFilm({ active, thumb }) {
       R.release = ok
     })
     R.next = () => { // at a line: go on; mid-animation: skip straight to the next line
+      if (R.auto) return // a scene that plays on its own (going home) can't be skipped past by accident
       if (R.release) { const go = R.release; R.release = null; go() } else { wantBeat.current = R.beat + 1; R.target = Infinity }
     }
     const doc = () => frame.current?.contentDocument
@@ -662,7 +667,7 @@ export function DemoFilm({ active, thumb }) {
       await result('She sees the week she missed, moment by moment, and the first time her baby was held.', 'Progress without charts or percentiles. Firsts are planets, worth celebrating.')
 
       // ── 5 · Day 90: going home (plays through on its own, paced to its captions)
-      mark('Going home')
+      mark('Going home'); R.auto = R.clock >= R.target // presses wait until it has played (not while ← replays to a line)
       feat('Going home', 'connection'); set({ pad: false, tint: 'dawn', foot: { id: 'home', at: R.clock } })
       cap('Three months later, it’s finally time. Mila is going home.'); await wait(3.8)
       // her story plays on its own, a little quicker than at the bedside, so no card is skipped or flashed past
@@ -676,7 +681,7 @@ export function DemoFilm({ active, thumb }) {
       cap('Theirs to take home.'); await tap('.cv-takehome-btn'); await wait(1.6)
       cap(null); set({ foot: { id: 'mobile', at: R.clock } }); await wait(1.4) // the real one, over her crib, dissolving in
       cap('Now it hangs over her crib at home.'); await wait(4.5)
-      await gate()
+      R.auto = false; await gate()
       cap(null); feat(null); set({ tint: null, foot: null })
       if (frame.current?.contentWindow) frame.current.contentWindow.__storyPace = 1
 
@@ -708,8 +713,8 @@ export function DemoFilm({ active, thumb }) {
       set({ fin: 4 }); cap('This is Constellate: every baby’s story, one day at a time. Thank you.'); await wait(1.4); await gate()
       setLen(R.clock); set({ done: true })
     }
-    script().catch(() => {})
-    return () => { R.dead = true; R.timers.forEach(clearTimeout); clearInterval(ticker) }
+    script().catch((e) => { if (e?.message !== 'stop') console.error('film script stopped:', e) })
+    return () => { R.dead = true; R.timers.forEach(clearTimeout); clearInterval(ticker); ch.port1.close() }
   }, [active, ready, run, thumb, seekTo]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // the camera: the composition's place and turn, then the push in toward the feature
