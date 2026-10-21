@@ -28,6 +28,7 @@ const CHAPTERS = [['born', '1 · Mila is born'], ['story', '2 · Her story begin
 // ?chapter=<id> opens on that chapter, and a parent page can switch chapters with postMessage.
 const Q = new URLSearchParams(window.location.search)
 const EMBED = Q.get('embed') === '1'
+const ART = Q.get('art') === '1' // just her sky, nothing else on screen: the presentation shows it as a picture
 
 export function CurrentView({ onSky }) {
   const kind = 'harder' // Mila is a complex baby: her day is shown as it really goes, setbacks included
@@ -90,6 +91,7 @@ export function CurrentView({ onSky }) {
   }
   useEffect(() => {
     if (Q.get('chapter')) goChapter(Q.get('chapter'))
+    if (ART) { goChapter('day'); setTimeout(toSky, 50) } // straight to her whole sky
     // the presentation can also ask for one feature at a time (mila:show)
     const later = (f, ms = 350) => setTimeout(f, ms)
     const skyAt = { current: 0 } // when her sky was last asked for, so a later step doesn't restart it
@@ -105,6 +107,7 @@ export function CurrentView({ onSky }) {
       ahead: () => { goChapter('day'); later(() => setPage('ahead')) },
       night: () => { goChapter('day'); later(() => setNight(true)) },
       sky: () => { skyAt.current = Date.now(); goChapter('sky') },
+      skyNow: () => { skyAt.current = Date.now(); goChapter('day'); later(toSky, 50) }, // her stars, straight to the overview (today's star doesn't form first)
       // these pick up from wherever her sky already is, so one step leads into the next without starting over
       openWeek: () => {
         const go = () => { const w = document.querySelector('.cv-gweek'); if (w) w.click(); return !!w }
@@ -134,6 +137,7 @@ export function CurrentView({ onSky }) {
       if (e.data?.type === 'mila:chapter') goChapter(e.data.chapter)
       if (e.data?.type === 'mila:show') { if (e.data.what !== 'morning') Object.assign(today.clock, CLOCK); SHOW[e.data.what]?.() }
       if (e.data?.type === 'mila:day') setDayLabel(e.data.day ?? null) // a film can show the same screen on another day
+      if (e.data?.type === 'mila:hour') setCH(e.data.h) // a film can glide through the day, hour by hour
     }
     window.addEventListener('message', on)
     return () => window.removeEventListener('message', on)
@@ -197,7 +201,7 @@ export function CurrentView({ onSky }) {
   }, [])
 
   return (
-    <div className={`cv-page theme-${theme} ${EMBED ? 'is-embed' : ''}`}>
+    <div className={`cv-page theme-${theme} ${EMBED ? 'is-embed' : ''} ${ART ? 'is-art' : ''}`}>
       {/* Prototype controls: not part of the bedside screen */}
       <div className="cv-proto" role="toolbar" aria-label="Prototype controls">
         <span className="cv-proto-k">Prototype</span>
@@ -484,11 +488,13 @@ function OneLine({ text, d, h }) {
           : <Fragment key={i}>{s}</Fragment>))}
       </p>
       {t && (
-        <div className="cv-pop" role="dialog" aria-label={`${t.word}: what it means`}>
+        <div className={`cv-pop ${t.device ? 'has-fig' : ''}`} role="dialog" aria-label={`${t.word}: what it means`}>
           {t.device && <HerFigure d={d} h={h} device={t.device} />}
-          <p className="cv-pop-word">{t.word}</p>
-          {(g?.stands ?? t.stands) && <p className="cv-pop-stands">{g?.stands ?? t.stands}</p>}
-          <p className="cv-pop-means">{g?.body ?? `${t.means[0].toUpperCase()}${t.means.slice(1)}.`}</p>
+          <div className="cv-pop-words">
+            <p className="cv-pop-word">{t.word}</p>
+            {(g?.stands ?? t.stands) && <p className="cv-pop-stands">{g?.stands ?? t.stands}</p>}
+            <p className="cv-pop-means">{g?.body ?? `${t.means[0].toUpperCase()}${t.means.slice(1)}.`}</p>
+          </div>
         </div>
       )}
     </>

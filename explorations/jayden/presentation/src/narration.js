@@ -1,14 +1,20 @@
 // What we'd say over each slide, as captions along the bottom of the deck (press C to hide or show them).
 // A slide with builds has one line per step; past the last line, the last one stays. The demo film has its own.
 export const NARRATION = {
-  title: 'This is Constellate, a bedside screen for parents of babies in the NICU.',
+  title: {
+    every: 8500,
+    timed: [
+      'Hi! We’re Jayden, Nimesh, and Sara. We’re currently masters students studying Human Centered Design and Engineering at the University of Washington in Seattle.',
+      'And today, we’ll be presenting on Constellate - a bedside screen for parents of babies in the NICU.',
+    ],
+  },
   niko: 'Meet Niko and his mom Lauren. We had the privilege to hear from Lauren about her family’s time in the NICU, which is where this story begins.',
   nicu: 'The neonatal intensive care unit, or the NICU, is the hospital unit where babies born too early or too sick are cared for, often for several weeks or months.',
   journey: [
     'Lauren had an emergency C-section, and Niko arrived more than two months early. Niko had to be transported to the NICU immediately, and Lauren was not able to hold or see him.',
     'She was healing in one place, while her newborn was cared for in another, and she felt guilty for not being there with him.',
-    'Then came the explanations for Niko’s complex conditions, communicated with words they’ve never heard, all while they were exhausted and scared.',
-    'Every day centered on the NICU. Long days and nights at his bedside, until the hours blurred together, and it was hard to tell whether he was making any progress.',
+    'The doctors explained Niko’s complex conditions, but the words were full of medical jargon, which was hard to understand in their exhausted and fearful state.',
+    'Every day centered around the NICU. With long days and nights spent at the bedside, the hours blurred together, and it was hard to tell whether he was making any progress.',
     'Outside the unit, bills, work, and insurance followed them home, on top of every hour they couldn’t be with him.',
   ],
   wall: 'And it isn’t only their families. Our secondary research showed the same: the NICU shapes how babies grow, how nurses work, and how parents cope.',
@@ -16,11 +22,11 @@ export const NARRATION = {
   voices: 'Lauren told us she felt whiplashed: told one thing by one team, then something completely different the next day. Like a game of telephone. The nurses also addressed the communication gap: “We tell them everything, but sometimes it’s too much.”',
   heard: 'Across those conversations, the same thing came up: parents get the pieces, but they’re left to put them together on their own.',
   pillars: [
-    'It comes down to three needs. Connection: parents can’t bond the way they expected, and guilt fills the gap.',
-    'In their own words, connection sounds like this: how can I feel close to my baby before I can hold them? And what happened while I was away?',
+    'It comes down to 3 needs. First is connection: parents can’t bond the way they expect, and guilt fills the gap.',
+    'In their own words, connection can sound like: how can I feel close to my baby before I can hold them? And what happened while I was away?',
     'Comprehension: they have information, but not the whole picture.',
     'It sounds like: what is all of this on my baby? And what does that word mean?',
-    'Awareness: time becomes a blur, and the next moment feels like a surprise.',
+    'Last is awareness: time becomes a blur and the next moment feels like a surprise.',
     'It sounds like: what’s next, and who is caring for my baby tonight? How are they doing right now?',
   ],
   compete: 'Other tools help with logistics, monitoring, or journaling, but none of them turn a baby’s chart into something parents can actually follow.',
@@ -50,7 +56,7 @@ export const NARRATION = {
   modality: 'How does the physical space impact the interactions? We designed for touch first, dim by default, with a night mode for the hours spent in the dark.',
   solution: 'Our solution: Constellate. A baby’s care, made something parents can follow.',
   overview: [
-    'So we built Constellate: a bedside screen that turns a baby’s chart into something parents can follow. Every day becomes a star, shaped by what nurses already chart.',
+    'Constellate is a bedside screen that turns a baby’s chart into a story that parents can follow. One idea runs through it: each day becomes a star, detailed by what nurses already record.',
     'Every week becomes a constellation, so parents can see the whole stay at a glance.',
     'And firsts become planets. Here’s how it works, through one baby’s stay.',
   ],
@@ -67,7 +73,10 @@ export const NARRATION = {
     'What’s next, and who is caring for her tonight? Her week, where parents fit in, and her care team.',
     'How is she doing right now? At night, the screen rests when she does: the time, her next care, one quiet line.',
   ],
-  recap: 'Six answers, one bedside screen. Each answers a question parents asked us, from the chart, with nothing new for nurses to write.',
   'f-live': 'This is the real prototype. You’re welcome to tap through it.',
-  close: 'Every star is hers to keep. Thank you.',
+  'c-story': 'Every baby’s stay is a story, and parents need to be able to follow it.',
+  'c-lost': 'But in the NICU, it’s scattered across charts, numbers, alarms and shift changes, and parents piece it together on their own.',
+  'c-answers': 'Constellate turns the chart nurses already keep into six answers to the questions parents ask most, right at the bedside, with nothing new for nurses to write.',
+  'c-keep': 'And it keeps every day of it, one star at a time, however the stay ends.',
+  'c-name': 'Constellate: so parents can understand their baby’s care, stay close to it, and know what’s next. Every star is theirs to keep. Thank you.',
 }

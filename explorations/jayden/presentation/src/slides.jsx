@@ -1,8 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Icon, StarGlyph } from './glyphs.jsx'
+import { Icon, StarGlyph, Wordmark } from './glyphs.jsx'
 import { Puzzle } from './puzzle.jsx'
 import { Answer, Feature } from './demo.jsx'
-import { DemoFilm } from './film.jsx'
+import { DemoFilm, Finale } from './film.jsx'
 
 export const ITER_MODE = 'focus' // 'focus' = one at a time, then into the row · 'row' = current staggered fade-in
 
@@ -67,11 +67,11 @@ function Define({ k, word, short, say, children }) {
 const define = (props) => function DefineView() { return <Define {...props} /> }
 
 /* ---------- Opening ---------- */
-function Title() {
+function Title({ active }) {
   return (
     <div className="center title">
       <R d={0} className="title-k">A NICU storytelling case study</R>
-      <R d={1} as="h1" className="title-h">Constellate</R>
+      <R d={1} as="h1" className="title-h"><Wordmark intro={active} /></R>
       <R d={2} as="p" className="title-sub">Transforming NICU care into a story, one star at a time.</R>
       <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
     </div>
@@ -1056,18 +1056,6 @@ function Both({ step }) {
     </div>
   )
 }
-function Close() {
-  return (
-    <div className="center close">
-      <R d={0} className="close-star" aria-hidden="true"><StarGlyph size={64} color="#FFF8E6" /></R>
-      <R d={1} as="h2" className="close-h">Every star is hers to keep.</R>
-      <R d={3} className="close-thanks">Thank you</R>
-      <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
-    </div>
-  )
-}
-
-
 /* ---------- v2: Niko's NICU journey, as it happened ---------- */
 // Niko's real story, from his family's public fundraiser and our interview with his mom, Lauren. Only what we
 // know: anything we haven't confirmed with Lauren stays out. Quotes are Lauren's, from our interview with her.
@@ -1223,22 +1211,52 @@ const RECAP = [
   ['First screen', 'connection', [150, 250]], ['Their day', 'connection', [300, 160]], ['What’s on them', 'comprehension', [460, 230]],
   ['Words in a tap', 'comprehension', [610, 130]], ['What’s ahead', 'awareness', [760, 210]], ['Their stars', 'connection', [900, 120]],
 ]
-function Recap() {
+// Sara's six answers, as a line of six stars
+function SixStars() {
   return (
-    <div className="center rc">
-      <R d={0} className="k">Constellate</R>
-      <R d={1} as="h2" className="rc-h">Six answers, one bedside screen.</R>
-      <svg className="rc-art" viewBox="80 60 900 260" aria-hidden="true">
-        <polyline className="rc-line" points={RECAP.map(([, , p]) => p.join(',')).join(' ')} />
-        {RECAP.map(([name, p, [x, y]], k) => (
-          <g key={name} className="rc-pt" style={{ '--k': k }} transform={`translate(${x} ${y})`}>
-            <circle r="22" className={`rc-glow is-${p}`} />
-            <path className="rc-star" d="M0 -11Q1.6 -1.6 11 0Q1.6 1.6 0 11Q-1.6 1.6 -11 0Q-1.6 -1.6 0 -11Z" />
-            <text y="44" className="rc-name">{name}</text>
-          </g>
-        ))}
-      </svg>
-      <R d={6} as="p" className="rc-p">Each one answers a question parents asked us, from the chart, with nothing new for nurses to write.</R>
+    <svg className="rc-art" viewBox="80 60 900 260" aria-hidden="true">
+      <polyline className="rc-line" points={RECAP.map(([, , p]) => p.join(',')).join(' ')} />
+      {RECAP.map(([name, p, [x, y]], k) => (
+        <g key={name} className="rc-pt" style={{ '--k': k }} transform={`translate(${x} ${y})`}>
+          <circle r="22" className={`rc-glow is-${p}`} />
+          <path className="rc-star" d="M0 -11Q1.6 -1.6 11 0Q1.6 1.6 0 11Q-1.6 1.6 -11 0Q-1.6 -1.6 0 -11Z" />
+          <text y="44" className="rc-name">{name}</text>
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+/* ---------- The closing: five slides after the film ---------- */
+// 1 and 2 are the drawn story (her days as a constellation; then charts, numbers and alarms crowding it);
+// each plays from the start when its slide comes on.
+const ClosingDrawn = (stage) => function ClosingDrawnSlide({ active }) { return <div className="cl cl-drawn">{active && <Finale stage={stage} />}</div> }
+// 3: what parents get, Sara's six answers
+function ClosingAnswers() {
+  return (
+    <div className="center cl cl-answers">
+      <R d={0} as="h2" className="cl-h">Constellate turns it into answers, right at the bedside.</R>
+      <R d={1}><SixStars /></R>
+    </div>
+  )
+}
+// 4: her sky, as the product draws it (the prototype, showing only her sky)
+function ClosingSky({ active }) {
+  return (
+    <div className="cl cl-sky">
+      {active && <iframe className="cl-sky-art" title="" tabIndex={-1} aria-hidden="true" src="./prototype/index.html?embed=1&art=1" />}
+      <R d={1} as="h2" className="cl-h">And keeps every day of it.</R>
+    </div>
+  )
+}
+// 5: the name, as big as on the title slide
+function ClosingName({ active }) {
+  return (
+    <div className="center title cl-name">
+      <R d={0} as="h1" className="title-h"><Wordmark intro={active} /></R>
+      <R d={1} as="p" className="title-sub">Every baby’s story, one day at a time.</R>
+      <R d={3} className="close-thanks">Thank you</R>
+      <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
     </div>
   )
 }
@@ -1289,11 +1307,11 @@ function Voices() {
 }
 
 /* ---------- v2: the solution's cover ---------- */
-function SolutionCover() {
+function SolutionCover({ active }) {
   return (
     <div className="center title">
       <R d={0} className="title-k">Solution</R>
-      <R d={1} as="h1" className="title-h">Constellate</R>
+      <R d={1} as="h1" className="title-h"><Wordmark intro={active} /></R>
       <R d={2} as="p" className="title-sub">A baby’s care, made something parents can follow.</R>
     </div>
   )
@@ -1386,7 +1404,10 @@ export const SLIDES = [
   { id: 'solution', section: '06 · Constellate', planet: true, View: SolutionCover },
   { id: 'overview', section: '06 · Constellate', steps: 3, feature: ['sky', 'openWeek', 'day6'], padSide: true, View: Overview },
   { id: 'demo', section: '07 · One stay, question by question', planet: true, bare: true, View: DemoFilm },
-  { id: 'recap', section: '07 · Constellate', View: Recap },
-  { id: 'close', section: 'Constellate', View: Close },
+  { id: 'c-story', section: '08 · Closing', planet: true, View: ClosingDrawn(1) },
+  { id: 'c-lost', section: '08 · Closing', View: ClosingDrawn(2) },
+  { id: 'c-answers', section: '08 · Closing', View: ClosingAnswers },
+  { id: 'c-keep', section: '08 · Closing', View: ClosingSky },
+  { id: 'c-name', section: 'Constellate', View: ClosingName },
 ]
 

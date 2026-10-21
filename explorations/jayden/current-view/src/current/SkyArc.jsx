@@ -100,7 +100,7 @@ export function SkyArc({ h, nowH, marks, later = [], glow, onChange, onFuture, s
     tap.current = onTapStar && Math.abs(v - h) < 0.7 ? [e.clientX, e.clientY] : null
     if (v > nowH + 0.6 && onFuture) return onFuture() // a tap on the future
     dragging.current = true
-    e.currentTarget.setPointerCapture(e.pointerId)
+    try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* a pointer the browser isn't tracking (the demo's own drag) */ }
     onChange(snap(Math.min(v, nowH)))
   }
   const onMove = (e) => {

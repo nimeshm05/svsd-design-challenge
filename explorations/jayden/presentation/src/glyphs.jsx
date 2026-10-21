@@ -7,6 +7,18 @@ export function StarGlyph({ size = 22, color = 'currentColor', className = '' })
   )
 }
 
+// The name, lowercase, ending in a star where the full stop would be: the product's four-point sparkle, in
+// today's-star copper. With `intro`, the letters rise in one after another and the star lands last.
+const NAME = 'constellate'.split('')
+export function Wordmark({ className = '', intro = false }) {
+  return (
+    <span className={`wordmark ${intro ? 'is-intro' : ''} ${className}`} role="img" aria-label="Constellate">
+      <span className="wm-word" aria-hidden="true">{NAME.map((ch, k) => <span key={k} className="wm-l" style={{ '--k': k }}>{ch}</span>)}</span>
+      <svg className="wm-dot" viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z" /></svg>
+    </span>
+  )
+}
+
 // Symbols for the people at the bedside and for the three pillars, in DS1's line: soft cream strokes,
 // rounded ends, and a small four-point star as the accent, like everything else in Constellate.
 const star = (x, y, r) => `M${x} ${y - r}Q${x + r * 0.15} ${y - r * 0.15} ${x + r} ${y}Q${x + r * 0.15} ${y + r * 0.15} ${x} ${y + r}Q${x - r * 0.15} ${y + r * 0.15} ${x - r} ${y}Q${x - r * 0.15} ${y - r * 0.15} ${x} ${y - r}Z`

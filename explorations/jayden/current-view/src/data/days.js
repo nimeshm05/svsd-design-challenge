@@ -250,9 +250,10 @@ export const today = {
     moments: 4, // moments today: each adds light to today's star
   },
   harder: {
-    status: 'Resting on her CPAP mask, after a long night.',
+    status: 'Resting, after a long night.',
     // one line on the home screen: [words] in brackets are clinical terms, tappable for what they mean
-    statusOne: 'Resting on her [CPAP] mask after a long night',
+    // (her CPAP mask is found earlier in the day, at 4:15 a.m., by going back through it)
+    statusOne: 'Resting quietly after a long night',
     statusTerm: { word: 'CPAP', means: 'a small mask that gives steady air pressure so her lungs stay open' },
     changes: [
       {
@@ -459,6 +460,32 @@ export const stay = {
   today: 23,
   weeks: ['Hello, small one', 'Finding a rhythm', 'More help breathing', 'This week'],
   firsts: { 4: 'First touch', 6: 'First hold', 14: 'First bottle', 23: 'Her own clothes' },
+  // About Mila, by week: little things her family and nurses noticed about who she is, each on the day it was seen
+  about: {
+    1: [
+      { d: 3, text: 'Mila rested best with soft jazz' },
+      { d: 4, text: 'Mila loved to grab Dad’s thumb' },
+      { d: 6, text: 'Mila settled fastest on your chest' },
+      { d: 7, text: 'Mila always winked' },
+    ],
+    2: [
+      { d: 9, text: 'Mila stretched her arms up after every nap' },
+      { d: 11, text: 'Mila calmed to the sound of your voice' },
+      { d: 12, text: 'Mila liked her feet tucked in snug' },
+      { d: 14, text: 'Mila sucked her fingers before feeds' },
+    ],
+    3: [
+      { d: 15, text: 'Mila liked a hand resting on her head' },
+      { d: 18, text: 'Mila slept curled up like a little bean' },
+      { d: 19, text: 'Mila opened her eyes when you sang' },
+      { d: 21, text: 'Mila frowned at loud noises' },
+    ],
+    4: [
+      { d: 22, text: 'Mila held on to the edge of her blanket' },
+      { d: 23, text: 'Mila wriggled when her sleepsuit went on' },
+      { d: 23, text: 'Mila gave the biggest tiny yawns' },
+    ],
+  },
   days: Array.from({ length: 23 }, (_, i) => {
     const d = i + 1
     return {

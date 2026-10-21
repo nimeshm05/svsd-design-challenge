@@ -1,3 +1,14 @@
+/* The display font: Matrix II (Adobe, active on Jayden's Mac), one cut lighter than the weight Fraunces used
+   (300 and 400 are its Book; 500 its Regular; 600 and up its Bold). Real italics, for quotes.
+   Where Matrix II isn't installed, these faces don't load and the stack uses the Adobe Fonts web project ("matrix-ii"), then Fraunces. */
+@font-face { font-family: "Constellate Display"; font-weight: 1 449; src: local("MatrixIIOT-Book"), local("Matrix II OT Book"); }
+@font-face { font-family: "Constellate Display"; font-weight: 450 549; src: local("MatrixIIOT-Reg"), local("Matrix II OT Reg"); }
+@font-face { font-family: "Constellate Display"; font-weight: 550 749; src: local("MatrixIIOT-Bold"), local("Matrix II OT Bold"); }
+@font-face { font-family: "Constellate Display"; font-weight: 750 1000; src: local("MatrixIIOT-ExtraBold"), local("Matrix II OT Extra Bold"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 1 449; src: local("MatrixIIOT-BookItalic"), local("Matrix II OT Book Italic"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 450 649; src: local("MatrixIIOT-RegItalic"), local("Matrix II OT Reg Italic"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 650 1000; src: local("MatrixIIOT-BoldItalic"), local("Matrix II OT Bold Italic"); }
+
 /* Bedside current view. Sara's palette (index.css) plus a warm cream for today's forming star.
    Minimal: a few large words read from the parent chair, low light, nothing that blinks. */
 .cv-page {
@@ -334,12 +345,12 @@
 }
 
 /* ================= Two styles from the design board =================
-   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Fraunces (soft, upright) + Geist.
+   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Matrix II for titles (an Adobe font, active on Jayden's Mac; Fraunces where it isn't) + Geist.
    Confetti Constellations: playful. Sunshine stars, thick light-blue lines, confetti, Young Serif + Figtree.
    Both on a black sky. Each style only sets tokens; the components read them. */
 .cv-page.theme-nursery {
   --cream: #F3E3B5; --warm: #FFB38A; --line-sky: #F3E3B5; --glow: rgba(243, 227, 181, .35);
-  --font-display: "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
+  --font-display: "Constellate Display", "matrix-ii", "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
 }
 .cv-page.theme-confetti {
   --cream: #FFD23F; --warm: #FF8FC8; --line-sky: #7CC0FF; --glow: rgba(255, 210, 63, .35);
@@ -455,7 +466,7 @@
 @keyframes cv-panel-in { from { opacity: 0; transform: translateX(12px); } }
 .cv-gpanel-k { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .theme-nursery .cv-gpanel-k { font-family: "Geist Mono", ui-monospace, monospace; letter-spacing: .08em; }
-.cv-gpanel-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
+.cv-gpanel-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.18; color: var(--cream); }
 .cv-gpanel-text { margin: 0; font-size: 15px; line-height: 1.5; color: var(--text-2); }
 .cv-gpanel ul, .cv-gpanel ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .cv-gpanel-firsts button, .cv-gpanel-moments button { width: 100%; text-align: left; display: flex; gap: 10px; align-items: baseline; padding: 7px 0;
@@ -954,7 +965,7 @@
 .ah-col-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ah-col-area { font-size: 15px; color: var(--text-2); }
 .ah-col .ah-stars { margin: 6px 0 4px; }
-.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
+.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.23; color: #F6EEDB; }
 .ah-next { font-size: 15px; color: var(--text-2); }
 .ah-col .ah-plan { margin-top: 6px; font-size: 14px; color: var(--muted); line-height: 1.45; }
 @media (max-width: 760px) { .ah-cols { grid-template-columns: 1fr; gap: 20px; } .ah-col { padding: 0; border: 0; } .ah-agenda li { grid-template-columns: 1fr; gap: 2px; } }
@@ -1055,11 +1066,11 @@
 .fd-star { margin-bottom: 6px; overflow: visible; }
 .fd-star-glow { transform-box: fill-box; transform-origin: center; animation: cv-breathe 6s ease-in-out infinite; }
 .fd-star-glow.is-inner { animation-duration: 4.5s; }
-.fd-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.6vw, 54px); line-height: 1.05; color: #F6EEDB; }
+.fd-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.6vw, 54px); line-height: 1.17; color: #F6EEDB; }
 .fd-title { margin: 0; font-size: clamp(24px, 3.2vw, 36px); font-weight: 500; line-height: 1.2; color: #F6EEDB; }
 .fd-title.is-serif { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; }
-/* the walkthrough: each wire's name in Fraunces */
-.fd-words .fd-title { font-family: "Fraunces", Georgia, serif; font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; letter-spacing: -.01em; }
+/* the walkthrough: each wire's name in the display font */
+.fd-words .fd-title { font-family: var(--font-display); font-variation-settings: "SOFT" 100, "opsz" 72; font-weight: 400; letter-spacing: 0; }
 .fd-line { margin: 0; max-width: 40ch; font-size: clamp(15px, 1.7vw, 19px); line-height: 1.45; color: var(--text-2); }
 .fd-size { margin: 8px 0 0; max-width: 42ch; font-size: clamp(14px, 1.55vw, 17px); color: var(--text-2); }
 .fd-size b { color: var(--cream); font-weight: 500; }
@@ -1093,7 +1104,7 @@
 .end-last { transform-box: fill-box; transform-origin: center; }
 .end-words { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .end-k { font-size: 13px; color: var(--cream); }
-.end-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(30px, 4.2vw, 48px); line-height: 1.08; color: #F6EEDB; }
+.end-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(30px, 4.2vw, 48px); line-height: 1.2; color: #F6EEDB; }
 .end-line { margin: 0; max-width: 48ch; font-size: clamp(15px, 1.7vw, 19px); color: var(--text-2); }
 .end.is-not .end-title { font-size: clamp(28px, 3.8vw, 44px); }
 .end.is-not .end-line:last-child { margin-top: 8px; color: var(--muted); font-size: clamp(14px, 1.5vw, 16px); }
@@ -1182,7 +1193,7 @@
 .ah-day li { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: baseline; padding: 14px 0;
   border-top: 1px solid rgba(255, 255, 255, .08); animation: cv-step-in .35s ease-out both; animation-delay: calc(var(--i) * .05s); }
 .ah-day li:last-child { border-bottom: 1px solid rgba(255, 255, 255, .08); }
-.ah-day-t { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1;
+.ah-day-t { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.8vw, 34px); line-height: 1.18;
   color: var(--cream); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ah-day div { display: flex; flex-direction: column; gap: 3px; }
 .ah-day b { font-size: clamp(19px, 2.1vw, 24px); font-weight: 500; color: #F6EEDB; }
@@ -1350,7 +1361,7 @@
 .ah-ev-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
 .ah-ev-text { display: flex; flex-direction: column; gap: 10px; }
 .ah-ev-text .ah-k { margin: 0; }
-.ah-ev-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.1; color: #F6EEDB; }
+.ah-ev-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.18; color: #F6EEDB; }
 .ah-ev-facts { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 10px 28px; }
 .ah-ev-facts dt { font-size: 12px; color: var(--muted); }
 .ah-ev-facts dd { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(20px, 2.2vw, 26px); color: var(--cream); }
@@ -1394,7 +1405,7 @@
 .gl-term:hover { color: #FFF8E6; text-decoration-color: var(--cream); }
 .gl-term:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; border-radius: 4px; }
 .gl-sheet { width: min(460px, 100%); animation: cv-step-in .25s ease-out both; }
-.gl-title { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
+.gl-title { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.6vw, 30px); line-height: 1.23; color: #F6EEDB; }
 .gl-stands { font-size: 13px; color: var(--cream); }
 .gl-body { font-size: 15px; line-height: 1.5; color: var(--text-2); }
 .gl-fig { margin: 2px 0 0; }
@@ -1481,7 +1492,7 @@
 @keyframes rem-in { to { opacity: 1; } }
 .rem-halo { transform-box: fill-box; transform-origin: center; animation: cv-breathe 4s ease-in-out infinite; }
 .rem-words { grid-column: 1; grid-row: 1; position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; opacity: 0; animation: rem-in 1.8s 4.2s ease forwards; }
-.rem-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.4vw, 52px); line-height: 1; color: var(--cream); }
+.rem-name { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(34px, 4.4vw, 52px); line-height: 1.12; color: var(--cream); }
 .rem-sub { margin: -4px 0 4px; font-size: 15px; color: var(--text-2); }
 .rem-sec { display: flex; flex-direction: column; gap: 6px; }
 .rem-k { font-size: 12.5px; color: var(--muted); }
@@ -1533,7 +1544,7 @@
 .rem-again { position: absolute; z-index: 2; top: 18px; right: 20px; animation: cv-fade-in .6s .6s ease both; }
 .rem.is-end .rem-words { gap: 18px; }
 /* the last page: her name, her story, and who loved her, each given room */
-.rem.is-end .rem-words { gap: 36px; }
+.rem.is-end .rem-words { gap: 28px; }
 .rem.is-end .rem-name { margin-bottom: 0; }
 
 /* Embedded (the presentation's iPad frame): just the screen, filling the window */
@@ -1545,7 +1556,7 @@
 .fd-group + .fd-group { margin-top: 30px; }
 .fd-born { margin: 0; font-size: clamp(14px, 1.5vw, 17px); color: var(--muted); }
 .fd-size { margin: 0; max-width: none; }
-.fd-size b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1; color: var(--cream); }
+.fd-size b { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.18; color: var(--cream); }
 .fd-size span { display: block; margin-top: 0; font-size: clamp(15px, 1.6vw, 18px); color: var(--text-2); }
 .fd-size em { font-style: normal; font-size: clamp(13px, 1.35vw, 15px); color: var(--muted); }
 /* her name is the one big thing; her weight reads as a fact beneath it, in the plain type */
@@ -1746,7 +1757,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-page .cv-gfacts dd, .cv-page .cv-grows-v { margin: 0; font-size: 14px; line-height: 1.35; color: var(--text); display: flex; flex-direction: column; gap: 4px; }
 .cv-page .cv-grows-v { flex-direction: row; align-items: center; gap: 8px; }
 .cv-page .cv-grows .cv-gplanet { flex: none; }
-
+.cv-page .cv-grows.is-undated, .cv-page .cv-grows.is-undated > li, .cv-page .cv-grows.is-undated > li > button { border: 0; }
+.cv-page .cv-grows.is-undated > li > button { grid-template-columns: 1fr; }
 /* a tappable time inside a paragraph */
 .cv-page .cv-gpanel-at { padding: 0; margin: 0; border: 0; background: none; font: inherit; color: var(--warm); font-variant-numeric: tabular-nums; cursor: pointer;
   text-decoration: underline dotted; text-underline-offset: 3px; }
@@ -1853,7 +1865,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 @keyframes ts-in { from { opacity: 0; transform: translateY(10px) scale(.985); } }
 .cv-page .ts-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; }
 .cv-page .ts-head .nav-btn { margin-right: -8px; }
-.cv-page .ts-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 28px; line-height: 1.1; color: var(--cream); }
+.cv-page .ts-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 28px; line-height: 1.18; color: var(--cream); }
 .cv-page .ts-list { list-style: none; margin: 0; padding: 0; }
 .cv-page .ts-list li { display: flex; flex-direction: column; gap: 4px; padding: 14px 0; border-top: 1px solid color-mix(in srgb, var(--cream) 10%, transparent); }
 .cv-page .ts-list b { font-size: 16px; font-weight: 600; color: #fff; }
@@ -2126,7 +2138,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .ah-col-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ah-col-area { font-size: 15px; color: var(--text-2); }
 .ah-col .ah-stars { margin: 6px 0 4px; }
-.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.15; color: #F6EEDB; }
+.ah-now { font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.23; color: #F6EEDB; }
 .ah-next { font-size: 15px; color: var(--text-2); }
 .ah-current { display: inline-flex; align-items: center; gap: 8px; }
 .ah-current i { width: 7px; height: 7px; border-radius: 50%; background: var(--cream); flex: none; }
@@ -2165,7 +2177,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .ah-day li { display: grid; grid-template-columns: 140px 1fr; gap: 24px; align-items: baseline; padding: 14px 0;
   border-top: 1px solid rgba(255, 255, 255, .08); animation: cv-step-in .35s ease-out both; animation-delay: calc(var(--i) * .05s); }
 .ah-day li:last-child { border-bottom: 1px solid rgba(255, 255, 255, .08); }
-.ah-day-t { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.8vw, 34px); line-height: 1.1;
+.ah-day-t { font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(24px, 2.8vw, 34px); line-height: 1.18;
   color: var(--cream); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ah-day div { display: flex; flex-direction: column; gap: 3px; }
 .ah-day b { font-size: clamp(19px, 2.1vw, 24px); font-weight: 500; color: #F6EEDB; }
@@ -2334,7 +2346,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
   gap: clamp(20px, 3vw, 40px); align-items: start; }
 .ah-ev-text { max-height: 100%; overflow-y: auto; padding-right: 8px; padding-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
 .ah-ev-text .ah-k { margin: 0; }
-.ah-ev-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.1; color: #F6EEDB; }
+.ah-ev-title { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: clamp(28px, 3.4vw, 42px); line-height: 1.18; color: #F6EEDB; }
 .ah-ev-facts { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 10px 28px; }
 .ah-ev-facts dt { font-size: 12px; color: var(--muted); }
 .ah-ev-facts dd { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-size: clamp(20px, 2.2vw, 26px); color: var(--cream); }
@@ -2395,3 +2407,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 @media (prefers-reduced-motion: reduce) {
   .ah-stars .cv-pstar.is-now path, .ah-stars .cv-pstar-glow, .ah-col-step { animation: none; }
 }
+
+/* A word's meaning, in the product's own panel style: her figure beside it, a small label, the word as a title */
+.cv-pop { width: min(460px, 92vw); flex-direction: row; align-items: center; gap: 18px; padding: 16px 20px 16px 16px; text-align: left;
+  border-color: color-mix(in srgb, var(--cream) 30%, transparent); }
+.cv-pop:not(.has-fig) { width: min(380px, 90vw); padding-left: 20px; }
+.cv-pop .cv-her-fig { flex: none; margin: 0; }
+.cv-pop-words { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.cv-pop-word { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 24px; line-height: 1.18; color: var(--cream); }
+.cv-pop-stands { font-size: 12.5px; }
+.cv-pop-means { margin-top: 4px; font-size: 14.5px; line-height: 1.5; }
+
+/* Just her sky (?art=1): the star layers, her constellations and the shooting stars, with nothing else on screen */
+.cv-page.is-art .cv-screen > :not(.cv-galaxy), .cv-page.is-art .cv-galaxy > :is(.cv-glabels, .cv-galaxy-title, .cv-galaxy-nav) { display: none !important; }
+.cv-page.is-art, .cv-page.is-art .cv-screen { background: transparent; }
+/* the whole of her sky, nothing cut off at the edges: her constellations drawn a little smaller, toward the middle
+   (just under the presentation's title); the background stars still fill the screen */
+.cv-page.is-art .cv-galaxy-art { transform: scale(.8); transform-origin: 50% 62%; }

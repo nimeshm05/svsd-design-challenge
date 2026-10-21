@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Font test · weekly view</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" />
+<style>
+  /* A font tester for the weekly view. The Adobe fonts are the ones Creative Cloud has active on this Mac,
+     used by name, so this page only shows them on a computer where they're active. */
+  :root { --bg: #050506; --panel: #0d0d11; --line: rgba(243, 227, 181, .18); --text: #F6EEDB; --muted: #9a9384; --cream: #F3E3B5; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: Geist, system-ui, sans-serif; }
+  .wrap { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
+  aside { padding: 20px 18px; border-right: 1px solid var(--line); background: var(--panel); overflow: auto; display: flex; flex-direction: column; gap: 18px; }
+  h1 { margin: 0; font-size: 15px; font-weight: 600; }
+  .note { margin: 4px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+  label { display: flex; flex-direction: column; gap: 6px; font-family: "Geist Mono", monospace; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  select, input[type=range] { width: 100%; }
+  select { padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: #15151b; color: var(--text); font: 14px Geist, sans-serif; text-transform: none; letter-spacing: 0; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  button { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text); font: 13px Geist, sans-serif; cursor: pointer; }
+  button:hover { border-color: var(--cream); }
+  .sample { padding: 12px; border-radius: 12px; border: 1px solid var(--line); }
+  .sample b { display: block; font-size: 26px; font-weight: 400; color: var(--cream); line-height: 1.1; }
+  .sample span { display: block; margin-top: 6px; font-size: 14px; line-height: 1.45; color: #e8e0cf; }
+  .stage { position: relative; display: grid; place-items: center; padding: 24px; min-width: 0; }
+  .screen { width: min(100%, calc((100vh - 48px) * 16 / 10)); aspect-ratio: 16 / 10; border-radius: 18px; overflow: hidden; border: 1px solid #222; background: #000; }
+  iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .warn { color: #ffb38a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside>
+    <div>
+      <h1>Font test · weekly view</h1>
+      <p class="note">Swaps the prototype's two fonts live: titles (her name, week and day titles) and everything else. The Adobe fonts are the ones active in your Creative Cloud.</p>
+      <p class="note warn" id="missing" hidden></p>
+    </div>
+    <label>Titles
+      <select id="display">
+        <option value='"Constellate Display", "Fraunces", Georgia, serif'>Matrix II, one weight lighter (current)</option>
+        <option value='"Fraunces", Georgia, serif'>Fraunces</option>
+        <option value='"Matrix II OT", Georgia, serif'>Matrix II · Adobe</option>
+        <option value='"Matrix II Script OT", Georgia, serif'>Matrix II Script · Adobe</option>
+      </select>
+    </label>
+    <label>Title weight <span id="wv">400</span>
+      <input id="weight" type="range" min="100" max="900" step="100" value="400" />
+    </label>
+    <label>Everything else
+      <select id="ui">
+        <option value='"Geist", "Helvetica Neue", Arial, sans-serif'>Geist (current)</option>
+        <option value='"Matrix II OT", "Helvetica Neue", Arial, sans-serif'>Matrix II · Adobe</option>
+      </select>
+    </label>
+    <div class="sample" id="sample"><b>Hello, small one</b><span>Mila arrived thirteen weeks early. She rested while machines did some of the work.</span></div>
+    <div>
+      <label style="margin-bottom:8px">Show</label>
+      <div class="row">
+        <button data-go="week">Week 1</button>
+        <button data-go="day6">Day 6</button>
+        <button data-go="sky">All her stars</button>
+        <button data-go="today">Today</button>
+      </div>
+    </div>
+  </aside>
+  <div class="stage">
+    <div class="screen"><iframe id="f" title="Constellate bedside display" src="./prototype/index.html?embed=1&chapter=day"></iframe></div>
+  </div>
+</div>
+<script>
+  const $ = (id) => document.getElementById(id)
+  const f = $('f')
+  const post = (what) => f.contentWindow?.postMessage({ type: 'mila:show', what }, '*')
+  // the prototype's titles and body text come from two variables on its page; override them, and the weight of
+  // everything set in the title font (the selectors that use --font-display in the prototype's styles)
+  const apply = () => {
+    const d = f.contentDocument
+    if (!d) return
+    let s = d.getElementById('font-test')
+    if (!s) { s = d.createElement('style'); s.id = 'font-test'; d.head.appendChild(s) }
+    const w = $('weight').value
+    s.textContent = `.cv-page.theme-nursery, .cv-page.theme-confetti { --font-display: ${$('display').value} !important; --font-ui: ${$('ui').value} !important; }
+      .cv-page :is(.ah-day-t, .ah-ev-facts dd, .ah-ev-title, .ah-now, .ah-path-head b, .comfort-name, .cv-about-name, .cv-form-caption b, .cv-galaxy-title .cv-gsum b, .cv-galaxy-title b, .cv-gday-label em, .cv-gfirst, .cv-gpanel-title, .cv-gstory b, .cv-lift.is-family span, .cv-lift.is-first span, .cv-ahead-title, .cv-day-k, .cv-path-head b, .cv-top-left, .ts-title, .cv-pop-word, .cv-story-title, .cv-top-title, .end-title, .fd-name, .fd-size b, .fd-title.is-serif, .gl-title, .mem-list button, .mem-moment, .mem-title, .rem-loved, .rem-name, .rem-who li, .cv-gweek b) { font-weight: ${w} !important; }`
+    $('wv').textContent = w
+    $('sample').querySelector('b').style.cssText = `font-family: ${$('display').value}; font-weight: ${w}`
+    $('sample').querySelector('span').style.fontFamily = $('ui').value
+  }
+  // tell when a chosen Adobe font isn't active on this computer (the browser falls back silently otherwise)
+  const missing = () => {
+    const c = document.createElement('canvas').getContext('2d')
+    const width = (fam) => { c.font = `40px ${fam}, monospace`; return c.measureText('Hello, small one 0123 Wg').width }
+    const base = width('__none__')
+    const gone = ['Matrix II OT', 'Matrix II Script OT'].filter((n) => width(`"${n}"`) === base)
+    $('missing').hidden = !gone.length
+    $('missing').textContent = gone.length ? `Not active on this computer: ${gone.join(', ')}. Turn them on in Creative Cloud > Fonts.` : ''
+  }
+  ;['display', 'ui', 'weight'].forEach((id) => $(id).addEventListener('input', apply))
+  document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => post({ week: 'openWeek', day6: 'day6', sky: 'skyNow', today: 'today' }[b.dataset.go])))
+  f.addEventListener('load', () => { apply(); setTimeout(() => post('openWeek'), 500) })
+  missing()
+</script>
+</body>
+</html>
