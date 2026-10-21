@@ -1,7 +1,13 @@
 // What we'd say over each slide, as captions along the bottom of the deck (press C to hide or show them).
 // A slide with builds has one line per step; past the last line, the last one stays. The demo film has its own.
 export const NARRATION = {
-  title: 'This is Constellate, a bedside screen for parents of babies in the NICU.',
+  title: {
+    every: 9000,
+    timed: [
+      'Hi! We’re Jayden, Nimesh, and Sara. We’re currently masters students studying Human Centered Design and Engineering at the University of Washington in Seattle.',
+      'And today, we’ll be presenting on Constellate - a bedside screen for parents of babies in the NICU.',
+    ],
+  },
   niko: 'Meet Niko and his mom Lauren. We had the privilege to hear from Lauren about her family’s time in the NICU, which is where this story begins.',
   nicu: 'The neonatal intensive care unit, or the NICU, is the hospital unit where babies born too early or too sick are cared for, often for several weeks or months.',
   journey: [
