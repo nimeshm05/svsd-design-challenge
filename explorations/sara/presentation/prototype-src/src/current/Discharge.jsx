@@ -536,7 +536,6 @@ export function Discharge({ theme, onBack }) {
       {story.phase === 'mobile' && (
         <div className="cv-galaxy-title">
           <b>Mila&apos;s mobile</b>
-          <span>{WEEKS} weeks of her stars, one strand for each · drag to turn it</span>
         </div>
       )}
       {story.phase === 'mobile' && (
