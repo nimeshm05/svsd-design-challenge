@@ -7,11 +7,15 @@ export function StarGlyph({ size = 22, color = 'currentColor', className = '' })
   )
 }
 
-// The name, with its "o" as a soft eight-point star (four long points, four short, curved like the product's stars): set in the line like a letter, at the size of the text around it
+// The name, lowercase, with a star after it: a soft five-point star with a dashed cut line around it, like a sticker
 export function Wordmark({ className = '' }) {
   return (
     <span className={`wordmark ${className}`} role="img" aria-label="Constellate">
-      <span aria-hidden="true">c<svg className="wm-o" viewBox="-12 -12 24 24"><path d="M0.00 -11.00Q1.03 -2.49 4.67 -4.67Q2.49 -1.03 11.00 0.00Q2.49 1.03 4.67 4.67Q1.03 2.49 0.00 11.00Q-1.03 2.49 -4.67 4.67Q-2.49 1.03 -11.00 0.00Q-2.49 -1.03 -4.67 -4.67Q-1.03 -2.49 0.00 -11.00Z" /></svg>nstellate</span>
+      <span aria-hidden="true">constellate</span>
+      <svg className="wm-star" viewBox="-16 -16 32 32" aria-hidden="true">
+        <path className="wm-cut" d="M-1.48 -12.68Q0.00 -15.20 1.48 -12.68L3.46 -9.32Q4.94 -6.80 7.79 -6.17L11.60 -5.33Q14.46 -4.70 12.52 -2.51L9.93 0.41Q7.99 2.60 8.27 5.51L8.65 9.39Q8.93 12.30 6.25 11.13L2.68 9.57Q0.00 8.40 -2.68 9.57L-6.25 11.13Q-8.93 12.30 -8.65 9.39L-8.27 5.51Q-7.99 2.60 -9.93 0.41L-12.52 -2.51Q-14.46 -4.70 -11.60 -5.33L-7.79 -6.17Q-4.94 -6.80 -3.46 -9.32Z" />
+        <path className="wm-fill" d="M-0.67 -9.12Q0.00 -10.50 0.67 -9.12L2.38 -5.59Q3.06 -4.21 4.58 -4.00L8.46 -3.46Q9.99 -3.24 8.88 -2.18L6.05 0.54Q4.95 1.61 5.22 3.12L5.90 6.98Q6.17 8.49 4.81 7.77L1.36 5.92Q0.00 5.20 -1.36 5.92L-4.81 7.77Q-6.17 8.49 -5.90 6.98L-5.22 3.12Q-4.95 1.61 -6.05 0.54L-8.88 -2.18Q-9.99 -3.24 -8.46 -3.46L-4.58 -4.00Q-3.06 -4.21 -2.38 -5.59Z" />
+      </svg>
     </span>
   )
 }

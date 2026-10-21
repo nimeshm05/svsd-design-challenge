@@ -2421,3 +2421,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 /* Just her sky (?art=1): the star layers, her constellations and the shooting stars, with nothing else on screen */
 .cv-page.is-art .cv-screen > :not(.cv-galaxy), .cv-page.is-art .cv-galaxy > :is(.cv-glabels, .cv-galaxy-title, .cv-galaxy-nav) { display: none !important; }
 .cv-page.is-art, .cv-page.is-art .cv-screen { background: transparent; }
+/* the whole of her sky, nothing cut off at the edges: her constellations drawn a little smaller, toward the middle
+   (just under the presentation's title); the background stars still fill the screen */
+.cv-page.is-art .cv-galaxy-art { transform: scale(.8); transform-origin: 50% 62%; }

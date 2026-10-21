@@ -1230,7 +1230,7 @@ function SixStars() {
 /* ---------- The closing: five slides after the film ---------- */
 // 1 and 2 are the drawn story (her days as a constellation; then charts, numbers and alarms crowding it);
 // each plays from the start when its slide comes on.
-const ClosingDrawn = (stage) => function ClosingDrawnSlide({ active }) { return active ? <Finale stage={stage} /> : null }
+const ClosingDrawn = (stage) => function ClosingDrawnSlide({ active }) { return <div className="cl cl-drawn">{active && <Finale stage={stage} />}</div> }
 // 3: what parents get, Sara's six answers
 function ClosingAnswers() {
   return (
@@ -1404,8 +1404,8 @@ export const SLIDES = [
   { id: 'solution', section: '06 · Constellate', planet: true, View: SolutionCover },
   { id: 'overview', section: '06 · Constellate', steps: 3, feature: ['sky', 'openWeek', 'day6'], padSide: true, View: Overview },
   { id: 'demo', section: '07 · One stay, question by question', planet: true, bare: true, View: DemoFilm },
-  { id: 'c-story', section: '08 · Closing', planet: true, bare: true, cc: true, View: ClosingDrawn(1) },
-  { id: 'c-lost', section: '08 · Closing', bare: true, cc: true, View: ClosingDrawn(2) },
+  { id: 'c-story', section: '08 · Closing', planet: true, View: ClosingDrawn(1) },
+  { id: 'c-lost', section: '08 · Closing', View: ClosingDrawn(2) },
   { id: 'c-answers', section: '08 · Closing', View: ClosingAnswers },
   { id: 'c-keep', section: '08 · Closing', View: ClosingSky },
   { id: 'c-name', section: 'Constellate', View: ClosingName },
