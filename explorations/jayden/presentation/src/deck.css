@@ -1,13 +1,13 @@
 /* The display font: Matrix II (Adobe, active on Jayden's Mac), one cut lighter than the weight Fraunces used
-   (300 and 400 are its Book; 500 its Regular; 600 and up its Bold). Real italics, for quotes.
+   (300 and 400 are its Book; 500 its Regular; 600 and up its Bold). Its italic is Matrix II Script: quotes, questions, felt lines.
    Where Matrix II isn't active, these faces don't load and the stack falls back to Fraunces. */
 @font-face { font-family: "Constellate Display"; font-weight: 1 449; src: local("MatrixIIOT-Book"), local("Matrix II OT Book"); }
 @font-face { font-family: "Constellate Display"; font-weight: 450 549; src: local("MatrixIIOT-Reg"), local("Matrix II OT Reg"); }
 @font-face { font-family: "Constellate Display"; font-weight: 550 749; src: local("MatrixIIOT-Bold"), local("Matrix II OT Bold"); }
 @font-face { font-family: "Constellate Display"; font-weight: 750 1000; src: local("MatrixIIOT-ExtraBold"), local("Matrix II OT Extra Bold"); }
-@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 1 449; src: local("MatrixIIOT-BookItalic"), local("Matrix II OT Book Italic"); }
-@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 450 649; src: local("MatrixIIOT-RegItalic"), local("Matrix II OT Reg Italic"); }
-@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 650 1000; src: local("MatrixIIOT-BoldItalic"), local("Matrix II OT Bold Italic"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 1 449; src: local("MatrixIIScriptOT-Book"), local("Matrix II Script OT Book"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 450 649; src: local("MatrixIIScriptOT-Reg"), local("Matrix II Script OT Reg"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 650 1000; src: local("MatrixIIScriptOT-Bold"), local("Matrix II Script OT Bold"); }
 
 /* Mila's Sky case study, in design system 1 (Night Nursery): black sky, warm cream, Matrix II + Geist (Matrix II is an Adobe font, active on Jayden's Mac; elsewhere it falls back to Fraunces).
    The three pillars each have a color: Connection (gold), Comprehension (blue), Awareness (lilac). */
@@ -2090,3 +2090,6 @@ body:has(.panel) { overflow: auto; }
   animation: fin-ans-foot .8s 2.6s ease forwards; }
 @keyframes fin-ans-foot { to { opacity: .9; } }
 @media (max-width: 760px) { .fin-ans li { grid-template-columns: 22px 1fr; } .fin-ans li > span:last-child { grid-column: 2; } }
+
+/* the deck's other italic lines, in the same script */
+.define-meta span:last-child, .mila-note, .dfilm-tl li.is-alt span { font-family: var(--display); }
