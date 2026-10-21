@@ -8,7 +8,7 @@ export function StarGlyph({ size = 22, color = 'currentColor', className = '' })
 }
 
 // Symbols for the people at the bedside and for the three pillars, in DS1's line: soft cream strokes,
-// rounded ends, and a small four-point star as the accent, like everything else in Mila's Sky.
+// rounded ends, and a small four-point star as the accent, like everything else in Constellate.
 const star = (x, y, r) => `M${x} ${y - r}Q${x + r * 0.15} ${y - r * 0.15} ${x + r} ${y}Q${x + r * 0.15} ${y + r * 0.15} ${x} ${y + r}Q${x - r * 0.15} ${y + r * 0.15} ${x - r} ${y}Q${x - r * 0.15} ${y - r * 0.15} ${x} ${y - r}Z`
 const ICONS = {
   // a swaddled baby, head on the left, a star by her

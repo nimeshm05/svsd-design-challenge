@@ -1418,6 +1418,7 @@
 .gl-body { font-size: 15px; line-height: 1.5; color: var(--text-2); }
 .gl-fig { margin: 2px 0 0; }
 .gl-fig img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; }
+.gl-baby { display: block; width: 100%; height: auto; max-height: 34vh; }
 .gl-review { align-self: flex-start; }
 @media (max-width: 760px) { .gl-scrim { place-items: end center; padding: 0; } .gl-sheet { width: 100%; border-radius: 18px 18px 0 0; } }
 @media (prefers-reduced-motion: reduce) { .gl-sheet { animation: none; } .gl-term { transition: none; } }

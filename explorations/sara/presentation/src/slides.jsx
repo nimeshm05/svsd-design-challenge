@@ -1,12 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Icon, StarGlyph } from './glyphs.jsx'
 import { Puzzle } from './puzzle.jsx'
-import { FEATURES, Feature, Storyboard } from './demo.jsx'
+import { Answer, Feature } from './demo.jsx'
+import { DemoFilm } from './film.jsx'
 
 export const ITER_MODE = 'focus' // 'focus' = one at a time, then into the row · 'row' = current staggered fade-in
 
 // The case study as one story. Its spine: NICU parents live two things at once (the fight and the
-// celebration), and Mila's Sky is a place that holds both. Each chapter opens on a realization, said
+// celebration), and Constellate is a place that holds both. Each chapter opens on a realization, said
 // big, with its key phrase lit; the slides after it are the evidence or what we did about it. The three
 // pillars keep their colors from the moment they appear to the last product screen.
 // Each slide: id, section (top right), tint (which pillar colors the sky), planet (a chapter's opening:
@@ -70,7 +71,7 @@ function Title() {
   return (
     <div className="center title">
       <R d={0} className="title-k">A NICU storytelling case study</R>
-      <R d={1} as="h1" className="title-h">Mila&apos;s Sky</R>
+      <R d={1} as="h1" className="title-h">Constellate</R>
       <R d={2} as="p" className="title-sub">Transforming NICU care into a story, one star at a time.</R>
       <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
     </div>
@@ -79,10 +80,15 @@ function Title() {
 
 // who this is for: one real baby, before any numbers
 function Niko() {
+  // Lauren is one of the parents we interviewed; her family's stay is where the story starts
   return (
-    <div className="center niko">
-      <R d={0} as="h2" className="h">Meet Niko</R>
-      <R d={2}><Shot src="./shots/niko.webp" pan={false} alt="Niko, a tiny baby in the NICU, held up by a nurse in a blue glove. Niko wears oversized red heart-shaped sunglasses, with a feeding tube taped across one cheek, framed by a red cut-out heart." /></R>
+    <div className="niko2">
+      <R d={1} className="niko2-photo"><img src="./shots/niko-lauren.webp" alt="Lauren holds her son Niko close outside the hospital, her cheek against his head. Niko, in a plaid shirt with soft lines and a tube taped at his chest, rests against her." /></R>
+      <div className="niko2-words">
+        <R d={0} className="k">Meet Niko</R>
+        <R d={2} as="h2" className="niko2-h">Niko, and his mom, Lauren.</R>
+        <R d={3} as="p" className="niko2-p">Lauren is one of the NICU parents we interviewed. Her family&apos;s time in the NICU is where this story starts.</R>
+      </div>
     </div>
   )
 }
@@ -138,10 +144,10 @@ function Wall() {
 // rises to the title and each icon travels from the row into its person's card (the same icon, moved with
 // a transform from where it sat to where its card keeps a place for it).
 const PEOPLE = [
-  { id: 'P1', who: 'parent', role: 'Former SICU/PICU parent', at: 'Seattle Children’s', notes: ['Child spent significant time in the hospital with a congenital heart defect', 'Not NICU, but inpatient care from an extremely early age'] },
-  { id: 'P2', who: 'nurse', role: 'Retired NICU nurse', at: 'Kaiser Permanente (Los Angeles)', notes: ['35 years as a NICU nurse', 'Retired 7 years ago'] },
-  { id: 'P3', who: 'parent', role: 'Current NICU parent', at: 'Seattle Children’s', notes: ['Child has a rare congenital heart disease and esophageal atresia', 'In the NICU for the past 11 months'] },
-  { id: 'P4', who: 'nurse', role: 'Former NICU night-shift nurse', at: 'Seattle Children’s', notes: ['Worked in NICUs in Seattle and Texas', 'Mostly night shifts'] },
+  { id: 'P1', who: 'parent', role: 'Former SICU/PICU parent', notes: ['Child spent significant time in the hospital with a congenital heart defect', 'Not NICU, but inpatient care from an extremely early age'] },
+  { id: 'P2', who: 'nurse', role: 'Retired NICU nurse', notes: ['35 years as a NICU nurse', 'Retired 7 years ago'] },
+  { id: 'P3', who: 'parent', role: 'Current NICU parent', notes: ['Child has a rare congenital heart disease and esophageal atresia', 'In the NICU for the past 11 months'] },
+  { id: 'P4', who: 'nurse', role: 'Former NICU night-shift nurse', notes: ['Worked in NICUs in Seattle and Texas', 'Mostly night shifts'] },
 ]
 const BY_ID = Object.fromEntries(PEOPLE.map((p) => [p.id, p]))
 const ROW = ['P1', 'P3', 'P2', 'P4'] // parents, then nurses
@@ -180,8 +186,7 @@ function Asked({ step, active, thumb }) {
   }, [active, step])
   return (
     <div ref={host} className={`ivw is-s${step} ${jump ? 'is-jump' : ''}`} style={pos ? { '--drop': `${pos.drop}px` } : undefined}>
-      <span className="k ivw-k">Who we talked to</span>
-      <div ref={head} className="ivw-head"><R d={0} as="p" className="statement-p">So we listened.</R></div>
+      <div ref={head} className="ivw-head"><R d={0} as="p" className="statement-p">We listened.</R></div>
       <div className="ivw-row">
         <span className="ivw-count"><b>4</b>interviews</span>
         <i className="ivw-rule" />
@@ -195,7 +200,7 @@ function Asked({ step, active, thumb }) {
           <article key={p.id} className={`ivw-card is-${p.who}`} style={{ '--k': k }}>
             <Slot id={p.id} />
             <div className="ivw-text">
-              <span className="ivw-id">{p.id} · {p.at}</span>
+              <span className="ivw-id">{p.who === 'nurse' ? 'Nurse' : 'Parent'} · {p.id}</span>
               <h3 className="ivw-role">{p.role}</h3>
               <ul>{p.notes.map((n) => <li key={n}>{n}</li>)}</ul>
             </div>
@@ -245,21 +250,21 @@ function Telephone() {
 
 /* ---------- 02 · The problem ---------- */
 const PAINS = [
-  { p: 'connection', pain: 'Parents can’t bond the way they expected, and guilt fills the gap.', q: 'I didn’t have the luxury of having my baby right away and like putting him on my chest.' },
-  { p: 'comprehension', pain: 'Parents have information, but not the whole picture.', q: '[Medical terminology] is a new language.' },
-  { p: 'awareness', pain: 'Time disappears, and the next moment is a surprise.', q: 'In the ICU, time just like, it doesn’t exist. It’s just a mash of time.' },
+  { p: 'connection', qs: ['How can I feel close to my baby before I can hold them?', 'What happened while I was away?'], themes: [['Bonding', 'Weeks before a first hold'], ['Emotions', 'Fear and hope, every day'], ['Parent guilt', 'For the situation, and when they can’t be there']], pain: 'Parents can’t bond the way they expected, and guilt fills the gap.', q: 'I didn’t have the luxury of having my baby right away and like putting him on my chest.' },
+  { p: 'comprehension', qs: ['What is all of this on my baby?', 'What does that word mean?'], themes: [['Medical terminology', 'A whole new language'], ['Status of child', 'Is he okay today?'], ['Provider communication', 'A new nurse every shift']], pain: 'Parents have information, but not the whole picture.', q: '[Medical terminology] is a new language.' },
+  { p: 'awareness', qs: ['What’s next, and who is caring for my baby tonight?', 'How are they doing right now?'], themes: [['Situational awareness', 'What’s happening right now'], ['Holistic awareness', 'How far he’s come, and what’s next']], pain: 'Time blurs, and the next moment is a surprise.', q: 'In the ICU, time just like, it doesn’t exist. It’s just a mash of time.' },
 ]
 // one pillar at a time, each with what a parent said
 function Pillars({ step }) {
   return (
     <div className="pillars">
-      <R d={0} className="k">The three pillars</R>
+      <R d={0} className="k">Three needs</R>
       <div className="cols">
         {PAINS.map((x, k) => (
           <div key={x.p} className={`col is-${x.p} ${step >= k ? 'is-in' : ''}`}>
             <span className="col-head"><Icon name={x.p} size={30} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</span>
             <p className="col-pain">{x.pain}</p>
-            <figure className="q"><blockquote>&ldquo;{x.q}&rdquo;</blockquote></figure>
+            <ul className="col-themes">{x.themes.map(([t, eg]) => <li key={t}><b>{t}</b><span>{eg}</span></li>)}</ul>
           </div>
         ))}
       </div>
@@ -305,7 +310,7 @@ const RIVALS = [
 const MATRIX = {
   connection: [
     null,
-    { does: 'Watch the baby live, from anywhere', take: 'Seeing her isn’t the same as being part of her day: nothing is kept.' },
+    { does: 'Watch the baby live, from anywhere', take: 'Seeing your baby isn’t the same as being part of their day: nothing is kept.' },
     { does: 'Parents record milestones and photos', take: 'Parents have to do the recording, on top of everything else.' },
   ],
   comprehension: [
@@ -343,6 +348,12 @@ function Compete() {
 }
 
 // the question builds one pillar at a time
+// what each colour means, wherever the three pain points appear together
+const KEY = [
+  ['connection', 'Feeling close to their baby, even when apart'],
+  ['comprehension', 'Understanding what’s happening, in words they know'],
+  ['awareness', 'Knowing what’s happening now, and what’s next'],
+]
 function HMW({ step }) {
   const on = (n) => (step >= n ? 'is-in' : '')
   return (
@@ -352,9 +363,12 @@ function HMW({ step }) {
         How might we turn a baby&apos;s care into a story that helps parents{' '}
         <span className={`hmw-part ${on(1)}`}><L p="connection">feel connected</L>,</span>{' '}
         <span className={`hmw-part ${on(2)}`}><L p="comprehension">understand what&apos;s happening</L>,</span>{' '}
-        <span className={`hmw-part ${on(3)}`}>and <L p="awareness">stay aware of what&apos;s ahead</L>,</span>
+        <span className={`hmw-part ${on(3)}`}>and <L p="awareness">stay aware of what&apos;s ahead</L>?</span>
       </R>
-      <p className={`hmw-and hmw-part ${on(4)}`}>without adding to nurses&apos; workload?</p>
+      <div className="hmw-key">
+        {/* only the pillar the sentence has just reached */}
+        {KEY.filter((_, k) => step === k + 1).map(([p, def]) => <span key={p} className={`is-${p} hmw-key-on`}><i /><b>{PILLARS[p].name}</b>{def}</span>)}
+      </div>
     </div>
   )
 }
@@ -404,12 +418,23 @@ function Brainstorm({ active }) {
   )
 }
 
+// brainstorm and sort as one slide: the affinity map first, then → sends its chips to their principles.
+// Both layers are stacked in place; each keeps its own logic, switched on by the step.
+function Ideation({ active, step }) {
+  return (
+    <div className="ideate">
+      <Brainstorm active={active && step === 0} />
+      <Sort active={active && step === 1} />
+    </div>
+  )
+}
+
 // the moment the question came up, as it was said in our team chat
 function Mom() {
   return (
     <div className="center statement mom">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="p" className="statement-p">Picture a tired mom in a hospital bed, <L>anxious about her baby</L>.</R>
+      <R d={1} as="p" className="statement-p">Picture a tired mom in the NICU, <L>anxious about her baby</L>.</R>
       <R d={3}><Shot src="./shots/modality-chat.png" pan={false} className="is-chat" alt="A teammate's message in our chat: imagining how a parent might interact with this from a hospital bed, by touch, remote control or gesture; imagining a tired mom on a bed who's anxious about her baby." /></R>
     </div>
   )
@@ -453,14 +478,14 @@ const Sketch = ({ kind }) => (
 )
 const MODES = [
   { k: 'Touch', t: 'One tap, big targets, nothing hidden behind hover.', chosen: true },
-  { k: 'Remote control', t: 'For a parent who can’t reach the screen from bed.' },
+  { k: 'Remote control', t: 'If the monitor can’t be accessed directly.' },
   { k: 'Gesture', t: 'No touching at all, near an incubator.' },
 ]
 function Modality() {
   return (
     <div className="modes">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="h2" className="h">How would she reach it?</R>
+      <R d={1} as="h2" className="h">How would she interact with it?</R>
       <div className="cols">
         {MODES.map((x, k) => (
           <R key={x.k} d={2 + k * 0.6} className={`col mode ${x.chosen ? 'is-chosen' : ''}`}>
@@ -527,7 +552,7 @@ function Idea({ step = 0 }) {
           </span>
         ))}
         <span className="idea2-star"><span className="idea2-burst" /><StarGlyph size={84} color="#FFF8E6" /></span>
-        <span className="idea2-name">Mila&apos;s Sky</span>
+        <span className="idea2-name">Constellate</span>
       </div>
       <div className="idea2-words">
         <div className="k idea2-k">05 · The idea</div>
@@ -567,7 +592,7 @@ function Film({ active, thumb }) {
 }
 
 const FLOW = [
-  { p: 'connection', principle: 'Keep parents in their baby’s story, even when apart', feature: 'Mila’s Sky' },
+  { p: 'connection', principle: 'Keep parents in their baby’s story, even when apart', feature: 'Constellate' },
   { p: 'comprehension', principle: 'Turn care into a cohesive story parents can follow', feature: 'Today screen and scheduled summary' },
   { p: 'awareness', principle: 'Show what’s happening now and prepare for what’s ahead', feature: 'Timeline and What’s Next' },
 ]
@@ -589,7 +614,7 @@ function Principles() {
 
 // Ideas from our affinity map, each floating from the brainstorm to the principle it serves
 const SORTED = {
-  connection: ['Constellations', 'Milestones like a first poop, first skin-to-skin', 'Voice notes to the baby', 'Reminders of her bravery and strength', 'Updates parents can share with family'],
+  connection: ['Constellates', 'Milestones like a first poop, first skin-to-skin', 'Voice notes to the baby', 'Reminders of her bravery and strength', 'Updates parents can share with family'],
   comprehension: ['Make my charts feel less clinical, more like a story', 'Search medical terms in charting', 'IV drip lines that become a shape', 'Her setup in 3D', 'A weekly or daily chapter to read'],
   awareness: ['A clock that shows progress hour by hour', 'Journey timeline', 'Upcoming plans from different doctors in one place', 'Notifications for new updates', 'Standup information'],
 }
@@ -640,7 +665,7 @@ const DEEP = {
     principle: 'Keep parents in their baby’s story, even when apart.',
     decision: 'Milestones without points or streaks. The sky only grows.',
     iter: <><s>Take your star home</s><span className="deep-to" aria-label="became">→</span><b>Every star is yours to keep</b></>,
-    feature: 'Mila’s Sky',
+    feature: 'Constellate',
   },
   comprehension: {
     principle: 'Turn care into a story parents can follow.',
@@ -680,7 +705,7 @@ const CONSTRAINTS = [
   { who: 'Baby', c: 'Sensitive to light, needs quiet rest', r: 'Dark mode, silent, angled away from the incubator',
     before: { src: './shots/baby previous.png', caption: 'Bright colors from the screen can light up the room', alt: 'An earlier version of the day screen: a large glowing pink-and-white star with long light flares fills most of the screen, beside a panel with the baby’s weight, breathing and time with family.' },
     after: { src: './shots/baby new.png', caption: 'Screen is dark by default to reduce residual light', alt: 'The new default screen: almost entirely black, with a small dim star, the time 1:12 a.m. in soft gray, “Next care 3:00 a.m. · Mila is resting,” and a Care team button.' } },
-  { who: 'Nurse', c: '“You have to be quick… life or death.”', r: 'Zero new tasks; content comes from charting',
+  { who: 'Nurse', c: '“You have to be quick… life or death.” (retired NICU nurse)', r: 'Zero new tasks; content comes from charting',
     before: { src: './shots/nurse previous.webp', caption: 'Nurses would have to write a new summary', alt: 'An early design idea of a baby dashboard' },
     after: { src: './shots/nurse new.png', caption: 'Nurse charts are incorporated into day overview', alt: '' } },
   { who: 'Family', c: 'Not every baby goes home', r: 'Nothing assumes an outcome; sensitive news only after a clinician talks with the family',
@@ -817,7 +842,7 @@ function System() {
               <path key={k} style={{ '--k': k }} transform={`translate(${x} ${y})`} d="M0 -6Q.9 -.9 6 0Q.9 .9 0 6Q-.9 .9 -6 0Q-.9 -.9 0 -6Z" />
             ))}
           </svg>
-          <span className="col-head">Constellation</span>
+          <span className="col-head">Constellate</span>
           <p>Shows progress and holds memory, whatever the outcome.</p>
         </R>
         <R d={2} className="col sys">
@@ -829,9 +854,9 @@ function System() {
           <p>Stars for everyday moments, planets for big ones, defined by parents: &ldquo;Yes, he pooped!… in its own way, it&apos;s beautiful.&rdquo;</p>
         </R>
         <R d={3} className="col sys">
-          <div className="sys-art sys-name" aria-hidden="true">Mila&apos;s Sky</div>
+          <div className="sys-art sys-name" aria-hidden="true">Constellate</div>
           <span className="col-head">Naming and tone</span>
-          <p>&ldquo;Mila&apos;s Sky&rdquo; makes it her story, not a chart: hopeful and reassuring.</p>
+          <p>&ldquo;Constellate&rdquo;: her days, joined into one picture. Hopeful and reassuring, never clinical.</p>
         </R>
       </div>
     </div>
@@ -966,7 +991,7 @@ const CHAPTERS = [
   { id: 'born', name: 'Mila is born', note: 'Her first star, as big as she is.', p: ['connection'] },
   { id: 'story', name: 'Her story begins', note: 'What’s on her, one thing at a time.', p: ['comprehension'] },
   { id: 'day', name: 'A day', note: 'Today as an arc; terms explained; what’s ahead.', p: ['comprehension', 'awareness'] },
-  { id: 'sky', name: 'Her sky', note: 'Today becomes a star in Mila’s Sky.', p: ['connection', 'awareness'] },
+  { id: 'sky', name: 'Her sky', note: 'Today becomes a star in her sky.', p: ['connection', 'awareness'] },
   { id: 'home', name: 'Going home', note: 'Her sky becomes a mobile for home.', p: ['connection'] },
   { id: 'not', name: 'If she doesn’t go home', note: 'Her story, kept, at the family’s pace.', p: ['connection'] },
 ]
@@ -995,7 +1020,7 @@ function Product({ thumb }) {
         <div className="ipad-screen">
           {thumb
             ? <div className="ipad-thumb"><StarGlyph size={40} color="#F3E3B5" /><span>Live prototype</span></div>
-            : <iframe ref={frame} title="Mila's Sky bedside display" src="./prototype/index.html?embed=1&chapter=day" />}
+            : <iframe ref={frame} title="Constellate bedside display" src="./prototype/index.html?embed=1&chapter=day" />}
         </div>
         <i className="ipad-cam" aria-hidden="true" />
       </R>
@@ -1017,7 +1042,7 @@ function Both({ step }) {
         </R>
         <div className="home-quote">
           <p className="statement-p">“There are going to be peaks and valleys… But that doesn’t mean you’re moving backward. You are still moving forward, even if you feel stuck.”</p>
-          <p className="hook-who">Current NICU parent</p>
+          <p className="hook-who">Lauren, Niko&apos;s mom</p>
         </div>
       </div>
     </div>
@@ -1034,42 +1059,261 @@ function Close() {
   )
 }
 
-export const SLIDES = [
-  { id: 'title', section: 'Mila’s Sky', planet: true, View: Title },
-  { id: 'niko', section: 'Hook', View: Niko },
-  { id: 'hook', section: 'Hook', View: Hook },
-  { id: 'both', section: 'Hook', View: statement({ k: 'The tension', big: true, children: <><L>Fear</L> and <L>joy</L>. NICU parents experience both, every day.</> }) },
-  { id: 'nicu', section: 'The NICU', planet: true, View: define({ k: 'The NICU', word: 'Neonatal Intensive Care Unit', say: '“nick-you”', children: <>The hospital unit where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
-  { id: 'environment', section: 'The NICU', View: Environment },
-  { id: 'wall', section: '01 · Research', planet: true, View: Wall },
 
-  { id: 'gap', section: '01 · Research', View: statement({ k: 'The gap', big: true, children: <>But it didn’t capture <L>what it feels like to live through it</L>.</> }) },
-  { id: 'asked', section: '01 · Research', steps: 3, View: Asked },
-  { id: 'heard', section: '01 · Research', View: Heard },
-  { id: 'telephone', section: '01 · Research', View: Telephone },
-
-  { id: 'p-open', section: '02 · The problem', planet: true, tint: 'all', View: statement({ k: '02 · The problem', big: true, children: <>Our research pointed to <L>three unmet needs</L>.</> }) },
-  { id: 'pillars', section: '02 · The problem', tint: 'all', steps: 3, View: Pillars },
-  { id: 'problem', section: '02 · The problem', tint: 'all', View: Problem },
-  { id: 'compete', section: '02 · The problem', tint: 'all', View: Compete },
-  { id: 'hmw', section: '02 · The problem', tint: 'all', steps: 5, View: HMW },
-
-  { id: 'principles', section: '03 · Design principles', planet: true, tint: 'all', View: Principles },
-
-  { id: 'brainstorm', section: '04 · Ideation', planet: true, View: Brainstorm },
-  { id: 'sort', section: '04 · Ideation', tint: 'all', View: Sort },
-  { id: 'thread', section: '04 · Ideation', View: statement({ k: 'What the ideas had in common', children: <>Turn the pieces of a baby’s care into <L>a{' '}story</L>.</> }) },
-
-  { id: 'film', section: '05 · The idea and the story layer', planet: true, bare: true, View: Film },
-
-  { id: 'k-open', section: '06 · Constraints', planet: true, View: KOpen },
-  { id: 'constraints', section: '06 · Constraints', steps: CONSTRAINT_STEPS, View: Constraints },
-  { id: 'mom', section: '07 · Modality', planet: true, View: Mom },
-  { id: 'modality', section: '07 · Modality', View: Modality },
-
-  { id: 'board', section: '08 · The product', planet: true, View: Storyboard },
-  ...FEATURES.map((f) => ({ id: f.id, section: '08 · The product', feature: f.show, View: Feature(f) })),
-  { id: 'both-close', section: 'Mila’s Sky', steps: 2, View: Both },
-  { id: 'every-day', section: 'Mila’s Sky', View: statement({ big: true, children: <>Mila&apos;s Sky shows that <L>every day counts</L>.</> }) },
-  { id: 'close', section: 'Mila’s Sky', View: Close },
+/* ---------- v2: Niko's NICU journey, as it happened ---------- */
+// Niko's real story, from his family's public fundraiser and our interview with his mom, Lauren. Only what we
+// know: anything we haven't confirmed with Lauren stays out. Quotes are Lauren's, from our interview with her.
+const JOURNEY = [
+  { when: 'Nov 14, 2025', title: 'An emergency birth', felt: 'Lauren underwent an emergency surgery, and Niko was taken to the NICU immediately.', p: 'connection', img: './shots/niko-1.webp', what: 'Lauren has an emergency C-section. Niko arrives a little over two months early.', q: 'I didn’t have the luxury of having my baby right away and putting him on my chest.', who: 'Lauren, Niko’s mom' },
+  { when: 'The first days', title: 'Two hospitals', felt: 'Recovering from surgery in one place, while her newborn is cared for in another.', p: 'connection', img: './shots/niko-2.webp', what: 'Niko is born at one hospital, but his care is in another hospital’s NICU. From the start, his family’s life moves there.', q: 'They’re hooked up to leads, they’re hooked up to pulse ox… ensuring that these itty-bitty babies are gonna survive.', who: 'Lauren, Niko’s mom' },
+  { when: 'His diagnoses', title: 'A new language', felt: 'Complex conditions, explained in words they’d never heard, while they were exhausted and scared.', p: 'comprehension', img: './shots/niko-3.webp', what: 'Niko has Tetralogy of Fallot, a rare heart condition, and esophageal atresia: his esophagus isn’t connected to his stomach. Two conditions, two specialist teams.', q: 'Medical terminology is a new language. Ask all the dumb questions, because it’s most important to understand your child’s care.', who: 'Lauren, Niko’s mom' },
+  { when: 'Every day', title: 'Round-the-clock care', felt: 'Long days and nights at his bedside, until the hours blur together.', p: 'awareness', img: './shots/niko-4.webp', what: 'Life is centered on the NICU. Scott and Lauren take time away from work to be by his side, day after day.', q: 'How is it already 6 p.m.? How is it already time for the shift change? You have no sense of time at all.', who: 'Lauren, Niko’s mom' },
+  { when: 'Outside the unit', title: 'The weight of it all', felt: 'Bills, work, insurance, and the guilt of every hour they can’t be with him.', p: 'awareness', img: './shots/niko-5.webp', what: 'Daily costs, and the worry of keeping their health insurance, follow them home. They can’t always be at his bedside.', q: 'Where the mom and dad are having to work full-time… the NICU experience itself would be almost impossible.', who: 'Lauren, Niko’s mom' },
 ]
+function Journey({ step = 0 }) {
+  // like a page in a picture book: the drawing whole, framed, on the right; the words on the left; the timeline below
+  const i = Math.min(step, JOURNEY.length - 1), m = JOURNEY[i]
+  return (
+    <div className="nj">
+      <div className="nj-page">
+        <div className="nj-text" key={`t${i}`}>
+          <span className="nj-k">Niko&apos;s NICU journey</span>
+          <h2 className="nj-title">{m.title}</h2>
+          {m.felt && <p className="nj-felt">{m.felt}</p>}
+          {m.q && <blockquote className="nj-q"><p>&ldquo;{m.q}&rdquo;</p><cite>{m.who}</cite></blockquote>}
+        </div>
+        <figure className="nj-art">
+          {JOURNEY.map((x, k) => <img key={x.img} className={k === i ? 'is-on' : ''} src={x.img} alt="" />)}
+        </figure>
+      </div>
+      <ol className="nj-line" aria-hidden="true">
+        {JOURNEY.map((x, k) => <li key={x.title} className={k === i ? 'is-on' : k < i ? 'is-past' : ''}><i /><span>{x.title}</span></li>)}
+      </ol>
+    </div>
+  )
+}
+const TAGS = { connection: 'Connection', comprehension: 'Comprehension', awareness: 'Awareness' }
+
+/* ---------- v2: the needs, as the questions parents actually ask ---------- */
+const QUESTIONS = [
+  ['What happened while I was away?', 'Ask whoever is on shift, check medical charts', 'connection'],
+  ['What does that word mean?', 'Google it later, ask a nurse, or stay confused', 'comprehension'],
+  ['What’s next in her care plan?', 'Wait, remember from morning rounds, or miss them', 'awareness'],
+  ['Who is caring for her?', 'Check the nurse note after the shift, try to remember names and roles during rounds', 'awareness'],
+  ['Is she getting better?', 'Piece it together from memory and staggered communication', 'connection'],
+]
+function Questions() {
+  return (
+    <div className="qs">
+      <R d={0} className="k">What parents are really asking</R>
+      <div className="qs-table" role="table">
+        <R d={1} className="qs-row is-head" role="row"><span role="columnheader">Parents ask</span><span role="columnheader">Today, they…</span></R>
+        {QUESTIONS.map(([q, now, p], k) => (
+          <R key={q} d={2 + k} className="qs-row" role="row">
+            <span role="cell" className="qs-q"><Icon name={p} size={24} color={PILLARS[p].color} />{q}</span><span role="cell" className="qs-now">{now}</span>
+          </R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- v2: the star idea, before the film, on the product's own screens ---------- */
+// Three builds over the live prototype (see DemoPad): her first star on Day 1; today's star forming and joining
+// her sky, each week a constellation; one week opened, where her firsts are planets.
+const STAR_SHOW = ['first', 'sky', 'week']
+const STAR_WORDS = [
+  ['Every day becomes a star.', 'Shaped by what her nurses already chart.'],
+  ['Every week, a constellation.', 'Her whole stay, at a glance.'],
+  ['Her firsts are planets.', 'First touch, first hold, first bottle.'],
+]
+function Stars({ step = 0, active, thumb }) {
+  // full screen: the live prototype fills the frame, one big line per build
+  const frame = useRef(null), [ready, setReady] = useState(false)
+  const n = Math.min(step, 2)
+  useEffect(() => { if (active && ready) frame.current?.contentWindow?.postMessage({ type: 'mila:show', what: STAR_SHOW[n] }, '*') }, [active, ready, n])
+  return (
+    <div className="scf">
+      {!thumb && <iframe ref={frame} title="Constellate, her stars" src="./prototype/index.html?embed=1&chapter=born" onLoad={() => setTimeout(() => setReady(true), 300)} tabIndex={-1} />}
+      <div className="scf-shade" aria-hidden="true" />
+      <div className="scf-words" key={n}>
+        <span className="scf-k">How Constellate shows progress</span>
+        <h2>{STAR_WORDS[n][0]}</h2>
+        <p>{STAR_WORDS[n][1]}</p>
+      </div>
+    </div>
+  )
+}
+
+/* ---------- v2: each question, and what answers it (a map for the film that follows) ---------- */
+// The same questions as the pillars slide, each led by a line straight into the feature that answers it.
+const GLANCE = [
+  ['connection', [
+    ['How can I feel close to her before I can hold her?', 'Her first screen', 'Her name, and how small she is, before any numbers.'],
+    ['What happened while I was away?', 'Her day', 'Hour by hour, from notes her nurses already write.'],
+  ]],
+  ['comprehension', [
+    ['What is all of this on her?', 'What’s on her', 'Each device on her body, one plain sentence at a time.'],
+    ['What does that word mean?', 'Words in a tap', 'Warm words first. One tap for the real term, shown on her.'],
+  ]],
+  ['awareness', [
+    ['What’s next, and who is caring for her tonight?', 'What’s ahead', 'Her week, where you fit in, and her care team.'],
+    ['How is she doing right now?', 'Night view', 'The time, her next care, and one quiet line.'],
+  ]],
+]
+function Glance({ step = 0 }) {
+  // one problem → solution pair per build; the live screen for that solution sits on the right (see DemoPad)
+  let n = 0
+  return (
+    <div className="gl">
+      <R d={0} className="k">Every problem, and what we built for it</R>
+      <div className="gl-rows">
+        {GLANCE.map(([p, pairs]) => (
+          <section key={p} className={`gl-row is-${p}`}>
+            <span className="gl-pillar"><Icon name={p} size={16} color={PILLARS[p].color} />{PILLARS[p].name}</span>
+            {pairs.map(([q, name, how]) => {
+              const k = n++
+              return (
+                <div key={q} className={`gl-pair ${k === step ? 'is-on' : k < step ? 'is-past' : ''}`}>
+                  <p className="gl-q">&ldquo;{q}&rdquo;</p>
+                  <i className="gl-arrow" aria-hidden="true" />
+                  <p className="gl-a"><b>{name}</b>{how}</p>
+                </div>
+              )
+            })}
+          </section>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- v2: each pillar, as the questions parents ask (big, one slide per pillar) ---------- */
+const PillarAsk = (p) => function PillarAskView() {
+  const x = PAINS.find((y) => y.p === p)
+  return (
+    <div className={`center pa is-${p}`}>
+      <R d={0} className="pa-k"><Icon name={p} size={22} color={PILLARS[p].color} />{PILLARS[p].name}<span>Parents ask</span></R>
+      {x.qs.map((q, k) => <R key={q} d={1 + k * 2} as="p" className="pa-q">&ldquo;{q}&rdquo;</R>)}
+    </div>
+  )
+}
+
+/* ---------- v2: Mila, our persona, before the film ---------- */
+function Mila() {
+  return (
+    <div className="center mila">
+      <R d={0} className="k">Meet Mila</R>
+      <R d={1} as="h2" className="mila-h">Mila is born thirteen weeks early, at 880 grams.</R>
+      <R d={2} as="p" className="mila-p">Her dad is first at her bedside. Her mom is recovering from a C-section, and won&apos;t meet her for days.</R>
+      <R d={4} as="p" className="mila-note">Mila isn&apos;t a real baby. She&apos;s built from Niko&apos;s story and the other families we heard from, so we can show a whole NICU stay, the hard parts too.</R>
+    </div>
+  )
+}
+
+/* ---------- v2: after the film, the six features as one constellation ---------- */
+const RECAP = [
+  ['First screen', 'connection', [150, 250]], ['Their day', 'connection', [300, 160]], ['What’s on them', 'comprehension', [460, 230]],
+  ['Words in a tap', 'comprehension', [610, 130]], ['What’s ahead', 'awareness', [760, 210]], ['Their stars', 'connection', [900, 120]],
+]
+function Recap() {
+  return (
+    <div className="center rc">
+      <R d={0} className="k">Constellate</R>
+      <R d={1} as="h2" className="rc-h">Six answers, one bedside screen.</R>
+      <svg className="rc-art" viewBox="80 60 900 260" aria-hidden="true">
+        <polyline className="rc-line" points={RECAP.map(([, , p]) => p.join(',')).join(' ')} />
+        {RECAP.map(([name, p, [x, y]], k) => (
+          <g key={name} className="rc-pt" style={{ '--k': k }} transform={`translate(${x} ${y})`}>
+            <circle r="22" className={`rc-glow is-${p}`} />
+            <path className="rc-star" d="M0 -11Q1.6 -1.6 11 0Q1.6 1.6 0 11Q-1.6 1.6 -11 0Q-1.6 -1.6 0 -11Z" />
+            <text y="44" className="rc-name">{name}</text>
+          </g>
+        ))}
+      </svg>
+      <R d={6} as="p" className="rc-p">Each one answers a question parents asked us, from the chart, with nothing new for nurses to write.</R>
+    </div>
+  )
+}
+
+/* ---------- v2: what Constellate is, beside the product itself ---------- */
+const CONCEPT = [
+  ['Every day becomes a star.', 'Shaped by what nurses already chart: the care, the changes, the moments family was there.'],
+  ['Every week, a constellation.', 'Her whole stay at a glance, so the days stop blurring together.'],
+  ['Her firsts are planets.', 'First touch, first hold, first bottle. The hard days stay too: stars never disappear.'],
+]
+function Overview({ step = 0 }) {
+  // what it is, then the idea that runs through it, built a step at a time beside the live screen
+  return (
+    <div className="ov">
+      <R d={0} className="k">Constellate</R>
+      <R d={1} as="h2" className="ov-h">A bedside screen that turns a baby’s chart into <L>something parents can follow</L>.</R>
+      <ol className="ov-steps">
+        {CONCEPT.map(([t, d], k) => (
+          <li key={t} className={k === step ? 'is-on' : k < step ? 'is-past' : ''}>
+            <i aria-hidden="true" /><b>{t}</b><span>{d}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
+/* ---------- v2: in their words, one voice at a time, before we name what we found ---------- */
+const VOICES = [
+  ['We felt so whiplashed, because we would be told one thing by one team. And then the next day it would be completely different.', 'Lauren, Niko’s mom'],
+  ['The hospital is like an elaborate game of telephone.', 'Lauren, Niko’s mom'],
+  ['We tell them everything, but sometimes it’s too much. They don’t understand.', 'Retired NICU nurse, 35 years'],
+]
+function Voices() {
+  return (
+    <div className="vo2">
+      <R d={0} className="k">In their words</R>
+      <div className="vo2-grid">
+        {VOICES.map(([q, who], k) => (
+          <R key={q} d={1 + k * 2} as="blockquote" className={`vo2-q ${k === 0 ? 'is-lead' : ''}`}><p>&ldquo;{q}&rdquo;</p><cite>{who}</cite></R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- v2: the solution's cover ---------- */
+function SolutionCover() {
+  return (
+    <div className="center title">
+      <R d={0} className="title-k">Solution</R>
+      <R d={1} as="h1" className="title-h">Constellate</R>
+      <R d={2} as="p" className="title-sub">A baby’s care, made something parents can follow.</R>
+    </div>
+  )
+}
+
+export const SLIDES = [
+  { id: 'title', section: 'Constellate', planet: true, View: Title },
+  { id: 'niko', section: 'Niko', View: Niko },
+  { id: 'nicu', section: 'The NICU', planet: true, View: define({ k: 'The NICU', word: 'Neonatal Intensive Care Unit', say: '“nick-you”', children: <>The hospital unit where babies born too early or too sick are cared for, <L>often for weeks or months</L>.</> }) },
+  { id: 'journey', section: '01 · Niko’s journey', planet: true, steps: JOURNEY.length, View: Journey },
+  { id: 'asked', section: '02 · Research', planet: true, steps: 3, View: Asked },
+  { id: 'voices', section: '02 · Research', View: Voices },
+  { id: 'heard', section: '02 · Research', View: Heard },
+  { id: 'wall', section: '02 · Research', View: Wall },
+  { id: 'pillars', section: '03 · The problem', planet: true, tint: 'all', steps: 3, View: Pillars },
+  { id: 'q-connection', section: '03 · The problem', tint: 'all', View: PillarAsk('connection') },
+  { id: 'q-comprehension', section: '03 · The problem', tint: 'all', View: PillarAsk('comprehension') },
+  { id: 'q-awareness', section: '03 · The problem', tint: 'all', View: PillarAsk('awareness') },
+  { id: 'compete', section: '03 · The problem', tint: 'all', View: Compete },
+  { id: 'hmw', section: '03 · The problem', tint: 'all', steps: 4, View: HMW },
+  { id: 'brainstorm', section: '03 · Ideation', planet: true, steps: 2, View: Ideation },
+  { id: 'mom', section: '04 · Modality', planet: true, View: Mom },
+  { id: 'modality', section: '04 · Modality', View: Modality },
+  { id: 'k-open', section: '04 · Constraints', View: KOpen },
+  { id: 'constraints', section: '04 · Constraints', steps: CONSTRAINT_STEPS, View: Constraints },
+  { id: 'insight', section: '05 · The insight', View: statement({ k: 'The insight', big: true, children: <>Everything parents need is <L>already in their baby’s chart</L>. It just never reaches them in a form they can use.</> }) },
+  { id: 'solution', section: '06 · Constellate', planet: true, View: SolutionCover },
+  { id: 'overview', section: '06 · Constellate', steps: 3, feature: ['sky', 'openWeek', 'day6'], padSide: true, View: Overview },
+  { id: 'demo', section: '07 · One stay, question by question', planet: true, bare: true, View: DemoFilm },
+  { id: 'recap', section: '07 · Constellate', View: Recap },
+  { id: 'close', section: 'Constellate', View: Close },
+]
+
