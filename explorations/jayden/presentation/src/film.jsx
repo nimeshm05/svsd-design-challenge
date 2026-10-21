@@ -30,7 +30,7 @@ const FIELD = Array.from({ length: 98 }, (_, k) => [rnd(k) * 100, rnd(k + 200) *
 const LOOK = {
   hero: { ox: 0, ry: -16, rx: 6, sc: 0.92 },
   center: { ox: 0, ry: 0, rx: 0, sc: 1 },
-  sky: { ox: 0, ry: 0, rx: 0, sc: 1.1 }, // her sky, the heart of it: a little closer than anything else
+  sky: { ox: 0, ry: 0, rx: 0, sc: 1 }, // her sky, the heart of it: a little closer than anything else
   left: { ox: -0.2, ry: 9, rx: 2, sc: 0.86 }, // monitor on the left, words on the right
   right: { ox: 0.2, ry: -9, rx: 2, sc: 0.86 }, // monitor on the right, words on the left
   splitR: { ox: 0.235, ry: -6, rx: 1, sc: 0.6 }, // split screen: footage on the left, the screen on the right
@@ -533,9 +533,8 @@ export function DemoFilm({ active, thumb }) {
       if (kind) { set({ scene: kind, cap }); await wait(s); set({ scene: null, cap: null }) }
     }
     // a change of screen dips the monitor to dark and back, so it never jumps from one screen to the next
-    const dip = async (msg, settle) => { set({ blink: true }); await wait(0.35); post(msg); await wait(settle); set({ blink: false }); await wait(0.35) }
-    const show = (what, settle = 1.2) => dip({ type: 'mila:show', what }, settle)
-    const chapter = (c, settle = 1.2) => dip({ type: 'mila:chapter', chapter: c }, settle)
+    const show = async (what, settle = 1.2) => { post({ type: 'mila:show', what }); await wait(settle) }
+    const chapter = async (c, settle = 1.2) => { post({ type: 'mila:chapter', chapter: c }); await wait(settle) }
     const pad = async (cap) => { set({ pad: true, cap: cap ?? null }); await wait(1.2) }
     const sky = (d) => [...d.querySelectorAll('.nav-btn, button')].find((b) => /Mila.s stars/.test(b.textContent)) ?? d.querySelector('.cv-skyt')
 
@@ -554,7 +553,7 @@ export function DemoFilm({ active, thumb }) {
     const lit = (sel, z = 1.22) => {
       if (!sel) return set({ lit: null, cam: { fx: 0.5, fy: 0.5, s: 1 } })
       const r = at(sel, 0); if (!r) return
-      const cam = z <= 1 ? { fx: 0.5, fy: 0.5, s: 1 } : { fx: 0.5 + (r.x + r.w / 2 - 0.5) * 0.6, fy: 0.5 + (r.y + r.h / 2 - 0.5) * 0.6, s: z } // z 1: light it, keep the screen centred
+      const cam = { fx: 0.5, fy: 0.5, s: 1 } // the monitor holds its size and place; the spotlight does the pointing
       set({ lit: { cx: r.x + r.w / 2, cy: r.y + r.h / 2, rx: Math.max(r.w * 0.85, 0.14), ry: Math.max(r.h * 1.1, 0.12) }, cam })
     }
     // lift a piece of the screen out of it, toward us
@@ -578,10 +577,10 @@ export function DemoFilm({ active, thumb }) {
       // (held), the screen doing the work (every tap shown), then the result, what they didn't have to do, with
       // our reasoning in a small line beneath it.
       const line = async (t, k = null) => { cap(t, k); await wait(0.6); await gate() } // held until →
-      const scene = async ({ when, name, p, q, still }) => {
+      const scene = async ({ when, name, p, q, still, say }) => {
         cap(null); res(null); lit(null); set({ pad: false, foot: still ? { id: still, at: R.clock } : null })
-        feat(name, p); ask(q, p); set({ when }); await wait(0.9); await gate()
-        ask(null); set({ when: null })
+        feat(name, p); ask(q, p); set({ when }); if (say) cap(say); await wait(0.9); await gate()
+        ask(null); cap(null); set({ when: null })
       }
       const result = async (t, w) => { cap(null); lit(null); res(t, w); await wait(0.8); await gate(); res(null) }
 
@@ -591,7 +590,7 @@ export function DemoFilm({ active, thumb }) {
       await line('Meet Mila: born thirteen weeks early, at 880 grams. She’s built from the families we met.')
       cap(null); set({ foot: { id: 'dad', at: R.clock } }); await wait(1)
       await line('It’s 4:20 in the morning, and her dad has just arrived.')
-      await scene({ when: 'Day 1 · 4:20 a.m.', name: 'First screen', p: 'comprehension', q: 'What is all of this on her?', still: 'explain' })
+      await scene({ when: 'Day 1 · 4:20 a.m.', name: 'First screen', p: 'comprehension', q: 'What is all of this on her?', still: 'explain', say: 'The team is moving fast around her, and every machine on her is new to him.' })
       set({ pad: true, foot: null }); await wait(0.8)
       lit('.fd-star', 1.18); await line('Her screen opens with her: her name, and how small she is.', 'connection')
       lit(null); await chapter('story', 0.2); feat('What’s on them', 'comprehension')
@@ -603,7 +602,7 @@ export function DemoFilm({ active, thumb }) {
       // ── 2 · Mom's first visit: catching up
       mark('Mom')
       await show('today', 0.1); day(3)
-      await scene({ when: 'Day 3', name: 'Their day', p: 'connection', q: 'What happened while I was away?', still: 'mom' })
+      await scene({ when: 'Day 3', name: 'Their day', p: 'connection', q: 'What happened while I was away?', still: 'mom', say: 'On the third day, Mom is finally well enough to come up. She’s missed everything so far.' })
       set({ pad: true, foot: null }); await wait(0.8)
       await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.3)
       lit('.cv-cap', 1.2); await line('Her days, hour by hour, with every moment her nurses noted.', 'connection')
@@ -615,7 +614,7 @@ export function DemoFilm({ active, thumb }) {
 
       // ── 3 · Planning tomorrow
       mark('What’s ahead')
-      await scene({ when: 'Day 3', name: 'What’s ahead', p: 'awareness', q: 'What’s next, and who is caring for her tonight?', still: 'ahead' })
+      await scene({ when: 'Day 3', name: 'What’s ahead', p: 'awareness', q: 'What’s next, and who is caring for her tonight?', still: 'ahead', say: 'Then the worry turns to what comes next, and who will be with her tonight.' })
       set({ pad: true, foot: null }); await wait(0.4)
       await tap('.cv-ahead-btn'); await wait(0.8)
       lit((d) => d.querySelector('.ah'), 1.05); await line('Her week at a glance: rounds tomorrow at 10, and what’s planned.', 'awareness')
@@ -628,7 +627,7 @@ export function DemoFilm({ active, thumb }) {
       // ── 4 · Day 23: looking back at the week she missed
       mark('Looking back')
       await show('today', 0.2); day(23)
-      await scene({ when: 'Day 23 · three weeks in', name: 'Their stars', p: 'connection', q: 'What did I miss that first week?' })
+      await scene({ when: 'Day 23 · three weeks in', name: 'Their stars', p: 'connection', q: 'What did I miss that first week?', say: 'Three weeks in, Mom wants to see the week she missed while she was recovering.' })
       set({ pad: true }); look('sky'); await wait(0.6)
       await tap(sky); await line('Every day of her stay becomes a star.')
       for (let n = 0; n < 40 && !find('.cv-gweek'); n++) await wait(0.25) // until her sky has opened
