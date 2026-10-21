@@ -26,6 +26,8 @@
   header { max-width: 1240px; margin: 0 auto; padding: 48px 24px 12px; }
   h1 { margin: 0; font: 400 34px/1.2 var(--word); color: var(--cream); }
   header p { margin: 10px 0 0; max-width: 70ch; color: var(--muted); font-size: 15px; line-height: 1.55; }
+  .sec { max-width: 1240px; margin: 34px auto 0; padding: 0 24px; font: 400 22px/1.2 var(--word); color: var(--cream); }
+  .sec span { display: block; margin-top: 6px; font: 14px Geist, sans-serif; color: var(--muted); }
   .grid { max-width: 1240px; margin: 0 auto; padding: 28px 24px 80px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr)); gap: 20px; }
   .card { position: relative; border: 1px solid var(--line); border-radius: 18px; background: var(--card); overflow: hidden; }
   .stage { position: relative; height: 230px; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 60%, #12121c, #08080b 75%); }
@@ -73,8 +75,11 @@
 <body>
 <header>
   <h1>constellate · logo ideas</h1>
-  <p>Twelve directions, from a light touch to the word becoming a constellation. Sparkles use the product's star colours, so they don't have to match the cream of the word. The tiny version in each card's corner shows how it reads at the size of the deck's top-left mark.</p>
+  <p>Eight simple options first, then twelve bolder directions, from a light touch to the word becoming a constellation. Sparkles use the product's star colours, so they don't have to match the cream of the word. The tiny version in each card's corner shows how it reads at the size of the deck's top-left mark.</p>
 </header>
+<h2 class="sec">Simple<span>One or two sparkles. The word does the work.</span></h2>
+<main class="grid" id="g-simple"></main>
+<h2 class="sec">Bolder<span>The word starts to become a constellation.</span></h2>
 <main class="grid" id="grid"></main>
 
 <template id="star"><svg class="sp" viewBox="-12 -12 24 24"><path d="M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z" /></svg></template>
@@ -83,6 +88,25 @@
   // Each idea: the word as letters, plus marks placed on letters (as fractions of that letter's box) and lines
   // joining the marks in order. Letters marked `hide` keep their space but are drawn as the mark instead.
   const W = 'constellate'.split('')
+  // simple: one or two marks, nothing replaced except (in one) the o
+  const SIMPLE = [
+    { t: 'One gold sparkle', d: 'The word in cream, one sparkle after it in gold. The quietest version.',
+      marks: [{ L: 10, x: 1.28, y: .1, s: 24, c: '--gold' }] },
+    { t: 'A star for a full stop', d: 'The sparkle sits on the line where a full stop would go: constellate, finished with a star.',
+      marks: [{ L: 10, x: 1.2, y: .84, s: 17, c: '--gold' }] },
+    { t: 'A star before the name', d: 'A single sparkle leads the word, like an icon. Also works alone as the tab icon.',
+      marks: [{ L: 0, x: -.8, y: .52, s: 28, c: '--gold' }] },
+    { t: 'Two stars, joined', d: 'Two sparkles and the faint line between them: the smallest possible constellation.',
+      marks: [{ L: 10, x: 1.22, y: .3, s: 11, c: '--lilac' }, { L: 10, x: 1.78, y: -.12, s: 18, c: '--gold' }], join: 'all' },
+    { t: 'Three stars, joined', d: 'A tiny three-star constellation after the word, in three of the product’s tints.',
+      marks: [{ L: 10, x: 1.22, y: .42, s: 10, c: '--sky' }, { L: 10, x: 1.7, y: -.08, s: 16, c: '--gold' }, { L: 10, x: 2.05, y: .52, s: 11, c: '--rose' }], join: 'all' },
+    { t: 'A star above the l', d: 'One sparkle floating just above the second l, like an accent on the letter.',
+      marks: [{ L: 7, x: .5, y: -.3, s: 15, c: '--gold' }] },
+    { t: 'The o, softly', d: 'The o is swapped for a sparkle in gold. A single, simple change to the letters.',
+      marks: [{ L: 1, x: .5, y: .64, s: 30, c: '--gold', hide: true }] },
+    { t: 'Spaced, with a small star', d: 'The letters opened up a little, and a small star after. Calm and airy, good at small sizes.',
+      spaced: true, marks: [{ L: 10, x: 1.42, y: .16, s: 13, c: '--gold' }] },
+  ]
   const IDEAS = [
     { t: 'Two sparkles, in other colours', d: 'Today’s logo, but the sparkles take the product’s star tints (gold and lilac) instead of the word’s cream. Light touch, easy to read.',
       after: [{ x: 1.12, y: .05, s: 30, c: '--gold' }, { x: 1.48, y: -.32, s: 14, c: '--lilac' }] },
@@ -120,12 +144,12 @@
   const NS = 'http://www.w3.org/2000/svg'
   const planet = (s) => { const v = document.createElementNS(NS, 'svg'); v.setAttribute('viewBox', '-20 -20 40 40'); v.classList.add('planet'); v.style.setProperty('--s', `${s}px`); v.innerHTML = '<g transform="rotate(-18)"><ellipse rx="17" ry="5.2"/></g><circle r="8"/><g transform="rotate(-18)"><path d="M-17 0 A17 5.2 0 0 0 17 0" fill="none" stroke="var(--copper)" stroke-width="1.6"/></g>'; return v }
 
-  function build(idea, i) {
+  function build(idea, i, into = 'grid') {
     const card = document.createElement('article'); card.className = 'card'
     card.innerHTML = `<span class="n">${String(i + 1).padStart(2, '0')}</span><div class="stage"></div><div class="meta"><b>${idea.t}</b><span>${idea.d}</span></div>`
     const stage = card.querySelector('.stage')
     const make = () => {
-      const logo = document.createElement('div'); logo.className = `logo ${idea.draw ? 'draw' : ''}`
+      const logo = document.createElement('div'); logo.className = `logo ${idea.draw ? 'draw' : ''}`; if (idea.spaced) logo.style.letterSpacing = '.06em'
       const word = document.createElement('span'); word.className = 'word'; word.style.display = 'inline-flex'
       const letters = W.map((ch) => { const s = document.createElement('span'); s.className = 'L'; s.textContent = ch; word.appendChild(s); return s })
       if (idea.mark) { // a small constellation before the word
@@ -169,10 +193,10 @@
       b.onclick = () => { const n = make(); big.logo.replaceWith(n.logo); big.logo = n.logo; requestAnimationFrame(() => join(n.logo, n.placed)) }
       card.appendChild(b)
     }
-    document.getElementById('grid').appendChild(card)
+    document.getElementById(into).appendChild(card)
     return () => { join(big.logo, big.placed); join(small.logo, small.placed) }
   }
-  const joins = IDEAS.map(build)
+  const joins = [...SIMPLE.map((x, i) => build(x, i, 'g-simple')), ...IDEAS.map((x, i) => build(x, i))]
   // fonts change the letters' widths: draw the lines after they load
   ;(document.fonts?.ready ?? Promise.resolve()).then(() => requestAnimationFrame(() => joins.forEach((f) => f())))
 </script>
