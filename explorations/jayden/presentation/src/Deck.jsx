@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SLIDES } from './slides.jsx'
-import { StarGlyph } from './glyphs.jsx'
+import { Wordmark } from './glyphs.jsx'
 import { NARRATION } from './narration.js'
 
 // The case study as a website you present from. One idea at a time; → / space / the › button to go on.
@@ -61,7 +61,7 @@ export function Deck() {
     <div className={`deck tint-${s.tint ?? 'night'} ${s.bare ? 'is-bare' : ''}`} style={{ '--i': i }}>
       <Sky />
       <header className="deck-top">
-        <span className="deck-mark"><StarGlyph size={14} />Constellate</span>
+        <span className="deck-mark"><Wordmark /></span>
         <span className="deck-where"><span key={s.section} className="deck-section">{s.section}</span><button type="button" className="deck-panel-btn" onClick={openPanel} title="Story overview (O)">Overview ↗</button><span className="deck-count">{String(i + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}</span></span>
       </header>
 
@@ -75,10 +75,7 @@ export function Deck() {
 
       <DemoPad side={s.padSide} show={s.clipFirst && step === 0 ? null : Array.isArray(s.feature) ? s.feature[Math.min(step, s.feature.length - 1)] : s.feature} />
 
-      {(() => {
-        const n = NARRATION[s.id], line = Array.isArray(n) ? n[Math.min(step, n.length - 1)] : n
-        return line && (!s.bare || s.cc) && <p key={`${s.id}-${line}`} className="deck-cc">{line}</p>
-      })()}
+      {(!s.bare || s.cc) && <Caption key={`${s.id}-${step}`} id={s.id} step={step} />}
 
       <footer className="deck-foot">
         <Progress i={i} go={go} />
@@ -89,6 +86,22 @@ export function Deck() {
       </footer>
     </div>
   )
+}
+
+/* ---------- Captions ---------- */
+// A slide's narration is one line, one line per step, or { timed: [lines], every: ms }: each timed line takes
+// over from the one before it `every` ms after the slide comes on. Keyed by slide and step, so it starts over.
+function Caption({ id, step }) {
+  const n = NARRATION[id]
+  const timed = n && typeof n === 'object' && !Array.isArray(n)
+  const [t, setT] = useState(0)
+  useEffect(() => {
+    if (!timed) return
+    const ids = n.timed.slice(1).map((_, j) => setTimeout(() => setT(j + 1), n.every * (j + 1)))
+    return () => ids.forEach(clearTimeout)
+  }, [n, timed])
+  const line = timed ? n.timed[t] : Array.isArray(n) ? n[Math.min(step, n.length - 1)] : n
+  return line ? <p key={`${id}-${line}`} className="deck-cc">{line}</p> : null
 }
 
 /* ---------- The sky behind everything ---------- */

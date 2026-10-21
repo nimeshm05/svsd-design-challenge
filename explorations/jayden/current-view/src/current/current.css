@@ -1,9 +1,3 @@
-/* Body text in Aquavit too, at its true weights (400 is Regular). Geist where Aquavit isn't active. */
-@font-face { font-family: "Constellate Text"; font-weight: 1 349; src: local("Aquavit Light"), local("Aquavit-Light"); }
-@font-face { font-family: "Constellate Text"; font-weight: 350 449; src: local("Aquavit Regular"), local("Aquavit-Regular"); }
-@font-face { font-family: "Constellate Text"; font-weight: 450 549; src: local("Aquavit Medium"), local("Aquavit-Medium"); }
-@font-face { font-family: "Constellate Text"; font-weight: 550 649; src: local("Aquavit Semibold"), local("Aquavit-Semibold"); }
-@font-face { font-family: "Constellate Text"; font-weight: 650 1000; src: local("Aquavit Bold"), local("Aquavit-Bold"); }
 /* The display font: Matrix II (Adobe, active on Jayden's Mac), one cut lighter than the weight Fraunces used
    (300 and 400 are its Book; 500 its Regular; 600 and up its Bold). Real italics, for quotes.
    Where Matrix II isn't active, these faces don't load and the stack falls back to Fraunces. */
@@ -351,12 +345,12 @@
 }
 
 /* ================= Two styles from the design board =================
-   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Matrix II for titles, Aquavit for text (Adobe fonts, active on Jayden's Mac; Fraunces and Geist where they aren't).
+   Night Nursery: Nimesh's look. Cream starlight, copper warmth, violet gas, Matrix II for titles (an Adobe font, active on Jayden's Mac; Fraunces where it isn't) + Geist.
    Confetti Constellations: playful. Sunshine stars, thick light-blue lines, confetti, Young Serif + Figtree.
    Both on a black sky. Each style only sets tokens; the components read them. */
 .cv-page.theme-nursery {
   --cream: #F3E3B5; --warm: #FFB38A; --line-sky: #F3E3B5; --glow: rgba(243, 227, 181, .35);
-  --font-display: "Constellate Display", "Fraunces", Georgia, serif; --font-ui: "Constellate Text", "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
+  --font-display: "Constellate Display", "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
 }
 .cv-page.theme-confetti {
   --cream: #FFD23F; --warm: #FF8FC8; --line-sky: #7CC0FF; --glow: rgba(255, 210, 63, .35);
@@ -2420,8 +2414,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 .cv-pop:not(.has-fig) { width: min(380px, 90vw); padding-left: 20px; }
 .cv-pop .cv-her-fig { flex: none; margin: 0; }
 .cv-pop-words { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.cv-pop-k { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.theme-nursery .cv-pop-k { font-family: "Geist Mono", ui-monospace, monospace; font-weight: 500; letter-spacing: .08em; }
-.cv-pop-word { margin: 2px 0 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 24px; line-height: 1.18; color: var(--cream); }
+.cv-pop-word { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 24px; line-height: 1.18; color: var(--cream); }
 .cv-pop-stands { font-size: 12.5px; }
 .cv-pop-means { margin-top: 4px; font-size: 14.5px; line-height: 1.5; }

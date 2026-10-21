@@ -489,7 +489,6 @@ function OneLine({ text, d, h }) {
         <div className={`cv-pop ${t.device ? 'has-fig' : ''}`} role="dialog" aria-label={`${t.word}: what it means`}>
           {t.device && <HerFigure d={d} h={h} device={t.device} />}
           <div className="cv-pop-words">
-            <span className="cv-pop-k">What it means</span>
             <p className="cv-pop-word">{t.word}</p>
             {(g?.stands ?? t.stands) && <p className="cv-pop-stands">{g?.stands ?? t.stands}</p>}
             <p className="cv-pop-means">{g?.body ?? `${t.means[0].toUpperCase()}${t.means.slice(1)}.`}</p>

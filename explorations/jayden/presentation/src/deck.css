@@ -1,13 +1,13 @@
 /* The display font: Matrix II (Adobe, active on Jayden's Mac), one cut lighter than the weight Fraunces used
-   (300 and 400 are its Book; 500 its Regular; 600 and up its Bold). Its italic is Matrix II Script: quotes, questions, felt lines.
+   (300 and 400 are its Book; 500 its Regular; 600 and up its Bold). Its own italic, for quotes and questions.
    Where Matrix II isn't active, these faces don't load and the stack falls back to Fraunces. */
 @font-face { font-family: "Constellate Display"; font-weight: 1 449; src: local("MatrixIIOT-Book"), local("Matrix II OT Book"); }
 @font-face { font-family: "Constellate Display"; font-weight: 450 549; src: local("MatrixIIOT-Reg"), local("Matrix II OT Reg"); }
 @font-face { font-family: "Constellate Display"; font-weight: 550 749; src: local("MatrixIIOT-Bold"), local("Matrix II OT Bold"); }
 @font-face { font-family: "Constellate Display"; font-weight: 750 1000; src: local("MatrixIIOT-ExtraBold"), local("Matrix II OT Extra Bold"); }
-@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 1 449; src: local("MatrixIIScriptOT-Book"), local("Matrix II Script OT Book"); }
-@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 450 649; src: local("MatrixIIScriptOT-Reg"), local("Matrix II Script OT Reg"); }
-@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 650 1000; src: local("MatrixIIScriptOT-Bold"), local("Matrix II Script OT Bold"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 1 449; src: local("MatrixIIOT-BookItalic"), local("Matrix II OT Book Italic"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 450 649; src: local("MatrixIIOT-RegItalic"), local("Matrix II OT Reg Italic"); }
+@font-face { font-family: "Constellate Display"; font-style: italic; font-weight: 650 1000; src: local("MatrixIIOT-BoldItalic"), local("Matrix II OT Bold Italic"); }
 
 /* Mila's Sky case study, in design system 1 (Night Nursery): black sky, warm cream, Matrix II + Geist (Matrix II is an Adobe font, active on Jayden's Mac; elsewhere it falls back to Fraunces).
    The three pillars each have a color: Connection (gold), Comprehension (blue), Awareness (lilac). */
@@ -2091,5 +2091,27 @@ body:has(.panel) { overflow: auto; }
 @keyframes fin-ans-foot { to { opacity: .9; } }
 @media (max-width: 760px) { .fin-ans li { grid-template-columns: 22px 1fr; } .fin-ans li > span:last-child { grid-column: 2; } }
 
-/* the deck's other italic lines, in the same script */
+/* the deck's other italic lines, in the same italic */
 .define-meta span:last-child, .mila-note, .dfilm-tl li.is-alt span { font-family: var(--display); }
+
+/* ===== Paragraphs in the sans: running sentences read in Geist; Matrix II is for titles, statements and quotes ===== */
+.define-p, .nj-felt, .research-sec p, .bubble p, .cwalk-shot figcaption p, .idea2-words p > span, .big.is-day .big-sub, .big.is-hero .big-sub,
+.dfilm-why, .dfilm-c3, .born-early { font-family: var(--ui); font-style: normal; font-weight: 400; letter-spacing: 0; }
+.define-p { font-size: clamp(22px, 2.2vw, 30px); line-height: 1.5; }
+.nj-felt { font-size: clamp(18px, 1.55vw, 22px); line-height: 1.55; color: var(--text); }
+
+/* The wordmark: its "o" is a star, the height of the letters' x-height, sitting on the line like an o */
+.wordmark { white-space: nowrap; }
+.wm-o { display: inline-block; width: .6em; height: .6em; margin: 0 .035em; vertical-align: -.035em; fill: currentColor;
+  filter: drop-shadow(0 0 .12em rgba(255, 248, 230, .55)); }
+
+/* ===== Slide 21, the overview: more air between the headline and its three steps, and between the steps ===== */
+.slide-overview .ov { width: 44%; gap: 30px; }
+.slide-overview .ov-h { line-height: 1.25; max-width: 16ch; }
+.slide-overview .ov-steps { margin-top: 10px; gap: 26px; }
+.slide-overview .ov-steps li { row-gap: 6px; column-gap: 16px; }
+.slide-overview .ov-steps span { line-height: 1.6; max-width: 40ch; }
+
+/* the film's scenario pictures hold still: no slow push in */
+.foot-still { animation: none; transform: none; }
+.wm-o { width: .66em; height: .66em; vertical-align: -.06em; stroke: currentColor; stroke-width: .6; stroke-linejoin: round; }

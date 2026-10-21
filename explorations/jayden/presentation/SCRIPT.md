@@ -3,8 +3,8 @@
 What we say over each slide, in deck order (from the deck’s narration captions). Slides with builds have one line per click. The demo film’s lines follow its scenes.
 
 ## 1. Constellate — Title
-
-This is Constellate, a bedside screen for parents of babies in the NICU.
+1. *(on arrival)* Hi! We’re Jayden, Nimesh, and Sara. We’re currently masters students studying Human Centered Design and Engineering at the University of Washington in Seattle.
+2. *(after 8.5 s)* And today, we’ll be presenting on Constellate - a bedside screen for parents of babies in the NICU.
 
 ## 2. Niko — Meet Niko
 
@@ -39,11 +39,11 @@ Across those conversations, the same thing came up: parents get the pieces, but 
 And it isn’t only their families. Our secondary research showed the same: the NICU shapes how babies grow, how nurses work, and how parents cope.
 
 ## 9. 03 · The problem — Three needs (builds)
-1. It comes down to three needs. Connection: parents can’t bond the way they expected, and guilt fills the gap.
+1. It comes down to 3 needs. First is connection: parents can’t bond the way they expect, and guilt fills the gap.
 2. In their own words, connection can sound like: how can I feel close to my baby before I can hold them? And what happened while I was away?
 3. Comprehension: they have information, but not the whole picture.
 4. It sounds like: what is all of this on my baby? And what does that word mean?
-5. Awareness: time becomes a blur, and the next moment feels like a surprise.
+5. Last is awareness: time becomes a blur and the next moment feels like a surprise.
 6. It sounds like: what’s next, and who is caring for my baby tonight? How are they doing right now?
 
 ## 10. 03 · The problem — Competitive analysis
@@ -178,8 +178,8 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 ## 23. 07 · Constellate
 
-Six answers, one bedside screen. Each answers a question parents asked us, from the chart, with nothing new for nurses to write.
+To recap: six answers, one bedside screen. Each answers a question parents asked us, directly from the chart, with nothing new for nurses to write.
 
 ## 24. Constellate — Every star is hers to keep
 
-Every star is hers to keep. Thank you.
+Every star is theirs to keep. Thank you.

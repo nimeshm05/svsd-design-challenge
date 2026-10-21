@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Icon, StarGlyph } from './glyphs.jsx'
+import { Icon, StarGlyph, Wordmark } from './glyphs.jsx'
 import { Puzzle } from './puzzle.jsx'
 import { Answer, Feature } from './demo.jsx'
 import { DemoFilm } from './film.jsx'
@@ -71,7 +71,7 @@ function Title() {
   return (
     <div className="center title">
       <R d={0} className="title-k">A NICU storytelling case study</R>
-      <R d={1} as="h1" className="title-h">Constellate</R>
+      <R d={1} as="h1" className="title-h"><Wordmark /></R>
       <R d={2} as="p" className="title-sub">Transforming NICU care into a story, one star at a time.</R>
       <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
     </div>
@@ -1060,7 +1060,7 @@ function Close() {
   return (
     <div className="center close">
       <R d={0} className="close-star" aria-hidden="true"><StarGlyph size={64} color="#FFF8E6" /></R>
-      <R d={1} as="h2" className="close-h">Every star is hers to keep.</R>
+      <R d={1} as="h2" className="close-h">Every star is theirs to keep.</R>
       <R d={3} className="close-thanks">Thank you</R>
       <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
     </div>
@@ -1293,7 +1293,7 @@ function SolutionCover() {
   return (
     <div className="center title">
       <R d={0} className="title-k">Solution</R>
-      <R d={1} as="h1" className="title-h">Constellate</R>
+      <R d={1} as="h1" className="title-h"><Wordmark /></R>
       <R d={2} as="p" className="title-sub">A baby’s care, made something parents can follow.</R>
     </div>
   )

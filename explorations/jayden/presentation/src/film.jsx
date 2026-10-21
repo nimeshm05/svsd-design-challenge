@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Scene } from './demo.jsx'
-import { Icon, StarGlyph } from './glyphs.jsx'
+import { Icon, StarGlyph, Wordmark } from './glyphs.jsx'
 
 // The product demo as one self-playing film, in the manner of a product feature video. The real bedside
 // prototype sits in a bedside monitor on its arm; each moment of her stay opens on a title card and a
@@ -302,7 +302,7 @@ function Finale({ stage, sky }) {
           ))}
         </g>
       </svg>
-      <div className="fin-brand"><StarGlyph size={58} color="#FFF8E6" /><b>Constellate</b><span>Every baby’s story, one day at a time.</span></div>
+      <div className="fin-brand"><b><Wordmark /></b><span>Every baby’s story, one day at a time.</span></div>
     </div>
   )
 }

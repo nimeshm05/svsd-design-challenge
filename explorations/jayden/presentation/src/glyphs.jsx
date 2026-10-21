@@ -7,6 +7,15 @@ export function StarGlyph({ size = 22, color = 'currentColor', className = '' })
   )
 }
 
+// The name, with its "o" as an eight-point star (four long points, four short): set in the line like a letter, at the size of the text around it
+export function Wordmark({ className = '' }) {
+  return (
+    <span className={`wordmark ${className}`} role="img" aria-label="Constellate">
+      <span aria-hidden="true">c<svg className="wm-o" viewBox="-12 -12 24 24"><path d="M0.00 -11.00L0.73 -1.76L4.38 -4.38L1.76 -0.73L11.00 0.00L1.76 0.73L4.38 4.38L0.73 1.76L0.00 11.00L-0.73 1.76L-4.38 4.38L-1.76 0.73L-11.00 0.00L-1.76 -0.73L-4.38 -4.38L-0.73 -1.76Z" /></svg>nstellate</span>
+    </span>
+  )
+}
+
 // Symbols for the people at the bedside and for the three pillars, in DS1's line: soft cream strokes,
 // rounded ends, and a small four-point star as the accent, like everything else in Constellate.
 const star = (x, y, r) => `M${x} ${y - r}Q${x + r * 0.15} ${y - r * 0.15} ${x + r} ${y}Q${x + r * 0.15} ${y + r * 0.15} ${x} ${y + r}Q${x - r * 0.15} ${y + r * 0.15} ${x - r} ${y}Q${x - r * 0.15} ${y - r * 0.15} ${x} ${y - r}Z`

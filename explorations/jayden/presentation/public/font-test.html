@@ -41,7 +41,6 @@
     <label>Titles
       <select id="display">
         <option value='"Constellate Display", "Fraunces", Georgia, serif'>Matrix II, one weight lighter (current)</option>
-        <option value='"Aquavit", Georgia, serif'>Aquavit · Adobe</option>
         <option value='"Fraunces", Georgia, serif'>Fraunces</option>
         <option value='"Matrix II OT", Georgia, serif'>Matrix II · Adobe</option>
         <option value='"Matrix II Script OT", Georgia, serif'>Matrix II Script · Adobe</option>
@@ -53,7 +52,6 @@
     <label>Everything else
       <select id="ui">
         <option value='"Geist", "Helvetica Neue", Arial, sans-serif'>Geist (current)</option>
-        <option value='"Aquavit", "Helvetica Neue", Arial, sans-serif'>Aquavit · Adobe</option>
         <option value='"Matrix II OT", "Helvetica Neue", Arial, sans-serif'>Matrix II · Adobe</option>
       </select>
     </label>
@@ -95,7 +93,7 @@
     const c = document.createElement('canvas').getContext('2d')
     const width = (fam) => { c.font = `40px ${fam}, monospace`; return c.measureText('Hello, small one 0123 Wg').width }
     const base = width('__none__')
-    const gone = ['Aquavit', 'Matrix II OT', 'Matrix II Script OT'].filter((n) => width(`"${n}"`) === base)
+    const gone = ['Matrix II OT', 'Matrix II Script OT'].filter((n) => width(`"${n}"`) === base)
     $('missing').hidden = !gone.length
     $('missing').textContent = gone.length ? `Not active on this computer: ${gone.join(', ')}. Turn them on in Creative Cloud > Fonts.` : ''
   }
