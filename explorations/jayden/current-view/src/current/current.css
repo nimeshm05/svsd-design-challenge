@@ -2396,3 +2396,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .cv-page ::-webkit-scrollbar {
 @media (prefers-reduced-motion: reduce) {
   .ah-stars .cv-pstar.is-now path, .ah-stars .cv-pstar-glow, .ah-col-step { animation: none; }
 }
+
+/* A word's meaning, in the product's own panel style: her figure beside it, a small label, the word as a title */
+.cv-pop { width: min(460px, 92vw); flex-direction: row; align-items: center; gap: 18px; padding: 16px 20px 16px 16px; text-align: left;
+  border-color: color-mix(in srgb, var(--cream) 30%, transparent); }
+.cv-pop:not(.has-fig) { width: min(380px, 90vw); padding-left: 20px; }
+.cv-pop .cv-her-fig { flex: none; margin: 0; }
+.cv-pop-words { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.cv-pop-k { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.theme-nursery .cv-pop-k { font-family: "Geist Mono", ui-monospace, monospace; font-weight: 500; letter-spacing: .08em; }
+.cv-pop-word { margin: 2px 0 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: 400; font-size: 24px; line-height: 1.1; color: var(--cream); }
+.cv-pop-stands { font-size: 12.5px; }
+.cv-pop-means { margin-top: 4px; font-size: 14.5px; line-height: 1.5; }

@@ -258,6 +258,12 @@ export function Discharge({ theme, onBack }) {
   const bar = useRef(null) // the story's progress bar, filled each frame from the same clock that moves it on
   const phaseRef = useRef('intro') // survives a style change, so the mobile doesn't replay its story
   const [story, setStory] = useState({ phase: 'intro', step: 0 })
+  // a presentation can skip the story ahead to its last moment (mila:storyLast)
+  useEffect(() => {
+    const on = (e) => { if (e.data?.type === 'mila:storyLast') ctl.current?.last?.() }
+    window.addEventListener('message', on)
+    return () => window.removeEventListener('message', on)
+  }, [])
   const [leaving, setLeaving] = useState(null) // the story step whose words are dissolving away
   const shownStep = useRef(0)
   useEffect(() => {
@@ -373,7 +379,8 @@ export function Discharge({ theme, onBack }) {
     }
     const next = () => { if (phase === 'intro') (step < STEPS.length - 1 ? goStep(step + 1) : startConverge()) }
     const skip = () => { if (phase === 'mobile') return; if (phase === 'intro') dropAt = performance.now(); root.visible = true; endConverge() }
-    ctl.current = { next, skip, replay: startIntro }
+    const toLast = () => { if (phase === 'intro') goStep(STEPS.length - 1) } // straight to her whole stay, every star lit
+    ctl.current = { next, skip, last: toLast, replay: startIntro }
 
     // motion state
     let rotY = -Math.PI / 2 + Math.PI / TIERS[0].weeks // week 1 starts a little left of front

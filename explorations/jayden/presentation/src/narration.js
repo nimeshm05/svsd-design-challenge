@@ -50,7 +50,7 @@ export const NARRATION = {
   modality: 'How does the physical space impact the interactions? We designed for touch first, dim by default, with a night mode for the hours spent in the dark.',
   solution: 'Our solution: Constellate. A baby’s care, made something parents can follow.',
   overview: [
-    'Constellate is a bedside screen that turns a baby’s chart into a story that parents can follow. Each day becomes a star, detailed by what nurses already record.',
+    'Constellate is a bedside screen that turns a baby’s chart into a story that parents can follow. One idea runs through it: each day becomes a star, detailed by what nurses already record.',
     'Every week becomes a constellation, so parents can see the whole stay at a glance.',
     'And firsts become planets. Here’s how it works, through one baby’s stay.',
   ],

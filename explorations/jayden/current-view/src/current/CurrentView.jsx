@@ -105,6 +105,7 @@ export function CurrentView({ onSky }) {
       ahead: () => { goChapter('day'); later(() => setPage('ahead')) },
       night: () => { goChapter('day'); later(() => setNight(true)) },
       sky: () => { skyAt.current = Date.now(); goChapter('sky') },
+      skyNow: () => { skyAt.current = Date.now(); goChapter('day'); later(toSky, 50) }, // her stars, straight to the overview (today's star doesn't form first)
       // these pick up from wherever her sky already is, so one step leads into the next without starting over
       openWeek: () => {
         const go = () => { const w = document.querySelector('.cv-gweek'); if (w) w.click(); return !!w }
@@ -134,6 +135,7 @@ export function CurrentView({ onSky }) {
       if (e.data?.type === 'mila:chapter') goChapter(e.data.chapter)
       if (e.data?.type === 'mila:show') { if (e.data.what !== 'morning') Object.assign(today.clock, CLOCK); SHOW[e.data.what]?.() }
       if (e.data?.type === 'mila:day') setDayLabel(e.data.day ?? null) // a film can show the same screen on another day
+      if (e.data?.type === 'mila:hour') setCH(e.data.h) // a film can glide through the day, hour by hour
     }
     window.addEventListener('message', on)
     return () => window.removeEventListener('message', on)
@@ -484,11 +486,14 @@ function OneLine({ text, d, h }) {
           : <Fragment key={i}>{s}</Fragment>))}
       </p>
       {t && (
-        <div className="cv-pop" role="dialog" aria-label={`${t.word}: what it means`}>
+        <div className={`cv-pop ${t.device ? 'has-fig' : ''}`} role="dialog" aria-label={`${t.word}: what it means`}>
           {t.device && <HerFigure d={d} h={h} device={t.device} />}
-          <p className="cv-pop-word">{t.word}</p>
-          {(g?.stands ?? t.stands) && <p className="cv-pop-stands">{g?.stands ?? t.stands}</p>}
-          <p className="cv-pop-means">{g?.body ?? `${t.means[0].toUpperCase()}${t.means.slice(1)}.`}</p>
+          <div className="cv-pop-words">
+            <span className="cv-pop-k">What it means</span>
+            <p className="cv-pop-word">{t.word}</p>
+            {(g?.stands ?? t.stands) && <p className="cv-pop-stands">{g?.stands ?? t.stands}</p>}
+            <p className="cv-pop-means">{g?.body ?? `${t.means[0].toUpperCase()}${t.means.slice(1)}.`}</p>
+          </div>
         </div>
       )}
     </>

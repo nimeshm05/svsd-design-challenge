@@ -28,6 +28,12 @@ export function Remembering({ theme }) {
   const upTo = end ? stay.today : STORY[step].d // her sky, filled in up to this day
   const here = end ? lit : STORY[step].d
   const go = () => setStep((s) => Math.min(s + 1, STORY.length))
+  // a presentation can go straight to the whole of her kept sky (mila:remEnd)
+  useEffect(() => {
+    const on = (e) => { if (e.data?.type === 'mila:remEnd') setStep(STORY.length) }
+    window.addEventListener('message', on)
+    return () => window.removeEventListener('message', on)
+  }, [])
   useEffect(() => {
     const key = (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go() } }
     window.addEventListener('keydown', key)

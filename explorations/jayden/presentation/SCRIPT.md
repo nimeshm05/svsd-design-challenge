@@ -102,7 +102,7 @@ Within those constraints, there was one key insight: everything parents need to 
 Our solution: Constellate. A baby’s care, made something parents can follow.
 
 ## 21. 06 · Constellate — Constellate in one line
-1. Constellate is a bedside screen that turns a baby’s chart into a story that parents can follow. Each day becomes a star, detailed by what nurses already record.
+1. Constellate is a bedside screen that turns a baby’s chart into a story that parents can follow. One idea runs through it: each day becomes a star, detailed by what nurses already record.
 2. Every week becomes a constellation, so parents can see the whole stay at a glance.
 3. And firsts become planets. Here’s how it works, through one baby’s stay.
 
@@ -112,7 +112,7 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 - This is Mila. She was born thirteen weeks early, at 880 grams. She’s inspired by the families we met, like Niko.
 - It’s 4:20 in the morning. Her dad has just arrived at the NICU, while Mom recovers from surgery.
-- *(scenario picture)* Her doctor and nurse explain everything at once: the breathing tube, the wires, the monitors.
+- *(scenario picture)* Her doctor and nurse explain everything at once: the breathing tube, the wires, the monitors. It’s too much to take in. Then they’re called away, and he’s alone again, asking the same question.
 - *(question card · Day 1 · 4:20 a.m.)* “What is all of this on her?”
 - At her bedside, the screen opens with who she is: her name, her time of birth, and her current weight.
 - Then it walks him through each device on her, one at a time, lit on her body avatar, in one plain sentence.
@@ -144,11 +144,12 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 - *(scenario picture)* Three weeks in, on a quiet morning at the bedside, Mom wonders about the first week she missed.
 - *(question card · Day 23 · three weeks in)* “What did I miss that first week?”
-- Each day of Mila’s stay is a star. Today’s joins the rest.
+- She opens Mila’s stars: her whole stay at a glance, one star for every day.
 - She opens the first week, the one she spent recovering upstairs.
 - And she gets to know her daughter: the little things her nurses noticed, like how Mila loved to grab Dad’s thumb.
 - And there it is: the day Dad first held her, recorded as it happened.
-- *(result)* ✓ She sees the week she missed, gets to know who Mila is, and finds the first time she was held.
+- Every day keeps its details from the chart too: what was helping her breathe, and how much she weighed.
+- *(result)* ✓ She sees the week she missed: who Mila was becoming, how she was doing each day, and the first time she was held.
   *(why)* Progress without charts or percentiles. Firsts are planets, worth celebrating.
 
 **5 · Day 90 — going home (plays on its own)**
@@ -166,8 +167,6 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 - *(title card)* Even a short life is a whole story. Every day of it matters.
 - For them, Constellate becomes a gentle memorial: a place that holds every day they shared.
 - Whenever they’re ready, they can open their baby’s sky again: who they were, the little things they loved, and every day they had together.
-- *(result)* ✓ Who she was, and every moment they had, kept for as long as they want.
-  *(why)* Nothing assumes an outcome. It opens only when the family chooses. It celebrates her life as a person, not a patient.
 
 **Closing**
 
