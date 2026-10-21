@@ -1978,3 +1978,16 @@ body:has(.panel) { overflow: auto; }
 .ov-why blockquote p { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(15px, 1.3vw, 18px); color: var(--text-2); }
 .ov-why cite { display: block; margin-top: 4px; font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .ov-steps li { grid-template-columns: 18px 1fr; } .ov-steps i { grid-row: auto; margin-top: 11px; } .ov-steps { gap: 10px; }
+
+/* concept slide: what it is | why we chose it, equally weighted */
+.ov-pairs { display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; row-gap: 4px; }
+.ov-head { font-family: var(--mono); font-size: 11.5px; color: var(--muted); padding-bottom: 6px; border-bottom: 1px solid rgba(243, 227, 181, .14); }
+.ov-pair { display: contents; }
+.ov-pair b { padding: 10px 0; font-family: var(--display); font-weight: 400; font-size: clamp(18px, 1.7vw, 24px); line-height: 1.25; color: var(--text); opacity: .3; transition: opacity .6s ease, color .6s ease; border-bottom: 1px solid rgba(243, 227, 181, .07); }
+.ov-pair.is-past b { opacity: .55; }
+.ov-pair.is-on b { opacity: 1; color: #FFF8E6; }
+.ov-pair.is-on .ov-why-t { color: var(--cream); }
+.ov-q { margin: 6px 0 0; animation: rise .7s var(--ease) both; }
+.ov-q p { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.4; color: var(--text-2); }
+.ov-q cite { display: block; margin-top: 5px; font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.ov-q-line { margin: 6px 0 0; font-size: clamp(15px, 1.3vw, 18px); color: var(--text-2); animation: rise .7s var(--ease) both; }
