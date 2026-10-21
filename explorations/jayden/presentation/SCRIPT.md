@@ -16,10 +16,10 @@ The neonatal intensive care unit, or the NICU, is the hospital unit where babies
 
 ## 4. 01 · Niko’s journey — A NICU journey, today: six moments (builds)
 1. Lauren had an emergency C-section, and Niko arrived more than two months early. Niko had to be transported to the NICU immediately, and Lauren was not able to hold or see him.
-2. She was healing in one place, while her newborn was cared for in another.
+2. She was healing in one place, while her newborn was cared for in another, and she felt guilty for not being there with him.
 3. Then came the explanations for Niko’s complex conditions, communicated with words they’ve never heard, all while they were exhausted and scared.
-4. Every day centered on the NICU. Long days and nights at his bedside, until the hours blurred together.
-5. Outside the unit, bills, work, and insurance followed them home, on top of the guilt of this situation and every hour they couldn’t be with him.
+4. Every day centered on the NICU. Long days and nights at his bedside, until the hours blurred together, and it was hard to tell whether he was making any progress.
+5. Outside the unit, bills, work, and insurance followed them home, on top of every hour they couldn’t be with him.
 
 ## 5. 02 · Research — So we listened: 4 interviews
 1. Niko’s story is one we heard first-hand.
@@ -141,33 +141,38 @@ Our solution: Constellate. A baby’s care, made something parents can follow.
 
 **4 · Day 23 — looking back at the week she missed**
 
-- *(scenario picture)* Three weeks in, Mom finds a quiet moment at the bedside, and opens Mila’s stars.
+- *(scenario picture)* Three weeks in, on a quiet morning at the bedside, Mom wonders about the first week she missed.
 - *(question card · Day 23 · three weeks in)* “What did I miss that first week?”
+- It’s 9:40 in the morning. Mila is wearing the sleepsuit Mom brought from home.
 - Each day of Mila’s stay is a star. Today’s joins the rest.
 - She opens the first week, the one she spent recovering upstairs.
 - And there it is: the day Dad first held her, kept as it happened.
 - *(result)* ✓ She sees the week she missed, moment by moment, and the first time her baby was held.
   *(why)* Progress without charts or percentiles. Firsts are planets, worth celebrating.
 
-**5 · Day 90 — going home**
+**5 · Day 90 — going home (plays on its own)**
 
 - Three months later, it’s finally time. Mila is going home.
 - Before they leave, her screen tells her whole stay one last time, star by star.
-- Her sky becomes a mobile, a model of her whole stay, theirs to take home.
+- Her sky becomes a mobile: a model of her whole stay, theirs to take home.
 - Now it hangs over her crib at home.
 
 **If she doesn't go home**
 
 - *(title card)* But not every baby gets to go home like Mila.
+- Some families leave the NICU without their baby.
 - *(title card)* Even a short life is a whole story. Every day of it mattered.
+- So Constellate never assumes how a stay will end.
+- When the family is ready, they can keep the baby’s sky: who they were, and every day they had together.
 - *(result)* ✓ Who she was, and every moment they had, kept for as long as they want it.
   *(why)* Nothing assumes an outcome. It opens only when the family chooses.
 
 **Closing**
 
-- Every baby’s life is a story.
-- In the NICU, it gets lost in charts, numbers and alarms.
-- Constellate keeps it, and celebrates every day of it.
+- Every baby’s life is a story, however long their stay.
+- But in the NICU, that story gets lost in charts, numbers and alarms.
+- Constellate keeps it, one star for every day, and celebrates every day of it.
+- This is Constellate: every baby’s story, one day at a time. Thank you.
 
 ## 23. 07 · Constellate
 

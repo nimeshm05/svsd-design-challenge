@@ -2027,3 +2027,25 @@ body:has(.panel) { overflow: auto; }
 
 /* ===== Captions in Fraunces, always on ===== */
 .deck-cc, .dfilm-cap { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 24; font-weight: 350; letter-spacing: .005em; }
+
+/* ===== Going home: the mobile at home, beside her screen ===== */
+.dfilm-pip { position: absolute; z-index: 9; right: 5vw; top: 50%; width: 36vw; aspect-ratio: 16 / 10; transform: translateY(-50%); border-radius: 18px; overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 255, 255, .08); animation: pip-in 1.1s .2s var(--ease) both; transition: opacity .9s ease; }
+.dfilm-pip.is-out { opacity: 0; }
+.dfilm-pip .foot { position: absolute; inset: 0; animation: none; background: #000; }
+.dfilm-pip .foot-box { position: absolute; inset: 0; left: 0; top: 0; width: 100%; height: 100%; aspect-ratio: auto; transform: none; animation: none; }
+@keyframes pip-in { from { opacity: 0; transform: translate(24px, -50%); filter: blur(6px); } to { opacity: 1; transform: translate(0, -50%); filter: none; } }
+
+/* ===== Closing: "Constellate keeps it" over Mila's own sky ===== */
+.fin-sky { position: absolute; inset: 0; opacity: 0; transition: opacity 1.8s ease; pointer-events: none; }
+.fin-sky svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.fin.has-sky.is-s3 .fin-sky, .fin.has-sky.is-s4 .fin-sky { opacity: 1; }
+.fin.has-sky.is-s4 .fin-sky { opacity: .35; }
+.fin.has-sky.is-s3 .fin-art, .fin.has-sky.is-s4 .fin-art { opacity: 0; transition: opacity 1.2s ease; }
+.fin-words { z-index: 2; }
+
+/* ===== Concepts: sketched by hand, like the modality sketches ===== */
+.cx-card .cx-sketch { margin-bottom: 4px; }
+.cx-card .sk.is-ray { stroke-dasharray: 3 6; }
+.fin-sky .rem-sky { inset: 8% 6% 14%; width: 88%; height: 78%; }
+.fin-sky .fin-sky-far { opacity: .6; }
