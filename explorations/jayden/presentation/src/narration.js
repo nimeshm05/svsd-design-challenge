@@ -42,6 +42,11 @@ export const NARRATION = {
     'Now nothing is assumed, and the baby’s unique characteristics beyond the medical status are highlighted.',
     'Those three constraints shaped every screen.',
   ],
+  concepts: [
+    'We explored a few ways to show a baby’s stay: a growth chart, a garden, a road home, a journal, and constellations.',
+    'Each fell short. A growth chart ranks and compares. A garden suggests growth is a straight line. A road assumes every baby goes home. A journal is heavy to read, and more work for nurses.',
+    'Constellations held up: a story, not a chart. No ranking. Firsts kept as planets. A sky that holds every ending, and dark by nature for a light-sensitive NICU.',
+  ],
   mom: 'We started with a scenario: a tired mom in a NICU room, anxious about her baby.',
   modality: 'How would she interact with it? We designed for touch first, dim by default, with a night mode for the hours parents spend there in the dark.',
   solution: 'Our solution: Constellate. A baby’s care, made something parents can follow.',

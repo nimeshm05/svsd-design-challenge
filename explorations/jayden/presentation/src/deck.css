@@ -1991,3 +1991,23 @@ body:has(.panel) { overflow: auto; }
 .ov-q p { margin: 0; font-family: var(--display); font-style: italic; font-weight: 300; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.4; color: var(--text-2); }
 .ov-q cite { display: block; margin-top: 5px; font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .ov-q-line { margin: 6px 0 0; font-size: clamp(15px, 1.3vw, 18px); color: var(--text-2); animation: rise .7s var(--ease) both; }
+
+/* ===== concepts we explored ===== */
+.cx { width: min(1180px, 100%); display: flex; flex-direction: column; gap: 22px; }
+.cx-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.cx-card { display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 18px; border-radius: 16px; background: #0d0d11; border: 1px solid color-mix(in srgb, var(--cream) 14%, transparent); color: rgba(243, 227, 181, .8); transition: opacity .7s ease, filter .7s ease, border-color .7s ease, transform .7s var(--ease); }
+.cx-card svg { width: 100%; height: auto; }
+.cx-card b { font-family: var(--display); font-weight: 400; font-size: clamp(18px, 1.6vw, 22px); color: var(--text); }
+.cx-no, .cx-why { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--text-2); opacity: 0; transform: translateY(6px); transition: opacity .6s ease, transform .6s var(--ease); }
+.cx-why { padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.cx-why li::before { content: "✦ "; color: var(--cream); }
+.cx.is-s1 .cx-no, .cx.is-s2 .cx-no { opacity: 1; transform: none; }
+.cx.is-s2 .cx-card:not(.is-chosen) { opacity: .3; filter: grayscale(.4); }
+.cx.is-s2 .cx-card.is-chosen { border-color: color-mix(in srgb, var(--cream) 55%, transparent); box-shadow: 0 0 0 1px rgba(243, 227, 181, .15), 0 24px 60px rgba(243, 227, 181, .08); transform: translateY(-6px); }
+.cx.is-s2 .cx-why { opacity: 1; transform: none; }
+/* the entrance animation holds opacity and transform, so dim and lift with filter and margin instead */
+.cx.is-s2 .cx-card:not(.is-chosen) { filter: brightness(.38) grayscale(.5); }
+.cx.is-s2 .cx-card.is-chosen { margin-top: -8px; margin-bottom: 8px; }
+.cx-card > * { transition: opacity .7s ease; }
+.cx.is-s2 .cx-card:not(.is-chosen) > * { opacity: .3; }
+.cx.is-s2 .cx-card:not(.is-chosen) { border-color: rgba(243, 227, 181, .06); }

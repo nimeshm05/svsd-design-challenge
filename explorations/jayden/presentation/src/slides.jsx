@@ -1330,6 +1330,43 @@ function WhyStars() {
   )
 }
 
+/* ---------- v2: the concepts we explored, sketched, and why constellations won ---------- */
+// Sketches are drawn in the deck's hand-drawn line style. Three builds: the options; why each fell short; the one we chose.
+const SK = { fill: 'none', stroke: 'currentColor', strokeWidth: 2.2, strokeLinecap: 'round', strokeLinejoin: 'round' }
+const CONCEPTS = [
+  { name: 'Growth chart', no: 'Ranks and compares. A hard week looks like failure.', art: (
+    <g {...SK}><path d="M20 90 V18 M20 90 H150" /><path d="M24 80 C 50 76, 64 60, 82 62 S 112 40, 146 30" /><path d="M24 70 C 60 62, 90 44, 146 20" strokeDasharray="3 6" opacity=".55" /><path d="M24 88 C 60 84, 92 70, 146 52" strokeDasharray="3 6" opacity=".55" /></g>) },
+  { name: 'Garden', no: 'Growth isn’t a straight line, and a wilting plant on a hard day hurts.', art: (
+    <g {...SK}><path d="M60 92 H110 L104 70 H66 Z" /><path d="M85 70 C 84 54, 88 40, 86 22" /><path d="M86 48 C 70 44, 64 34, 66 26 C 78 28, 86 36, 86 48 Z" /><path d="M86 38 C 100 30, 112 32, 114 24 C 104 20, 92 26, 86 38 Z" /></g>) },
+  { name: 'Road home', no: 'Assumes a destination. Not every baby goes home.', art: (
+    <g {...SK}><path d="M18 92 C 50 86, 40 64, 72 60 S 104 44, 120 36" /><path d="M30 94 C 64 88, 56 68, 84 64 S 114 50, 128 42" opacity=".55" /><path d="M126 34 V18 L138 10 L150 18 V34 Z" /><circle cx="48" cy="80" r="3" /><circle cx="92" cy="54" r="3" /></g>) },
+  { name: 'Journal', no: 'Heavy to read at 3 a.m., and more writing for nurses.', art: (
+    <g {...SK}><path d="M24 24 C 46 18, 66 22, 84 30 C 102 22, 122 18, 144 24 V88 C 122 82, 102 86, 84 92 C 66 86, 46 82, 24 88 Z" /><path d="M84 30 V92" /><path d="M36 40 H70 M36 52 H72 M36 64 H66 M98 40 H132 M98 52 H128 M98 64 H130" opacity=".6" /></g>) },
+  { name: 'Constellations', chosen: true, art: (
+    <g><path {...SK} d="M24 78 L52 50 L80 62 L108 30 L140 44" opacity=".6" />
+      {[[24, 78], [52, 50], [80, 62], [140, 44]].map(([x, y]) => <path key={x} d={`M${x} ${y - 7}Q${x + 1} ${y - 1} ${x + 7} ${y}Q${x + 1} ${y + 1} ${x} ${y + 7}Q${x - 1} ${y + 1} ${x - 7} ${y}Q${x - 1} ${y - 1} ${x} ${y - 7}Z`} fill="#FFF8E6" />)}
+      <g transform="translate(108 30)"><ellipse rx="12" ry="4" fill="none" stroke="#FFB38A" strokeWidth="1.8" transform="rotate(-18)" /><circle r="5.5" fill="#EFDCAA" /></g></g>) },
+]
+const CHOSEN_WHY = ['A story, not a chart', 'No ranking, no percentiles', 'Firsts kept as planets', 'Holds every ending', 'Dark by nature, for a light-sensitive NICU']
+function Concepts({ step = 0 }) {
+  return (
+    <div className={`cx is-s${step}`}>
+      <R d={0} className="k">Concepts we explored</R>
+      <div className="cx-row">
+        {CONCEPTS.map((c, k) => (
+          <R key={c.name} d={1 + k} className={`cx-card ${c.chosen ? 'is-chosen' : ''}`}>
+            <svg viewBox="0 0 168 104" aria-hidden="true">{c.art}</svg>
+            <b>{c.name}</b>
+            {c.chosen
+              ? <ul className="cx-why">{CHOSEN_WHY.map((w) => <li key={w}>{w}</li>)}</ul>
+              : <p className="cx-no">{c.no}</p>}
+          </R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export const SLIDES = [
   { id: 'title', section: 'Constellate', planet: true, View: Title },
   { id: 'niko', section: 'Niko', View: Niko },
@@ -1347,6 +1384,7 @@ export const SLIDES = [
   { id: 'gap', section: '03 · The problem', tint: 'all', View: Gap },
   { id: 'hmw', section: '03 · The problem', tint: 'all', steps: 4, View: HMW },
   { id: 'brainstorm', section: '03 · Ideation', planet: true, steps: 2, View: Ideation },
+  { id: 'concepts', section: '03 · Concepts', steps: 3, View: Concepts },
   { id: 'mom', section: '04 · Modality', planet: true, View: Mom },
   { id: 'modality', section: '04 · Modality', View: Modality },
   { id: 'k-open', section: '04 · Constraints', View: KOpen },
