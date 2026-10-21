@@ -26,7 +26,7 @@ export const NARRATION = {
     'In their own words, connection can sound like: how can I feel close to my baby before I can hold them? And what happened while I was away?',
     'Comprehension: they have information, but not the whole picture.',
     'It sounds like: what is all of this on my baby? And what does that word mean?',
-    'Awareness: time becomes a blur, and the next moment feels like a surprise.',
+    'Last is awareness: time becomes a blur and the next moment feels like a surprise.',
     'It sounds like: what’s next, and who is caring for my baby tonight? How are they doing right now?',
   ],
   compete: 'Other tools help with logistics, monitoring, or journaling, but none of them turn a baby’s chart into something parents can actually follow.',
