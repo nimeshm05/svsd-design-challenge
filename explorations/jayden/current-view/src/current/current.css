@@ -1,6 +1,6 @@
 /* The display font: Matrix II (Adobe, active on Jayden's Mac), one cut lighter than the weight Fraunces used
    (300 and 400 are its Book; 500 its Regular; 600 and up its Bold). Real italics, for quotes.
-   Where Matrix II isn't active, these faces don't load and the stack falls back to Fraunces. */
+   Where Matrix II isn't installed, these faces don't load and the stack uses the Adobe Fonts web project ("matrix-ii"), then Fraunces. */
 @font-face { font-family: "Constellate Display"; font-weight: 1 449; src: local("MatrixIIOT-Book"), local("Matrix II OT Book"); }
 @font-face { font-family: "Constellate Display"; font-weight: 450 549; src: local("MatrixIIOT-Reg"), local("Matrix II OT Reg"); }
 @font-face { font-family: "Constellate Display"; font-weight: 550 749; src: local("MatrixIIOT-Bold"), local("Matrix II OT Bold"); }
@@ -350,7 +350,7 @@
    Both on a black sky. Each style only sets tokens; the components read them. */
 .cv-page.theme-nursery {
   --cream: #F3E3B5; --warm: #FFB38A; --line-sky: #F3E3B5; --glow: rgba(243, 227, 181, .35);
-  --font-display: "Constellate Display", "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
+  --font-display: "Constellate Display", "matrix-ii", "Fraunces", Georgia, serif; --font-ui: "Geist", "Helvetica Neue", Arial, sans-serif; --display-style: normal;
 }
 .cv-page.theme-confetti {
   --cream: #FFD23F; --warm: #FF8FC8; --line-sky: #7CC0FF; --glow: rgba(255, 210, 63, .35);
