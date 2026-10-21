@@ -7,15 +7,14 @@ export function StarGlyph({ size = 22, color = 'currentColor', className = '' })
   )
 }
 
-// The name, lowercase, with two sparkles after it: the product's own four-point star, a large one and a small one
-export function Wordmark({ className = '' }) {
+// The name, lowercase, ending in a star where the full stop would be: the product's four-point sparkle, in
+// today's-star copper. With `intro`, the letters rise in one after another and the star lands last.
+const NAME = 'constellate'.split('')
+export function Wordmark({ className = '', intro = false }) {
   return (
-    <span className={`wordmark ${className}`} role="img" aria-label="Constellate">
-      <span aria-hidden="true">constellate</span>
-      <svg className="wm-star" viewBox="-12 -24 30 36" aria-hidden="true">
-        <path d="M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z" />
-        <path className="wm-small" d="M12 -20.5Q12.82 -15.82 17.5 -15Q12.82 -14.18 12 -9.5Q11.18 -14.18 6.5 -15Q11.18 -15.82 12 -20.5Z" />
-      </svg>
+    <span className={`wordmark ${intro ? 'is-intro' : ''} ${className}`} role="img" aria-label="Constellate">
+      <span className="wm-word" aria-hidden="true">{NAME.map((ch, k) => <span key={k} className="wm-l" style={{ '--k': k }}>{ch}</span>)}</span>
+      <svg className="wm-dot" viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z" /></svg>
     </span>
   )
 }

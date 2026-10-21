@@ -67,11 +67,11 @@ function Define({ k, word, short, say, children }) {
 const define = (props) => function DefineView() { return <Define {...props} /> }
 
 /* ---------- Opening ---------- */
-function Title() {
+function Title({ active }) {
   return (
     <div className="center title">
       <R d={0} className="title-k">A NICU storytelling case study</R>
-      <R d={1} as="h1" className="title-h"><Wordmark /></R>
+      <R d={1} as="h1" className="title-h"><Wordmark intro={active} /></R>
       <R d={2} as="p" className="title-sub">Transforming NICU care into a story, one star at a time.</R>
       <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
     </div>
@@ -1250,10 +1250,10 @@ function ClosingSky({ active }) {
   )
 }
 // 5: the name, as big as on the title slide
-function ClosingName() {
+function ClosingName({ active }) {
   return (
     <div className="center title cl-name">
-      <R d={0} as="h1" className="title-h"><Wordmark /></R>
+      <R d={0} as="h1" className="title-h"><Wordmark intro={active} /></R>
       <R d={1} as="p" className="title-sub">Every baby’s story, one day at a time.</R>
       <R d={3} className="close-thanks">Thank you</R>
       <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
@@ -1307,11 +1307,11 @@ function Voices() {
 }
 
 /* ---------- v2: the solution's cover ---------- */
-function SolutionCover() {
+function SolutionCover({ active }) {
   return (
     <div className="center title">
       <R d={0} className="title-k">Solution</R>
-      <R d={1} as="h1" className="title-h"><Wordmark /></R>
+      <R d={1} as="h1" className="title-h"><Wordmark intro={active} /></R>
       <R d={2} as="p" className="title-sub">A baby’s care, made something parents can follow.</R>
     </div>
   )

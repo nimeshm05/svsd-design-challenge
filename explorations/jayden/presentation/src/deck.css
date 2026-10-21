@@ -2129,10 +2129,21 @@ body:has(.panel) { overflow: auto; }
 .cl-answers .rc-art { width: 100%; max-height: 46vh; }
 .slide-c-keep > .cl-sky { max-width: none; width: 100%; }
 
-/* The wordmark: lowercase, then two of the product's sparkles, a large one and a small one above it */
-.wordmark { display: inline-flex; align-items: flex-start; }
-.wm-star { flex: none; width: .5em; height: .6em; margin: -.08em 0 0 .06em; overflow: visible; fill: currentColor; filter: drop-shadow(0 0 .1em rgba(255, 248, 230, .55)); }
-.wm-small { opacity: .85; }
+/* The wordmark: lowercase, ending in a copper star where the full stop would be */
+.wordmark { display: inline-flex; align-items: baseline; white-space: nowrap; }
+.wm-word { display: inline-flex; }
+.wm-l { display: inline-block; }
+.wm-dot { flex: none; width: .3em; height: .3em; margin-left: .04em; position: relative; top: .05em; overflow: visible; fill: #FFB38A;
+  filter: drop-shadow(0 0 .12em rgba(255, 179, 138, .75)); }
+/* the intro: letters rise in, one after another; then the star lands, flares, and keeps a soft twinkle */
+.is-intro .wm-l { opacity: 0; animation: wm-in .9s calc(.35s + var(--k) * .065s) cubic-bezier(.2, .8, .2, 1) forwards; }
+@keyframes wm-in { from { opacity: 0; transform: translateY(.22em); filter: blur(.08em); } to { opacity: 1; transform: none; filter: none; } }
+.is-intro .wm-dot { opacity: 0; transform-origin: 50% 50%; animation: wm-dot 1.1s 1.45s cubic-bezier(.2, .9, .3, 1.35) forwards, wm-twinkle 3.6s 2.8s ease-in-out infinite; }
+@keyframes wm-dot { 0% { opacity: 0; transform: translateY(-.9em) scale(.3) rotate(-120deg); }
+  60% { opacity: 1; transform: translateY(0) scale(1.35) rotate(10deg); filter: drop-shadow(0 0 .4em rgba(255, 179, 138, 1)); }
+  100% { opacity: 1; transform: none; } }
+@keyframes wm-twinkle { 0%, 100% { transform: scale(1); } 50% { transform: scale(.82) rotate(8deg); } }
+@media (prefers-reduced-motion: reduce) { .is-intro .wm-l, .is-intro .wm-dot { animation: none; opacity: 1; } }
 
 /* slides 23 and 24: the drawn story in a centered frame, under the deck's header like any slide */
 .cl-drawn { position: relative; width: min(1100px, 100%); height: min(72vh, 640px); }
