@@ -92,6 +92,7 @@ export function CurrentView({ onSky }) {
     if (Q.get('chapter')) goChapter(Q.get('chapter'))
     // the presentation can also ask for one feature at a time (mila:show)
     const later = (f, ms = 350) => setTimeout(f, ms)
+    const skyAt = { current: 0 } // when her sky was last asked for, so a later step doesn't restart it
     const SHOW = {
       first: () => goChapter('born'),
       walk: () => { goChapter('story'); later(() => setWalk(1)) },
@@ -100,12 +101,12 @@ export function CurrentView({ onSky }) {
       family: () => { goChapter('day'); later(() => setCH(d.saved[0].h)) },
       ahead: () => { goChapter('day'); later(() => setPage('ahead')) },
       night: () => { goChapter('day'); later(() => setNight(true)) },
-      sky: () => goChapter('sky'),
+      sky: () => { skyAt.current = Date.now(); goChapter('sky') },
       // these pick up from wherever her sky already is, so one step leads into the next without starting over
       openWeek: () => {
         const go = () => { const w = document.querySelector('.cv-gweek'); if (w) w.click(); return !!w }
         if (go()) return
-        if (!document.querySelector('.cv-galaxy')) goChapter('sky')
+        if (!document.querySelector('.cv-galaxy') && Date.now() - skyAt.current > 12000) SHOW.sky() // her sky isn't already on its way
         const t0 = Date.now(), id = setInterval(() => { if (go() || Date.now() - t0 > 15000) clearInterval(id) }, 300)
       },
       day6: () => { // her first week's planet day: the first time she was held

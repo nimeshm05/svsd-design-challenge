@@ -254,17 +254,25 @@ const PAINS = [
   { p: 'comprehension', qs: ['What is all of this on my baby?', 'What does that word mean?'], themes: [['Medical terminology', 'A whole new language'], ['Status of child', 'Is he okay today?'], ['Provider communication', 'A new nurse every shift']], pain: 'Parents have information, but not the whole picture.', q: '[Medical terminology] is a new language.' },
   { p: 'awareness', qs: ['What’s next, and who is caring for my baby tonight?', 'How are they doing right now?'], themes: [['Situational awareness', 'What’s happening right now'], ['Holistic awareness', 'How far he’s come, and what’s next']], pain: 'Time blurs, and the next moment is a surprise.', q: 'In the ICU, time just like, it doesn’t exist. It’s just a mash of time.' },
 ]
-// one pillar at a time, each with what a parent said
+// one pillar at a time, each card taking the last one's place; the next click brings what its parents ask beside it
 function Pillars({ step }) {
+  const at = Math.floor(step / 2), asks = step % 2 === 1
   return (
     <div className="pillars">
       <R d={0} className="k">Three needs</R>
       <div className="cols">
         {PAINS.map((x, k) => (
-          <div key={x.p} className={`col is-${x.p} ${step >= k ? 'is-in' : ''}`}>
+          <div key={x.p} className={`col is-${x.p} ${at === k ? 'is-in' : ''}`}>
             <span className="col-head"><Icon name={x.p} size={30} color={PILLARS[x.p].color} />{PILLARS[x.p].name}</span>
             <p className="col-pain">{x.pain}</p>
             <ul className="col-themes">{x.themes.map(([t, eg]) => <li key={t}><b>{t}</b><span>{eg}</span></li>)}</ul>
+          </div>
+        ))}
+        {/* keyed on the pillar so it rises in fresh each time */}
+        {PAINS.filter((_, k) => asks && k === at).map((x) => (
+          <div key={x.p} className={`pillars-ask pa is-${x.p}`}>
+            <R d={0} className="pa-k"><span>Parents ask</span></R>
+            {x.qs.map((q, k) => <R key={q} d={1 + k * 2} as="p" className="pa-q">&ldquo;{q}&rdquo;</R>)}
           </div>
         ))}
       </div>
@@ -434,7 +442,7 @@ function Mom() {
   return (
     <div className="center statement mom">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="p" className="statement-p">Picture a tired mom in the NICU, <L>anxious about her baby</L>.</R>
+      <R d={1} as="p" className="statement-p">Ideating interactions</R>
       <R d={3}><Shot src="./shots/modality-chat.png" pan={false} className="is-chat" alt="A teammate's message in our chat: imagining how a parent might interact with this from a hospital bed, by touch, remote control or gesture; imagining a tired mom on a bed who's anxious about her baby." /></R>
     </div>
   )
@@ -485,7 +493,7 @@ function Modality() {
   return (
     <div className="modes">
       <R d={0} className="k">Modality</R>
-      <R d={1} as="h2" className="h">How would she interact with it?</R>
+      <R d={1} as="h2" className="h">How would parents interact with it?</R>
       <div className="cols">
         {MODES.map((x, k) => (
           <R key={x.k} d={2 + k * 0.6} className={`col mode ${x.chosen ? 'is-chosen' : ''}`}>
@@ -712,12 +720,12 @@ const CONSTRAINTS = [
     before: { src: './shots/parent previous.png', caption: 'Only highlights key moments from the hospital, lacking the memory of the baby itself', alt: '' },
     after: { src: './shots/parent new.png', caption: 'Highlights the unique characteristics of the baby, beyond the medical status', alt: '' } },
 ]
-// Steps: 0 the table · then per walkthrough row: lift, before, after · last: the table again (the last label home).
+// Steps: 0 the table · then per walkthrough row: lift, before, after. The last row's "after" ends the slide.
 // Going from one row's "after" to the next row's "lift" is one click: the label flies home, the table blinks
 // back in, then the next row lifts.
 const WALK = CONSTRAINTS.flatMap((x, k) => (x.before ? [k] : []))
 const PHASES = ['lift', 'before', 'after']
-const CONSTRAINT_STEPS = WALK.length * PHASES.length + 2
+const CONSTRAINT_STEPS = WALK.length * PHASES.length + 1
 const walkAt = (step) => (step < 1 || step > WALK.length * PHASES.length
   ? { row: -1, phase: 'rest' }
   : { row: WALK[Math.floor((step - 1) / PHASES.length)], phase: PHASES[(step - 1) % PHASES.length] })
@@ -1188,17 +1196,6 @@ function Glance({ step = 0 }) {
   )
 }
 
-/* ---------- v2: each pillar, as the questions parents ask (big, one slide per pillar) ---------- */
-const PillarAsk = (p) => function PillarAskView() {
-  const x = PAINS.find((y) => y.p === p)
-  return (
-    <div className={`center pa is-${p}`}>
-      <R d={0} className="pa-k"><Icon name={p} size={22} color={PILLARS[p].color} />{PILLARS[p].name}<span>Parents ask</span></R>
-      {x.qs.map((q, k) => <R key={q} d={1 + k * 2} as="p" className="pa-q">&ldquo;{q}&rdquo;</R>)}
-    </div>
-  )
-}
-
 // after the competitive analysis, what it showed, in the pillar slides' design
 function Gap() {
   return (
@@ -1248,12 +1245,15 @@ function Recap() {
 
 /* ---------- v2: what Constellate is, beside the product itself ---------- */
 const CONCEPT = [
-  ['Every day becomes a star.', 'Shaped by what nurses already chart: the care, the changes, the moments family was there.'],
-  ['Every week, a constellation.', 'Her whole stay at a glance, so the days stop blurring together.'],
-  ['Her firsts are planets.', 'First touch, first hold, first bottle. The hard days stay too: stars never disappear.'],
+  ['Every day becomes a star.', 'Shaped by what nurses already chart: the care, the changes, the moments family was there.',
+    'A story, not a chart', 'Parents live their baby’s stay as moments, not numbers.', null],
+  ['Every week, a constellation.', 'The whole stay at a glance, so the days stop blurring together.',
+    'No harsh metrics', 'Nothing ranks a baby or compares them to anyone.', ['Not all babies start out the same way.', 'Former PICU parent']],
+  ['Firsts are planets.', 'First touch, first hold, first bottle. The hard days stay too: stars never disappear.',
+    'Moments to cherish', 'Kept for good, whatever happens.', ['They’re celebrating those little milestones that are actually a really big deal.', 'Lauren, Niko’s mom']],
 ]
 function Overview({ step = 0 }) {
-  // what it is, then the idea that runs through it, built a step at a time beside the live screen
+  // what it is, built a step at a time while the idea forms on the live screen beside it (the why is on the concepts slide)
   return (
     <div className="ov">
       <R d={0} className="k">Constellate</R>
@@ -1299,6 +1299,67 @@ function SolutionCover() {
   )
 }
 
+/* ---------- v2: why constellations: the decision behind the idea ---------- */
+const WHY_STARS = [
+  ['A story, not a chart.', 'Parents live their baby’s stay as moments, not numbers. Stars gather those moments into something they can follow and remember.', null],
+  ['No harsh metrics.', 'Nothing ranks a baby, or compares them to anyone. A star is shaped by their own days, never by a percentile.', ['Not all babies start out the same way, or go through the same things.', 'Former PICU parent']],
+  ['Moments to cherish.', 'Firsts become planets, worth celebrating. And stars never disappear, so the sky holds whatever ending a family faces.', ['They’re celebrating those little milestones that are actually a really big deal.', 'Lauren, Niko’s mom']],
+]
+function WhyStars() {
+  return (
+    <div className="ws">
+      <R d={0} className="k">Why constellations</R>
+      <div className="ws-grid">
+        {WHY_STARS.map(([t, d, q], k) => (
+          <R key={t} d={1 + k * 2} className="ws-col">
+            <StarGlyph size={20} color="#FFF8E6" />
+            <h3>{t}</h3>
+            <p>{d}</p>
+            {q && <blockquote><p>&ldquo;{q[0]}&rdquo;</p><cite>{q[1]}</cite></blockquote>}
+          </R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- v2: the concepts we explored, sketched, and why constellations won ---------- */
+// Sketches are drawn in the deck's hand-drawn line style. Three builds: the options; why each fell short; the one we chose.
+const SK = { fill: 'none', stroke: 'currentColor', strokeWidth: 2.2, strokeLinecap: 'round', strokeLinejoin: 'round' }
+const CONCEPTS = [
+  { name: 'Growth chart', no: 'Ranks and compares. A hard week looks like failure.', art: (
+    <g {...SK}><path d="M20 90 V18 M20 90 H150" /><path d="M24 80 C 50 76, 64 60, 82 62 S 112 40, 146 30" /><path d="M24 70 C 60 62, 90 44, 146 20" strokeDasharray="3 6" opacity=".55" /><path d="M24 88 C 60 84, 92 70, 146 52" strokeDasharray="3 6" opacity=".55" /></g>) },
+  { name: 'Garden', no: 'Growth isn’t a straight line, and a wilting plant on a hard day hurts.', art: (
+    <g {...SK}><path d="M60 92 H110 L104 70 H66 Z" /><path d="M85 70 C 84 54, 88 40, 86 22" /><path d="M86 48 C 70 44, 64 34, 66 26 C 78 28, 86 36, 86 48 Z" /><path d="M86 38 C 100 30, 112 32, 114 24 C 104 20, 92 26, 86 38 Z" /></g>) },
+  { name: 'Road home', no: 'Assumes a destination. Not every baby goes home.', art: (
+    <g {...SK}><path d="M18 92 C 50 86, 40 64, 72 60 S 104 44, 120 36" /><path d="M30 94 C 64 88, 56 68, 84 64 S 114 50, 128 42" opacity=".55" /><path d="M126 34 V18 L138 10 L150 18 V34 Z" /><circle cx="48" cy="80" r="3" /><circle cx="92" cy="54" r="3" /></g>) },
+  { name: 'Journal', no: 'Heavy to read at 3 a.m., and more writing for nurses.', art: (
+    <g {...SK}><path d="M24 24 C 46 18, 66 22, 84 30 C 102 22, 122 18, 144 24 V88 C 122 82, 102 86, 84 92 C 66 86, 46 82, 24 88 Z" /><path d="M84 30 V92" /><path d="M36 40 H70 M36 52 H72 M36 64 H66 M98 40 H132 M98 52 H128 M98 64 H130" opacity=".6" /></g>) },
+  { name: 'Constellations', chosen: true, art: (
+    <g><path {...SK} d="M24 78 L52 50 L80 62 L108 30 L140 44" opacity=".6" />
+      {[[24, 78], [52, 50], [80, 62], [140, 44]].map(([x, y]) => <path key={x} d={`M${x} ${y - 7}Q${x + 1} ${y - 1} ${x + 7} ${y}Q${x + 1} ${y + 1} ${x} ${y + 7}Q${x - 1} ${y + 1} ${x - 7} ${y}Q${x - 1} ${y - 1} ${x} ${y - 7}Z`} fill="#FFF8E6" />)}
+      <g transform="translate(108 30)"><ellipse rx="12" ry="4" fill="none" stroke="#FFB38A" strokeWidth="1.8" transform="rotate(-18)" /><circle r="5.5" fill="#EFDCAA" /></g></g>) },
+]
+const CHOSEN_WHY = ['A story, not a chart', 'No ranking, no percentiles', 'Firsts kept as planets', 'Holds every ending', 'Dark by nature, for a light-sensitive NICU']
+function Concepts({ step = 0 }) {
+  return (
+    <div className={`cx is-s${step}`}>
+      <R d={0} className="k">Concepts we explored</R>
+      <div className="cx-row">
+        {CONCEPTS.map((c, k) => (
+          <R key={c.name} d={1 + k} className={`cx-card ${c.chosen ? 'is-chosen' : ''}`}>
+            <svg viewBox="0 0 168 104" aria-hidden="true">{c.art}</svg>
+            <b>{c.name}</b>
+            {c.chosen
+              ? <ul className="cx-why">{CHOSEN_WHY.map((w) => <li key={w}>{w}</li>)}</ul>
+              : <p className="cx-no">{c.no}</p>}
+          </R>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export const SLIDES = [
   { id: 'title', section: 'Constellate', planet: true, View: Title },
   { id: 'niko', section: 'Niko', View: Niko },
@@ -1308,14 +1369,12 @@ export const SLIDES = [
   { id: 'voices', section: '02 · Research', View: Voices },
   { id: 'heard', section: '02 · Research', View: Heard },
   { id: 'wall', section: '02 · Research', View: Wall },
-  { id: 'pillars', section: '03 · The problem', planet: true, tint: 'all', steps: 3, View: Pillars },
-  { id: 'q-connection', section: '03 · The problem', tint: 'all', View: PillarAsk('connection') },
-  { id: 'q-comprehension', section: '03 · The problem', tint: 'all', View: PillarAsk('comprehension') },
-  { id: 'q-awareness', section: '03 · The problem', tint: 'all', View: PillarAsk('awareness') },
+  { id: 'pillars', section: '03 · The problem', planet: true, tint: 'all', steps: 6, View: Pillars },
   { id: 'compete', section: '03 · The problem', tint: 'all', View: Compete },
   { id: 'gap', section: '03 · The problem', tint: 'all', View: Gap },
   { id: 'hmw', section: '03 · The problem', tint: 'all', steps: 4, View: HMW },
   { id: 'brainstorm', section: '03 · Ideation', planet: true, steps: 2, View: Ideation },
+  { id: 'concepts', section: '03 · Concepts', steps: 3, View: Concepts },
   { id: 'mom', section: '04 · Modality', planet: true, View: Mom },
   { id: 'modality', section: '04 · Modality', View: Modality },
   { id: 'k-open', section: '04 · Constraints', View: KOpen },
