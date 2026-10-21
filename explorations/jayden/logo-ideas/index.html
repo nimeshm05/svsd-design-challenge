@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Logo ideas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400&family=Fraunces:opsz,wght@9..144,300..500&display=swap" />
+<style>
+  /* Constellate logo ideas. A sketchbook, separate from the deck.
+     The word is set in Matrix II Book (Adobe, active on Jayden's Mac; Fraunces where it isn't).
+     Sparkles take the product's star colours, so they can differ from the cream of the word. */
+  @font-face { font-family: "Logo"; font-weight: 1 449; src: local("MatrixIIOT-Book"), local("Matrix II OT Book"); }
+  @font-face { font-family: "Logo"; font-style: italic; font-weight: 1 449; src: local("MatrixIIOT-BookItalic"), local("Matrix II OT Book Italic"); }
+  :root {
+    --bg: #050506; --card: #0b0b10; --line: rgba(243, 227, 181, .14);
+    --cream: #F3E3B5; --text: #F6EEDB; --muted: #9a9384;
+    /* the product's star tints (Night Nursery) */
+    --peach: #FFDCB5; --lilac: #D9CEFF; --mint: #BDEBD3; --sky: #C4E0FF; --rose: #FFC9D8; --copper: #FFB38A; --gold: #FFE7A3;
+    --word: "Logo", "Fraunces", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font-family: Geist, system-ui, sans-serif; }
+  body { background: radial-gradient(ellipse at 30% 0%, #15132a 0%, transparent 55%), radial-gradient(ellipse at 90% 100%, #1a1210 0%, transparent 50%), var(--bg); min-height: 100vh; }
+  header { max-width: 1240px; margin: 0 auto; padding: 48px 24px 12px; }
+  h1 { margin: 0; font: 400 34px/1.2 var(--word); color: var(--cream); }
+  header p { margin: 10px 0 0; max-width: 70ch; color: var(--muted); font-size: 15px; line-height: 1.55; }
+  .grid { max-width: 1240px; margin: 0 auto; padding: 28px 24px 80px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr)); gap: 20px; }
+  .card { position: relative; border: 1px solid var(--line); border-radius: 18px; background: var(--card); overflow: hidden; }
+  .stage { position: relative; height: 230px; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 60%, #12121c, #08080b 75%); }
+  .meta { padding: 16px 20px 20px; border-top: 1px solid var(--line); }
+  .meta b { display: block; font-weight: 500; font-size: 15px; }
+  .meta span { display: block; margin-top: 5px; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+  .n { position: absolute; top: 14px; left: 16px; font: 11px "Geist Mono", monospace; letter-spacing: .08em; color: var(--muted); z-index: 2; }
+
+  /* ---- the word ---- */
+  .logo { position: relative; display: inline-flex; align-items: baseline; font-family: var(--word); font-weight: 300; font-size: 76px; line-height: 1; color: var(--cream); letter-spacing: 0; white-space: nowrap; }
+  .logo .L { position: relative; display: inline-block; }
+  .logo .hide { color: transparent; } /* a letter kept for spacing, drawn as something else */
+  .logo .lines { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+  .logo .lines polyline { fill: none; stroke: var(--cream); stroke-width: 1; stroke-opacity: .45; stroke-linecap: round; stroke-linejoin: round; }
+  .logo .lines .dash { stroke-dasharray: 2 5; }
+
+  /* a sparkle: the product's four-point star; colour from --c */
+  .sp { position: absolute; width: var(--s, 18px); height: var(--s, 18px); left: var(--x, 50%); top: var(--y, 0); transform: translate(-50%, -50%); color: var(--c, var(--gold)); overflow: visible; pointer-events: none;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--c, var(--gold)) 70%, transparent)); }
+  .sp path { fill: currentColor; }
+  .tw { animation: tw var(--t, 3.2s) ease-in-out infinite; animation-delay: var(--d, 0s); }
+  @keyframes tw { 0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 50% { opacity: .6; transform: translate(-50%, -50%) scale(.82); } }
+
+  /* a planet: a dot with a tilted ring, like her firsts */
+  .planet { position: absolute; left: var(--x, 50%); top: var(--y, 50%); width: var(--s, 40px); height: var(--s, 40px); transform: translate(-50%, -50%); overflow: visible; }
+  .planet ellipse { fill: none; stroke: var(--ring, var(--copper)); stroke-width: 1.6; }
+  .planet circle { fill: var(--c, var(--peach)); }
+  .glow { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); transform: translate(-50%, -50%); border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--c) 55%, transparent), transparent 70%); pointer-events: none; }
+
+  /* drawn in (idea 12): stars light one by one, then the line draws */
+  .draw .sp { opacity: 0; animation: pop .5s calc(var(--i) * .35s + .3s) cubic-bezier(.2, .9, .3, 1.3) forwards; }
+  .draw .lines polyline { stroke-dasharray: 600; stroke-dashoffset: 600; animation: line 2.4s 1.6s ease forwards; }
+  .draw .word { opacity: 0; animation: fade 1.2s 3.4s ease forwards; }
+  .replay { position: absolute; right: 14px; top: 10px; z-index: 2; border: 1px solid var(--line); background: transparent; color: var(--muted); font: 12px Geist, sans-serif; border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+  @keyframes pop { from { opacity: 0; transform: translate(-50%, -50%) scale(.2); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+  @keyframes line { to { stroke-dashoffset: 0; } }
+  @keyframes fade { to { opacity: 1; } }
+
+  /* small sizes, to check each idea still reads in the corner of a slide */
+  .small { position: absolute; left: 16px; bottom: 12px; transform-origin: left bottom; transform: scale(.24); opacity: .9; }
+  @media (prefers-reduced-motion: reduce) { .tw, .draw .sp, .draw .lines polyline, .draw .word { animation: none; opacity: 1; stroke-dashoffset: 0; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>constellate · logo ideas</h1>
+  <p>Twelve directions, from a light touch to the word becoming a constellation. Sparkles use the product's star colours, so they don't have to match the cream of the word. The tiny version in each card's corner shows how it reads at the size of the deck's top-left mark.</p>
+</header>
+<main class="grid" id="grid"></main>
+
+<template id="star"><svg class="sp" viewBox="-12 -12 24 24"><path d="M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z" /></svg></template>
+
+<script>
+  // Each idea: the word as letters, plus marks placed on letters (as fractions of that letter's box) and lines
+  // joining the marks in order. Letters marked `hide` keep their space but are drawn as the mark instead.
+  const W = 'constellate'.split('')
+  const IDEAS = [
+    { t: 'Two sparkles, in other colours', d: 'Today’s logo, but the sparkles take the product’s star tints (gold and lilac) instead of the word’s cream. Light touch, easy to read.',
+      after: [{ x: 1.12, y: .05, s: 30, c: '--gold' }, { x: 1.48, y: -.32, s: 14, c: '--lilac' }] },
+    { t: 'The o is her star', d: 'The o becomes Mila’s star: a soft glow with a sparkle at its heart, like today’s star on the bedside screen.',
+      marks: [{ L: 1, x: .5, y: .66, s: 34, c: '--copper', glow: 74, hide: true }] },
+    { t: 'The o is a planet', d: 'Firsts are planets in the product. The o becomes one, with a tilted copper ring. Reads as an o at any size.',
+      marks: [{ L: 1, x: .5, y: .64, planet: 46, hide: true }] },
+    { t: 'Stars on the letter tops, joined', d: 'Sparkles sit on the l’s and t’s and on the tip of the c, joined by a faint line: a constellation drawn over the word.',
+      marks: [{ L: 0, x: .78, y: .32, s: 13, c: '--sky' }, { L: 4, x: .5, y: .06, s: 15, c: '--gold' }, { L: 6, x: .5, y: -.02, s: 18, c: '--peach' }, { L: 7, x: .5, y: .05, s: 12, c: '--lilac' }, { L: 9, x: .5, y: .1, s: 15, c: '--mint' }],
+      join: 'all' },
+    { t: 'The two l’s as a constellation', d: 'The double l becomes two lines of stars: the middle of the word turns into the thing it names.',
+      marks: [{ L: 6, x: .5, y: 0, s: 15, c: '--gold', hide: true }, { L: 6, x: .5, y: .5, s: 9, c: '--peach' }, { L: 6, x: .5, y: .97, s: 12, c: '--gold' },
+              { L: 7, x: .5, y: .97, s: 12, c: '--lilac', hide: true }, { L: 7, x: .5, y: .45, s: 9, c: '--lilac' }, { L: 7, x: .5, y: .05, s: 15, c: '--sky' }],
+      join: 'all' },
+    { t: 'The t’s are crossed with stars', d: 'Where each t is crossed, a small sparkle sits instead. Quiet, and it still reads as a t.',
+      marks: [{ L: 4, x: .5, y: .39, s: 17, c: '--gold' }, { L: 9, x: .5, y: .39, s: 17, c: '--lilac' }] },
+    { t: 'A constellation underline', d: 'Under the word, a line of stars at the letters’ feet, rising and falling like her days. The word stays untouched.',
+      marks: [0, 2, 4, 6, 8, 10].map((L, k) => ({ L, x: .5, y: 1.22 + (k % 2 ? .1 : -.02), s: k === 5 ? 16 : 10, c: ['--sky', '--peach', '--gold', '--mint', '--lilac', '--copper'][k] })),
+      join: 'all', dash: true },
+    { t: 'A mark beside the word', d: 'A tiny constellation of five stars and a planet sits before the word, like an app icon. The mark works alone as the tab icon.',
+      mark: true },
+    { t: 'The c is an arc of stars', d: 'The first letter is drawn as stars along a c, joined. A monogram for the corner; the rest of the word stays type.',
+      marks: [[.86, .38], [.6, .2], [.28, .3], [.12, .62], [.3, .92], [.62, 1.0], [.88, .86]].map(([x, y], k) => ({ L: 0, x, y: y * .74 + .26, s: k === 2 ? 14 : 9, c: ['--sky', '--lilac', '--gold', '--peach', '--mint', '--lilac', '--sky'][k], hide: k === 0 })),
+      join: 'all' },
+    { t: 'The e’s end in sparkles', d: 'Both e’s keep their shape; a small sparkle catches the end of each stroke, like light on the letter.',
+      marks: [{ L: 5, x: .92, y: .86, s: 12, c: '--gold' }, { L: 10, x: .92, y: .86, s: 14, c: '--lilac' }] },
+    { t: 'Every letter, one star', d: 'One small star above each letter, in the product’s tints, joined into a long constellation. Busy, but unmistakable on a title slide.',
+      marks: W.map((ch, L) => ({ L, x: .5, y: 'ltf'.includes(ch) ? -.12 : .18, s: L % 3 === 0 ? 12 : 8, c: ['--gold', '--lilac', '--mint', '--sky', '--peach', '--rose'][L % 6] })),
+      join: 'all', dash: true },
+    { t: 'Drawn in (title slide)', d: 'The idea from card 4, animated: the stars light one by one, the line draws between them, then the word fades in. Like a day becoming a star.',
+      marks: [{ L: 0, x: .78, y: .32, s: 13, c: '--sky' }, { L: 4, x: .5, y: .06, s: 15, c: '--gold' }, { L: 6, x: .5, y: -.02, s: 18, c: '--peach' }, { L: 7, x: .5, y: .05, s: 12, c: '--lilac' }, { L: 9, x: .5, y: .1, s: 15, c: '--mint' }],
+      join: 'all', draw: true },
+  ]
+  const star = document.getElementById('star').content.firstElementChild
+  const NS = 'http://www.w3.org/2000/svg'
+  const planet = (s) => { const v = document.createElementNS(NS, 'svg'); v.setAttribute('viewBox', '-20 -20 40 40'); v.classList.add('planet'); v.style.setProperty('--s', `${s}px`); v.innerHTML = '<g transform="rotate(-18)"><ellipse rx="17" ry="5.2"/></g><circle r="8"/><g transform="rotate(-18)"><path d="M-17 0 A17 5.2 0 0 0 17 0" fill="none" stroke="var(--copper)" stroke-width="1.6"/></g>'; return v }
+
+  function build(idea, i) {
+    const card = document.createElement('article'); card.className = 'card'
+    card.innerHTML = `<span class="n">${String(i + 1).padStart(2, '0')}</span><div class="stage"></div><div class="meta"><b>${idea.t}</b><span>${idea.d}</span></div>`
+    const stage = card.querySelector('.stage')
+    const make = () => {
+      const logo = document.createElement('div'); logo.className = `logo ${idea.draw ? 'draw' : ''}`
+      const word = document.createElement('span'); word.className = 'word'; word.style.display = 'inline-flex'
+      const letters = W.map((ch) => { const s = document.createElement('span'); s.className = 'L'; s.textContent = ch; word.appendChild(s); return s })
+      if (idea.mark) { // a small constellation before the word
+        const m = document.createElementNS(NS, 'svg'); m.setAttribute('viewBox', '0 0 80 70'); m.style.cssText = 'width:.95em;height:.85em;margin-right:.18em;overflow:visible;align-self:center'
+        const P = [[8, 52], [24, 30], [42, 40], [60, 14], [74, 26]]
+        m.innerHTML = `<polyline points="${P.map((p) => p.join(',')).join(' ')}" fill="none" stroke="var(--cream)" stroke-opacity=".45" stroke-width="1.2"/>` +
+          P.map(([x, y], k) => k === 2
+            ? `<g transform="translate(${x} ${y}) rotate(-18)"><ellipse rx="9" ry="2.8" fill="none" stroke="var(--copper)" stroke-width="1.4"/><circle r="4.2" fill="var(--peach)"/></g>`
+            : `<path transform="translate(${x} ${y}) scale(${k === 3 ? .62 : .42})" d="M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z" fill="var(${['--sky', '--gold', '', '--gold', '--lilac'][k]})"/>`).join('')
+        logo.appendChild(m)
+      }
+      logo.appendChild(word)
+      const placed = []
+      ;(idea.marks ?? []).forEach((mk, k) => {
+        const host = letters[mk.L]
+        if (mk.hide) host.classList.add('hide')
+        if (mk.glow) { const g = document.createElement('span'); g.className = 'glow'; g.style.cssText = `--x:${mk.x * 100}%;--y:${mk.y * 100}%;--s:${mk.glow}px;--c:var(${mk.c})`; host.appendChild(g) }
+        let el
+        if (mk.planet) el = planet(mk.planet), el.style.setProperty('--x', `${mk.x * 100}%`), el.style.setProperty('--y', `${mk.y * 100}%`)
+        else { el = star.cloneNode(true); el.style.cssText = `--x:${mk.x * 100}%;--y:${mk.y * 100}%;--s:${mk.s}px;--c:var(${mk.c});--i:${k};--d:${(k * .7) % 3}s;--t:${2.6 + (k % 3) * .6}s`; if (!idea.draw) el.classList.add('tw') }
+        host.appendChild(el); placed.push(el)
+      })
+      ;(idea.after ?? []).forEach((mk, k) => {
+        const host = letters[W.length - 1], el = star.cloneNode(true)
+        el.style.cssText = `--x:${mk.x * 100}%;--y:${mk.y * 100}%;--s:${mk.s}px;--c:var(${mk.c});--d:${k * 1.3}s`; el.classList.add('tw'); host.appendChild(el)
+      })
+      return { logo, placed }
+    }
+    // join the marks once the letters have their real widths
+    const join = (logo, placed) => {
+      if (!idea.join || placed.length < 2) return
+      const box = logo.getBoundingClientRect()
+      const pts = placed.map((el) => { const r = el.getBoundingClientRect(); return `${(r.left + r.width / 2 - box.left) / (box.width / logo.offsetWidth)},${(r.top + r.height / 2 - box.top) / (box.height / logo.offsetHeight)}` })
+      const v = document.createElementNS(NS, 'svg'); v.classList.add('lines'); v.innerHTML = `<polyline class="${idea.dash ? 'dash' : ''}" points="${pts.join(' ')}"/>`
+      logo.prepend(v)
+    }
+    const big = make(); stage.appendChild(big.logo)
+    const small = make(); small.logo.classList.add('small'); stage.appendChild(small.logo)
+    if (idea.draw) {
+      const b = document.createElement('button'); b.className = 'replay'; b.textContent = 'Replay'
+      b.onclick = () => { const n = make(); big.logo.replaceWith(n.logo); big.logo = n.logo; requestAnimationFrame(() => join(n.logo, n.placed)) }
+      card.appendChild(b)
+    }
+    document.getElementById('grid').appendChild(card)
+    return () => { join(big.logo, big.placed); join(small.logo, small.placed) }
+  }
+  const joins = IDEAS.map(build)
+  // fonts change the letters' widths: draw the lines after they load
+  ;(document.fonts?.ready ?? Promise.resolve()).then(() => requestAnimationFrame(() => joins.forEach((f) => f())))
+</script>
+</body>
+</html>
