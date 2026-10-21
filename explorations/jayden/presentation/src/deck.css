@@ -2024,3 +2024,6 @@ body:has(.panel) { overflow: auto; }
 .dfilm .dfilm-cam { inset: 44px 0 150px 0; } /* the monitor sits a little lower, still clear of the caption band */
 /* no dimming behind each result: the screen stays as it is */
 .dfilm.has-result .dfilm-cam, .dfilm.has-result .foot-wrap { filter: none; }
+
+/* ===== Captions in Fraunces, always on ===== */
+.deck-cc, .dfilm-cap { font-family: var(--display); font-variation-settings: "SOFT" 100, "opsz" 24; font-weight: 350; letter-spacing: .005em; }
