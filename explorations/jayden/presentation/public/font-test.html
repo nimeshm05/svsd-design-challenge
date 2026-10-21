@@ -75,7 +75,8 @@
   const $ = (id) => document.getElementById(id)
   const f = $('f')
   const post = (what) => f.contentWindow?.postMessage({ type: 'mila:show', what }, '*')
-  // the prototype's titles and body text come from two variables on its page; override them, weight too
+  // the prototype's titles and body text come from two variables on its page; override them, and the weight of
+  // everything set in the title font (the selectors that use --font-display in the prototype's styles)
   const apply = () => {
     const d = f.contentDocument
     if (!d) return
@@ -83,7 +84,7 @@
     if (!s) { s = d.createElement('style'); s.id = 'font-test'; d.head.appendChild(s) }
     const w = $('weight').value
     s.textContent = `.cv-page.theme-nursery, .cv-page.theme-confetti { --font-display: ${$('display').value} !important; --font-ui: ${$('ui').value} !important; }
-      .cv-page :is(.cv-gpanel-title, .cv-story-title, .cv-pop-word, .rem h2, .cv-galaxy-title b, [class*="title"]) { font-weight: ${w} !important; }`
+      .cv-page :is(.ah-day-t, .ah-ev-facts dd, .ah-ev-title, .ah-now, .ah-path-head b, .comfort-name, .cv-about-name, .cv-form-caption b, .cv-galaxy-title .cv-gsum b, .cv-galaxy-title b, .cv-gday-label em, .cv-gfirst, .cv-gpanel-title, .cv-gstory b, .cv-lift.is-family span, .cv-lift.is-first span, .cv-ahead-title, .cv-day-k, .cv-path-head b, .cv-top-left, .ts-title, .cv-pop-word, .cv-story-title, .cv-top-title, .end-title, .fd-name, .fd-size b, .fd-title.is-serif, .gl-title, .mem-list button, .mem-moment, .mem-title, .rem-loved, .rem-name, .rem-who li, .cv-gweek b) { font-weight: ${w} !important; }`
     $('wv').textContent = w
     $('sample').querySelector('b').style.cssText = `font-family: ${$('display').value}; font-weight: ${w}`
     $('sample').querySelector('span').style.fontFamily = $('ui').value
