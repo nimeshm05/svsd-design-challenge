@@ -1533,7 +1533,7 @@
 .rem-again { position: absolute; z-index: 2; top: 18px; right: 20px; animation: cv-fade-in .6s .6s ease both; }
 .rem.is-end .rem-words { gap: 18px; }
 /* the last page: her name, her story, and who loved her, each given room */
-.rem.is-end .rem-words { gap: 36px; }
+.rem.is-end .rem-words { gap: 28px; }
 .rem.is-end .rem-name { margin-bottom: 0; }
 
 /* Embedded (the presentation's iPad frame): just the screen, filling the window */
