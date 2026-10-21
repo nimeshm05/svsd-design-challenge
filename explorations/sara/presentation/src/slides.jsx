@@ -1060,7 +1060,7 @@ function Close() {
   return (
     <div className="center close">
       <R d={0} className="close-star" aria-hidden="true"><StarGlyph size={64} color="#FFF8E6" /></R>
-      <R d={1} as="h2" className="close-h">Every star is hers to keep.</R>
+      <R d={1} as="h2" className="close-h">Every star is theirs to keep.</R>
       <R d={3} className="close-thanks">Thank you</R>
       <R d={4} className="title-team">Jayden · Nimesh · Sara</R>
     </div>

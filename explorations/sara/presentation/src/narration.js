@@ -1,7 +1,13 @@
 // What we'd say over each slide, as captions along the bottom of the deck (press C to hide or show them).
 // A slide with builds has one line per step; past the last line, the last one stays. The demo film has its own.
 export const NARRATION = {
-  title: 'This is Constellate, a bedside screen for parents of babies in the NICU.',
+  title: {
+    every: 8500,
+    timed: [
+      'Hi! We’re Jayden, Nimesh, and Sara. We’re currently masters students studying Human Centered Design and Engineering at the University of Washington in Seattle.',
+      'And today, we’ll be presenting on Constellate - a bedside screen for parents of babies in the NICU.',
+    ],
+  },
   niko: 'Meet Niko and his mom Lauren. We had the privilege to hear from Lauren about her family’s time in the NICU, which is where this story begins.',
   nicu: 'The neonatal intensive care unit, or the NICU, is the hospital unit where babies born too early or too sick are cared for, often for several weeks or months.',
   journey: [
@@ -16,11 +22,11 @@ export const NARRATION = {
   voices: 'Lauren told us she felt whiplashed: told one thing by one team, then something completely different the next day. Like a game of telephone. The nurses also addressed the communication gap: “We tell them everything, but sometimes it’s too much.”',
   heard: 'Across those conversations, the same thing came up: parents get the pieces, but they’re left to put them together on their own.',
   pillars: [
-    'It comes down to three needs. Connection: parents can’t bond the way they expected, and guilt fills the gap.',
+    'It comes down to 3 needs. First is connection: parents can’t bond the way they expect, and guilt fills the gap.',
     'In their own words, connection can sound like: how can I feel close to my baby before I can hold them? And what happened while I was away?',
     'Comprehension: they have information, but not the whole picture.',
     'It sounds like: what is all of this on my baby? And what does that word mean?',
-    'Awareness: time becomes a blur, and the next moment feels like a surprise.',
+    'Last is awareness: time becomes a blur and the next moment feels like a surprise.',
     'It sounds like: what’s next, and who is caring for my baby tonight? How are they doing right now?',
   ],
   compete: 'Other tools help with logistics, monitoring, or journaling, but none of them turn a baby’s chart into something parents can actually follow.',
@@ -60,7 +66,7 @@ export const NARRATION = {
     'What’s next, and who is caring for her tonight? Her week, where parents fit in, and her care team.',
     'How is she doing right now? At night, the screen rests when she does: the time, her next care, one quiet line.',
   ],
-  recap: 'Six answers, one bedside screen. Each answers a question parents asked us, from the chart, with nothing new for nurses to write.',
+  recap: 'To recap: six answers, one bedside screen. Each answers a question parents asked us, directly from the chart, with nothing new for nurses to write.',
   'f-live': 'This is the real prototype. You’re welcome to tap through it.',
-  close: 'Every star is hers to keep. Thank you.',
+  close: 'Every star is theirs to keep. Thank you.',
 }
