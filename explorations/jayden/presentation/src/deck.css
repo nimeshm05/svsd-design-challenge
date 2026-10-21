@@ -2014,3 +2014,4 @@ body:has(.panel) { overflow: auto; }
 .ov-steps li { grid-template-columns: 18px 1fr; } .ov-steps i { grid-row: span 2; margin-top: 9px; } .ov-steps { gap: 14px; }
 /* the monitor keeps its true shape: sized by whichever is tighter, the height or the width */
 .dfilm .mon { height: auto; width: min(88vw, calc((100vh - 230px) * 16 / 10.9)); aspect-ratio: 16 / 10.9; max-width: none; }
+.dfilm .dfilm-cam { inset: 44px 0 150px 0; } /* the monitor sits a little lower, still clear of the caption band */
