@@ -30,7 +30,7 @@ const FIELD = Array.from({ length: 98 }, (_, k) => [rnd(k) * 100, rnd(k + 200) *
 const LOOK = {
   hero: { ox: 0, ry: -16, rx: 6, sc: 0.92 },
   center: { ox: 0, ry: 0, rx: 0, sc: 1 },
-  sky: { ox: 0, ry: 0, rx: 0, sc: 1.1 }, // her sky, the heart of it: a little closer than anything else
+  sky: { ox: 0, ry: 0, rx: 0, sc: 1 }, // her sky, the heart of it: a little closer than anything else
   left: { ox: -0.2, ry: 9, rx: 2, sc: 0.86 }, // monitor on the left, words on the right
   right: { ox: 0.2, ry: -9, rx: 2, sc: 0.86 }, // monitor on the right, words on the left
   splitR: { ox: 0.235, ry: -6, rx: 1, sc: 0.6 }, // split screen: footage on the left, the screen on the right
@@ -386,8 +386,8 @@ function useFade(value, keyOf, ms = 900) {
 
 // the stay, down the right of the film: where each scene sits in it
 const STAY = [
-  ['Day 1', 'First night', 'Day 1'], ['Day 3', 'Mom’s first visit', 'Mom'], ['Day 3', 'Planning tomorrow', 'What’s ahead'],
-  ['Day 23', 'Looking back', 'Looking back'], ['Day 90', 'Going home', 'Going home'],
+  ['Day 1', 'First night', ['Day 1']], ['Day 3', 'Mom catches up', ['Mom', 'What’s ahead']],
+  ['Day 23', 'Looking back', ['Looking back']], ['Day 90', 'Going home', ['Going home']],
 ]
 
 export function DemoFilm({ active, thumb }) {
@@ -453,7 +453,7 @@ export function DemoFilm({ active, thumb }) {
       }
       step()
     })
-    const mark = (label) => { setMarks((m) => (m.some((x) => x.label === label) ? m : [...m, { t: R.clock, label }])); const n = STAY.findIndex((x) => x[2] === label); if (n >= 0) set({ tl: n }) }
+    const mark = (label) => { setMarks((m) => (m.some((x) => x.label === label) ? m : [...m, { t: R.clock, label }])); const n = STAY.findIndex((x) => x[2].includes(label)); if (n >= 0) set({ tl: n }) }
     // the presenter's pace: the film holds at every line until → (a press made mid-transition is kept for the next line)
     const gate = () => new Promise((ok, no) => {
       if (R.dead) return no(new Error('stop'))
@@ -532,6 +532,7 @@ export function DemoFilm({ active, thumb }) {
       set({ card: null }); await wait(0.5)
       if (kind) { set({ scene: kind, cap }); await wait(s); set({ scene: null, cap: null }) }
     }
+    // a change of screen dips the monitor to dark and back, so it never jumps from one screen to the next
     const show = async (what, settle = 1.2) => { post({ type: 'mila:show', what }); await wait(settle) }
     const chapter = async (c, settle = 1.2) => { post({ type: 'mila:chapter', chapter: c }); await wait(settle) }
     const pad = async (cap) => { set({ pad: true, cap: cap ?? null }); await wait(1.2) }
@@ -549,10 +550,10 @@ export function DemoFilm({ active, thumb }) {
     // a quiet place-and-time label, top left
     const tag = (t) => set({ say: t ? { t, side: 'tag' } : null })
     // the spotlight, with a gentle push toward it
-    const lit = (sel, z = 1.22) => {
+    const lit = (sel, z = 1.22) => { return // spotlight off: the film shows the screens as parents see them, with no dimming in and out
       if (!sel) return set({ lit: null, cam: { fx: 0.5, fy: 0.5, s: 1 } })
       const r = at(sel, 0); if (!r) return
-      const cam = z <= 1 ? { fx: 0.5, fy: 0.5, s: 1 } : { fx: 0.5 + (r.x + r.w / 2 - 0.5) * 0.6, fy: 0.5 + (r.y + r.h / 2 - 0.5) * 0.6, s: z } // z 1: light it, keep the screen centred
+      const cam = { fx: 0.5, fy: 0.5, s: 1 } // the monitor holds its size and place; the spotlight does the pointing
       set({ lit: { cx: r.x + r.w / 2, cy: r.y + r.h / 2, rx: Math.max(r.w * 0.85, 0.14), ry: Math.max(r.h * 1.1, 0.12) }, cam })
     }
     // lift a piece of the screen out of it, toward us
@@ -576,9 +577,11 @@ export function DemoFilm({ active, thumb }) {
       // (held), the screen doing the work (every tap shown), then the result, what they didn't have to do, with
       // our reasoning in a small line beneath it.
       const line = async (t, k = null) => { cap(t, k); await wait(0.6); await gate() } // held until →
-      const scene = async ({ when, name, p, q, still }) => {
+      const scene = async ({ when, name, p, q, still, say }) => {
         cap(null); res(null); lit(null); set({ pad: false, foot: still ? { id: still, at: R.clock } : null })
-        feat(name, p); ask(q, p); set({ when }); await wait(0.9); await gate()
+        feat(name, p)
+        if (say) { cap(say); await wait(0.9); await gate(); cap(null) } // the scenario, told over its picture, clear
+        ask(q, p); set({ when }); await wait(0.9); await gate() // then the question it raises, over the dimmed picture
         ask(null); set({ when: null })
       }
       const result = async (t, w) => { cap(null); lit(null); res(t, w); await wait(0.8); await gate(); res(null) }
@@ -586,71 +589,78 @@ export function DemoFilm({ active, thumb }) {
       // ── 1 · Dad, 4:20 a.m.: what is all of this?
       mark('Day 1'); look('center', 'connection')
       await wait(0.6); set({ foot: { id: 'mila', at: R.clock } }); await wait(1.4)
-      await line('Meet Mila: born thirteen weeks early, at 880 grams. She’s built from the families we met.')
+      await line('This is Mila. She was born thirteen weeks early, at 880 grams. She’s built from the families we met.')
       cap(null); set({ foot: { id: 'dad', at: R.clock } }); await wait(1)
-      await line('It’s 4:20 in the morning, and her dad has just arrived.')
-      await scene({ when: 'Day 1 · 4:20 a.m.', name: 'First screen', p: 'comprehension', q: 'What is all of this on her?', still: 'explain' })
+      await line('It’s 4:20 in the morning. Her dad has just arrived at the NICU, while Mom recovers from surgery.')
+      await scene({ when: 'Day 1 · 4:20 a.m.', name: 'First screen', p: 'comprehension', q: 'What is all of this on her?', still: 'explain',
+        say: 'Her doctor and nurse explain everything at once: the breathing tube, the wires, the monitors.' })
       set({ pad: true, foot: null }); await wait(0.8)
-      lit('.fd-star', 1.18); await line('Her screen opens with her: her name, and how small she is.', 'connection')
+      lit('.fd-star', 1); await line('At her bedside, the screen starts with her: her name, and how small she is.', 'connection')
       lit(null); await chapter('story', 0.2); feat('What’s on them', 'comprehension')
-      await tap('.fd-next'); lit('.fd-words', 1.15); await wait(1.2); await tap('.fd-next'); lit('.fd-words', 1.15)
-      await line('Then each device on her, lit on her body, in one plain sentence.', 'comprehension')
+      await tap('.fd-next'); lit('.fd-words', 1); await wait(1.2); await tap('.fd-next'); lit('.fd-words', 1)
+      await line('Then it walks him through each device on her, one at a time, in plain words.', 'comprehension')
       lit(null); for (let n = 0; n < 5 && find('.fd-next'); n++) { await flick('.fd-next'); await wait(0.3) }
       await result('He understands everything on her in a minute, without stopping a nurse.', 'Parents can’t miss anything, but all at once is too much. So it’s complete, one thing at a time.')
 
       // ── 2 · Mom's first visit: catching up
       mark('Mom')
       await show('today', 0.1); day(3)
-      await scene({ when: 'Day 3', name: 'Their day', p: 'connection', q: 'What happened while I was away?', still: 'mom' })
+      await scene({ when: 'Day 3', name: 'Their day', p: 'connection', q: 'What happened while I was away?', still: 'mom',
+        say: 'On the third day, Mom is finally well enough to come up. She’s missed everything so far.' })
       set({ pad: true, foot: null }); await wait(0.8)
       await drag('.cv-arc-now', '.cv-arc-mark[data-kind="family"]', () => post({ type: 'mila:show', what: 'family' })); await wait(0.3)
-      lit('.cv-cap', 1.2); await line('Her days, hour by hour, with every moment her nurses noted.', 'connection')
+      lit('.cv-cap', 1); await line('She slides back through Mila’s day, hour by hour, and finds every moment her nurses noted.', 'connection')
       lit(null); await drag('.cv-arc-mark[data-kind="family"]', '.cv-arc-now', () => post({ type: 'mila:show', what: 'today' }))
-      feat('Words in a tap', 'comprehension'); await tap('.cv-term-btn'); await wait(0.4)
-      lit('.cv-pop', 1.22); await line('And when a word is new, like CPAP, one tap explains it on her body.', 'comprehension')
+      feat('Words in a tap', 'comprehension')
+      doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); await wait(0.3) // no popover open yet
+      await line('One word on her screen she’s never heard before: CPAP.', 'comprehension')
+      await tap('.cv-term-btn'); await wait(0.5) // she taps the word, and only then does it open
+      await line('She taps it, and sees what it means, on Mila’s own body.', 'comprehension')
       await tap('.cv-one', () => doc()?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })))
       await result('She catches up on everything she missed before rounds, without calling the desk.', 'It all comes from notes nurses already write, so there’s nothing new for them to do.')
 
-      // ── 3 · Planning tomorrow
+      // ── 3 · That night: who's with her, and what's next
       mark('What’s ahead')
-      await scene({ when: 'Day 3', name: 'What’s ahead', p: 'awareness', q: 'What’s next, and who is caring for her tonight?', still: 'ahead' })
+      await scene({ when: 'Day 3', name: 'What’s ahead', p: 'awareness', q: 'What’s next, and who is caring for her tonight?', still: 'ahead',
+        say: 'Before she leaves for the night, the worries turn to what comes next.' })
       set({ pad: true, foot: null }); await wait(0.4)
+      await tap('.nav-btn.is-call'); await wait(0.5)
+      lit('.ts', 1); await line('First, who’s with Mila tonight: Marcus, her night nurse, with a way to reach him.')
+      lit(null); doc()?.querySelector('.ts-scrim')?.click(); await wait(0.6)
       await tap('.cv-ahead-btn'); await wait(0.8)
-      lit((d) => d.querySelector('.ah'), 1.05); await line('Her week at a glance: rounds tomorrow at 10, and what’s planned.', 'awareness')
-      await tap((d) => [...d.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Next Steps')); await wait(1.4)
-      lit(null); await tap('.nav-btn.is-call'); await wait(0.5)
-      lit('.ts', 1.1); await line('And who’s caring for her today, and who takes over tonight.')
-      doc()?.querySelector('.ts-scrim')?.click()
-      await result('She knows rounds are at 10 tomorrow and plans to join them, and she knows who’s on tonight.', 'We show what’s planned, never predictions: no medical claims, just what’s coming and who’s there.')
+      lit((d) => d.querySelector('.ah'), 1); await line('Then the week ahead: rounds tomorrow at 10, and what’s planned.', 'awareness')
+      await tap((d) => [...d.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Next Steps')); await wait(0.6)
+      await line('And Next Steps: what each part of her care is working toward.', 'awareness')
+      await result('She knows who’s on tonight, and plans to join rounds tomorrow at 10.', 'We show what’s planned, never predictions: no medical claims, just what’s coming and who’s there.')
 
       // ── 4 · Day 23: looking back at the week she missed
       mark('Looking back')
       await show('today', 0.2); day(23)
-      await scene({ when: 'Day 23 · three weeks in', name: 'Their stars', p: 'connection', q: 'What did I miss that first week?' })
-      set({ pad: true }); look('sky'); await wait(0.6)
-      await tap(sky); await line('Every day of her stay becomes a star.')
+      await scene({ when: 'Day 23 · three weeks in', name: 'Their stars', p: 'connection', q: 'What did I miss that first week?', still: 'daily',
+        say: 'Three weeks in, Mom finds a quiet moment at the bedside, and opens Mila’s stars.' })
+      set({ pad: true, foot: null }); await wait(0.6)
+      await tap(sky); await line('Each day of Mila’s stay is a star. Today’s joins the rest.')
       for (let n = 0; n < 40 && !find('.cv-gweek'); n++) await wait(0.25) // until her sky has opened
       await swipe('.cv-galaxy', -260, 30, 1.6)
       await tap('.cv-gweek'); await wait(0.4)
-      await line('Mom opens the first week, the one she was recovering upstairs.')
+      await line('She opens the first week, the one she spent recovering upstairs.')
       const six = (d) => d.querySelector('.cv-gday[aria-label^="Day 6"]') ?? d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]')
       await tap(six); await wait(0.4)
-      lit((d) => d.querySelector('.cv-gpanel'), 1); await line('There’s the day Dad first held her, kept as it happened.', 'connection')
-      await result('She sees the week she missed, moment by moment, and the first time her baby was held.', 'Progress without charts or percentiles. Her firsts are planets, worth celebrating.')
-      look('center')
+      lit((d) => d.querySelector('.cv-gpanel'), 1); await line('And there it is: the day Dad first held her, kept as it happened.', 'connection')
+      await result('She sees the week she missed, moment by moment, and the first time her baby was held.', 'Progress without charts or percentiles. Firsts are planets, worth celebrating.')
 
       // ── 5 · Day 90: going home
       mark('Going home')
       feat('Going home', 'connection'); set({ pad: false, tint: 'dawn', foot: { id: 'home', at: R.clock } }); await show('home', 0.6)
-      await line('Three months later, Mila goes home.')
+      await line('Three months later, it’s finally time. Mila is going home.')
       cap(null); set({ pad: true, foot: null }); await wait(0.6)
-      await line('Before they leave, her screen retells her whole stay, star by star.')
+      await line('Before they leave, her screen tells her whole stay one last time, star by star.')
       for (let n = 0; n < 40 && find('.cv-story'); n++) { await flick('.cv-story'); await wait(0.3) }
       for (let n = 0; n < 40 && !find('.cv-discharge.is-mobile'); n++) await wait(0.25) // until the mobile is whole
       await swipe('.cv-mobile', 300, 0, 1.8)
-      await tap('.cv-takehome-btn'); await line('Her sky becomes a mobile they take home, a model of her whole stay.')
+      await tap('.cv-takehome-btn'); await line('Her sky becomes a mobile, a model of her whole stay, theirs to take home.')
       cap(null); set({ foot: { id: 'mobile', at: R.clock } }); await wait(1.4) // the real one, over her crib, dissolving in
-      await line('Her sky goes home with her.')
+      await line('Now it hangs over her crib at home.')
       cap(null); feat(null); set({ tint: null, foot: null })
 
       // ── If she doesn't go home
@@ -720,6 +730,7 @@ export function DemoFilm({ active, thumb }) {
           {!thumb && <iframe ref={frame} title="Constellate bedside display, in the demo" src="./prototype/index.html?embed=1&chapter=born" onLoad={() => setTimeout(() => setReady(true), 400)} />}
           {thumb && <div className="ipad-thumb"><StarGlyph size={44} color="#F3E3B5" /><span>Demo</span></div>}
           {/* the spotlight: the screen falls a little darker around what we're looking at */}
+          <div className={`dfilm-blink ${v.blink ? 'is-on' : ''}`} aria-hidden="true" />
           <div className={`dfilm-lit ${v.lit ? 'is-on' : ''}`} style={v.lit ? { '--cx': `${v.lit.cx * 100}%`, '--cy': `${v.lit.cy * 100}%`, '--rx': `${v.lit.rx * 100}%`, '--ry': `${v.lit.ry * 100}%` } : undefined} />
           <div className={`dfilm-spot ${v.spot ? 'is-on' : ''}`} style={v.spot ? { left: `${v.spot.x * 100}%`, top: `${v.spot.y * 100}%`, width: `${v.spot.w * 100}%`, height: `${v.spot.h * 100}%` } : undefined} />
           {v.touch && <span className={`dfilm-touch is-${v.touch.s}`} style={{ left: `${v.touch.x * 100}%`, top: `${v.touch.y * 100}%` }} />}
