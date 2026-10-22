@@ -698,7 +698,6 @@ export function DemoFilm({ active, thumb }) {
       const six = (d) => d.querySelector('.cv-gday[aria-label^="Day 6"]') ?? d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]')
       await tap(six); await wait(0.4)
       lit((d) => d.querySelector('.cv-gpanel'), 1); await line('And there it is: the day Dad first held her, recorded as it happened.', 'connection')
-      inPanel('.cv-gpanel .cv-gsec')
       await line('Every day keeps its details from the chart too: what was helping her breathe, and how much she weighed.', 'comprehension')
       await result('She sees the week she missed: who Mila was becoming, how she was doing each day, and the first time she was held.', 'Progress without charts or percentiles. Firsts are planets, worth celebrating.')
 
