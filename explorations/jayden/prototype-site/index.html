@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-12 -12 24 24'%3E%3Cpath d='M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z' fill='%23FFB38A'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" />
 <style>
-  /* The bedside prototype on its own: Day 23 on the monitor, and nothing else on the page.
+  /* The bedside prototype on its own: Day 23 on the monitor, with buttons for her first and last days below it.
      It was designed for a touch monitor at the bedside and isn't responsive, so a small window gets a note instead. */
   :root { --bg: #050506; --cream: #F3E3B5; --text: #F6EEDB; --muted: #9a9384; }
   * { box-sizing: border-box; }
@@ -16,7 +16,16 @@
     background: radial-gradient(ellipse at 50% 40%, #12142a 0%, transparent 60%), radial-gradient(ellipse at 15% 100%, #1a1210 0%, transparent 45%), var(--bg); }
 
   /* the monitor, as in the presentation's demo */
-  .mon { position: relative; width: min(92vw, calc((100vh - 64px) * 16 / 10.9)); aspect-ratio: 16 / 10.9; }
+  .stage { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .mon { position: relative; width: min(92vw, calc((100vh - 140px) * 16 / 10.9)); aspect-ratio: 16 / 10.9; }
+  /* which day the screen shows */
+  .days { display: flex; gap: 10px; }
+  .days button { padding: 9px 18px; border-radius: 999px; border: 1px solid rgba(243, 227, 181, .22); background: rgba(13, 13, 17, .7);
+    color: var(--text); font: 500 14px Geist, system-ui, sans-serif; cursor: pointer; transition: border-color .2s, background .2s, color .2s; }
+  .days button:hover { border-color: rgba(243, 227, 181, .5); }
+  .days button[aria-pressed="true"] { background: var(--cream); border-color: var(--cream); color: #14110a; }
+  .days button span { color: var(--muted); font-weight: 400; margin-left: 6px; }
+  .days button[aria-pressed="true"] span { color: #5a4f38; }
   .mon-body { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 1.4% 1.4% 0; border-radius: 22px;
     background: linear-gradient(160deg, #34373d 0%, #1b1d21 34%, #121316 70%, #1e2024 100%);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07), inset 0 1.5px 0 rgba(255, 255, 255, .16), inset 0 -2px 6px rgba(0, 0, 0, .6),
@@ -33,14 +42,15 @@
   .small h1 { margin: 14px 0 0; font: 400 24px/1.25 "Constellate Display", "matrix-ii", Georgia, serif; color: var(--cream); }
   .small p { margin: 12px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
   @media (max-width: 900px), (max-height: 520px) {
-    .mon { display: none; }
+    .stage { display: none; }
     .small { display: block; }
   }
 </style>
 <link rel="stylesheet" href="https://use.typekit.net/dor0pxk.css" />
 </head>
 <body>
-  <div class="mon" role="region" aria-label="Constellate bedside screen, Day 23">
+  <div class="stage">
+  <div class="mon" role="region" aria-label="Constellate bedside screen">
     <div class="mon-body">
       <div class="mon-screen">
         <!-- the prototype, embedded: its own controls hidden, opened on Day 23 -->
@@ -52,11 +62,25 @@
       </div>
     </div>
   </div>
+  <nav class="days" aria-label="Which day the screen shows">
+    <button type="button" data-show="first" aria-pressed="false">Day 1<span>First night</span></button>
+    <button type="button" data-show="today" aria-pressed="true">Day 23<span>Today</span></button>
+    <button type="button" data-show="home" aria-pressed="false">Day 90<span>Last day</span></button>
+  </nav>
+  </div>
 
   <div class="small" role="note">
     <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z" /></svg>
     <h1>Please view on a wider screen</h1>
     <p>This is a prototype for a bedside touch monitor, and it isn’t responsive. Open it on a laptop or desktop, with the window wide enough to show the whole screen.</p>
   </div>
+<script>
+  // each button asks the prototype for that day's screen (the same messages the presentation's demo uses)
+  const frame = document.querySelector('iframe'), buttons = [...document.querySelectorAll('.days button')]
+  buttons.forEach((b) => b.addEventListener('click', () => {
+    frame.contentWindow.postMessage({ type: 'mila:show', what: b.dataset.show }, '*')
+    buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+  }))
+</script>
 </body>
 </html>
