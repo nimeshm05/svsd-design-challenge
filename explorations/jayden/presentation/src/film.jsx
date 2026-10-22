@@ -557,6 +557,13 @@ export function DemoFilm({ active, thumb }) {
       }
       ev('pointerup', x0 + dx, y0 + dy); set({ touch: { x: (x0 + dx) / W, y: (y0 + dy) / H, s: 'lift' } }); await wait(0.4); set({ touch: null })
     }
+    // bring a part of her week's panel into view by scrolling the panel alone (scrollIntoView would also scroll
+    // the deck around the screen, and the whole monitor would slide up)
+    const inPanel = (sel) => {
+      const el = find(sel), box = el?.closest('.cv-gpanel'); if (!el || !box) return
+      const top = el.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop - box.clientHeight / 2 + el.clientHeight / 2
+      box.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+    }
     // a moment of her stay: its title card, then its sketch (the scenario clip's place)
     const moment = async (card, kind, cap, s = 3.8) => {
       set({ pad: false, spot: null, call: null, ex: null, card }); await wait(2.4)
@@ -686,12 +693,12 @@ export function DemoFilm({ active, thumb }) {
       await tap(wk1); await wait(0.4)
       if (!find('.cv-gpanel')) post({ type: 'mila:show', what: 'openWeek' }) // pressed on before her sky was ready: open her first week anyway
       await line('She opens the first week, the one she spent recovering upstairs.')
-      find('.cv-grows.is-undated')?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      inPanel('.cv-grows.is-undated')
       await line('And she gets to know her daughter: the little things her nurses noticed, like how Mila loved to grab Dad’s thumb.', 'connection')
       const six = (d) => d.querySelector('.cv-gday[aria-label^="Day 6"]') ?? d.querySelector('.cv-ghit[aria-label="Week 1, day 6"]')
       await tap(six); await wait(0.4)
       lit((d) => d.querySelector('.cv-gpanel'), 1); await line('And there it is: the day Dad first held her, recorded as it happened.', 'connection')
-      find('.cv-gpanel .cv-gsec')?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      inPanel('.cv-gpanel .cv-gsec')
       await line('Every day keeps its details from the chart too: what was helping her breathe, and how much she weighed.', 'comprehension')
       await result('She sees the week she missed: who Mila was becoming, how she was doing each day, and the first time she was held.', 'Progress without charts or percentiles. Firsts are planets, worth celebrating.')
 
