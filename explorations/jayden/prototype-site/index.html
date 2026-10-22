@@ -63,7 +63,7 @@
     </div>
   </div>
   <nav class="days" aria-label="Which day the screen shows">
-    <button type="button" data-show="first" aria-pressed="false">Day 1<span>First night</span></button>
+    <button type="button" data-chapter="story" aria-pressed="false">Day 1<span>First night</span></button>
     <button type="button" data-show="today" aria-pressed="true">Day 23<span>Today</span></button>
     <button type="button" data-show="home" aria-pressed="false">Day 90<span>Last day</span></button>
   </nav>
@@ -75,10 +75,11 @@
     <p>This is a prototype for a bedside touch monitor, and it isn’t responsive. Open it on a laptop or desktop, with the window wide enough to show the whole screen.</p>
   </div>
 <script>
-  // each button asks the prototype for that day's screen (the same messages the presentation's demo uses)
+  // each button asks the prototype for that day's screen (the same messages the presentation's demo uses);
+  // Day 1 opens the onboarding, the first night's walkthrough of what's on her
   const frame = document.querySelector('iframe'), buttons = [...document.querySelectorAll('.days button')]
   buttons.forEach((b) => b.addEventListener('click', () => {
-    frame.contentWindow.postMessage({ type: 'mila:show', what: b.dataset.show }, '*')
+    frame.contentWindow.postMessage(b.dataset.chapter ? { type: 'mila:chapter', chapter: b.dataset.chapter } : { type: 'mila:show', what: b.dataset.show }, '*')
     buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
   }))
 </script>
