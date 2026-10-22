@@ -1,0 +1,8 @@
+{
+  "name": "constellate-prototype-site",
+  "private": true,
+  "description": "The bedside prototype on its own: Day 23 in a monitor, nothing else. Builds ../current-view into dist/app.",
+  "scripts": {
+    "build": "cd ../current-view && npx vite build --base=./ --outDir ../prototype-site/dist/app --emptyOutDir && cp ../prototype-site/index.html ../prototype-site/dist/index.html"
+  }
+}

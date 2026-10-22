@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Constellate · bedside prototype</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-12 -12 24 24'%3E%3Cpath d='M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z' fill='%23FFB38A'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" />
+<style>
+  /* The bedside prototype on its own: Day 23 on the monitor, and nothing else on the page.
+     It was designed for a touch monitor at the bedside and isn't responsive, so a small window gets a note instead. */
+  :root { --bg: #050506; --cream: #F3E3B5; --text: #F6EEDB; --muted: #9a9384; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: Geist, system-ui, sans-serif; overflow: hidden; }
+  body { display: grid; place-items: center;
+    background: radial-gradient(ellipse at 50% 40%, #12142a 0%, transparent 60%), radial-gradient(ellipse at 15% 100%, #1a1210 0%, transparent 45%), var(--bg); }
+
+  /* the monitor, as in the presentation's demo */
+  .mon { position: relative; width: min(92vw, calc((100vh - 64px) * 16 / 10.9)); aspect-ratio: 16 / 10.9; }
+  .mon-body { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 1.4% 1.4% 0; border-radius: 22px;
+    background: linear-gradient(160deg, #34373d 0%, #1b1d21 34%, #121316 70%, #1e2024 100%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07), inset 0 1.5px 0 rgba(255, 255, 255, .16), inset 0 -2px 6px rgba(0, 0, 0, .6),
+      0 2px 0 #08090a, 0 50px 120px rgba(0, 0, 0, .85), 0 0 140px rgba(107, 91, 214, .12); }
+  .mon-screen { position: relative; flex: 1; border-radius: 8px; overflow: hidden; background: #000; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04); }
+  .mon-screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+  .mon-chin { height: 5.6%; min-height: 22px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .mon-chin svg { width: 10px; height: 10px; fill: rgba(243, 227, 181, .5); }
+  .mon-led { position: absolute; right: 3%; top: 50%; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%; background: #9ee6c4; box-shadow: 0 0 6px #9ee6c4; opacity: .8; }
+
+  /* too small for the bedside screen: a note in its place */
+  .small { display: none; max-width: 34ch; padding: 24px; text-align: center; }
+  .small svg { width: 26px; height: 26px; fill: #FFB38A; filter: drop-shadow(0 0 8px rgba(255, 179, 138, .7)); }
+  .small h1 { margin: 14px 0 0; font: 400 24px/1.25 "Constellate Display", "matrix-ii", Georgia, serif; color: var(--cream); }
+  .small p { margin: 12px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
+  @media (max-width: 900px), (max-height: 520px) {
+    .mon { display: none; }
+    .small { display: block; }
+  }
+</style>
+<link rel="stylesheet" href="https://use.typekit.net/dor0pxk.css" />
+</head>
+<body>
+  <div class="mon" role="region" aria-label="Constellate bedside screen, Day 23">
+    <div class="mon-body">
+      <div class="mon-screen">
+        <!-- the prototype, embedded: its own controls hidden, opened on Day 23 -->
+        <iframe src="./app/index.html?embed=1&amp;chapter=day" title="Constellate bedside screen" allow="fullscreen"></iframe>
+      </div>
+      <div class="mon-chin" aria-hidden="true">
+        <svg viewBox="-12 -12 24 24"><path d="M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z" /></svg>
+        <i class="mon-led"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="small" role="note">
+    <svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0 -11Q1.65 -1.65 11 0Q1.65 1.65 0 11Q-1.65 1.65 -11 0Q-1.65 -1.65 0 -11Z" /></svg>
+    <h1>Please view on a wider screen</h1>
+    <p>This is a prototype for a bedside touch monitor, and it isn’t responsive. Open it on a laptop or desktop, with the window wide enough to show the whole screen.</p>
+  </div>
+</body>
+</html>
